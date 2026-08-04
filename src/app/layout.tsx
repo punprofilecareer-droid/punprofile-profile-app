@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ConvexClientProvider from "./ConvexClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +33,9 @@ export default function RootLayout({
         <header className="border-b border-black/[.08] px-4 py-3 dark:border-white/[.145]">
           <span className="text-sm font-semibold">EU Fit Check</span>
         </header>
-        <main className="flex flex-1 flex-col">{children}</main>
+        <ConvexClientProvider>
+          <main className="flex flex-1 flex-col">{children}</main>
+        </ConvexClientProvider>
         <footer className="border-t border-black/[.08] px-4 py-3 text-xs text-zinc-500 dark:border-white/[.145] dark:text-zinc-400">
           PunProfile Career Coaching
         </footer>
