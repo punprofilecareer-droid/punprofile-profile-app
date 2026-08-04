@@ -2,22 +2,31 @@
 
 Operating contract for `punprofile-profile-app`, the EU Fit Check web app.
 
-## This repo does not define its own purpose
+## This repo holds implementation only
 
-EU Fit Check exists to replace PunProfile Career Coaching's Google Form lead funnel.
-What it is replacing, and the frameworks it derives from, live in the sibling repo
-`punprofile-career-coaching/`, not here:
+**Every specification lives in the sibling repo `../punprofile-career-coaching/`.**
+Reorganised 04/08/2026: this repo's `docs/` folder was emptied and its contents
+moved there. Nothing here defines what the app should be.
 
 | Fact | Owner, in the sibling repo |
 |---|---|
+| The method: core claim, gates, stages, Thai-specific factors | `10_Methodology.md` |
+| EU Fit Check specs: PRD, product vision, scoring spec, survey spec | `ctxt-product/` |
 | Lead qualification, ICP, ECRA, live form URLs | `08_Coaching_Business.md` |
 | Writing standards, Thai tone, the fixed CTA pool | `03_Content_System.md` |
+| **Design tokens: real colours, typography, spacing, components** | `ctxt-brand/design.md` |
+| Brand personality, voice, colour meaning | `Brand_Guidelines.md` |
 | Mission, offerings, scope, audience | `01_Project_Foundation.md` |
-| Decisions and their rationale | `09_Decision_Log.md` |
+| Decisions and their rationale, including abandoned attempts | `09_Decision_Log.md` |
+| Roadmap and session handoff | `punprofile-work/work-projects/eu-fit-check/` |
 
-Read the owning document before reasoning about the funnel. Do not restate its values
-here, link instead. `docs/self-report-scoring.md` records only the survey-to-score
-mapping this app implements and defers to `08_Coaching_Business.md` on the framework.
+Cross-references in this repo's code are bare filenames in backticks, never
+paths, which is what let those files move without breaking a single citation.
+Keep it that way.
+
+Read the owning document before reasoning about anything. The workspace root
+`../CLAUDE.md` carries the full map, and it exists because reading this repo in
+isolation has already produced wrong work twice.
 
 ### Four instruments with similar names
 
@@ -65,9 +74,14 @@ read:
 
 ## Build state
 
-Following `docs/product-roadmap.md`. `docs/design.md` is a PENDING stub: use framework
-defaults as placeholder styling, and never invent a colour palette or type scale to
-fill that gap.
+Roadmap is `product-roadmap.md` in the sibling repo's
+`punprofile-work/work-projects/eu-fit-check/`.
+
+**The design system is real and lives in the sibling repo's `ctxt-brand/design.md`.**
+This repo's old `docs/design.md` stub, which said no tokens existed, was wrong and
+has been removed. Current placeholder styling in the app predates that discovery and
+needs replacing: the chart's blue introduces a hue the brand forbids, and the dark
+mode is an invention the brand does not have.
 
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
