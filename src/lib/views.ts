@@ -1,0 +1,187 @@
+/**
+ * The two projections of one assessment.
+ *
+ * Coach view: gaps, levers ranked by simulated uplift with an employability
+ * focus, the AI toolstack plan, and what an engagement unlocks. Free to use
+ * internal vocabulary.
+ *
+ * Candidate journey: the motivational surface. Built as a WHITELIST, a typed
+ * shape containing only fields safe to show, rather than the coach view with
+ * fields removed. `08_Coaching_Business.md` is explicit that internal ops
+ * terms (lead, qualification, triage, temperature, propensity, tier, asset)
+ * never appear respondent-facing; `assertCandidateSafe` makes that a check
+ * instead of a hope. Motivation here never buys honesty back: reachable
+ * deltas are the candidate's own re-scored answers, and the unlock line sells
+ * measurement, not a verdict.
+ */
+
+import { scoreResponse, topStrengths, firstAction } from "./scoring.js";
+import type { ScoringInput, ProfileScore, Highlight } from "./scoring.js";
+import { rankMoves, projectUnlock, MOVES } from "./levers.js";
+import type { MoveImpact, UnlockProjection, Module } from "./levers.js";
+import { DIMENSIONS, BAND_COPY } from "./model.js";
+import { AI_INDICATOR_LABELS } from "./normalize.js";
+
+// -------------------------------------------------------------- coach view
+
+export interface CoachView {
+  candidate: string;
+  dims: { key: string; label: string; score: number | null; coverage: number; band: string; bandCopy: string }[];
+  /** The same pick the report's "what to do first" makes. */
+  firstAction: Highlight | null;
+  /** Goal 1.1: levers ranked by simulated Employability delta. */
+  employabilityLevers: MoveImpact[];
+  /** Best moves overall, any dimension. */
+  topLevers: MoveImpact[];
+  /** Goal 1.2: the AI toolstack state and what to deploy. */
+  aiPlan: {
+    state: "unknown" | "partial" | "complete";
+    metCount: number | null;
+    missing: string[];
+    moves: MoveImpact[];
+  };
+  /** What an engagement measures that self-report cannot. */
+  unlock: UnlockProjection;
+  byModule: { module: Module; moves: MoveImpact[] }[];
+}
+
+export function buildCoachView(input: ScoringInput, candidate: string): CoachView {
+  const profile = scoreResponse(input);
+  const overall = rankMoves(input);
+  const employability = rankMoves(input, "employability").filter(
+    (x) => (x.changes.find((c) => c.dimension === "employability")?.delta ?? 0) > 0,
+  );
+  const aiMoves = overall.filter((x) => x.move.ai && x.move.itemKey === "aiDigitalFluency");
+  const flags = input.aiIndicatorFlags ?? null;
+  const missing = flags ? AI_INDICATOR_LABELS.filter((_, i) => !flags[i]) : [...AI_INDICATOR_LABELS];
+
+  const modules: Module[] = ["Career Coaching", "Candidate Profile Optimization", "Job Application Lifecycle", "Self-serve"];
+  return {
+    candidate,
+    dims: profile.dimensions.map((d) => ({
+      key: d.key, label: d.label, score: d.score, coverage: d.coverage, band: d.band, bandCopy: BAND_COPY[d.band],
+    })),
+    firstAction: firstAction(profile),
+    employabilityLevers: employability,
+    topLevers: overall.slice(0, 6),
+    aiPlan: {
+      state: flags === null ? "unknown" : missing.length === 0 ? "complete" : "partial",
+      metCount: flags ? flags.filter(Boolean).length : null,
+      missing,
+      moves: aiMoves,
+    },
+    unlock: projectUnlock(profile),
+    byModule: modules
+      .map((m) => ({ module: m, moves: overall.filter((x) => x.move.module === m) }))
+      .filter((g) => g.moves.length > 0),
+  };
+}
+
+// -------------------------------------------------------- candidate journey
+
+export interface JourneyStep {
+  label: string;
+  status: "done" | "next" | "later" | "unanswered";
+  detail?: string;
+}
+
+export interface CandidateJourney {
+  candidate: string;
+  /** Lead with what they have, not what they lack. */
+  strengths: { label: string; score: number; area: string }[];
+  next: { title: string; why: string } | null;
+  /** The funnel as a visible checklist: progress mechanics without fake scores. */
+  steps: JourneyStep[];
+  aiHabits: { label: string; done: boolean | null }[];
+  /** "Doing X moves Y from a to b", re-scored from their own answers. */
+  reachable: { action: string; area: string; from: number | null; to: number | null }[];
+  measured: { count: number; total: number; line: string };
+  caveat: string;
+}
+
+/**
+ * The funnel steps as candidate-visible mechanics. `doneAt` is the score at
+ * which the step reads as complete; salary caps at 3 by design, language is
+ * usable from conversational.
+ */
+const STEPS: { itemKey: string; label: string; doneAt: number }[] = [
+  { itemKey: "targetClarity", label: "Pick one target country and role", doneAt: 4 },
+  { itemKey: "cvStatus", label: "Get your CV Europe-ready", doneAt: 4 },
+  { itemKey: "linkedinStatus", label: "Make LinkedIn active and findable", doneAt: 4 },
+  { itemKey: "visaReadiness", label: "Know your visa route by name", doneAt: 4 },
+  { itemKey: "languageReadiness", label: "Keep your English moving", doneAt: 3 },
+  { itemKey: "portfolioEvidence", label: "Show some work you are proud of", doneAt: 3 },
+  { itemKey: "applicationActivity", label: "Get applications going out", doneAt: 3 },
+];
+
+export function buildCandidateJourney(input: ScoringInput, candidate: string): CandidateJourney {
+  const profile = scoreResponse(input);
+  const itemScores = new Map<string, number | null>();
+  for (const d of profile.dimensions) for (const i of d.items) itemScores.set(i.key, i.score);
+
+  const fa = firstAction(profile);
+  // The move's candidate copy already carries its own reasoning, so the card
+  // shows one text or the other, never both saying the same thing twice.
+  const faMove = fa ? MOVES.find((m) => m.itemKey === fa.key && m.applies(input)) : undefined;
+
+  // The checklist's "next" is the SAME pick firstAction makes, not merely the
+  // first unfinished step in display order. firstAction prefers the earliest
+  // clearly-weak stage; marking a different step "next" here would give the
+  // candidate two competing instructions on one page.
+  const steps: JourneyStep[] = STEPS.map((s) => {
+    const score = itemScores.get(s.itemKey);
+    if (score === null || score === undefined) return { label: s.label, status: "unanswered", detail: "Two quick answers and this fills in" };
+    if (score >= s.doneAt) return { label: s.label, status: "done" };
+    if (fa && s.itemKey === fa.key) return { label: s.label, status: "next" };
+    return { label: s.label, status: "later" };
+  });
+
+  const flags = input.aiIndicatorFlags ?? null;
+  const aiHabits = AI_INDICATOR_LABELS.map((label, i) => ({ label, done: flags ? flags[i] : null }));
+
+  const reachable = rankMoves(input)
+    .filter((x) => (x.changes[0]?.delta ?? 0) > 0)
+    .slice(0, 2)
+    .map((x) => ({
+      action: x.move.candidate,
+      area: x.changes[0].label,
+      from: x.changes[0].from,
+      to: x.changes[0].to,
+    }));
+
+  const unlock = projectUnlock(profile);
+  return {
+    candidate,
+    strengths: topStrengths(profile, 3).map((h) => ({ label: h.label.replace(/ \(self-declared\)$/, ""), score: h.score, area: h.dimension })),
+    next: fa
+      ? faMove
+        ? { title: faMove.candidate, why: "" }
+        : { title: `Start with ${fa.label.replace(/ \(self-declared\)$/, "")}`, why: fa.actionWhy ?? "" }
+      : null,
+    steps,
+    aiHabits,
+    reachable,
+    measured: {
+      count: unlock.measuredNow,
+      total: unlock.totalItems,
+      line: `Your answers so far measure ${unlock.measuredNow} of ${unlock.totalItems} areas. A free 30-minute conversation can measure ${unlock.measuredAfter - unlock.measuredNow} more, the parts no form can see.`,
+    },
+    caveat: "Everything here is self-reported and preliminary. It is a first read of where you stand, not a verdict.",
+  };
+}
+
+// ------------------------------------------------------------- safety check
+
+/**
+ * Internal ops vocabulary that must never reach a candidate surface, per the
+ * customer-facing naming rule in `08_Coaching_Business.md`. Run against the
+ * rendered candidate output, not the data, so template slip-ups are caught too.
+ */
+const BANNED: RegExp[] = [
+  /\blead\b/i, /\bleads\b/i, /\bICP\b/, /propensity/i, /entry point/i,
+  /\btriage\b/i, /temperature/i, /\btier\b/i, /qualif/i, /\basset\b/i, /conversion/i,
+];
+
+export function assertCandidateSafe(renderedText: string): string[] {
+  return BANNED.filter((re) => re.test(renderedText)).map((re) => String(re));
+}
