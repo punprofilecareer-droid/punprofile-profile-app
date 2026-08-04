@@ -8,8 +8,14 @@ export default function Home() {
         An honest first read on your EU job-market readiness — in a few
         minutes, on your phone.
       </p>
-      <p className="text-sm text-zinc-400 dark:text-zinc-500">
-        Assessment flow coming in Phase 1.
+      <a
+        href="/assess"
+        className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white dark:bg-white dark:text-black"
+      >
+        Check where you stand
+      </a>
+      <p className="text-xs text-zinc-400 dark:text-zinc-500">
+        Under 2 minutes. No sign-up before you see your first result.
       </p>
     </div>
   );

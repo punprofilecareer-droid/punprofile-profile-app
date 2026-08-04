@@ -30,3 +30,25 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Spider chart (src/lib/radar.ts) role tokens. Placeholder styling per
+   TASK-006: swapped for real brand tokens when docs/design.md lands. */
+.viz-root {
+  --viz-surface: #ffffff;
+  --viz-grid: #e4e4e7;
+  --viz-muted: #8b8b90;
+  --viz-series-1: #2a78d6;
+}
+@media (prefers-color-scheme: dark) {
+  .viz-root {
+    --viz-surface: #0a0a0a;
+    --viz-grid: #2c2c2a;
+    --viz-series-1: #3987e5;
+  }
+}
+.viz-root .viz-radar { display: block; }
+.viz-root .viz-axis-label { font: 500 11px var(--font-geist-sans, system-ui), system-ui, sans-serif; fill: currentColor; opacity: 0.85; }
+.viz-root .viz-axis-unscored { opacity: 0.5; }
+.viz-root .viz-axis-value { font-weight: 700; }
+.viz-root .viz-tick { font: 10px system-ui, sans-serif; fill: var(--viz-muted); }
+.viz-root .viz-caption { font: 11px system-ui, sans-serif; fill: var(--viz-muted); }
