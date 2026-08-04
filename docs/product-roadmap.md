@@ -333,15 +333,19 @@ started. That moves several task notes out of date:
 
 New tasks:
 
-- [ ] **TASK-051**, map the app's short question set onto `ScoringInput` and add
-  pathway-aware narrative variants (FR-008). The survey-era parsers expect the
-  Google Form vocabulary; the app asks tap-only questions, so each app question
-  needs an explicit mapping to a `ScoringInput` field, and the four pathways
-  need distinct opening narrative lines. Depends on TASK-017. The highest-signal
-  questions are already identified in `docs/self-report-scoring.md`: visa,
-  English level, AI habits, family, CV status, LinkedIn status, plus pathway and
-  target country/role (use the Job Title Pool from `08_Coaching_Business.md` as
-  the role picker, no free text).
+- [ ] **TASK-051**, build the FULL questionnaire into the app as staged content
+  (decided 04/08/2026: the app absorbs both Google instruments, and no new data
+  ever lands in a Form again). Content model in `src/lib/content/questions.ts`
+  with canonical answer values, so the app writes `ScoringInput` fields
+  directly and the fuzzy parsers in `normalize.ts` become backfill-only code.
+  Staging: Stage 1 pre-email, under 10 taps (pathway, target country/role via
+  the Job Title Pool from `08_Coaching_Business.md`, CV, LinkedIn, visa,
+  English, stage, timeline), which covers the old quiz's six topics and feeds
+  the teaser chart; Stage 2 post-unlock carries the rest of the survey
+  (experience, industry, portfolio, other languages, AI habits, family,
+  salary, obstacles, prior investment). Free-text questions become structured
+  pickers wherever an option set exists. Includes the pathway-aware opening
+  narrative lines per FR-008. Supersedes the short-set reading of TASK-017.
 - [ ] **TASK-052**, one consolidated Thai native-tone pass over ALL candidate
   copy (questions, narrative, journey, consent, emails) against
   `03_Content_System.md`, instead of the per-task passes scattered above.
@@ -351,8 +355,15 @@ New tasks:
   pipeline (`scripts/import-sheet.ts`). The dashboard then has real data on day
   one, and the re-engagement play (send each historical lead their result plus
   discovery-call CTA) becomes a query instead of a project. Do after TASK-032.
-- [ ] **TASK-054**, funnel cutover spec for TASK-048: what happens to the
-  6-question quiz (retire alongside the Form, or repoint at the app), which
-  links change (pinned post, Free Consultation Hook, `00_Quick_Facts.md`), and
-  in which order. Decide with the coaching repo's owner docs open; the quiz and
-  survey are distinct instruments (see root `CLAUDE.md`, four instruments).
+- [x] **TASK-054**, funnel cutover DECIDED 04/08/2026: both Google instruments
+  retire together at launch, replaced by the app's staged flow (Stage 1 plays
+  the quiz's role, Stage 2 the survey's). At TASK-048, every link moves to the
+  app: pinned post, Free Consultation Hook, `00_Quick_Facts.md`. The decision
+  belongs in the coaching repo's `09_Decision_Log.md`; record it there in the
+  next session that touches that repo.
+- [ ] **TASK-055**, port the quiz's Product Propensity logic (Entry Point
+  decision tree, Temperature score, the two interaction rules) from
+  `08_Coaching_Business.md` into the app, computed from Stage 1 answers and
+  shown on the admin lead views. This is what lets the response-sheet formula
+  columns retire too, once the dashboard supersedes the Candidates Master
+  sheet. Post-MVP: Phase 2 or later, after TASK-034.
