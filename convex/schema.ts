@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 /**
  * Data model per `docs/prd.md` § 3, plus the `assessments` snapshot table from
@@ -12,6 +13,10 @@ import { v } from "convex/values";
  * instead of contradicting it.
  */
 export default defineSchema({
+  // Convex Auth's own tables (users, sessions, accounts...). Only the single
+  // admin account ever lands here; candidates are leads, not users.
+  ...authTables,
+
   // One row per candidate session, from first partial answer onward.
   leads: defineTable({
     // Contact info: all optional until captured; email is the "minimum contact
