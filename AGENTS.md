@@ -1,6 +1,13 @@
 # AGENTS.md
 
-Operating contract for `punprofile-profile-app`, the EU Fit Check web app.
+Operating contract for `punprofile-profile-app`, the **PunProfile App**.
+
+**Naming, decided 04/08/2026.** The product is the PunProfile App. **EU Fit
+Check is its assessment feature**, alongside a personalized job board, saved
+jobs with self-tracked status, and email notifications (Phase 4). Older text in
+the specs uses "EU Fit Check" to mean the whole product; read it as the app.
+The public-facing name is a working name and not settled, so do not hard-code
+a product name into user-facing copy beyond the brand "PunProfile".
 
 ## This repo holds implementation only
 

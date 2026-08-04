@@ -1,8 +1,13 @@
-# EU Fit Check
+# PunProfile App
 
-PunProfile's mobile-first EU job-market readiness self-assessment. See
-`docs/VISION.md`, `docs/product-vision.md`, `docs/prd.md`, and
-`docs/product-roadmap.md` for full product context and build plan.
+The web surface of PunProfile Career Coaching. **EU Fit Check** is its
+assessment feature, not the product itself; the job board, saved jobs and
+application tracker are specified in Phase 4.
+
+All specifications live in the sibling repo `../punprofile-career-coaching/`:
+the method in `10_Methodology.md`, the product specs in `ctxt-product/`, the
+roadmap in `punprofile-work/work-projects/eu-fit-check/`. This repo is
+implementation only. See `AGENTS.md`.
 
 ## Getting Started
 

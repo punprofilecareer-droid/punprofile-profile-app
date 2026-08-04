@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EU Fit Check — PunProfile",
+  title: "PunProfile",
   description:
     "An honest, coach-informed first read on your EU job-market readiness.",
 };
@@ -33,7 +33,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <header className="border-b border-black/[.08] px-4 py-3 dark:border-white/[.145]">
-          <span className="text-sm font-semibold">EU Fit Check</span>
+          <span className="text-sm font-semibold">PunProfile</span>
         </header>
         <ConvexClientProvider>
           <main className="flex flex-1 flex-col">{children}</main>
