@@ -84,11 +84,28 @@ read:
 Roadmap is `product-roadmap.md` in the sibling repo's
 `punprofile-work/work-projects/eu-fit-check/`.
 
-**The design system is real and lives in the sibling repo's `ctxt-brand/design.md`.**
-This repo's old `docs/design.md` stub, which said no tokens existed, was wrong and
-has been removed. Current placeholder styling in the app predates that discovery and
-needs replacing: the chart's blue introduces a hue the brand forbids, and the dark
-mode is an invention the brand does not have.
+**The design system is real and lives in the sibling repo's `design.md`.** This
+repo's old `docs/design.md` stub, which said no tokens existed, was wrong and has
+been removed.
+
+Applied 08/08/2026. The token layer is `src/app/globals.css` for the app and
+`src/lib/design-tokens.ts` for everything generated outside Next. Those two are the
+only definitions of the palette; keep them from drifting and never add a third.
+Some things worth knowing before you touch styling:
+
+- **There is no dark mode and there must not be one.** The system's base is white
+  with full-bleed colour washes and it defines no dark ramp, so a `dark:` variant or
+  a `prefers-color-scheme` block would be invented tokens.
+- **Terracotta is one action per view**, teal is everything else that needs emphasis,
+  and `error` is neither.
+- **No spacing tokens.** The system's scale already maps onto Tailwind's 4px base.
+- **`src/lib/radar.ts` holds no colours** and should stay that way.
+- **The `--viz-*`, `--ink-*` and `--border` names are load-bearing.**
+  `scripts/build-report-book.ts` reads them out of a rendered report's stylesheet;
+  renaming one strips the book's sidebar with no error.
+
+Still placeholder: the wordmark, the mascot, section wash rotation and the editorial
+spacing pass. Those need assets from the sibling repo's `ctxt-brand/assets/`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
