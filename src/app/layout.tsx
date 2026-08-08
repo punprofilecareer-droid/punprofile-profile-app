@@ -41,7 +41,16 @@ export default function RootLayout({
 }>) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="th" className={`${fontVars} h-full antialiased`}>
+      {/* Browser extensions stamp attributes onto <html> before React hydrates
+          (LanguageTool's `data-lt-installed`, password managers, translators),
+          which reads as a hydration mismatch in dev. This suppresses attribute
+          mismatches on this element only, so it cannot mask a real one in a
+          component. */}
+      <html
+        lang="th"
+        suppressHydrationWarning
+        className={`${fontVars} h-full antialiased`}
+      >
         <body className="min-h-full flex flex-col">
           {/* nav-header: surface, ink, 72px, and never competing with page
               content for colour attention. */}
