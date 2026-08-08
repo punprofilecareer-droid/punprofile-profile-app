@@ -13,24 +13,27 @@ import Link from "next/link";
 export default function AdminPage() {
   const { signOut } = useAuthActions();
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
+    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center leading-normal">
       <AuthLoading>
-        <p className="text-sm text-zinc-500">Checking session...</p>
+        <p className="text-body text-neutral-500">Checking session...</p>
       </AuthLoading>
       <Unauthenticated>
-        <p className="text-sm">
-          Not signed in. <Link className="underline" href="/login">Go to sign-in</Link>
+        <p className="text-body text-slate">
+          Not signed in.{" "}
+          <Link className="text-primary underline" href="/login">
+            Go to sign-in
+          </Link>
         </p>
       </Unauthenticated>
       <Authenticated>
-        <h1 className="text-2xl font-semibold tracking-tight">Coach dashboard</h1>
-        <p className="max-w-md text-zinc-600 dark:text-zinc-400">
+        <h1 className="text-h2">Coach dashboard</h1>
+        <p className="max-w-md text-body text-slate">
           Signed in. The lead list and detail views land here in Phase 2
           (TASK-034, TASK-035).
         </p>
         <button
           onClick={() => void signOut()}
-          className="rounded border border-black/[.15] px-3 py-1.5 text-sm dark:border-white/[.2]"
+          className="rounded-md border border-neutral-300 bg-surface px-5 py-2.5 text-label text-slate transition-colors hover:bg-neutral-100"
         >
           Sign out
         </button>

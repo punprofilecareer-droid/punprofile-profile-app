@@ -72,7 +72,7 @@ export default function AssessPage() {
   const scores = useMemo(() => session?.scores ?? {}, [session]);
 
   if (!leadId) {
-    return <p className="px-6 py-24 text-center text-sm text-zinc-500">Starting...</p>;
+    return <p className="px-6 py-24 text-center text-body text-neutral-500">Starting...</p>;
   }
 
   // Steps 0..8: the nine Stage 1 questions (TASK-019/020).
@@ -108,19 +108,18 @@ export default function AssessPage() {
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
-      <h1 className="text-xl font-semibold tracking-tight">
-        Here&apos;s your first read
-      </h1>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <h1 className="text-h3">Here&apos;s your first read</h1>
+      <p className="mt-1 text-body text-slate">
         Self-reported and preliminary, from your own answers just now.
       </p>
       <div className="mt-4">
         <SpiderChart scores={scores} variant="teaser" />
       </div>
-      <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mt-2 text-caption text-neutral-500">
         Hollow markers mean &quot;not measured yet&quot;, never zero.
       </p>
-      <p className="mt-6 rounded-lg border border-black/[.1] px-4 py-3 text-sm text-zinc-600 dark:border-white/[.15] dark:text-zinc-400">
+      {/* card-bordered: border-only, because it sits on white. */}
+      <p className="mt-6 rounded-lg border border-neutral-300 bg-surface px-6 py-6 text-body text-slate">
         The full picture, with what to do first, unlocks by email in the next
         release (Phase 2).
       </p>

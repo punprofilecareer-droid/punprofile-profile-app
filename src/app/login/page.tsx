@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 /**
- * TASK-004: the admin sign-in screen. Deliberately plain (design.md is a
- * PENDING stub) and deliberately quiet about what it is: candidates never see
- * a link here, and sign-up is refused server-side for any email but the
- * admin's, so the "first time" button is safe to show.
+ * TASK-004: the admin sign-in screen. Deliberately quiet about what it is:
+ * candidates never see a link here, and sign-up is refused server-side for any
+ * email but the admin's, so the "first time" button is safe to show.
+ *
+ * Latin-only, so it opts into the system's body line-height of 1.5 rather than
+ * the Thai-first 1.6 the app's base carries. Components follow `design.md`.
  */
 export default function LoginPage() {
   const { signIn } = useAuthActions();
@@ -35,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-6 py-16">
+    <div className="flex flex-1 items-center justify-center px-6 py-16 leading-normal">
       <form
         className="w-full max-w-sm space-y-4"
         onSubmit={(e) => {
@@ -43,35 +45,37 @@ export default function LoginPage() {
           void submit("signIn", e.currentTarget);
         }}
       >
-        <h1 className="text-xl font-semibold">Coach sign-in</h1>
-        <label className="block text-sm">
+        <h1 className="text-h3">Coach sign-in</h1>
+        <label className="block text-label text-slate">
           Email
           <input
             name="email"
             type="email"
             required
             autoComplete="username"
-            className="mt-1 w-full rounded border border-black/[.15] bg-transparent px-3 py-2 dark:border-white/[.2]"
+            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink"
           />
         </label>
-        <label className="block text-sm">
+        <label className="block text-label text-slate">
           Password
           <input
             name="password"
             type="password"
             required
             autoComplete="current-password"
-            className="mt-1 w-full rounded border border-black/[.15] bg-transparent px-3 py-2 dark:border-white/[.2]"
+            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink"
           />
         </label>
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {/* `error`, never Terracotta: a problem must not look like an action. */}
+        {error && <p className="text-body text-error">{error}</p>}
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded bg-black px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="h-12 w-full rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
         >
           {busy ? "Working..." : "Sign in"}
         </button>
+        {/* button-secondary: matters, but must not compete with the primary. */}
         <button
           type="button"
           disabled={busy}
@@ -79,7 +83,7 @@ export default function LoginPage() {
             const form = e.currentTarget.closest("form");
             if (form?.reportValidity()) void submit("signUp", form);
           }}
-          className="w-full rounded border border-black/[.15] px-3 py-2 text-sm disabled:opacity-50 dark:border-white/[.2]"
+          className="h-12 w-full rounded-md bg-primary px-7 text-label text-on-primary transition-colors hover:bg-primary-deep disabled:bg-neutral-300 disabled:text-neutral-500"
         >
           First time: create the admin account
         </button>

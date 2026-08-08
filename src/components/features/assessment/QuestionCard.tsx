@@ -60,22 +60,23 @@ export default function QuestionCard({
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-8">
-      <p className="mb-1 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mb-1 text-caption text-neutral-500">
         {step} / {total}
       </p>
       <div
-        className="mb-5 h-1 w-full overflow-hidden rounded bg-black/[.08] dark:bg-white/[.12]"
+        className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={total}
         aria-valuenow={step}
       >
+        {/* Teal, not Terracotta: progress is feedback, not the view's action. */}
         <div
-          className="h-full rounded bg-black transition-all dark:bg-white"
+          className="h-full rounded-full bg-primary transition-all"
           style={{ width: `${(step / total) * 100}%` }}
         />
       </div>
-      <h2 id={`q-${step}`} className="mb-4 text-lg font-semibold tracking-tight">
+      <h2 id={`q-${step}`} className="mb-4 text-h4">
         {prompt}
       </h2>
       <div
@@ -88,10 +89,10 @@ export default function QuestionCard({
             key={o.value}
             onClick={() => handleTap(o.value)}
             aria-pressed={isChosen(o.value)}
-            className={`min-h-12 rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
+            className={`min-h-12 rounded-md border px-4 py-3 text-left text-body transition-colors ${
               isChosen(o.value)
-                ? "border-black bg-black text-white dark:border-white dark:bg-white dark:text-black"
-                : "border-black/[.15] hover:bg-black/[.04] dark:border-white/[.2] dark:hover:bg-white/[.08]"
+                ? "border-primary bg-primary text-on-primary"
+                : "border-neutral-300 bg-surface hover:bg-mint-wash"
             }`}
           >
             {o.label}
@@ -102,7 +103,7 @@ export default function QuestionCard({
         <button
           onClick={onContinue}
           disabled={chosen.length === 0}
-          className="mt-5 min-h-12 w-full rounded-lg bg-black px-5 py-3 text-sm font-medium text-white disabled:opacity-40 dark:bg-white dark:text-black"
+          className="mt-5 min-h-12 w-full rounded-md bg-accent px-7 py-3.5 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
         >
           {continueLabel}
         </button>
