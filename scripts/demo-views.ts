@@ -11,6 +11,11 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { mapColumns, importRow, looksShifted } from "./import-sheet.js";
 import { buildCoachView, buildCandidateJourney, assertCandidateSafe } from "../src/lib/views.js";
 import { validateCatalog } from "../src/lib/levers.js";
+import {
+  BRAND_FONT_LINK,
+  BRAND_FONT_STACKS,
+  BRAND_TOKENS_CSS,
+} from "../src/lib/design-tokens.js";
 
 const [, , inPath, who, outPath] = process.argv;
 if (!inPath || !who || !outPath) {
@@ -110,30 +115,28 @@ if (leaks.length) {
 const html = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Two views, ${esc(meta.candidate)}</title>
+${BRAND_FONT_LINK}
 <style>
-  :root { color-scheme: light dark;
-    --surface:#fcfcfb; --page:#f9f9f7; --ink1:#0b0b0b; --ink2:#52514e; --mut:#898781;
-    --accent:#2a78d6; --border:rgba(11,11,11,.1); }
-  @media (prefers-color-scheme: dark) { :root {
-    --surface:#1a1a19; --page:#0d0d0d; --ink1:#fff; --ink2:#c3c2b7; --accent:#3987e5; --border:rgba(255,255,255,.1); } }
-  body { margin:0; padding:1.5rem; background:var(--page); color:var(--ink1);
-    font-family:system-ui,-apple-system,"Segoe UI",sans-serif; font-size:.9rem; line-height:1.5; }
+${BRAND_TOKENS_CSS.replace(/\n  \}$/, `\n${BRAND_FONT_STACKS}\n  }`)}
+  body { margin:0; padding:1.5rem; background:var(--viz-page); color:var(--ink-1);
+    font-family:var(--font-sans); font-size:.9rem; line-height:1.5; }
   .cols { display:grid; gap:1.5rem; grid-template-columns:1fr; max-width:80rem; margin:0 auto; }
   @media (min-width:64rem) { .cols { grid-template-columns:1fr 1fr; } }
-  .pane { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.25rem 1.5rem; }
-  .pane.candidate { border-top:3px solid var(--accent); }
+  .pane { background:var(--viz-surface); border:1px solid var(--border); border-radius:16px; padding:1.25rem 1.5rem; }
+  .pane.candidate { border-top:3px solid var(--primary); }
+  h2,h3 { font-family:var(--font-display); }
   h2 { margin:0; font-size:1.1rem; } h3 { font-size:.95rem; margin:1.4rem 0 .4rem; }
-  .sub { color:var(--ink2); margin:.15rem 0 0; }
+  .sub { color:var(--ink-2); margin:.15rem 0 0; }
   table { border-collapse:collapse; width:100%; font-size:.84rem; }
   th,td { text-align:left; padding:.35rem .5rem; border-bottom:1px solid var(--border); vertical-align:top; }
-  th { color:var(--ink2); font-weight:600; }
+  th { color:var(--ink-2); font-weight:600; }
   .num { font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .mut { color:var(--mut); font-size:.8rem; }
+  .mut { color:var(--viz-muted); font-size:.8rem; }
   ul { padding-left:1.2rem; margin:.4rem 0; } ul.steps { list-style:none; padding-left:0; }
   ul.steps li { padding:.25rem 0; border-bottom:1px solid var(--border); }
-  .mark { display:inline-block; width:1.3rem; color:var(--accent); font-weight:700; }
-  .s-done { color:var(--ink2); } .s-next { font-weight:600; }
-  .card { border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:8px; padding:.75rem 1rem; margin:.75rem 0; }
+  .mark { display:inline-block; width:1.3rem; color:var(--primary); font-weight:700; }
+  .s-done { color:var(--ink-2); } .s-next { font-weight:600; }
+  .card { border:1px solid var(--border); border-left:3px solid var(--primary); border-radius:10px; padding:.75rem 1rem; margin:.75rem 0; }
   .card h3 { margin:0 0 .3rem; }
 </style></head><body>
 <div class="cols">

@@ -4,7 +4,7 @@
  * Written as a pure string builder rather than against a chart library so the
  * same function serves the offline report, a server-rendered email, and (via
  * `dangerouslySetInnerHTML` or a trivial JSX port) the app's chart component —
- * `prd.md` § 12 leaves the library choice open pending `docs/design.md`, and
+ * `prd.md` § 12 leaves the library choice open, and
  * this commits to nothing.
  *
  * Colour roles come from CSS custom properties, never hard-coded hex, so the

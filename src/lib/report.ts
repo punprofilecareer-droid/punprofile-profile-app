@@ -5,12 +5,10 @@
  * Structure": executive summary, one spider chart per assessment, top
  * strengths, development priorities, readiness summary.
  *
- * Styling is deliberately minimal and token-driven. `docs/design.md` is a
- * PENDING stub and `product-roadmap.md` TASK-006 set the rule for this repo:
- * plain defaults as placeholder styling, never an invented palette. The chart
- * colours come from the validated brand-neutral default in the dataviz
- * reference palette and are declared once as custom properties, so swapping in
- * real brand tokens later is a one-block edit.
+ * Styling is token-driven, from the brand system in `design.md`. The tokens
+ * themselves live in `design-tokens.ts`, shared with the report book and the
+ * two-views demo, so a palette change is one edit rather than three. Report
+ * HTML is standalone and cannot use `next/font`, hence the font <link>.
  *
  * Every score in the document carries its tier, and a table view mirrors every
  * chart — `prd.md` § 7 requires the non-visual form, and FR-007 requires the
@@ -18,6 +16,7 @@
  */
 
 import { radarSvg } from "./radar.js";
+import { BRAND_FONT_LINK, BRAND_FONT_STACKS, BRAND_TOKENS_CSS } from "./design-tokens.js";
 import type { RadarAxis } from "./radar.js";
 import { buildNarrative } from "./narrative.js";
 import type { ProfileScore } from "./scoring.js";
@@ -109,39 +108,19 @@ ${rows}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EU Fit Check — ${esc(meta.candidate)}</title>
+${BRAND_FONT_LINK}
 <style>
-  :root {
-    color-scheme: light dark;
-    --viz-surface: #fcfcfb;
-    --viz-page: #f9f9f7;
-    --viz-series-1: #2a78d6;
-    --viz-grid: #e1e0d9;
-    --viz-muted: #898781;
-    --ink-1: #0b0b0b;
-    --ink-2: #52514e;
-    --border: rgba(11,11,11,0.10);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --viz-surface: #1a1a19;
-      --viz-page: #0d0d0d;
-      --viz-series-1: #3987e5;
-      --viz-grid: #2c2c2a;
-      --viz-muted: #898781;
-      --ink-1: #ffffff;
-      --ink-2: #c3c2b7;
-      --border: rgba(255,255,255,0.10);
-    }
-  }
+${BRAND_TOKENS_CSS.replace(/\n  \}$/, `\n${BRAND_FONT_STACKS}\n  }`)}
   * { box-sizing: border-box; }
   body {
     margin: 0; padding: 0 1rem 4rem;
     background: var(--viz-page); color: var(--ink-1);
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: var(--font-sans);
     line-height: 1.55;
   }
   main { max-width: 60rem; margin: 0 auto; }
   header.top { padding: 2.5rem 0 1.25rem; border-bottom: 1px solid var(--border); }
+  h1, h2 { font-family: var(--font-display); }
   h1 { font-size: 1.6rem; margin: 0 0 .25rem; letter-spacing: -0.01em; }
   .sub { color: var(--ink-2); margin: 0; font-size: .9rem; }
   .banner {
@@ -164,12 +143,12 @@ ${rows}
   @media (min-width: 60rem) { .dim-body { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; } }
   figure.chart { margin: 0; background: var(--viz-surface); min-width: 0; }
   .viz-radar { display: block; }
-  .viz-axis-label { font: 500 11px system-ui, -apple-system, sans-serif; fill: var(--ink-2); }
+  .viz-axis-label { font: 500 11px var(--font-sans); fill: var(--ink-2); }
   .viz-axis-unscored { fill: var(--viz-muted); }
   .viz-axis-value { font-weight: 700; fill: var(--ink-1); font-variant-numeric: tabular-nums; }
   .viz-axis-unscored .viz-axis-value { fill: var(--viz-muted); font-weight: 500; }
   .viz-tick { font: 10px system-ui, sans-serif; fill: var(--viz-muted); font-variant-numeric: tabular-nums; }
-  .viz-caption { font: 11px system-ui, sans-serif; fill: var(--viz-muted); }
+  .viz-caption { font: 11px var(--font-sans); fill: var(--viz-muted); }
   table.scores { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: .84rem; }
   table.scores caption { text-align: left; color: var(--ink-2); font-size: .8rem; padding-bottom: .4rem; }
   table.scores th, table.scores td { text-align: left; padding: .4rem .5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
