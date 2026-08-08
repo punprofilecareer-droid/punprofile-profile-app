@@ -48,11 +48,16 @@ export const setPathway = mutation({
   },
 });
 
+const PATHWAY_VALUES = ["job_first", "study_first", "family", "not_sure"] as const;
+type Pathway = (typeof PATHWAY_VALUES)[number];
+
 export const submitAnswer = mutation({
   args: {
     leadId: v.id("leads"),
     questionKey: v.string(),
-    value: v.string(),
+    // A "many" question (target countries) sends a list; everything else sends
+    // a string. `isValidAnswer` enforces which shape each key accepts.
+    value: v.union(v.string(), v.array(v.string())),
   },
   handler: async (ctx, args) => {
     if (!isValidAnswer(args.questionKey, args.value)) {
@@ -64,7 +69,19 @@ export const submitAnswer = mutation({
     const responses = { ...(lead.responses ?? {}), [args.questionKey]: args.value };
     const scores = computeScores(toScoringInput(responses));
     const now = Date.now();
+
+    // Pathway is a first-class column as well as a response, because
+    // `by_pathway` indexes it for the admin surface. Mirroring it here keeps
+    // the assessment flow to one round trip per answer.
+    const pathway =
+      args.questionKey === "pathway" &&
+      typeof args.value === "string" &&
+      (PATHWAY_VALUES as readonly string[]).includes(args.value)
+        ? { pathway: args.value as Pathway }
+        : {};
+
     await ctx.db.patch(args.leadId, {
+      ...pathway,
       responses,
       scores,
       updatedAt: now,

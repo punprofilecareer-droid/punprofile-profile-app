@@ -13,11 +13,24 @@ type Responses = Record<string, unknown>;
 
 const str = (v: unknown): string | null => (typeof v === "string" ? v : null);
 
+const strArray = (v: unknown): string[] | null =>
+  Array.isArray(v) && v.every((x) => typeof x === "string") ? (v as string[]) : null;
+
 export function toScoringInput(responses: Responses): ScoringInput {
   const input: ScoringInput = {};
 
-  const country = str(responses.targetCountry);
-  if (country) input.targetCountries = country === "not_sure" ? [] : [country];
+  // `pathway` maps to nothing on purpose. It is context and narrative only
+  // (SLOT: pathway), stored on the `leads.pathway` column rather than in
+  // ScoringInput, so its absence here is a decision, not an omission.
+
+  // Multi-select since 08/08/2026. `targetCountry` is the pre-multi-select key
+  // and is read as a fallback so rows written before the change still score.
+  const countries =
+    strArray(responses.targetCountries) ??
+    (str(responses.targetCountry) ? [str(responses.targetCountry) as string] : null);
+  if (countries) {
+    input.targetCountries = countries.filter((c) => c !== "not_sure");
+  }
 
   const role = str(responses.targetRole);
   if (role) input.targetRole = role === "not_sure" ? null : role;
@@ -49,8 +62,7 @@ export function toScoringInput(responses: Responses): ScoringInput {
     stage === "researching" ||
     stage === "applying" ||
     stage === "interviewing" ||
-    stage === "offer" ||
-    stage === "negotiating"
+    stage === "offer"
   ) {
     input.stage = stage;
   }
