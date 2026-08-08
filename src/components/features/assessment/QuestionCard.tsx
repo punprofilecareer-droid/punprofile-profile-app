@@ -24,7 +24,9 @@ export default function QuestionCard({
   selected,
   onSelect,
   onContinue,
+  onBack,
   continueLabel = "Continue",
+  backLabel = "ย้อนกลับ",
   step,
   total,
 }: {
@@ -36,7 +38,10 @@ export default function QuestionCard({
   onSelect: (value: string | string[]) => void;
   /** Required in "many" mode: the only way forward. */
   onContinue?: () => void;
+  /** Omitted on the first question, where there is nothing to go back to. */
+  onBack?: () => void;
   continueLabel?: string;
+  backLabel?: string;
   step: number;
   total: number;
 }) {
@@ -60,9 +65,22 @@ export default function QuestionCard({
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-8">
-      <p className="mb-1 text-caption text-neutral-500">
-        {step} / {total}
-      </p>
+      <div className="mb-1 flex min-h-6 items-center justify-between">
+        <p className="text-caption text-neutral-500">
+          {step} / {total}
+        </p>
+        {/* Quiet on purpose: revising an answer is allowed (PRD § 11) but it is
+            not the action the screen is asking for. */}
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="-mr-2 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-primary"
+          >
+            {backLabel}
+          </button>
+        )}
+      </div>
       <div
         className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300"
         role="progressbar"
@@ -99,7 +117,12 @@ export default function QuestionCard({
           </button>
         ))}
       </div>
-      {select === "many" && (
+      {/* A "many" question always needs this, since tapping toggles rather than
+          commits. A "one" question grows it only when an answer is already
+          there, which means the candidate came back to look: without it their
+          only way forward would be to re-tap an option they had not come to
+          change. */}
+      {(select === "many" || chosen.length > 0) && (
         <button
           onClick={onContinue}
           disabled={chosen.length === 0}

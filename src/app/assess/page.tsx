@@ -101,6 +101,11 @@ export default function AssessPage() {
           const value = local[q.key];
           if (value !== undefined) commit(value);
         }}
+        // PRD § 11: a candidate may change a prior answer after moving forward,
+        // and the score recomputes rather than the update being discarded.
+        // Nothing is unwound on the way back: the previous answer stays stored
+        // until they actually replace it.
+        onBack={step > 0 ? () => setStep(step - 1) : undefined}
       />
     );
   }
@@ -123,6 +128,16 @@ export default function AssessPage() {
         The full picture, with what to do first, unlocks by email in the next
         release (Phase 2).
       </p>
+      {/* Without this the chart is a dead end, and PRD § 11 allows changing an
+          answer after moving forward. Quiet, and below the chart, so it never
+          competes with the reveal. */}
+      <button
+        type="button"
+        onClick={() => setStep(STAGE1.length - 1)}
+        className="mt-6 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-primary"
+      >
+        ย้อนกลับไปแก้คำตอบ
+      </button>
     </div>
   );
 }
