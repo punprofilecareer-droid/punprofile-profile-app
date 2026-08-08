@@ -184,9 +184,13 @@ function scoreTargetClarity(r: SurveyResponse): number | null {
   const hasCountry = countries.length > 0;
   if (!hasRole && !hasCountry) return 1;
   if (!hasRole || !hasCountry) return 2;
-  // One named country outranks a scattergun list: every downstream step —
-  // visa route, language, market knowledge — is country-specific.
-  return countries.length === 1 ? 4 : 3;
+  // Taper, decided 08/08/2026 when the country question became multi-select.
+  // Focus still outranks breadth, because every downstream step — visa route,
+  // language, market knowledge — is country-specific. But a two-or-three
+  // shortlist is a real search strategy, not a scattergun, and the old
+  // one-versus-several rule collapsed almost every multi-select answer onto 3.
+  if (countries.length === 1) return 4;
+  return countries.length <= 3 ? 3.5 : 3;
 }
 
 function scoreSalaryStated(s: SalaryShape | null | undefined): number | null {

@@ -115,7 +115,31 @@ console.log(
   profile.dimensions.map((d) => `${d.key}=${d.score}`).join(" "),
 );
 
-// 4. The legacy singular key must still score, so rows written before the
+// 4. The Target Clarity taper (decided 08/08/2026). Pinned because the whole
+// point of the multi-select is that breadth and focus score differently.
+const clarity = (countries: string[]): number | null => {
+  const p = scoreResponse(toScoringInput({ targetCountries: countries, targetRole: "Marketing" }));
+  for (const d of p.dimensions) {
+    const item = d.items.find((i) => i.key === "targetClarity");
+    if (item) return item.score;
+  }
+  return null;
+};
+const TAPER: [string[], number | null][] = [
+  [["Germany"], 4],
+  [["Germany", "France"], 3.5],
+  [["Germany", "France", "Spain"], 3.5],
+  [["Germany", "France", "Spain", "Italy"], 3],
+  [["not_sure"], 2],
+];
+for (const [countries, expected] of TAPER) {
+  const got = clarity(countries);
+  if (got !== expected) {
+    fail(`targetClarity for [${countries.join(", ")}] is ${got}, expected ${expected}`);
+  }
+}
+
+// 5. The legacy singular key must still score, so rows written before the
 // multi-select change are not silently dropped.
 const legacy = scoreResponse(toScoringInput({ targetCountry: "Germany", targetRole: "Marketing" }));
 if (JSON.stringify(legacy) !== JSON.stringify(
