@@ -7,6 +7,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
 import SpiderChart from "@/components/features/chart/SpiderChart";
+import { useCopy } from "@/components/LocaleProvider";
 
 /**
  * TASK-018..022: the Stage 1 flow. The nine questions from
@@ -32,6 +33,7 @@ const isAnswer = (v: unknown): v is Answer =>
   typeof v === "string" || (Array.isArray(v) && v.every((x) => typeof x === "string"));
 
 export default function AssessPage() {
+  const { t, pick } = useCopy();
   const [leadId, setLeadId] = useState<Id<"leads"> | null>(null);
   const [local, setLocal] = useState<Record<string, Answer>>({});
   const [step, setStep] = useState(0); // 0..8 = questions, 9 = teaser
@@ -72,7 +74,11 @@ export default function AssessPage() {
   const scores = useMemo(() => session?.scores ?? {}, [session]);
 
   if (!leadId) {
-    return <p className="px-6 py-24 text-center text-body text-neutral-500">Starting...</p>;
+    return (
+      <p className="px-6 py-24 text-center text-body text-neutral-500">
+        {t("assess.starting")}
+      </p>
+    );
   }
 
   // Steps 0..8: the nine Stage 1 questions (TASK-019/020).
@@ -85,8 +91,8 @@ export default function AssessPage() {
     return (
       <QuestionCard
         key={q.key}
-        prompt={q.th || q.en}
-        options={q.options.map((o) => ({ value: o.value, label: o.th || o.en }))}
+        prompt={pick(q)}
+        options={q.options.map((o) => ({ value: o.value, label: pick(o) }))}
         select={q.select}
         selected={local[q.key]}
         step={step + 1}
@@ -113,20 +119,15 @@ export default function AssessPage() {
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
-      <h1 className="text-h3">Here&apos;s your first read</h1>
-      <p className="mt-1 text-body text-slate">
-        Self-reported and preliminary, from your own answers just now.
-      </p>
+      <h1 className="text-h3">{t("teaser.headline")}</h1>
+      <p className="mt-1 text-body text-slate">{t("teaser.selfReported")}</p>
       <div className="mt-4">
         <SpiderChart scores={scores} variant="teaser" />
       </div>
-      <p className="mt-2 text-caption text-neutral-500">
-        Hollow markers mean &quot;not measured yet&quot;, never zero.
-      </p>
+      <p className="mt-2 text-caption text-neutral-500">{t("teaser.hollowMarkers")}</p>
       {/* card-bordered: border-only, because it sits on white. */}
       <p className="mt-6 rounded-lg border border-neutral-300 bg-surface px-6 py-6 text-body text-slate">
-        The full picture, with what to do first, unlocks by email in the next
-        release (Phase 2).
+        {t("teaser.locked")}
       </p>
       {/* Without this the chart is a dead end, and PRD § 11 allows changing an
           answer after moving forward. Quiet, and below the chart, so it never
@@ -136,7 +137,7 @@ export default function AssessPage() {
         onClick={() => setStep(STAGE1.length - 1)}
         className="mt-6 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-primary"
       >
-        ย้อนกลับไปแก้คำตอบ
+        {t("teaser.revise")}
       </button>
     </div>
   );

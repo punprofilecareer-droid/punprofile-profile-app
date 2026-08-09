@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import { radarSvg } from "@/lib/radar";
 import type { RadarAxis } from "@/lib/radar";
+import { useCopy } from "@/components/LocaleProvider";
+import type { CopyKey } from "@/lib/content/copy";
 
 /**
  * TASK-021: React wrapper over the dependency-free SVG builder in
@@ -24,17 +26,22 @@ export interface SpiderChartProps {
   variant?: "teaser" | "full";
 }
 
-const DIMS: { key: keyof SpiderChartProps["scores"]; label: string }[] = [
-  { key: "professionalCapability", label: "Professional Capability" },
-  { key: "employability", label: "Employability" },
-  { key: "mobilityReadiness", label: "Mobility Readiness" },
-  { key: "europeanMarketFit", label: "European Market Fit" },
+// Labels come from COPY because the axis text is candidate-facing. `model.ts`
+// keeps its own English for the coach report: a different audience, not a
+// second source of truth for this one.
+const DIMS: { key: keyof SpiderChartProps["scores"]; copyKey: CopyKey }[] = [
+  { key: "professionalCapability", copyKey: "dimension.professionalCapability" },
+  { key: "employability", copyKey: "dimension.employability" },
+  { key: "mobilityReadiness", copyKey: "dimension.mobilityReadiness" },
+  { key: "europeanMarketFit", copyKey: "dimension.europeanMarketFit" },
 ];
 
 export default function SpiderChart({ scores, variant = "teaser" }: SpiderChartProps) {
+  const { t, locale } = useCopy();
+
   const svg = useMemo(() => {
     const axes: RadarAxis[] = DIMS.map((d) => ({
-      label: d.label,
+      label: t(d.copyKey),
       value: typeof scores[d.key] === "number" ? (scores[d.key] as number) : null,
     }));
     return radarSvg(axes, {
@@ -42,7 +49,8 @@ export default function SpiderChart({ scores, variant = "teaser" }: SpiderChartP
       size: variant === "teaser" ? 300 : 420,
       maxLabel: variant === "teaser" ? 22 : 26,
     });
-  }, [scores, variant]);
+    // `locale` is the real dependency; `t` is rebuilt whenever it changes.
+  }, [scores, variant, t, locale]);
 
   return (
     <div

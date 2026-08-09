@@ -11,6 +11,7 @@
  */
 
 import { EXCLUSIVE_VALUES } from "@/lib/content/questions";
+import { useCopy } from "@/components/LocaleProvider";
 
 export interface CardOption {
   value: string;
@@ -25,8 +26,6 @@ export default function QuestionCard({
   onSelect,
   onContinue,
   onBack,
-  continueLabel = "Continue",
-  backLabel = "ย้อนกลับ",
   step,
   total,
 }: {
@@ -40,11 +39,10 @@ export default function QuestionCard({
   onContinue?: () => void;
   /** Omitted on the first question, where there is nothing to go back to. */
   onBack?: () => void;
-  continueLabel?: string;
-  backLabel?: string;
   step: number;
   total: number;
 }) {
+  const { t } = useCopy();
   const chosen = Array.isArray(selected) ? selected : selected ? [selected] : [];
   const isChosen = (value: string) => chosen.includes(value);
 
@@ -67,7 +65,7 @@ export default function QuestionCard({
     <div className="mx-auto w-full max-w-md px-6 py-8">
       <div className="mb-1 flex min-h-6 items-center justify-between">
         <p className="text-caption text-neutral-500">
-          {step} / {total}
+          {t("assess.progress", { step, total })}
         </p>
         {/* Quiet on purpose: revising an answer is allowed (PRD § 11) but it is
             not the action the screen is asking for. */}
@@ -77,7 +75,7 @@ export default function QuestionCard({
             onClick={onBack}
             className="-mr-2 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-primary"
           >
-            {backLabel}
+            {t("assess.back")}
           </button>
         )}
       </div>
@@ -128,7 +126,7 @@ export default function QuestionCard({
           disabled={chosen.length === 0}
           className="mt-5 min-h-12 w-full rounded-md bg-accent px-7 py-3.5 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
         >
-          {continueLabel}
+          {t("assess.continue")}
         </button>
       )}
     </div>
