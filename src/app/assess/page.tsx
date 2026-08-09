@@ -24,11 +24,10 @@ import { toScoringInput } from "@/lib/content/mapping";
  * other question, and `submitAnswer` mirrors it onto the `leads.pathway` column
  * so the `by_pathway` index stays populated.
  *
- * The session id lives in localStorage so a closed tab resumes mid-flow on the
- * same device; cross-device resume is the magic link (Phase 2).
+ * No client-side storage at all: every visit is a new session. Resume exists
+ * only through the magic link, which needs an email and its consent first.
  */
 
-const STORAGE_KEY = "eufit.leadId";
 const TOTAL_STEPS = STAGE1.length;
 
 type Answer = string | string[];
@@ -59,22 +58,21 @@ export default function AssessPage() {
   const [attempt, setAttempt] = useState(0);
   const session = useQuery(api.leads.getSession, leadId ? { leadId } : "skip");
 
-  // Create or resume the session.
+  // Always a new session. Nothing about the candidate is stored on their
+  // device: no cookie, no localStorage, no identifier of any kind before they
+  // have consented to anything.
+  //
+  // US-001's acceptance criteria require this in as many words: closing the tab
+  // mid-flow without giving an email must leave no recoverable lead. Resume is
+  // the magic link's job (FR-011), and that only exists once an email and its
+  // consent do.
   useEffect(() => {
-    const existing = window.localStorage.getItem(STORAGE_KEY) as Id<"leads"> | null;
-    if (existing) {
-      setLeadId(existing);
-      return;
-    }
     // A rejection here is usually the rate limit (TASK-039) or a dropped
     // connection. Without this the promise fails silently and the candidate
     // watches the loading line forever, which reads as a broken app rather
     // than a busy one.
     void startSession({ source: "direct" })
-      .then((id) => {
-        window.localStorage.setItem(STORAGE_KEY, id);
-        setLeadId(id);
-      })
+      .then(setLeadId)
       .catch(() => setStartFailed(true));
   }, [startSession, attempt]);
 

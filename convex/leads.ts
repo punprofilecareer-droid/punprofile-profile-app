@@ -202,19 +202,38 @@ async function requireAdmin(ctx: { auth: { getUserIdentity: () => Promise<{ emai
  * detail view is for.
  */
 export const listForAdmin = query({
-  args: { limit: v.optional(v.number()) },
+  args: { limit: v.optional(v.number()), includeAbandoned: v.optional(v.boolean()) },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
-    const rows = await ctx.db
-      .query("leads")
-      .withIndex("by_status_recency")
-      .order("desc")
-      .take(Math.min(args.limit ?? 100, 500));
+    const limit = Math.min(args.limit ?? 100, 500);
 
-    // Sort by activity across all statuses. The index orders within a status,
+    // FR-010 and FR-012: a session that never reached contact capture is noise,
+    // not a lead, and stays out of the default view. That matters more since
+    // the client stopped storing a session id: every page load now starts a
+    // fresh session, so abandoned rows are the common case rather than the rare
+    // one. They are still queryable, because "how many start and never finish"
+    // is the funnel's most important number.
+    const statuses = args.includeAbandoned
+      ? (["email_captured", "completed", "partial"] as const)
+      : (["email_captured", "completed"] as const);
+
+    const rows = (
+      await Promise.all(
+        statuses.map((status) =>
+          ctx.db
+            .query("leads")
+            .withIndex("by_status_recency", (q) => q.eq("status", status))
+            .order("desc")
+            .take(limit),
+        ),
+      )
+    ).flat();
+
+    // Sorted across statuses here, because the index orders within one status,
     // which is not the same thing as "what happened most recently".
     return rows
       .sort((a, b) => b.lastActivityAt - a.lastActivityAt)
+      .slice(0, limit)
       .map((l) => ({
         _id: l._id,
         fullName: l.fullName ?? null,

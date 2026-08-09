@@ -15,19 +15,24 @@ import { components } from "./_generated/api";
  *     per lead.
  *
  * A global limit trades an abuse problem for an availability one: a flood locks
- * out real candidates too. That is acceptable here only because of the volume.
- * The 90-day target is roughly 300 starts in total, so 120 per hour is about
- * two orders of magnitude above real traffic while still stopping a script
- * dead. Revisit the number if the funnel ever gets busy, and note that true
- * per-IP limiting belongs at the edge (Next middleware or the host), not here.
+ * out real candidates too. Sizing it is therefore about page loads, not
+ * completions, and since 10/08/2026 the client stores nothing on the device, so
+ * every visit and every refresh starts a new session. One curious person
+ * hitting reload must not be able to lock out a Facebook post's worth of
+ * traffic.
+ *
+ * **This makes per-IP limiting at the edge more necessary, not less.** A global
+ * bucket loose enough to be safe for real users is also loose enough for a
+ * script to sit under. The backstop below bounds the damage; it does not
+ * prevent it, and Next middleware or the host is where the real fix belongs.
  */
 export const rateLimiter = new RateLimiter(components.rateLimiter, {
   /**
-   * New anonymous sessions, globally. `capacity` allows a burst, so a class of
-   * students opening the link together is not refused, while a script still
-   * exhausts the hour's budget in seconds and then waits.
+   * New anonymous sessions, globally. Deliberately generous: a post landing a
+   * hundred visitors in an hour is a good day, not an attack, and refusing them
+   * would cost more than the junk rows a script would write.
    */
-  startSession: { kind: "token bucket", rate: 120, period: HOUR, capacity: 20 },
+  startSession: { kind: "token bucket", rate: 600, period: HOUR, capacity: 100 },
 
   /**
    * Contact submissions per lead. Generous enough to absorb a genuine retry
