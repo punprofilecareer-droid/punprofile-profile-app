@@ -8,6 +8,7 @@ import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
+import ContactGate from "@/components/features/assessment/ContactGate";
 import { buildTeaserSummary } from "@/lib/views";
 import { toScoringInput } from "@/lib/content/mapping";
 
@@ -47,6 +48,11 @@ export default function AssessPage() {
 
   const startSession = useMutation(api.leads.startSession);
   const submitAnswer = useMutation(api.leads.submitAnswer);
+  const captureContact = useMutation(api.leads.captureContact);
+  // Shown only when the candidate asks for it. FR-004 keeps the teaser free of
+  // any contact field, so the gate is a step they choose to take, not one that
+  // appears over the chart.
+  const [gateOpen, setGateOpen] = useState(false);
   const session = useQuery(api.leads.getSession, leadId ? { leadId } : "skip");
 
   // Create or resume the session.
@@ -136,6 +142,18 @@ export default function AssessPage() {
     );
   }
 
+  // The gate, once they choose to open it (TASK-025/027).
+  if (gateOpen && session?.status === "partial") {
+    return (
+      <ContactGate
+        onSubmit={async (values) => {
+          await captureContact({ leadId, ...values });
+          setGateOpen(false);
+        }}
+      />
+    );
+  }
+
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
@@ -168,10 +186,25 @@ export default function AssessPage() {
         </div>
       )}
 
-      {/* card-bordered: border-only, because it sits on white. */}
-      <p className="mt-6 rounded-lg border border-neutral-300 bg-surface px-6 py-6 text-body text-slate">
-        {t("teaser.locked")}
-      </p>
+      {/* card-bordered: border-only, because it sits on white. The gate is
+          reached by choice from here; FR-004 forbids a contact field appearing
+          on the teaser itself. */}
+      {session?.status === "partial" ? (
+        <div className="mt-6 rounded-lg border border-neutral-300 bg-surface px-6 py-6">
+          <p className="text-body text-slate">{t("teaser.locked")}</p>
+          <button
+            type="button"
+            onClick={() => setGateOpen(true)}
+            className="mt-4 h-12 w-full rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright"
+          >
+            {t("teaser.unlock")}
+          </button>
+        </div>
+      ) : (
+        <p className="mt-6 rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6 text-body text-ink">
+          {t("teaser.captured")}
+        </p>
+      )}
 
       {/* TASK-046. Hidden until a booking mechanism exists, rather than
           shipping a button that goes nowhere. */}

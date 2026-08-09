@@ -117,9 +117,19 @@ export const COPY = {
     th: "จุดที่ยังไม่ทึบ หมายถึงยังไม่ได้วัด ไม่ได้แปลว่าได้ศูนย์",
   },
   "teaser.locked": {
-    screen: "Teaser, the card below the chart",
-    en: "The full picture, with what to do first, unlocks by email in the next release (Phase 2).",
-    th: "ภาพเต็มพร้อมสิ่งที่ควรทำก่อน จะเปิดให้ดูผ่านอีเมลในเวอร์ชันถัดไป",
+    screen: "Teaser, the card below the chart, before the gate is opened",
+    en: "The full picture, with what to work on first, opens once you tell us where to send it.",
+    th: "ภาพเต็มพร้อมสิ่งที่ควรเริ่มทำก่อน จะเปิดให้ดูเมื่อคุณบอกช่องทางที่จะส่งให้",
+  },
+  "teaser.unlock": {
+    screen: "Teaser, the button that opens the contact gate",
+    en: "See my full result",
+    th: "ดูผลแบบเต็มของฉัน",
+  },
+  "teaser.captured": {
+    screen: "Teaser, after contact details are given. The full result screen is TASK-028",
+    en: "Thanks. Your details are saved, and the full result lands here shortly.",
+    th: "ขอบคุณ เราบันทึกข้อมูลของคุณแล้ว ผลแบบเต็มจะขึ้นตรงนี้เร็วๆ นี้",
   },
   "teaser.revise": {
     screen: "Teaser, the link back to the last question",
@@ -150,6 +160,92 @@ export const COPY = {
     screen: "Spider chart axis",
     en: "European Market Fit",
     th: "ความเหมาะกับตลาดยุโรป",
+  },
+
+  // ------------------------------------------------------------ contact gate
+  // FR-005. Full name, email, and at least one of LINE ID or phone.
+  "gate.heading": {
+    screen: "Contact gate, the heading",
+    en: "See your full result",
+    th: "ดูผลแบบเต็มของคุณ",
+  },
+  "gate.body": {
+    screen: "Contact gate, under the heading. Says what they get, not what we want",
+    en: "Tell us where to send it and we'll open the full picture, with what to work on first.",
+    th: "บอกช่องทางที่จะส่งให้คุณ แล้วเราจะเปิดผลแบบเต็มพร้อมสิ่งที่ควรเริ่มทำก่อน",
+  },
+  "gate.fullName": {
+    screen: "Contact gate, name field label",
+    en: "Full name",
+    th: "ชื่อ-นามสกุล",
+  },
+  "gate.email": {
+    screen: "Contact gate, email field label",
+    en: "Email",
+    th: "อีเมล",
+  },
+  "gate.channelHint": {
+    screen: "Contact gate, above the LINE and phone fields. Explains why one is required",
+    en: "And one way we can actually reach you. Choose whichever you check most.",
+    th: "และอีกหนึ่งช่องทางที่ติดต่อคุณได้จริง เลือกช่องทางที่คุณเช็กบ่อยที่สุด",
+  },
+  "gate.lineId": {
+    screen: "Contact gate, LINE ID field label",
+    en: "LINE ID",
+    th: "LINE ID",
+  },
+  "gate.phone": {
+    screen: "Contact gate, phone field label",
+    en: "Phone number",
+    th: "เบอร์โทร",
+  },
+  "gate.submit": {
+    screen: "Contact gate, the submit button",
+    en: "Open my full result",
+    th: "เปิดผลแบบเต็ม",
+  },
+  "gate.working": {
+    screen: "Contact gate, submit button while the write is in flight",
+    en: "Working...",
+    th: "กำลังบันทึก...",
+  },
+
+  // Errors. Thrown server-side as stable codes and resolved here, so a rule
+  // enforced on the server can still speak the candidate's language.
+  "gate.error.name_required": {
+    screen: "Contact gate, when the name is empty",
+    en: "Please enter your name.",
+    th: "กรุณากรอกชื่อของคุณ",
+  },
+  "gate.error.email_invalid": {
+    screen: "Contact gate, when the email is missing or malformed",
+    en: "That email doesn't look right. Please check it.",
+    th: "อีเมลนี้ดูไม่ถูกต้อง ลองตรวจสอบอีกครั้ง",
+  },
+  "gate.error.channel_required": {
+    screen: "Contact gate, when neither LINE nor phone was given",
+    en: "Please add a LINE ID or a phone number.",
+    th: "กรุณากรอก LINE ID หรือเบอร์โทรอย่างน้อยหนึ่งอย่าง",
+  },
+  "gate.error.consent_email": {
+    screen: "Contact gate, when email consent is unticked",
+    en: "We need your permission before we can send anything.",
+    th: "เราต้องได้รับอนุญาตจากคุณก่อนถึงจะส่งอะไรไปได้",
+  },
+  "gate.error.consent_phone": {
+    screen: "Contact gate, when a phone was given without consent",
+    en: "Please confirm we may contact you by phone, or clear the field.",
+    th: "กรุณายืนยันว่าเราติดต่อทางโทรศัพท์ได้ หรือลบเบอร์ออก",
+  },
+  "gate.error.consent_line": {
+    screen: "Contact gate, when a LINE ID was given without consent",
+    en: "Please confirm we may contact you on LINE, or clear the field.",
+    th: "กรุณายืนยันว่าเราติดต่อทาง LINE ได้ หรือลบ LINE ID ออก",
+  },
+  "gate.error.unknown": {
+    screen: "Contact gate, any failure with no specific cause. Network, mostly",
+    en: "That didn't go through. Please try again.",
+    th: "ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   },
 
   // -------------------------------------------------------- competency names

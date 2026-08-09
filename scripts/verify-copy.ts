@@ -96,8 +96,21 @@ for (const key of Object.keys(ALL)) {
     // referenced literally, so a source scan cannot see them.
     if (key.startsWith("move.")) continue;
     if (key.startsWith("item.")) continue;
+    if (key.startsWith("gate.error.")) continue;
     if (/^narrative\.(opener|standing)\./.test(key)) continue;
     fail(`${key}: defined but never used`);
+  }
+}
+
+// 4a-bis. Every error code the server can throw must have candidate-facing
+// copy. `captureContact` throws stable codes precisely so the wording is
+// translatable; a code with no key would surface as a raw identifier.
+{
+  const server = readFileSync("convex/leads.ts", "utf8");
+  for (const m of server.matchAll(/new ConvexError\("([a-z_]+)"\)/g)) {
+    if (!(`gate.error.${m[1]}` in ALL)) {
+      fail(`gate.error.${m[1]}: thrown by convex/leads.ts but has no copy`);
+    }
   }
 }
 

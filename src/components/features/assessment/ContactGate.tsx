@@ -1,0 +1,203 @@
+"use client";
+
+/**
+ * TASK-025/027, PRD FR-005 and FR-006: the contact gate.
+ *
+ * Full name, email, and at least one of LINE ID or phone. Email keeps the magic
+ * link deliverable (FR-011); LINE or phone keeps the lead actually reachable,
+ * because Thai candidates largely do not read email. Decided 08/08/2026.
+ *
+ * FR-006 wants a separate consent per channel, each timestamped. A consent
+ * checkbox appears next to a channel only once that channel has something in
+ * it: asking permission to use a field the candidate left blank is noise, and
+ * the server refuses a timestamp for an empty channel anyway.
+ *
+ * The client validates for immediate feedback only. `leads.captureContact` is
+ * the authority, and it throws stable codes rather than sentences so the copy
+ * stays translatable.
+ */
+
+import { useState } from "react";
+import { useCopy } from "@/components/LocaleProvider";
+import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
+import type { CopyKey } from "@/lib/content/copy";
+
+const ERROR_KEYS = [
+  "name_required",
+  "email_invalid",
+  "channel_required",
+  "consent_email",
+  "consent_phone",
+  "consent_line",
+] as const;
+
+export default function ContactGate({
+  onSubmit,
+}: {
+  onSubmit: (values: {
+    fullName: string;
+    email: string;
+    emailConsent: boolean;
+    phone?: string;
+    phoneConsent?: boolean;
+    lineId?: string;
+    lineConsent?: boolean;
+  }) => Promise<void>;
+}) {
+  const { t, pick } = useCopy();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [lineId, setLineId] = useState("");
+  const [phone, setPhone] = useState("");
+  const [emailConsent, setEmailConsent] = useState(false);
+  const [lineConsent, setLineConsent] = useState(false);
+  const [phoneConsent, setPhoneConsent] = useState(false);
+  const [error, setError] = useState<CopyKey | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const field =
+    "mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink";
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await onSubmit({
+        fullName,
+        email,
+        emailConsent,
+        phone: phone.trim() || undefined,
+        phoneConsent: phone.trim() ? phoneConsent : undefined,
+        lineId: lineId.trim() || undefined,
+        lineConsent: lineId.trim() ? lineConsent : undefined,
+      });
+    } catch (err) {
+      // The server's code, mapped to translatable copy. Anything unrecognised
+      // is a network or platform failure, not a rule the candidate broke.
+      const code = err instanceof Error ? err.message : "";
+      const matched = ERROR_KEYS.find((k) => code.includes(k));
+      setError(`gate.error.${matched ?? "unknown"}` as CopyKey);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} className="mx-auto w-full max-w-md px-6 py-10">
+      <h1 className="text-h3">{t("gate.heading")}</h1>
+      <p className="mt-2 text-body text-slate">{t("gate.body")}</p>
+
+      {!CONSENT_COPY_REVIEWED && (
+        <p className="mt-4 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
+          Consent copy below is placeholder text and has not been legally
+          reviewed (TASK-047). Not for production.
+        </p>
+      )}
+
+      <p className="mt-6 text-caption text-neutral-500">
+        {pick(CONSENT_COPY["consent.purpose"])}
+      </p>
+
+      <label className="mt-6 block text-label text-slate">
+        {t("gate.fullName")}
+        <input
+          className={field}
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          autoComplete="name"
+          required
+        />
+      </label>
+
+      <label className="mt-4 block text-label text-slate">
+        {t("gate.email")}
+        <input
+          className={field}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+          required
+        />
+      </label>
+      <Consent
+        checked={emailConsent}
+        onChange={setEmailConsent}
+        label={pick(CONSENT_COPY["consent.email"])}
+      />
+
+      <p className="mt-8 text-body text-slate">{t("gate.channelHint")}</p>
+
+      <label className="mt-4 block text-label text-slate">
+        {t("gate.lineId")}
+        <input
+          className={field}
+          value={lineId}
+          onChange={(e) => setLineId(e.target.value)}
+        />
+      </label>
+      {lineId.trim() && (
+        <Consent
+          checked={lineConsent}
+          onChange={setLineConsent}
+          label={pick(CONSENT_COPY["consent.line"])}
+        />
+      )}
+
+      <label className="mt-4 block text-label text-slate">
+        {t("gate.phone")}
+        <input
+          className={field}
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          autoComplete="tel"
+        />
+      </label>
+      {phone.trim() && (
+        <Consent
+          checked={phoneConsent}
+          onChange={setPhoneConsent}
+          label={pick(CONSENT_COPY["consent.phone"])}
+        />
+      )}
+
+      {/* `error`, never Terracotta: a problem must not look like an action. */}
+      {error && (
+        <p role="alert" className="mt-6 text-body text-error">
+          {t(error)}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={busy}
+        className="mt-8 h-12 w-full rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+      >
+        {busy ? t("gate.working") : t("gate.submit")}
+      </button>
+    </form>
+  );
+}
+
+function Consent({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
+  return (
+    <label className="mt-2 flex items-start gap-3 text-caption text-slate">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 size-5 shrink-0 accent-primary"
+      />
+      <span>{label}</span>
+    </label>
+  );
+}

@@ -90,6 +90,75 @@ export const submitAnswer = mutation({
   },
 });
 
+/**
+ * Deliberately permissive. The job is to reject what is obviously not an email,
+ * not to adjudicate RFC 5322: a regex strict enough to be "correct" rejects
+ * real addresses, and the magic link is what actually proves an address works.
+ */
+const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+
+/**
+ * TASK-025/027, PRD FR-005. The gate: full name, email, and at least one of
+ * LINE ID or phone.
+ *
+ * Email alone is not enough. It keeps the magic link deliverable (FR-011), but
+ * Thai candidates largely do not read email, so a lead reachable only there is
+ * not reachable. Decided 08/08/2026, see `09_Decision_Log.md`.
+ *
+ * Every rule here is enforced server-side. The form checks the same things for
+ * immediate feedback, but a hand-crafted request must not be able to create a
+ * lead nobody can contact, or a consent timestamp for a channel the candidate
+ * never gave.
+ */
+export const captureContact = mutation({
+  args: {
+    leadId: v.id("leads"),
+    fullName: v.string(),
+    email: v.string(),
+    emailConsent: v.boolean(),
+    phone: v.optional(v.string()),
+    phoneConsent: v.optional(v.boolean()),
+    lineId: v.optional(v.string()),
+    lineConsent: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const lead = await ctx.db.get(args.leadId);
+    if (!lead) throw new ConvexError("Session not found.");
+
+    const fullName = args.fullName.trim();
+    const email = args.email.trim();
+    const phone = args.phone?.trim() || undefined;
+    const lineId = args.lineId?.trim() || undefined;
+
+    // Stable codes, not sentences. These reach a candidate's screen, so the
+    // wording has to come from the copy module and be translatable; an English
+    // string thrown from here would be untranslatable by construction.
+    if (!fullName) throw new ConvexError("name_required");
+    if (!looksLikeEmail(email)) throw new ConvexError("email_invalid");
+    if (!phone && !lineId) throw new ConvexError("channel_required");
+
+    // PDPA: consent is per channel and only counts for a channel actually
+    // given. Ticking a box for a field left blank grants nothing.
+    if (!args.emailConsent) throw new ConvexError("consent_email");
+    if (phone && !args.phoneConsent) throw new ConvexError("consent_phone");
+    if (lineId && !args.lineConsent) throw new ConvexError("consent_line");
+
+    const now = Date.now();
+    await ctx.db.patch(args.leadId, {
+      fullName,
+      email,
+      emailConsentAt: now,
+      // Each timestamp is written only alongside its own value, so the audit
+      // trail can never claim consent for a channel that was left empty.
+      ...(phone ? { phone, phoneConsentAt: now } : {}),
+      ...(lineId ? { lineId, lineConsentAt: now } : {}),
+      status: "email_captured",
+      updatedAt: now,
+      lastActivityAt: now,
+    });
+  },
+});
+
 export const getSession = query({
   args: { leadId: v.id("leads") },
   handler: async (ctx, args) => {
