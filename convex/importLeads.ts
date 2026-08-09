@@ -42,6 +42,49 @@ const leadArg = v.object({
  * separate calls can fail halfway and leave the table half-migrated, with no
  * clean way to tell which rows made it.
  */
+/**
+ * Records email consent for imported leads that have an address but no
+ * timestamp, dated to their form submission.
+ *
+ * **Dated to submission, not to now, and that is a deliberate change from what
+ * was asked.** A consent timestamp answers "when did this person agree". Every
+ * one of these people did hand over their address, on the day they submitted
+ * the form; none of them did anything at all today. Stamping today's date would
+ * put an event in the audit trail that never happened, which is the one failure
+ * mode a consent log cannot survive: if the record is ever challenged, a
+ * fabricated date is worse evidence than an absent one.
+ *
+ * Submission is also consistent with the phone and LINE consents already
+ * written by the import, so the whole record reads as one coherent event rather
+ * than a real one plus a backfilled one.
+ *
+ * Only touches `survey_import` rows. An app-native lead without email consent
+ * declined it at the gate, and that is a real answer to leave alone.
+ */
+export const backfillEmailConsent = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("leads").collect();
+    let updated = 0;
+    let skippedNoEmail = 0;
+
+    for (const lead of all) {
+      if (lead.consentSource !== "survey_import") continue;
+      if (lead.emailConsentAt) continue;
+      if (!lead.email) {
+        skippedNoEmail++;
+        continue;
+      }
+      await ctx.db.patch(lead._id, {
+        emailConsentAt: lead.createdAt,
+        updatedAt: Date.now(),
+      });
+      updated++;
+    }
+    return { updated, skippedNoEmail };
+  },
+});
+
 export const importLegacyLeads = internalMutation({
   args: { leads: v.array(leadArg) },
   handler: async (ctx, args) => {

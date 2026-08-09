@@ -6,6 +6,7 @@ import { computeScores } from "./scoring";
 import { toScoringInput } from "../src/lib/content/mapping";
 import { isValidAnswer } from "../src/lib/content/questions";
 import { rateLimiter } from "./rateLimits";
+import { gradeLead } from "../src/lib/leadGrade";
 
 /**
  * TASK-012/013/015/016: the candidate session lifecycle, per PRD § 4.
@@ -252,6 +253,9 @@ export const listForAdmin = query({
         status: l.status,
         source: l.source ?? null,
         scores: l.scores ?? {},
+        // Graded here rather than in the browser, so the list does not have to
+        // ship every candidate's full answer set to render a badge.
+        grade: gradeLead(toScoringInput(l.responses ?? {})),
         answered: Object.keys(l.responses ?? {}).length,
         createdAt: l.createdAt,
         lastActivityAt: l.lastActivityAt,
