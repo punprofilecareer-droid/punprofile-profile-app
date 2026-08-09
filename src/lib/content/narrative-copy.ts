@@ -7,16 +7,15 @@
  * generated sentence would reach a candidate in unreviewed Thai, and could
  * claim something the scores do not support.
  *
- * English here is a draft written against the scoring logic so the meaning is
- * correct. Replace it with natural Thai through the worksheet rather than
- * translating it clause by clause, per the native-tone rule in
- * `03_Content_System.md`.
+ * Language rules live in `03_Content_System.md` → Language Guidelines, which
+ * says explicitly that they cover the app and not only posts. Read them there
+ * rather than trusting a summary here, because they change: two were added on
+ * 09/08/2026 alone.
  *
- * Two rules this copy must not break, both from `08_Coaching_Business.md` and
- * enforced by `assertCandidateSafe()`:
- *   - no internal vocabulary (lead, propensity, triage, temperature, tier)
- *   - motivation never buys honesty back. An unmeasured area says so; it is
- *     never softened into a score.
+ * The one constraint specific to this file: a sentence here must stand on its
+ * own for the situation named in its `screen` note, without knowing which
+ * others appear beside it, because the engine selects rather than composes.
+ * `assertCandidateSafe()` and `scripts/verify-copy.ts` enforce the rest.
  */
 
 import type { CopyEntry } from "./copy";

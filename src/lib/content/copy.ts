@@ -13,6 +13,11 @@
  * Do not add admin, login or coach-report strings here. Those surfaces are
  * English on purpose; only the founder reads them.
  *
+ * Language rules live in `03_Content_System.md` → Language Guidelines, which
+ * states that they cover the app and not only posts, and names the three
+ * post-only rules that do not transfer. Read them there rather than trusting a
+ * summary, because they change.
+ *
  * The founder fills these in through the worksheet, not by editing this file:
  *   npx tsx scripts/export-copy-worksheet.ts   # code  -> worksheet
  *   npx tsx scripts/import-copy-worksheet.ts   # worksheet -> code
