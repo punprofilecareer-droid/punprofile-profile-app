@@ -20,6 +20,7 @@ import { NARRATIVE_COPY } from "../src/lib/content/narrative-copy.js";
 import { CONSENT_COPY } from "../src/lib/consent-copy.js";
 import { STAGE1 } from "../src/lib/content/questions.js";
 import { MOVES } from "../src/lib/levers.js";
+import { DIMENSIONS } from "../src/lib/model.js";
 import { assertCandidateSafe } from "../src/lib/views.js";
 
 let failures = 0;
@@ -94,8 +95,19 @@ for (const key of Object.keys(ALL)) {
     // Move and narrative-band keys are selected at runtime by score, not
     // referenced literally, so a source scan cannot see them.
     if (key.startsWith("move.")) continue;
+    if (key.startsWith("item.")) continue;
     if (/^narrative\.(opener|standing)\./.test(key)) continue;
     fail(`${key}: defined but never used`);
+  }
+}
+
+// 4a. Every competency a candidate can be shown by name needs a candidate-facing
+// name. Without one the model's English label drops into the middle of a Thai
+// sentence, which is how "จุดแข็งที่สุดของคุณคือ Language Readiness" happens.
+for (const d of DIMENSIONS) {
+  for (const item of d.items) {
+    if (item.tier === "coach") continue; // never named to a candidate
+    if (!(`item.${item.key}` in ALL)) fail(`item.${item.key}: scoreable but has no candidate-facing name`);
   }
 }
 

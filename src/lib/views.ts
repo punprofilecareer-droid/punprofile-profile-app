@@ -21,7 +21,8 @@ import { rankMoves, projectUnlock, MOVES } from "./levers";
 import type { MoveImpact, UnlockProjection, Module } from "./levers";
 import { DIMENSIONS, BAND_COPY } from "./model";
 import { AI_INDICATOR_LABELS } from "./normalize";
-import { pick, t } from "./locale";
+import { pick, t, ALL_COPY } from "./locale";
+import type { AnyCopyKey } from "./locale";
 import type { Locale } from "./locale";
 import { NARRATIVE_COPY, standingFor } from "./content/narrative-copy";
 
@@ -164,7 +165,7 @@ export function buildCandidateJourney(
   const unlock = projectUnlock(profile);
   return {
     candidate,
-    strengths: topStrengths(profile, 3).map((h) => ({ label: h.label.replace(/ \(self-declared\)$/, ""), score: h.score, area: h.dimension })),
+    strengths: topStrengths(profile, 3).map((h) => ({ label: itemName(h.key, h.label, locale), score: h.score, area: h.dimension })),
     next: fa
       ? faMove
         ? { title: pick(faMove.candidate, locale), why: "" }
@@ -199,6 +200,19 @@ export interface TeaserSummary {
 }
 
 type Pathway = "job_first" | "study_first" | "family" | "not_sure";
+
+/**
+ * The candidate-facing name of a competency. `model.ts` names them in English
+ * for the coach report; naming one to a candidate goes through COPY instead, or
+ * a Thai sentence ends up with an English noun dropped into the middle of it.
+ * Falls back to the model's label so an unmapped item degrades to English
+ * rather than to a blank.
+ */
+function itemName(key: string, fallback: string, locale: Locale): string {
+  const copyKey = `item.${key}` as AnyCopyKey;
+  if (copyKey in ALL_COPY) return t(copyKey, locale);
+  return fallback.replace(/ \(self-declared\)$/, "");
+}
 
 /**
  * The short version, for the pre-unlock teaser.
@@ -237,9 +251,7 @@ export function buildTeaserSummary(
     opener: t(`narrative.opener.${pathway ?? "not_sure"}` as const, locale),
     standing: t(`narrative.standing.${standingFor(mean)}` as const, locale),
     strengthLead: best
-      ? t("narrative.strength.lead", locale, {
-          area: best.label.replace(/ \(self-declared\)$/, ""),
-        })
+      ? t("narrative.strength.lead", locale, { area: itemName(best.key, best.label, locale) })
       : null,
     nextLead: t("narrative.next.lead", locale),
     next: faMove ? pick(faMove.candidate, locale) : null,
