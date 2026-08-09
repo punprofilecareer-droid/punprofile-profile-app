@@ -3,17 +3,21 @@
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import Link from "next/link";
+import LeadList from "@/components/features/dashboard/LeadList";
 
 /**
- * TASK-004: the authenticated admin shell. Middleware redirects anonymous
- * visitors to /login before this renders; the Unauthenticated branch is the
- * belt-and-braces fallback for a stale session. The actual lead dashboard
- * lands here with TASK-034.
+ * TASK-004/034: the authenticated admin shell and the lead list.
+ *
+ * Middleware redirects anonymous visitors to /login before this renders, and
+ * the Unauthenticated branch is the belt-and-braces fallback for a stale
+ * session. Neither is the security boundary: `requireAdmin` in
+ * `convex/leads.ts` is, because a direct call to a Convex query never passes
+ * through either of them.
  */
 export default function AdminPage() {
   const { signOut } = useAuthActions();
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center leading-normal">
+    <div className="flex flex-1 flex-col items-center gap-4 px-6 py-16 text-center leading-normal">
       <AuthLoading>
         <p className="text-body text-neutral-500">Checking session...</p>
       </AuthLoading>
@@ -26,17 +30,20 @@ export default function AdminPage() {
         </p>
       </Unauthenticated>
       <Authenticated>
-        <h1 className="text-h2">Coach dashboard</h1>
-        <p className="max-w-md text-body text-slate">
-          Signed in. The lead list and detail views land here in Phase 2
-          (TASK-034, TASK-035).
-        </p>
-        <button
-          onClick={() => void signOut()}
-          className="rounded-md border border-neutral-300 bg-surface px-5 py-2.5 text-label text-slate transition-colors hover:bg-neutral-100"
-        >
-          Sign out
-        </button>
+        <div className="w-full max-w-3xl text-left">
+          <div className="flex items-baseline justify-between gap-4">
+            <h1 className="text-h2">Coach dashboard</h1>
+            <button
+              onClick={() => void signOut()}
+              className="shrink-0 rounded-md border border-neutral-300 bg-surface px-5 py-2.5 text-label text-slate transition-colors hover:bg-neutral-100"
+            >
+              Sign out
+            </button>
+          </div>
+          <div className="mt-8">
+            <LeadList />
+          </div>
+        </div>
       </Authenticated>
     </div>
   );

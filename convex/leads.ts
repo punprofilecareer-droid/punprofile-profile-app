@@ -159,6 +159,96 @@ export const captureContact = mutation({
   },
 });
 
+/**
+ * TASK-032. The real access boundary for every admin read.
+ *
+ * `middleware.ts` redirects an anonymous visitor away from /admin, but that is
+ * a UI convenience: it does not run for a direct call to a Convex function.
+ * PRD § 7 Security calls out broken access control specifically, so the check
+ * is here, matching the identity's email against ADMIN_EMAIL, and every admin
+ * query goes through it rather than repeating the comparison.
+ *
+ * Throws rather than returning null. An admin query that quietly returns
+ * nothing to an attacker looks identical to one returning nothing because
+ * there is no data, and that difference matters when reading logs.
+ */
+async function requireAdmin(ctx: { auth: { getUserIdentity: () => Promise<{ email?: string } | null> } }) {
+  const identity = await ctx.auth.getUserIdentity();
+  const admin = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
+  const email = (identity?.email ?? "").trim().toLowerCase();
+  if (!identity || !admin || email !== admin) {
+    throw new ConvexError("Not authorised.");
+  }
+}
+
+/**
+ * FR-012: the coach's lead list, newest activity first.
+ *
+ * Returns enough to triage without opening a row: who they are, which channels
+ * they consented to, how far they got. Not their answers, which is what the
+ * detail view is for.
+ */
+export const listForAdmin = query({
+  args: { limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const rows = await ctx.db
+      .query("leads")
+      .withIndex("by_status_recency")
+      .order("desc")
+      .take(Math.min(args.limit ?? 100, 500));
+
+    // Sort by activity across all statuses. The index orders within a status,
+    // which is not the same thing as "what happened most recently".
+    return rows
+      .sort((a, b) => b.lastActivityAt - a.lastActivityAt)
+      .map((l) => ({
+        _id: l._id,
+        fullName: l.fullName ?? null,
+        email: l.email ?? null,
+        phone: l.phone ?? null,
+        lineId: l.lineId ?? null,
+        pathway: l.pathway ?? null,
+        status: l.status,
+        source: l.source ?? null,
+        scores: l.scores ?? {},
+        answered: Object.keys(l.responses ?? {}).length,
+        createdAt: l.createdAt,
+        lastActivityAt: l.lastActivityAt,
+      }));
+  },
+});
+
+/** FR-013: one lead in full, including every consent timestamp. */
+export const getForAdmin = query({
+  args: { leadId: v.id("leads") },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const lead = await ctx.db.get(args.leadId);
+    if (!lead) return null;
+    return {
+      _id: lead._id,
+      fullName: lead.fullName ?? null,
+      email: lead.email ?? null,
+      phone: lead.phone ?? null,
+      lineId: lead.lineId ?? null,
+      // Timestamps, not booleans. "Consented" is a fact with a date attached,
+      // and the date is the part a PDPA request actually asks for.
+      emailConsentAt: lead.emailConsentAt ?? null,
+      phoneConsentAt: lead.phoneConsentAt ?? null,
+      lineConsentAt: lead.lineConsentAt ?? null,
+      pathway: lead.pathway ?? null,
+      status: lead.status,
+      source: lead.source ?? null,
+      responses: lead.responses ?? {},
+      scores: lead.scores ?? {},
+      createdAt: lead.createdAt,
+      updatedAt: lead.updatedAt,
+      lastActivityAt: lead.lastActivityAt,
+    };
+  },
+});
+
 export const getSession = query({
   args: { leadId: v.id("leads") },
   handler: async (ctx, args) => {
