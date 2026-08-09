@@ -1,4 +1,6 @@
 import { mutation, query } from "./_generated/server";
+import type { QueryCtx } from "./_generated/server";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v, ConvexError } from "convex/values";
 import { computeScores } from "./scoring";
 import { toScoringInput } from "../src/lib/content/mapping";
@@ -175,23 +177,29 @@ export const captureContact = mutation({
 /**
  * TASK-032. The real access boundary for every admin read.
  *
- * `middleware.ts` redirects an anonymous visitor away from /admin, but that is
- * a UI convenience: it does not run for a direct call to a Convex function.
+ * `src/proxy.ts` redirects an anonymous visitor away from /admin, but that is a
+ * UI convenience: it does not run for a direct call to a Convex function.
  * PRD § 7 Security calls out broken access control specifically, so the check
- * is here, matching the identity's email against ADMIN_EMAIL, and every admin
- * query goes through it rather than repeating the comparison.
+ * is here, and every admin query goes through it rather than repeating the
+ * comparison.
  *
  * Throws rather than returning null. An admin query that quietly returns
  * nothing to an attacker looks identical to one returning nothing because
  * there is no data, and that difference matters when reading logs.
  */
-async function requireAdmin(ctx: { auth: { getUserIdentity: () => Promise<{ email?: string } | null> } }) {
-  const identity = await ctx.auth.getUserIdentity();
+async function requireAdmin(ctx: QueryCtx) {
+  // The email comes from the user record, NOT from the token. Convex Auth mints
+  // a JWT carrying only sub, iss, aud, iat and exp, so `identity.email` is
+  // always undefined and comparing against it rejects everyone, including the
+  // real admin. `getAuthUserId` resolves the user id out of the `sub` claim,
+  // which is the supported way to get from a session to a user.
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new ConvexError("Not authorised.");
+
+  const user = await ctx.db.get(userId);
   const admin = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
-  const email = (identity?.email ?? "").trim().toLowerCase();
-  if (!identity || !admin || email !== admin) {
-    throw new ConvexError("Not authorised.");
-  }
+  const email = String(user?.email ?? "").trim().toLowerCase();
+  if (!admin || email !== admin) throw new ConvexError("Not authorised.");
 }
 
 /**
