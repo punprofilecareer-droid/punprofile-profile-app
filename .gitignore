@@ -47,3 +47,6 @@ next-env.d.ts
 
 # generated candidate reports
 /reports/
+
+# Candidate exports. Real contact details: never commit these.
+/data

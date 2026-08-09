@@ -67,7 +67,7 @@ for (const row of raw.rows) {
   }
 }
 
-console.log("\n=== parser coverage (of 63 rows) ===");
+console.log(`\n=== parser coverage (of ${raw.rows.length} rows) ===`);
 console.log("field                 parsed  blank  unparsed");
 for (const [f, s] of Object.entries(stats)) {
   const flag = s.failed.length > 0 ? "  <-- check" : "";
@@ -101,4 +101,4 @@ for (const row of raw.rows) {
     if (d.coverage < 0 || d.coverage > 1) { console.log(`  COVERAGE OUT OF RANGE ${meta.emailHash} ${d.key} ${d.coverage}`); violations++; }
   }
 }
-console.log(violations === 0 ? "  all invariants hold across 63 rows" : `  ${violations} violations`);
+console.log(violations === 0 ? `  all invariants hold across ${raw.rows.length} rows` : `  ${violations} violations`);

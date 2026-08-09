@@ -29,7 +29,16 @@ export const COLUMN_MATCHERS = {
   english: "english level",
   workAuth: "work authorization",
   priorInvestment: "have you invested in any courses",
-  email: "email address",
+  /**
+   * Google captures the respondent's account address in a column called
+   * "Username". The form itself never asked for an email: its contact question
+   * offers Facebook, LinkedIn, LINE ID or phone. So this is an address we hold,
+   * not a channel anyone nominated, which is why the import records no email
+   * consent.
+   */
+  email: "username",
+  /** The channel they actually chose. Free text, and gloriously varied. */
+  contact: "best way",
   aiTools: "how do you use digital tools",
   dependents: "who would relocate with you",
   familyReady: "how ready is your family",
@@ -68,6 +77,76 @@ export interface ImportedRow {
     targetRole: string;
     targetCountries: string[];
     emailHash: string;
+  };
+  /**
+   * Real contact details, added for the TASK-053 backfill. The offline scoring
+   * tools only ever wanted `emailHash`; a CRM needs to be able to reach people.
+   */
+  contact: Contact;
+}
+
+export interface Contact {
+  /** The address Google captured. Held, but never nominated as a channel. */
+  email: string | null;
+  /** An address they typed as their chosen channel, if any. */
+  emailNominated: string | null;
+  phone: string | null;
+  lineId: string | null;
+  /**
+   * The contact answer verbatim. Kept because the parse below is lossy by
+   * necessity: a Facebook or LinkedIn URL has nowhere to go in the schema, and
+   * a lead you cannot reach because a regex did not recognise their format is
+   * worse than one with an unparsed string attached.
+   */
+  raw: string;
+}
+
+/** Thai mobiles are 0X XXXX XXXX; +66 replaces the leading zero. */
+const PHONE = /(?:\+66[\s-]?|0)(\d[\s-]?){8,9}\d/;
+
+function parseContact(username: string, best: string): Contact {
+  const raw = best.trim();
+  const emailMatch = username.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+
+  const phoneMatch = raw.replace(/[()]/g, "").match(PHONE);
+  const phone = phoneMatch ? phoneMatch[0].replace(/[\s-]/g, "") : null;
+
+  // A LINE id is whatever follows a "line"/"ไลน์"/"id" label. Failing a label,
+  // a bare token that is not a URL and not the phone we just took is far more
+  // often a LINE id than anything else, which is what the shape of the answers
+  // says: two thirds name LINE, and the rest give a number or a profile link.
+  let lineId: string | null = null;
+  const labelled = raw.match(/(?:line|ไลน์|ไอดี|id)\s*(?:id)?\s*[:：]?\s*([^\s,/|]+)/i);
+  if (labelled && !/^https?:/i.test(labelled[1])) lineId = labelled[1];
+
+  // An "@name" token is a LINE id, not an address. Official LINE ids carry the
+  // prefix, and treating every "@" as an email loses them: it was the single
+  // biggest cause of unreachable rows on the first pass.
+  if (!lineId) {
+    const at = raw.match(/@[\w.-]{2,}/);
+    const isEmail = /[\w.+-]+@[\w-]+\.[\w.-]+/.test(raw);
+    if (at && !isEmail) lineId = at[0];
+  }
+
+  if (!lineId && !/https?:|@/i.test(raw)) {
+    const bare = raw.split(/[\s,]+/).find((t) => t && t !== phone && !/^\d+$/.test(t));
+    if (bare) lineId = bare;
+  }
+  // A label can capture the word "id" itself when the answer is "LINE ID : x".
+  if (lineId && /^(id|line|ไลน์)$/i.test(lineId)) lineId = null;
+
+  // An address typed into the contact answer is a channel they chose. The one
+  // Google captured in Username is not: the form never offered email as a way
+  // to be reached. Only the former carries a consent basis, so the two are
+  // recorded separately rather than collapsed into "we have their email".
+  const nominatedEmail = raw.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+
+  return {
+    email: emailMatch ? emailMatch[0].toLowerCase() : null,
+    emailNominated: nominatedEmail ? nominatedEmail[0].toLowerCase() : null,
+    phone,
+    lineId,
+    raw,
   };
 }
 
@@ -109,6 +188,7 @@ export function importRow(row: string[], cols: ColumnMap): ImportedRow {
       targetCountries: countries,
       emailHash: hash(g("email").trim().toLowerCase()),
     },
+    contact: parseContact(g("email"), g("contact")),
   };
 }
 
