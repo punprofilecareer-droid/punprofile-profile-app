@@ -97,8 +97,21 @@ for (const key of Object.keys(ALL)) {
     if (key.startsWith("move.")) continue;
     if (key.startsWith("item.")) continue;
     if (key.startsWith("gate.error.")) continue;
+    // Journey step labels are looked up as `step.${itemKey}` from the STEPS
+    // table, so a literal source scan cannot see them.
+    if (key.startsWith("step.")) continue;
     if (/^narrative\.(opener|standing)\./.test(key)) continue;
     fail(`${key}: defined but never used`);
+  }
+}
+
+// 4a-quater. Every journey step needs a label, or the checklist renders a row
+// with no name on it.
+{
+  const views = readFileSync("src/lib/views.ts", "utf8");
+  const table = views.match(/const STEPS[\s\S]*?\n\];/)?.[0] ?? "";
+  for (const m of table.matchAll(/itemKey: "([a-zA-Z]+)"/g)) {
+    if (!(`step.${m[1]}` in ALL)) fail(`step.${m[1]}: in the STEPS table but has no label`);
   }
 }
 

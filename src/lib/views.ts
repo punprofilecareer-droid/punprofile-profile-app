@@ -108,14 +108,14 @@ export interface CandidateJourney {
  * which the step reads as complete; salary caps at 3 by design, language is
  * usable from conversational.
  */
-const STEPS: { itemKey: string; label: string; doneAt: number }[] = [
-  { itemKey: "targetClarity", label: "Pick one target country and role", doneAt: 4 },
-  { itemKey: "cvStatus", label: "Get your CV Europe-ready", doneAt: 4 },
-  { itemKey: "linkedinStatus", label: "Make LinkedIn active and findable", doneAt: 4 },
-  { itemKey: "visaReadiness", label: "Know your visa route by name", doneAt: 4 },
-  { itemKey: "languageReadiness", label: "Keep your English moving", doneAt: 3 },
-  { itemKey: "portfolioEvidence", label: "Show some work you are proud of", doneAt: 3 },
-  { itemKey: "applicationActivity", label: "Get applications going out", doneAt: 3 },
+const STEPS: { itemKey: string; doneAt: number }[] = [
+  { itemKey: "targetClarity", doneAt: 4 },
+  { itemKey: "cvStatus", doneAt: 4 },
+  { itemKey: "linkedinStatus", doneAt: 4 },
+  { itemKey: "visaReadiness", doneAt: 4 },
+  { itemKey: "languageReadiness", doneAt: 3 },
+  { itemKey: "portfolioEvidence", doneAt: 3 },
+  { itemKey: "applicationActivity", doneAt: 3 },
 ];
 
 export function buildCandidateJourney(
@@ -142,11 +142,14 @@ export function buildCandidateJourney(
   // clearly-weak stage; marking a different step "next" here would give the
   // candidate two competing instructions on one page.
   const steps: JourneyStep[] = STEPS.map((s) => {
+    const label = t(`step.${s.itemKey}` as AnyCopyKey, locale);
     const score = itemScores.get(s.itemKey);
-    if (score === null || score === undefined) return { label: s.label, status: "unanswered", detail: "Two quick answers and this fills in" };
-    if (score >= s.doneAt) return { label: s.label, status: "done" };
-    if (fa && s.itemKey === fa.key) return { label: s.label, status: "next" };
-    return { label: s.label, status: "later" };
+    if (score === null || score === undefined) {
+      return { label, status: "unanswered", detail: t("step.unanswered", locale) };
+    }
+    if (score >= s.doneAt) return { label, status: "done" };
+    if (fa && s.itemKey === fa.key) return { label, status: "next" };
+    return { label, status: "later" };
   });
 
   const flags = input.aiIndicatorFlags ?? null;
@@ -157,7 +160,7 @@ export function buildCandidateJourney(
     .slice(0, 2)
     .map((x) => ({
       action: pick(x.move.candidate, locale),
-      area: x.changes[0].label,
+      area: dimensionName(x.changes[0].dimension, x.changes[0].label, locale),
       from: x.changes[0].from,
       to: x.changes[0].to,
     }));
@@ -165,11 +168,18 @@ export function buildCandidateJourney(
   const unlock = projectUnlock(profile);
   return {
     candidate,
-    strengths: topStrengths(profile, 3).map((h) => ({ label: itemName(h.key, h.label, locale), score: h.score, area: h.dimension })),
+    strengths: topStrengths(profile, 3).map((h) => ({
+      label: itemName(h.key, h.label, locale),
+      score: h.score,
+      area: dimensionName(DIM_KEY_BY_LABEL.get(h.dimension) ?? "", h.dimension, locale),
+    })),
     next: fa
       ? faMove
         ? { title: pick(faMove.candidate, locale), why: "" }
-        : { title: `Start with ${fa.label.replace(/ \(self-declared\)$/, "")}`, why: fa.actionWhy ?? "" }
+        : {
+            title: t("result.startWith", locale, { area: itemName(fa.key, fa.label, locale) }),
+            why: fa.actionWhy ?? "",
+          }
       : null,
     steps,
     aiHabits,
@@ -177,9 +187,13 @@ export function buildCandidateJourney(
     measured: {
       count: unlock.measuredNow,
       total: unlock.totalItems,
-      line: `Your answers so far measure ${unlock.measuredNow} of ${unlock.totalItems} areas. A free 30-minute conversation can measure ${unlock.measuredAfter - unlock.measuredNow} more, the parts no form can see.`,
+      line: t("result.measured", locale, {
+        count: unlock.measuredNow,
+        total: unlock.totalItems,
+        more: unlock.measuredAfter - unlock.measuredNow,
+      }),
     },
-    caveat: "Everything here is self-reported and preliminary. It is a first read of where you stand, not a verdict.",
+    caveat: t("result.caveat", locale),
   };
 }
 
@@ -213,6 +227,24 @@ function itemName(key: string, fallback: string, locale: Locale): string {
   if (copyKey in ALL_COPY) return t(copyKey, locale);
   return fallback.replace(/ \(self-declared\)$/, "");
 }
+
+/**
+ * The candidate-facing name of a dimension, for the same reason as `itemName`.
+ * `model.ts` and the chart both name these; the chart already reads COPY, and
+ * anything else that shows a dimension by name to a candidate must too.
+ */
+function dimensionName(key: string, fallback: string, locale: Locale): string {
+  const copyKey = `dimension.${key}` as AnyCopyKey;
+  return copyKey in ALL_COPY ? t(copyKey, locale) : fallback;
+}
+
+/**
+ * `Highlight.dimension` carries the English LABEL rather than the key
+ * (`scoring.ts:350`), so a candidate surface has to map it back before it can
+ * be named. Widening `Highlight` itself would ripple through the coach report
+ * for no gain there, since that report wants the English.
+ */
+const DIM_KEY_BY_LABEL = new Map(DIMENSIONS.map((d) => [d.label, d.key]));
 
 /**
  * The short version, for the pre-unlock teaser.

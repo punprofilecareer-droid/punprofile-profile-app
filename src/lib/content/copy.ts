@@ -248,6 +248,90 @@ export const COPY = {
     th: "ส่งข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง",
   },
 
+  // ------------------------------------------------------- full result screen
+  "result.headline": {
+    screen: "Full result, the heading",
+    en: "Your full read",
+    th: "ผลประเมินฉบับเต็มของคุณ",
+  },
+  "result.strengthsHeading": {
+    screen: "Full result, above the strongest areas. Leads with what they have",
+    en: "What you already have",
+    th: "จุดที่คุณมีอยู่แล้ว",
+  },
+  "result.stepsHeading": {
+    screen: "Full result, above the journey checklist",
+    en: "Where you are on the path",
+    th: "ตอนนี้คุณอยู่ตรงไหนของเส้นทาง",
+  },
+  "result.reachableHeading": {
+    screen: "Full result, above the 'doing X moves Y' items",
+    en: "What moves if you act",
+    th: "สิ่งที่จะขยับ ถ้าคุณลงมือทำ",
+  },
+  "result.reachableLine": {
+    screen: "Full result, one uplift. {area}, {from} and {to} are substituted",
+    en: "{area}: {from} to {to}",
+    th: "{area}: {from} เป็น {to}",
+  },
+  "result.startWith": {
+    screen: "Full result, fallback next step when no specific action matches. {area} substituted",
+    en: "Start with {area}.",
+    th: "เริ่มจาก {area}",
+  },
+  "result.measured": {
+    screen: "Full result, the coverage line. {count}, {total} and {more} are substituted",
+    en: "Your answers measure {count} of {total} areas. A 30-minute conversation can measure {more} more, the parts no form can see.",
+    th: "คำตอบของคุณประเมินได้ {count} จาก {total} ด้าน การพูดคุย 30 นาทีจะประเมินเพิ่มได้อีก {more} ด้าน ซึ่งเป็นส่วนที่แบบฟอร์มมองไม่เห็น",
+  },
+  "result.caveat": {
+    screen: "Full result, the persistent honesty line. FR-007 requires it to be unmissable",
+    en: "Everything here is self-reported and preliminary. It is a first read of where you stand, not a verdict.",
+    th: "ทั้งหมดนี้เป็นผลประเมินเบื้องต้นจากข้อมูลที่คุณให้มา เป็นภาพแรกว่าคุณอยู่ตรงไหน ไม่ใช่คำตัดสิน",
+  },
+
+  // The journey checklist. Statuses are computed; these are the step names.
+  "step.unanswered": {
+    screen: "Full result, on a step nothing has been answered for yet",
+    en: "Two quick answers and this fills in",
+    th: "ตอบเพิ่มอีกไม่กี่ข้อ ส่วนนี้ก็จะแสดงผล",
+  },
+  "step.targetClarity": {
+    screen: "Full result, journey checklist step",
+    en: "Pick one target country and role",
+    th: "เลือกประเทศและตำแหน่งเป้าหมายให้ชัด",
+  },
+  "step.cvStatus": {
+    screen: "Full result, journey checklist step",
+    en: "Get your CV Europe-ready",
+    th: "ปรับ CV ให้พร้อมสำหรับตลาดยุโรป",
+  },
+  "step.linkedinStatus": {
+    screen: "Full result, journey checklist step",
+    en: "Make LinkedIn active and findable",
+    th: "ทำให้ LinkedIn เคลื่อนไหวและถูกค้นเจอ",
+  },
+  "step.visaReadiness": {
+    screen: "Full result, journey checklist step",
+    en: "Know your visa route by name",
+    th: "รู้ว่าจะใช้วีซ่าประเภทไหน",
+  },
+  "step.languageReadiness": {
+    screen: "Full result, journey checklist step",
+    en: "Keep your English moving",
+    th: "ฝึกภาษาอังกฤษอย่างต่อเนื่อง",
+  },
+  "step.portfolioEvidence": {
+    screen: "Full result, journey checklist step",
+    en: "Show some work you are proud of",
+    th: "มีผลงานที่แสดงให้ดูได้",
+  },
+  "step.applicationActivity": {
+    screen: "Full result, journey checklist step",
+    en: "Get applications going out",
+    th: "เริ่มส่งใบสมัครออกไป",
+  },
+
   // -------------------------------------------------------- competency names
   // The 15 scoreable competencies. `model.ts` names them in English for the
   // coach report; these are the candidate-facing names, used wherever one is

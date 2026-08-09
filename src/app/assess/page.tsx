@@ -9,6 +9,7 @@ import QuestionCard from "@/components/features/assessment/QuestionCard";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
+import FullResult from "@/components/features/assessment/FullResult";
 import { buildTeaserSummary } from "@/lib/views";
 import { toScoringInput } from "@/lib/content/mapping";
 
@@ -138,6 +139,20 @@ export default function AssessPage() {
         // Nothing is unwound on the way back: the previous answer stays stored
         // until they actually replace it.
         onBack={step > 0 ? () => setStep(step - 1) : undefined}
+      />
+    );
+  }
+
+  // The full result, once contact details are in (TASK-028). This is what the
+  // gate unlocks, so it replaces the teaser entirely rather than sitting under
+  // it: showing both would leave the candidate scrolling past the summary they
+  // just paid for with their details.
+  if (session?.status !== "partial" && session) {
+    return (
+      <FullResult
+        responses={session.responses}
+        pathway={session.pathway as Parameters<typeof buildTeaserSummary>[1]}
+        scores={scores}
       />
     );
   }
