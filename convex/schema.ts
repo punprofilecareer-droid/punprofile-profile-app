@@ -40,6 +40,21 @@ export default defineSchema({
     phoneConsentAt: v.optional(v.number()),
     lineConsentAt: v.optional(v.number()),
 
+    /**
+     * Where the consent above came from. `app` means it passed through the
+     * contact gate: a per-channel tick, timestamped at the moment it was given.
+     * `survey_import` means it came from the Lead Discovery Survey, which asked
+     * "ช่องทางติดต่อที่สะดวกที่สุด" and carried no consent clause at all, so the
+     * timestamp is the submission date and the basis is the question rather
+     * than an explicit grant.
+     *
+     * Absent means `app`, since every lead predating the backfill came through
+     * the gate. The distinction is recorded because a PDPA request asks what
+     * someone agreed to, and "they told us how to reach them" and "they ticked
+     * a box saying we may" are not the same answer.
+     */
+    consentSource: v.optional(v.union(v.literal("app"), v.literal("survey_import"))),
+
     // Relocation pathway: asked early, shapes the self-report commentary.
     pathway: v.optional(
       v.union(

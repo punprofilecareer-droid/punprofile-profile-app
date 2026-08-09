@@ -114,6 +114,14 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
       </div>
 
       <Section title="Contact and consent">
+        {lead.consentSource === "survey_import" && (
+          <p className="mb-3 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
+            Imported from the Lead Discovery Survey. That form asked how best to
+            reach them but carried no consent clause, so the timestamps below are
+            their submission date, not a per-channel grant. Judge outreach against
+            what the form actually said.
+          </p>
+        )}
         <Row
           label="Email"
           value={lead.email}

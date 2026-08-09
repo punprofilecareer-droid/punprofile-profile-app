@@ -277,6 +277,7 @@ export const getForAdmin = query({
       emailConsentAt: lead.emailConsentAt ?? null,
       phoneConsentAt: lead.phoneConsentAt ?? null,
       lineConsentAt: lead.lineConsentAt ?? null,
+      consentSource: lead.consentSource ?? "app",
       pathway: lead.pathway ?? null,
       status: lead.status,
       source: lead.source ?? null,
