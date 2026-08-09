@@ -19,9 +19,12 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       profile(params) {
         const email = String(params.email ?? "").trim().toLowerCase();
         const admin = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
-        if (!admin || email !== admin) {
-          throw new ConvexError("Sign-up is not open.");
-        }
+        // Distinct causes, distinct errors. These previously shared one
+        // message, so a deployment with no ADMIN_EMAIL set was indistinguishable
+        // from someone typing the wrong address, and both were reported by the
+        // UI as the latter.
+        if (!admin) throw new ConvexError("admin_email_unset");
+        if (email !== admin) throw new ConvexError("not_admin_email");
         return { email };
       },
     }),

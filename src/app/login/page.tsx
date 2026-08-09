@@ -26,14 +26,33 @@ export default function LoginPage() {
     try {
       await signIn("password", data);
       router.push("/admin");
-    } catch {
-      setError(
-        flow === "signIn"
-          ? "That didn't work. Check the email and password, or use the first-time button if the account doesn't exist yet."
-          : "Could not create the account. Only the configured admin email can register.",
-      );
+    } catch (err) {
+      // Report the actual cause. This used to attribute every sign-up failure
+      // to a wrong email, so a password one character short read as "you are
+      // not the admin", which is a false statement and sends you looking in
+      // the wrong place.
+      const raw = err instanceof Error ? err.message : "";
+      setError(reasonFor(raw, flow));
       setBusy(false);
     }
+  }
+
+  function reasonFor(raw: string, flow: "signIn" | "signUp"): string {
+    if (raw.includes("Invalid password")) {
+      return "That password is too short. It needs at least 8 characters.";
+    }
+    if (raw.includes("admin_email_unset")) {
+      return "No admin email is configured on this deployment, so no account can be created. Set ADMIN_EMAIL in the Convex environment first.";
+    }
+    if (raw.includes("not_admin_email")) {
+      return "That is not the configured admin address. Only one email can register.";
+    }
+    if (raw.includes("InvalidAccountId") || raw.includes("already")) {
+      return "That account already exists. Use Sign in rather than the first-time button.";
+    }
+    return flow === "signIn"
+      ? "That didn't work. Check the email and password, or use the first-time button if the account doesn't exist yet."
+      : "Could not create the account. Check the browser console for the underlying error.";
   }
 
   return (
@@ -62,9 +81,13 @@ export default function LoginPage() {
             name="password"
             type="password"
             required
+            minLength={8}
             autoComplete="current-password"
             className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink"
           />
+          <span className="mt-1 block text-caption font-normal text-neutral-500">
+            At least 8 characters.
+          </span>
         </label>
         {/* `error`, never Terracotta: a problem must not look like an action. */}
         {error && <p className="text-body text-error">{error}</p>}
