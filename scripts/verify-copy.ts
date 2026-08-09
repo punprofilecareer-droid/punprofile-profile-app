@@ -124,6 +124,24 @@ for (const d of DIMENSIONS) {
   }
 }
 
+// 4a-ter. No two consent strings may be identical. PDPA consent has to be
+// specific to the channel it grants, so a LINE checkbox carrying the phone
+// sentence is not a typo, it is consent that does not cover what it collects.
+// Duplication here is almost always a copy-paste that survived review.
+{
+  const consent = Object.entries(ALL).filter(([k]) => k.startsWith("consent."));
+  for (const lang of ["en", "th"] as const) {
+    const seen = new Map<string, string>();
+    for (const [key, entry] of consent) {
+      const text = entry[lang].trim();
+      if (!text) continue;
+      const first = seen.get(text);
+      if (first) fail(`${key}.${lang} is identical to ${first}.${lang}`);
+      else seen.set(text, key);
+    }
+  }
+}
+
 // 4b. Every branch the engine can select must exist, or a real candidate hits
 // an undefined key at render.
 for (const p of ["job_first", "study_first", "family", "not_sure"]) {

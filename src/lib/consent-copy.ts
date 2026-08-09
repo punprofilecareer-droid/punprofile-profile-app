@@ -26,23 +26,23 @@ export const CONSENT_COPY_REVIEWED = false;
 export const CONSENT_COPY = {
   "consent.email": {
     screen: "Contact gate, beside the email field",
-    en: "PLACEHOLDER, NOT LEGALLY REVIEWED. I agree that PunProfile may email me about my result and career coaching.",
-    th: "",
+    en: "Email is required so PunProfile can send you your assessment result.",
+    th: "จำเป็นต้องระบุอีเมลเพื่อให้ PunProfile ส่งผลการประเมินให้คุณ",
   },
   "consent.phone": {
     screen: "Contact gate, beside the phone field",
-    en: "PLACEHOLDER, NOT LEGALLY REVIEWED. I agree that PunProfile may contact me by phone.",
-    th: "",
+    en: "I consent to PunProfile contacting me by phone about career coaching. (Optional)",
+    th: "ยินยอมให้ PunProfile ติดต่อทางโทรศัพท์เกี่ยวกับบริการแนะแนวอาชีพ (ไม่บังคับ)",
   },
   "consent.line": {
     screen: "Contact gate, beside the LINE ID field",
-    en: "PLACEHOLDER, NOT LEGALLY REVIEWED. I agree that PunProfile may contact me on LINE.",
-    th: "",
+    en: "I consent to PunProfile contacting me on LINE about career coaching. (Optional)",
+    th: "ยินยอมให้ PunProfile ติดต่อทาง LINE เกี่ยวกับบริการแนะแนวอาชีพ (ไม่บังคับ)",
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
-    en: "PLACEHOLDER, NOT LEGALLY REVIEWED. Explains what is collected, why, how long it is kept, and how to withdraw consent.",
-    th: "",
+    en: "PunProfile uses your required email address to send your assessment result. To request career-coaching follow-up, provide a phone number or LINE ID and select the corresponding optional consent. We retain your information for 12 months and do not share it with third parties. You may withdraw your phone or LINE consent at any time through [contact method TODO]. See our [Privacy Notice TODO] for details.",
+    th: "PunProfile ใช้อีเมลที่จำเป็นต้องระบุเพื่อส่งผลการประเมินให้คุณ หากต้องการให้ติดต่อกลับเกี่ยวกับบริการแนะแนวอาชีพ โปรดระบุหมายเลขโทรศัพท์หรือ LINE ID และเลือกให้ความยินยอมสำหรับช่องทางนั้น เราจะเก็บข้อมูลไว้เป็นเวลา 12 เดือนและไม่เปิดเผยต่อบุคคลที่สาม คุณสามารถถอนความยินยอมสำหรับการติดต่อทางโทรศัพท์หรือ LINE ได้ทุกเมื่อผ่าน [ช่องทางติดต่อ TODO] ดูรายละเอียดเพิ่มเติมใน [ประกาศความเป็นส่วนตัว TODO]",
   },
 } as const satisfies Record<string, CopyEntry>;
 

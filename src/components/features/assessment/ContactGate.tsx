@@ -89,8 +89,8 @@ export default function ContactGate({
 
       {!CONSENT_COPY_REVIEWED && (
         <p className="mt-4 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
-          Consent copy below is placeholder text and has not been legally
-          reviewed (TASK-047). Not for production.
+          Consent copy below has not been legally reviewed (TASK-047), and still
+          contains unresolved placeholders. Not for production.
         </p>
       )}
 

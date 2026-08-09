@@ -1,15 +1,18 @@
 /**
- * Reads the filled worksheet back into `copy.ts` and `consent-copy.ts`.
+ * Reads the filled worksheet back into the copy modules.
  *
  *   npx tsx scripts/import-copy-worksheet.ts [worksheet.md] [--dry]
  *
- * The point is that Thai never gets retyped. A transcription slip in a script
+ * The point is that copy never gets retyped. A transcription slip in a script
  * nobody in the loop reads is invisible until a candidate sees it, so the
  * founder's bytes go in verbatim or not at all.
  *
- * It only ever rewrites the `th:` line of a key that already exists in the
- * source file, and it refuses anything it cannot place. It will not add keys,
- * reorder them, touch `en`, or edit a comment.
+ * Reads BOTH languages. The founder edits English as readily as Thai, and an
+ * importer that only carried Thai back would silently discard half the review.
+ *
+ * It only ever rewrites the `en:` and `th:` lines of a key that already exists
+ * in the source, and refuses anything it cannot place. It will not add keys,
+ * reorder them, or edit a comment.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -25,37 +28,56 @@ const TARGETS = [
   { file: "src/lib/consent-copy.ts", label: "consent copy" },
 ];
 
-// ### `key`  ...  > **TH:** value
 const BLOCK = /^### `([^`]+)`$/;
-const TH = /^> \*\*TH:\*\* ?(.*)$/;
+// The leading "> " is optional. The export writes it, but editing a long Thai
+// line in a wrapping editor drops it easily, and losing a founder's copy to a
+// missing blockquote marker is a tooling failure, not their mistake.
+const EN = /^\s*>?\s*\*\*EN:\*\* ?(.*)$/;
+const TH = /^\s*>?\s*\*\*TH:\*\* ?(.*)$/;
 
-const worksheet = readFileSync(IN, "utf8").split(/\r?\n/);
+/** The export's marker for "no Thai yet". Never a real string. */
+const TODO = "TODO";
 
-const supplied = new Map<string, string>();
-let current: string | null = null;
-for (const line of worksheet) {
-  const k = line.match(BLOCK);
-  if (k) {
-    current = k[1];
-    continue;
-  }
-  const th = line.match(TH);
-  if (th && current) {
-    const value = th[1].trim();
-    // TODO is the export's placeholder for "not supplied yet", not a string.
-    if (value && value !== "TODO") supplied.set(current, value);
-    current = null;
+interface Pair {
+  en?: string;
+  th?: string;
+}
+
+const supplied = new Map<string, Pair>();
+{
+  let key: string | null = null;
+  for (const line of readFileSync(IN, "utf8").split(/\r?\n/)) {
+    const k = line.match(BLOCK);
+    if (k) {
+      key = k[1];
+      supplied.set(key, {});
+      continue;
+    }
+    if (!key) continue;
+    const en = line.match(EN);
+    if (en) {
+      supplied.get(key)!.en = en[1].trim();
+      continue;
+    }
+    const th = line.match(TH);
+    if (th) {
+      const v = th[1].trim();
+      if (v && v !== TODO) supplied.get(key)!.th = v;
+      key = null; // TH closes the block
+    }
   }
 }
 
-console.log(`worksheet: ${supplied.size} keys carry Thai`);
+console.log(
+  `worksheet: ${supplied.size} keys, ${[...supplied.values()].filter((p) => p.th).length} carry Thai`,
+);
 
 const unplaced = new Set(supplied.keys());
 let written = 0;
 
-for (const target of TARGETS) {
-  const src = readFileSync(target.file, "utf8");
-  const lines = src.split(/\r?\n/);
+/** Rewrite `en:` / `th:` inside a `"key": { ... }` block. */
+function applyKeyed(file: string, label: string) {
+  const lines = readFileSync(file, "utf8").split(/\r?\n/);
   let key: string | null = null;
   let changed = 0;
 
@@ -67,29 +89,32 @@ for (const target of TARGETS) {
     }
     if (!key) continue;
 
-    const th = lines[i].match(/^(\s*)th: (".*"|"")(,?)$/);
-    if (th) {
-      const value = supplied.get(key);
-      if (value !== undefined) {
-        unplaced.delete(key);
-        const next = `${th[1]}th: ${JSON.stringify(value)}${th[3]}`;
-        if (next !== lines[i]) {
-          lines[i] = next;
-          changed++;
-        }
+    for (const lang of ["en", "th"] as const) {
+      // Re-serialised through JSON.stringify, so a value containing a quote or
+      // a backslash cannot break the file, whichever quote style it had before.
+      const m = lines[i].match(new RegExp(`^(\\s*)${lang}: (.*?)(,?)$`));
+      if (!m) continue;
+      const value = supplied.get(key)?.[lang];
+      if (value === undefined) continue;
+      unplaced.delete(key);
+      const next = `${m[1]}${lang}: ${JSON.stringify(value)}${m[3]}`;
+      if (next !== lines[i]) {
+        lines[i] = next;
+        changed++;
       }
-      key = null;
     }
+    if (/^\s*\},?$/.test(lines[i])) key = null;
   }
 
-  if (changed && !DRY) writeFileSync(target.file, lines.join("\n"));
+  if (changed && !DRY) writeFileSync(file, lines.join("\n"));
   written += changed;
-  console.log(`${target.label}: ${changed} updated${DRY ? " (dry run)" : ""}`);
+  console.log(`${label}: ${changed} updated${DRY ? " (dry run)" : ""}`);
 }
 
-// The 15 lever actions are data in `levers.ts`, not keyed copy, so they need
-// their own pass: find `key: "x"`, then rewrite the `th` inside that move's
-// one-line `candidate: { en: ..., th: ... }`.
+for (const t of TARGETS) applyKeyed(t.file, t.label);
+
+// The lever actions are data in `levers.ts`, not keyed copy, so they need their
+// own pass: find `key: "x"`, then rewrite that move's one-line `candidate` pair.
 {
   const file = "src/lib/levers.ts";
   const lines = readFileSync(file, "utf8").split(/\r?\n/);
@@ -104,12 +129,14 @@ for (const target of TARGETS) {
     }
     if (!moveKey) continue;
 
-    const c = lines[i].match(/^(\s*candidate: \{ en: ".*", th: )(".*")( \},)$/);
+    const c = lines[i].match(/^(\s*candidate: \{ en: )(".*?")(, th: )(".*?")( \},)$/);
     if (c) {
-      const value = supplied.get(`move.${moveKey}`);
-      if (value !== undefined) {
+      const pair = supplied.get(`move.${moveKey}`);
+      if (pair) {
         unplaced.delete(`move.${moveKey}`);
-        const next = `${c[1]}${JSON.stringify(value)}${c[3]}`;
+        const en = pair.en !== undefined ? JSON.stringify(pair.en) : c[2];
+        const th = pair.th !== undefined ? JSON.stringify(pair.th) : c[4];
+        const next = `${c[1]}${en}${c[3]}${th}${c[5]}`;
         if (next !== lines[i]) {
           lines[i] = next;
           changed++;
@@ -133,5 +160,5 @@ if (unplaced.size) {
   process.exit(1);
 }
 
-console.log(`\n${written} string(s) ${DRY ? "would be" : ""} written.`);
+console.log(`\n${written} line(s) ${DRY ? "would be" : ""} written.`);
 if (!DRY && written) console.log("Run: npx tsx scripts/verify-copy.ts");

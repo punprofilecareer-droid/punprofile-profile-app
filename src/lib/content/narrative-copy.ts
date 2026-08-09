@@ -44,78 +44,78 @@ export const NARRATIVE_COPY = {
   "narrative.opener.job_first": {
     screen: "Result summary, opening line when the route is find-a-job-first",
     en: "You're aiming to land the job first, then move. That's the route with the most moving parts, and the one where being specific pays off fastest.",
-    th: "คุณเลือกเส้นทางหางานให้ได้ก่อน แล้วค่อยย้าย เส้นทางนี้มีรายละเอียดเยอะที่สุด และเป็นเส้นทางที่การเจาะจงเป้าหมายให้ผลเร็วที่สุด",
+    th: "คุณตั้งใจหางานให้ได้ก่อนแล้วค่อยย้าย เส้นทางนี้มีหลายปัจจัยให้จัดการมากที่สุด แต่ยิ่งกำหนดเป้าหมายได้ชัด ก็ยิ่งเห็นผลเร็ว",
   },
   "narrative.opener.study_first": {
     screen: "Result summary, opening line when the route is study-first",
     en: "You're planning to study first, then work. That buys you time in-country, and it changes which parts of this matter most right now.",
-    th: "คุณวางแผนเรียนต่อก่อน แล้วค่อยหางานที่นั่น การเรียนช่วยให้คุณมีเวลาอยู่ในประเทศนั้น และทำให้ลำดับความสำคัญตอนนี้ต่างออกไป",
+    th: "คุณวางแผนไปเรียนก่อนแล้วจึงเริ่มทำงาน วิธีนี้ช่วยให้คุณมีเวลาอยู่ในประเทศเป้าหมายมากขึ้น และทำให้สิ่งที่ควรให้ความสำคัญในตอนนี้แตกต่างออกไป",
   },
   "narrative.opener.family": {
     screen: "Result summary, opening line when the route is family or partner",
     en: "You're moving through a family or partner route. Your right to work is likely the settled part, so the work goes into the profile itself.",
-    th: "คุณไปตามคู่ครองหรือครอบครัว เรื่องสิทธิ์ทำงานน่าจะลงตัวแล้ว งานที่เหลือจึงอยู่ที่ตัวโปรไฟล์ของคุณเอง",
+    th: "คุณวางแผนย้ายไปยุโรปผ่านเส้นทางครอบครัวหรือคู่ครอง สิทธิ์ในการทำงานจึงน่าจะเป็นส่วนที่ชัดเจนแล้ว สิ่งที่ควรโฟกัสต่อไปคือการพัฒนาโปรไฟล์ของคุณ",
   },
   "narrative.opener.not_sure": {
     screen: "Result summary, opening line when the route is not chosen yet. Must not read as a worse answer",
     en: "You're still weighing up how you'd get to Europe. That's a reasonable place to be, and this read is meant to help you choose rather than assume you already have.",
-    th: "คุณยังกำลังชั่งใจว่าจะไปยุโรปด้วยเส้นทางไหน ซึ่งเป็นเรื่องปกติ ผลประเมินนี้ทำขึ้นเพื่อช่วยให้คุณเลือกได้ ไม่ได้คิดไปเองว่าคุณเลือกแล้ว",
+    th: "คุณยังอยู่ระหว่างพิจารณาว่าจะไปยุโรปด้วยเส้นทางไหน ซึ่งเป็นเรื่องปกติ ผลประเมินนี้มีไว้ช่วยคุณเลือก ไม่ได้คาดหวังว่าคุณต้องมีคำตอบอยู่แล้ว",
   },
 
   // ------------------------------------------------------- overall standing
   "narrative.standing.advantage": {
     screen: "Result summary, when the overall picture is a real advantage",
     en: "On what you've told us, you're further along than most people at this stage.",
-    th: "จากคำตอบของคุณ ตอนนี้คุณไปได้ไกลกว่าคนส่วนใหญ่ที่อยู่ในจุดเดียวกัน",
+    th: "จากข้อมูลที่คุณให้มา ตอนนี้คุณมีความพร้อมมากกว่าคนส่วนใหญ่ที่อยู่ในขั้นเดียวกัน",
   },
   "narrative.standing.strong": {
     screen: "Result summary, when the overall picture is strong",
     en: "On what you've told us, you've got real foundations in place.",
-    th: "จากคำตอบของคุณ คุณมีพื้นฐานที่ดีอยู่แล้ว",
+    th: "จากข้อมูลที่คุณให้มา คุณมีพื้นฐานที่แข็งแรงอยู่แล้ว",
   },
   "narrative.standing.typical": {
     screen: "Result summary, when the overall picture is mid-range",
     en: "On what you've told us, you're about where most people are at this stage.",
-    th: "จากคำตอบของคุณ ตอนนี้คุณอยู่ในจุดใกล้เคียงกับคนส่วนใหญ่",
+    th: "จากข้อมูลที่คุณให้มา ความพร้อมของคุณอยู่ในระดับใกล้เคียงกับคนส่วนใหญ่ในขั้นนี้",
   },
   "narrative.standing.developing": {
     screen: "Result summary, when the overall picture is still developing",
     en: "On what you've told us, there's groundwork still to do. That's normal this early, and it's all work you can actually do.",
-    th: "จากคำตอบของคุณ ยังมีพื้นฐานบางอย่างที่ต้องทำเพิ่ม ซึ่งเป็นเรื่องปกติในช่วงเริ่มต้น และทุกข้อเป็นสิ่งที่ลงมือทำได้จริง",
+    th: "จากข้อมูลที่คุณให้มา ยังมีพื้นฐานบางส่วนที่ต้องเตรียมเพิ่มเติม ซึ่งเป็นเรื่องปกติในช่วงเริ่มต้น และทุกอย่างพัฒนาได้ด้วยการลงมือทำ",
   },
   "narrative.standing.earliest": {
     screen: "Result summary, when the candidate is at the very beginning",
     en: "You're at the start of this. Nothing here is a verdict, and every part of it moves with work.",
-    th: "คุณเพิ่งเริ่มต้นเส้นทางนี้ ผลนี้ไม่ใช่คำตัดสิน และทุกส่วนขยับได้ด้วยการลงมือทำ",
+    th: "คุณเพิ่งเริ่มต้นเส้นทางนี้ ผลประเมินนี้ไม่ใช่คำตัดสิน และทุกด้านพัฒนาได้ด้วยการลงมือทำ",
   },
 
   // ------------------------------------------------------------ lead-in lines
   "narrative.strength.lead": {
     screen: "Result summary, before the strongest area. {area} is substituted",
     en: "Your strongest area right now is {area}.",
-    th: "ตอนนี้จุดแข็งที่สุดของคุณคือ {area}",
+    th: "ตอนนี้ด้านที่โดดเด่นที่สุดของคุณคือ {area}",
   },
   "narrative.next.lead": {
     screen: "Result summary, before the single next action",
     en: "If you change one thing first, make it this:",
-    th: "ถ้าจะเริ่มแก้อะไรสักอย่างก่อน ให้เริ่มจากข้อนี้",
+    th: "ถ้าจะลงมือทำเพียงเรื่องเดียวก่อน ให้เริ่มจากเรื่องนี้:",
   },
   "narrative.unmeasured": {
     screen: "Result summary, when parts could not be scored. {count} is substituted",
     en: "{count} things this measures need a conversation rather than a form, so they're left blank rather than guessed at.",
-    th: "ยังมีอีก {count} เรื่องที่ต้องคุยกันจริงๆ ถึงจะประเมินได้ แบบฟอร์มมองไม่เห็น เราจึงเว้นว่างไว้แทนที่จะเดา",
+    th: "มี {count} เรื่องที่ต้องพูดคุยกันจึงจะประเมินได้ เราจึงเว้นผลส่วนนั้นไว้แทนที่จะคาดเดา",
   },
 
   // -------------------------------------------------------------------- CTA
   "narrative.cta.heading": {
     screen: "Result summary, above the consultation button",
     en: "Want to go through this properly?",
-    th: "อยากดูผลนี้แบบละเอียดไหม",
+    th: "อยากเจาะลึกผลประเมินนี้ไหม",
   },
   "narrative.cta.body": {
     screen: "Result summary, under the heading. Sells measurement, never a verdict",
     en: "A 30-minute consultation with PunProfile goes through your answers in detail and turns this into a plan you can act on.",
-    th: "นัดปรึกษาฟรี 30 นาที กับทีม PunProfile เราจะไล่ดูคำตอบของคุณทีละข้อ แล้วเปลี่ยนผลนี้ให้เป็นแผนที่ลงมือทำได้จริง",
+    th: "ในการปรึกษา 30 นาทีกับ PunProfile เราจะทบทวนคำตอบของคุณอย่างละเอียด และเปลี่ยนผลประเมินนี้ให้เป็นแผนที่นำไปลงมือทำได้จริง",
   },
   "narrative.cta.button": {
     screen: "Result summary, the consultation button itself",
