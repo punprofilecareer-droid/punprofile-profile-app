@@ -3,6 +3,7 @@ import { v, ConvexError } from "convex/values";
 import { computeScores } from "./scoring";
 import { toScoringInput } from "../src/lib/content/mapping";
 import { isValidAnswer } from "../src/lib/content/questions";
+import { rateLimiter } from "./rateLimits";
 
 /**
  * TASK-012/013/015/016: the candidate session lifecycle, per PRD § 4.
@@ -17,6 +18,10 @@ import { isValidAnswer } from "../src/lib/content/questions";
 export const startSession = mutation({
   args: { source: v.optional(v.string()) },
   handler: async (ctx, args) => {
+    // TASK-039. Global, because a session that does not exist yet has nothing
+    // to key on. See `rateLimits.ts` for why that is the honest ceiling here.
+    await rateLimiter.limit(ctx, "startSession", { throws: true });
+
     const now = Date.now();
     return await ctx.db.insert("leads", {
       status: "partial",
@@ -124,6 +129,14 @@ export const captureContact = mutation({
   handler: async (ctx, args) => {
     const lead = await ctx.db.get(args.leadId);
     if (!lead) throw new ConvexError("Session not found.");
+
+    // Keyed on the lead, which the server issued, so it cannot be forged the
+    // way a client-supplied key could. Checked after the lead exists, so a
+    // random id cannot burn a real session's quota.
+    await rateLimiter.limit(ctx, "captureContact", {
+      key: args.leadId,
+      throws: true,
+    });
 
     const fullName = args.fullName.trim();
     const email = args.email.trim();

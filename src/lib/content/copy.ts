@@ -84,6 +84,16 @@ export const COPY = {
     en: "Starting...",
     th: "กำลังเตรียมแบบประเมิน...",
   },
+  "assess.busy": {
+    screen: "Assessment, when the session could not be created. Rate limit or network",
+    en: "We couldn't start your assessment just now. Please try again in a moment.",
+    th: "ตอนนี้ยังเริ่มแบบประเมินให้คุณไม่ได้ กรุณาลองใหม่อีกครั้งในอีกสักครู่",
+  },
+  "assess.retry": {
+    screen: "Assessment, the retry button beside that message",
+    en: "Try again",
+    th: "ลองใหม่อีกครั้ง",
+  },
   "assess.back": {
     screen: "Assessment, the link back to the previous question",
     en: "Back",

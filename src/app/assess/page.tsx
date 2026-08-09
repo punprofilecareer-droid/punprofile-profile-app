@@ -54,6 +54,9 @@ export default function AssessPage() {
   // any contact field, so the gate is a step they choose to take, not one that
   // appears over the chart.
   const [gateOpen, setGateOpen] = useState(false);
+  const [startFailed, setStartFailed] = useState(false);
+  /** Bumping this re-runs the session effect, which is what Try again does. */
+  const [attempt, setAttempt] = useState(0);
   const session = useQuery(api.leads.getSession, leadId ? { leadId } : "skip");
 
   // Create or resume the session.
@@ -63,11 +66,17 @@ export default function AssessPage() {
       setLeadId(existing);
       return;
     }
-    void startSession({ source: "direct" }).then((id) => {
-      window.localStorage.setItem(STORAGE_KEY, id);
-      setLeadId(id);
-    });
-  }, [startSession]);
+    // A rejection here is usually the rate limit (TASK-039) or a dropped
+    // connection. Without this the promise fails silently and the candidate
+    // watches the loading line forever, which reads as a broken app rather
+    // than a busy one.
+    void startSession({ source: "direct" })
+      .then((id) => {
+        window.localStorage.setItem(STORAGE_KEY, id);
+        setLeadId(id);
+      })
+      .catch(() => setStartFailed(true));
+  }, [startSession, attempt]);
 
   // Resume position from server state on reload. Runs once: after that, local
   // state is ahead of the server and must not be overwritten by it.
@@ -102,9 +111,25 @@ export default function AssessPage() {
 
   if (!leadId) {
     return (
-      <p className="px-6 py-24 text-center text-body text-neutral-500">
-        {t("assess.starting")}
-      </p>
+      <div className="mx-auto w-full max-w-md px-6 py-24 text-center">
+        {startFailed ? (
+          <>
+            <p className="text-body text-slate">{t("assess.busy")}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setStartFailed(false);
+                setAttempt((n) => n + 1);
+              }}
+              className="mt-6 h-12 rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright"
+            >
+              {t("assess.retry")}
+            </button>
+          </>
+        ) : (
+          <p className="text-body text-neutral-500">{t("assess.starting")}</p>
+        )}
+      </div>
     );
   }
 
