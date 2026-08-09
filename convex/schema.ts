@@ -30,6 +30,13 @@ export default defineSchema({
     // One field, not first/last: the survey asked ชื่อ-นามสกุล as a single
     // question, and a forced split produces junk for candidates who go by a
     // nickname.
+    /**
+     * Split since 10/08/2026. `fullName` is kept and still written, composed
+     * from the two, because the 90 imported survey leads only ever had one
+     * field and every read path already uses it.
+     */
+    firstName: v.optional(v.string()),
+    lastName: v.optional(v.string()),
     fullName: v.optional(v.string()),
     email: v.optional(v.string()),
     phone: v.optional(v.string()),

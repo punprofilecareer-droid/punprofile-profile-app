@@ -9,7 +9,6 @@ import QuestionCard from "@/components/features/assessment/QuestionCard";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
-import FullResult from "@/components/features/assessment/FullResult";
 import { buildTeaserSummary } from "@/lib/views";
 import { toScoringInput } from "@/lib/content/mapping";
 
@@ -49,10 +48,6 @@ export default function AssessPage() {
   const startSession = useMutation(api.leads.startSession);
   const submitAnswer = useMutation(api.leads.submitAnswer);
   const captureContact = useMutation(api.leads.captureContact);
-  // Shown only when the candidate asks for it. FR-004 keeps the teaser free of
-  // any contact field, so the gate is a step they choose to take, not one that
-  // appears over the chart.
-  const [gateOpen, setGateOpen] = useState(false);
   const [startFailed, setStartFailed] = useState(false);
   /** Bumping this re-runs the session effect, which is what Try again does. */
   const [attempt, setAttempt] = useState(0);
@@ -166,27 +161,18 @@ export default function AssessPage() {
     );
   }
 
-  // The full result, once contact details are in (TASK-028). This is what the
-  // gate unlocks, so it replaces the teaser entirely rather than sitting under
-  // it: showing both would leave the candidate scrolling past the summary they
-  // just paid for with their details.
-  if (session?.status !== "partial" && session) {
-    return (
-      <FullResult
-        responses={session.responses}
-        pathway={session.pathway as Parameters<typeof buildTeaserSummary>[1]}
-        scores={scores}
-      />
-    );
-  }
-
-  // The gate, once they choose to open it (TASK-025/027).
-  if (gateOpen && session?.status === "partial") {
+  // Contact is the last step of the survey, not a gate on the result.
+  //
+  // Decided 10/08/2026, and it deliberately reverses PRD FR-004, which had the
+  // chart render before any contact field. That mechanic optimised for people
+  // finishing; this one optimises for every finisher being reachable, because
+  // the full result now arrives through a human rather than a screen.
+  if (session && session.status === "partial") {
     return (
       <ContactGate
+        totalSteps={TOTAL_STEPS + 1}
         onSubmit={async (values) => {
           await captureContact({ leadId, ...values });
-          setGateOpen(false);
         }}
       />
     );
@@ -224,25 +210,11 @@ export default function AssessPage() {
         </div>
       )}
 
-      {/* card-bordered: border-only, because it sits on white. The gate is
-          reached by choice from here; FR-004 forbids a contact field appearing
-          on the teaser itself. */}
-      {session?.status === "partial" ? (
-        <div className="mt-6 rounded-lg border border-neutral-300 bg-surface px-6 py-6">
-          <p className="text-body text-slate">{t("teaser.locked")}</p>
-          <button
-            type="button"
-            onClick={() => setGateOpen(true)}
-            className="mt-4 h-12 w-full rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright"
-          >
-            {t("teaser.unlock")}
-          </button>
-        </div>
-      ) : (
-        <p className="mt-6 rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6 text-body text-ink">
-          {t("teaser.captured")}
-        </p>
-      )}
+      {/* Contact is already in by the time this renders, so this says what
+          happens next rather than asking for anything. */}
+      <p className="mt-6 rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6 text-body text-ink">
+        {t("teaser.nextStep")}
+      </p>
 
       {/* TASK-046. Hidden until a booking mechanism exists, rather than
           shipping a button that goes nowhere. */}

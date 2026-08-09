@@ -126,20 +126,10 @@ export const COPY = {
     en: "Hollow markers mean \"not measured yet\", never zero.",
     th: "จุดวงกลมที่ยังว่างอยู่แปลว่า “ยังไม่ได้รับการประเมิน”",
   },
-  "teaser.locked": {
-    screen: "Teaser, the card below the chart, before the gate is opened",
-    en: "The full picture, with what to work on first, opens once you tell us where to send it.",
-    th: "ดูภาพรวมทั้งหมด พร้อมสิ่งที่ควรเริ่มทำก่อน เพียงบอกเราว่าจะให้ส่งผลไปที่ไหน",
-  },
-  "teaser.unlock": {
-    screen: "Teaser, the button that opens the contact gate",
-    en: "See my full result",
-    th: "ดูผลประเมินฉบับเต็ม",
-  },
-  "teaser.captured": {
-    screen: "Teaser, after contact details are given. The full result screen is TASK-028",
-    en: "Thanks. Your details are saved, and the full result lands here shortly.",
-    th: "ขอบคุณ ข้อมูลของคุณถูกบันทึกข้อเรียบร้อยแล้ว ผลลัพธ์จะแสดงในอีกสักครู่",
+  "teaser.nextStep": {
+    screen: "First read, the closing card. What happens after this screen",
+    en: "PunProfile will be in touch with your full result, and what to do about it.",
+    th: "ทีม PunProfile จะติดต่อกลับพร้อมผลฉบับเต็ม และคำแนะนำว่าควรทำอะไรต่อ",
   },
   "teaser.revise": {
     screen: "Teaser, the link back to the last question",
@@ -175,19 +165,24 @@ export const COPY = {
   // ------------------------------------------------------------ contact gate
   // FR-005. Full name, email, and at least one of LINE ID or phone.
   "gate.heading": {
-    screen: "Contact gate, the heading",
-    en: "See your full result",
-    th: "ดูผลประเมินฉบับเต็ม",
+    screen: "Contact step, the heading. Last step of the survey",
+    en: "Last step",
+    th: "ขั้นตอนสุดท้าย",
   },
   "gate.body": {
-    screen: "Contact gate, under the heading. Says what they get, not what we want",
-    en: "Tell us where to send it and we'll open the full picture, with what to work on first.",
-    th: "เลือกช่องทางรับผล แล้วดูผลประเมินฉบับเต็ม พร้อมคำแนะนำว่าควรเริ่มพัฒนาจากจุดไหนก่อน",
+    screen: "Contact step, under the heading. Says what happens next",
+    en: "Tell us who you are and how to reach you. Your first read comes up next, and PunProfile will follow up with the full result.",
+    th: "บอกชื่อและช่องทางติดต่อของคุณ แล้วดูผลประเมินเบื้องต้นได้เลย จากนั้นทีม PunProfile จะติดต่อกลับพร้อมผลฉบับเต็ม",
   },
-  "gate.fullName": {
-    screen: "Contact gate, name field label",
-    en: "Full name",
-    th: "ชื่อ-สกุล",
+  "gate.firstName": {
+    screen: "Contact step, first name field label",
+    en: "First name",
+    th: "ชื่อ",
+  },
+  "gate.lastName": {
+    screen: "Contact step, last name field label",
+    en: "Last name",
+    th: "นามสกุล",
   },
   "gate.email": {
     screen: "Contact gate, email field label",
@@ -210,9 +205,9 @@ export const COPY = {
     th: "เบอร์โทร",
   },
   "gate.submit": {
-    screen: "Contact gate, the submit button",
-    en: "Open my full result",
-    th: "เปิดผลประเมินฉบับเต็ม",
+    screen: "Contact step, the submit button",
+    en: "See my first read",
+    th: "ดูผลประเมินเบื้องต้น",
   },
   "gate.working": {
     screen: "Contact gate, submit button while the write is in flight",
@@ -222,10 +217,15 @@ export const COPY = {
 
   // Errors. Thrown server-side as stable codes and resolved here, so a rule
   // enforced on the server can still speak the candidate's language.
-  "gate.error.name_required": {
-    screen: "Contact gate, when the name is empty",
-    en: "Please enter your name.",
-    th: "กรุณากรอกชื่อและนามสกุล",
+  "gate.error.first_name_required": {
+    screen: "Contact step, when the first name is empty",
+    en: "Please enter your first name.",
+    th: "กรุณากรอกชื่อของคุณ",
+  },
+  "gate.error.last_name_required": {
+    screen: "Contact step, when the last name is empty",
+    en: "Please enter your last name.",
+    th: "กรุณากรอกนามสกุลของคุณ",
   },
   "gate.error.email_invalid": {
     screen: "Contact gate, when the email is missing or malformed",
@@ -259,31 +259,6 @@ export const COPY = {
   },
 
   // ------------------------------------------------------- full result screen
-  "result.headline": {
-    screen: "Full result, the heading",
-    en: "Your full read",
-    th: "ผลประเมินฉบับเต็มของคุณ",
-  },
-  "result.strengthsHeading": {
-    screen: "Full result, above the strongest areas. Leads with what they have",
-    en: "What you already have",
-    th: "จุดที่คุณมีอยู่แล้ว",
-  },
-  "result.stepsHeading": {
-    screen: "Full result, above the journey checklist",
-    en: "Where you are on the path",
-    th: "ตอนนี้คุณอยู่ตรงไหนของเส้นทาง",
-  },
-  "result.reachableHeading": {
-    screen: "Full result, above the 'doing X moves Y' items",
-    en: "What moves if you act",
-    th: "สิ่งที่จะขยับ ถ้าคุณลงมือทำ",
-  },
-  "result.reachableLine": {
-    screen: "Full result, one uplift. {area}, {from} and {to} are substituted",
-    en: "{area}: {from} to {to}",
-    th: "{area}: {from} เป็น {to}",
-  },
   "result.startWith": {
     screen: "Full result, fallback next step when no specific action matches. {area} substituted",
     en: "Start with {area}.",

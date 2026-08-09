@@ -121,7 +121,8 @@ const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim()
 export const captureContact = mutation({
   args: {
     leadId: v.id("leads"),
-    fullName: v.string(),
+    firstName: v.string(),
+    lastName: v.string(),
     email: v.string(),
     emailConsent: v.boolean(),
     phone: v.optional(v.string()),
@@ -141,7 +142,8 @@ export const captureContact = mutation({
       throws: true,
     });
 
-    const fullName = args.fullName.trim();
+    const firstName = args.firstName.trim();
+    const lastName = args.lastName.trim();
     const email = args.email.trim();
     const phone = args.phone?.trim() || undefined;
     const lineId = args.lineId?.trim() || undefined;
@@ -149,7 +151,8 @@ export const captureContact = mutation({
     // Stable codes, not sentences. These reach a candidate's screen, so the
     // wording has to come from the copy module and be translatable; an English
     // string thrown from here would be untranslatable by construction.
-    if (!fullName) throw new ConvexError("name_required");
+    if (!firstName) throw new ConvexError("first_name_required");
+    if (!lastName) throw new ConvexError("last_name_required");
     if (!looksLikeEmail(email)) throw new ConvexError("email_invalid");
     if (!phone && !lineId) throw new ConvexError("channel_required");
 
@@ -161,7 +164,11 @@ export const captureContact = mutation({
 
     const now = Date.now();
     await ctx.db.patch(args.leadId, {
-      fullName,
+      firstName,
+      lastName,
+      // Composed as well as split, so every existing read path keeps working
+      // and the imported leads stay comparable.
+      fullName: `${firstName} ${lastName}`,
       email,
       emailConsentAt: now,
       // Each timestamp is written only alongside its own value, so the audit
@@ -246,6 +253,7 @@ export const listForAdmin = query({
       .map((l) => ({
         _id: l._id,
         fullName: l.fullName ?? null,
+        firstName: l.firstName ?? null,
         email: l.email ?? null,
         phone: l.phone ?? null,
         lineId: l.lineId ?? null,

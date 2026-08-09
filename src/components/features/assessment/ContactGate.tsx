@@ -1,11 +1,18 @@
 "use client";
 
 /**
- * TASK-025/027, PRD FR-005 and FR-006: the contact gate.
+ * TASK-025/027: the contact step, and the last question of the survey.
  *
- * Full name, email, and at least one of LINE ID or phone. Email keeps the magic
- * link deliverable (FR-011); LINE or phone keeps the lead actually reachable,
- * because Thai candidates largely do not read email. Decided 08/08/2026.
+ * First name, last name, email, and at least one of LINE ID or phone. Email
+ * keeps the magic link deliverable (FR-011); LINE or phone keeps the lead
+ * actually reachable, because Thai candidates largely do not read email.
+ *
+ * **This runs BEFORE the result, reversing FR-004** (decided 10/08/2026). The
+ * spec had the chart render with no contact field on screen, optimising for
+ * people finishing. This optimises for every finisher being reachable, because
+ * the full result now arrives through a conversation rather than a screen. It
+ * carries the step counter and a full progress bar so it reads as the last
+ * question rather than as a wall in front of the answer.
  *
  * FR-006 wants a separate consent per channel, each timestamped. A consent
  * checkbox appears next to a channel only once that channel has something in
@@ -23,7 +30,8 @@ import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
 import type { CopyKey } from "@/lib/content/copy";
 
 const ERROR_KEYS = [
-  "name_required",
+  "first_name_required",
+  "last_name_required",
   "email_invalid",
   "channel_required",
   "consent_email",
@@ -33,9 +41,12 @@ const ERROR_KEYS = [
 
 export default function ContactGate({
   onSubmit,
+  totalSteps,
 }: {
+  totalSteps: number;
   onSubmit: (values: {
-    fullName: string;
+    firstName: string;
+    lastName: string;
     email: string;
     emailConsent: boolean;
     phone?: string;
@@ -45,7 +56,8 @@ export default function ContactGate({
   }) => Promise<void>;
 }) {
   const { t, pick } = useCopy();
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [lineId, setLineId] = useState("");
   const [phone, setPhone] = useState("");
@@ -64,7 +76,8 @@ export default function ContactGate({
     setError(null);
     try {
       await onSubmit({
-        fullName,
+        firstName,
+        lastName,
         email,
         emailConsent,
         phone: phone.trim() || undefined,
@@ -84,6 +97,12 @@ export default function ContactGate({
 
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-md px-6 py-10">
+      <p className="mb-1 text-caption text-neutral-500">
+        {t("assess.progress", { step: totalSteps, total: totalSteps })}
+      </p>
+      <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300">
+        <div className="h-full w-full rounded-full bg-primary" />
+      </div>
       <h1 className="text-h3">{t("gate.heading")}</h1>
       <p className="mt-2 text-body text-slate">{t("gate.body")}</p>
 
@@ -98,16 +117,28 @@ export default function ContactGate({
         {pick(CONSENT_COPY["consent.purpose"])}
       </p>
 
-      <label className="mt-6 block text-label text-slate">
-        {t("gate.fullName")}
-        <input
-          className={field}
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          autoComplete="name"
-          required
-        />
-      </label>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <label className="block text-label text-slate">
+          {t("gate.firstName")}
+          <input
+            className={field}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            autoComplete="given-name"
+            required
+          />
+        </label>
+        <label className="block text-label text-slate">
+          {t("gate.lastName")}
+          <input
+            className={field}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            autoComplete="family-name"
+            required
+          />
+        </label>
+      </div>
 
       <label className="mt-4 block text-label text-slate">
         {t("gate.email")}
