@@ -1,13 +1,20 @@
 /**
  * TASK-007: PII scrubbing shared by all three Sentry runtimes.
  *
- * The assessment flow handles email, phone and LINE ID, so an error thrown
- * from inside a form can carry candidate contact data in its message, its
- * breadcrumbs or the request body. Everything here strips aggressively and
- * accepts false positives: losing a digit string from an error report is
- * cheap, leaking a candidate's phone number to a third-party service is not.
- * TASK-041 later verifies this against real assessment-flow errors, not just
- * synthetic ones.
+ * The assessment flow handles a full name, email, phone and LINE ID, so an
+ * error thrown from inside a form can carry candidate contact data in its
+ * message, its breadcrumbs or the request body. Everything here strips
+ * aggressively and accepts false positives: losing a digit string from an error
+ * report is cheap, leaking a candidate's phone number to a third-party service
+ * is not. TASK-041 later verifies this against real assessment-flow errors, not
+ * just synthetic ones.
+ *
+ * Names and LINE IDs have no pattern, so no regex can catch them. They are
+ * covered only by the wholesale deletions below (`user`, `request.data`,
+ * `extra`, breadcrumb `data`), which is where form values actually live. The
+ * gap that leaves is an identity interpolated into an error string, so: never
+ * put a candidate's name, LINE ID or email into a thrown message. Refer to a
+ * lead by its document id.
  */
 
 import type { ErrorEvent } from "@sentry/nextjs";

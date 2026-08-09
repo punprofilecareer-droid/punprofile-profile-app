@@ -19,8 +19,18 @@ export default defineSchema({
 
   // One row per candidate session, from first partial answer onward.
   leads: defineTable({
-    // Contact info: all optional until captured; email is the "minimum contact
-    // info" trigger that makes a lead real.
+    // Contact info: all optional until captured. Decided 08/08/2026, the unlock
+    // requires a full name, an email, AND at least one of LINE ID or phone.
+    // Email alone is not enough: it keeps the magic link deliverable (FR-011)
+    // but Thai candidates largely do not read email, so a lead reachable only
+    // there is not reachable. The live Lead Discovery Survey already asked for
+    // both (`08_Coaching_Business.md` § A.1 and § A.3); the app had narrowed it
+    // to email, which was a regression rather than a simplification.
+    //
+    // One field, not first/last: the survey asked ชื่อ-นามสกุล as a single
+    // question, and a forced split produces junk for candidates who go by a
+    // nickname.
+    fullName: v.optional(v.string()),
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
     lineId: v.optional(v.string()),
@@ -55,7 +65,9 @@ export default defineSchema({
       }),
     ),
 
-    // Lifecycle.
+    // Lifecycle. `email_captured` keeps the PRD's vocabulary, but since
+    // 08/08/2026 it means the whole contact set cleared the gate: name, email
+    // and a LINE ID or phone number.
     status: v.union(
       v.literal("partial"),
       v.literal("email_captured"),
