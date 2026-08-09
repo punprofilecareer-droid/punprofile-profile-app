@@ -18,10 +18,11 @@
  * precision starts.
  */
 
-import { scoreResponse } from "./scoring.js";
-import type { ScoringInput, ProfileScore } from "./scoring.js";
-import { DIMENSIONS } from "./model.js";
-import type { DimensionKey } from "./model.js";
+import { scoreResponse } from "./scoring";
+import type { ScoringInput, ProfileScore } from "./scoring";
+import { DIMENSIONS } from "./model";
+import type { DimensionKey } from "./model";
+import type { Copy } from "./content/copy";
 
 export type Horizon = "days" | "weeks" | "months";
 
@@ -40,10 +41,13 @@ export interface Move {
   horizon: Horizon;
   /** Part of the AI toolstack (goal 1.2). */
   ai?: boolean;
-  /** Coach-facing imperative. */
+  /** Coach-facing imperative. English only: the coach is the only reader. */
   coach: string;
-  /** Candidate-facing copy. EN placeholder; needs the Thai native-tone pass per `03_Content_System.md`. */
-  candidate: string;
+  /**
+   * Candidate-facing copy, so bilingual. Empty `th` falls back to English, and
+   * the worksheet is how Thai arrives (`scripts/export-copy-worksheet.ts`).
+   */
+  candidate: Copy;
   applies(r: ScoringInput): boolean;
   apply(r: ScoringInput): ScoringInput;
 }
@@ -71,7 +75,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "Narrow to one target country and one target role. AI-assisted country/role research prompts make this a session, not a month.",
-    candidate: "Pick one country and one role to aim at first. Everything after this step gets easier once it is specific.",
+    candidate: { en: "Pick one country and one role to aim at first. Everything after this step gets easier once it is specific.", th: "" },
     applies: (r) => !((r.targetCountries?.length ?? 0) === 1 && !!r.targetRole?.trim()),
     apply: (r) => ({
       ...r,
@@ -85,7 +89,7 @@ export const MOVES: Move[] = [
     module: "Candidate Profile Optimization",
     horizon: "weeks",
     coach: "Rework the CV to Europe-ready: quantified achievements, role tailoring, ATS-safe format, 2 pages.",
-    candidate: "Retailor your CV for the European market. It is the first thing an employer sees, and format alone filters people out.",
+    candidate: { en: "Retailor your CV for the European market. It is the first thing an employer sees, and format alone filters people out.", th: "" },
     applies: (r) => r.cv === "none" || r.cv === "untailored",
     apply: (r) => ({ ...r, cv: "europe_ready" }),
   },
@@ -95,7 +99,7 @@ export const MOVES: Move[] = [
     module: "Candidate Profile Optimization",
     horizon: "days",
     coach: "Bring LinkedIn to active and optimized: headline, About, target-role keywords, recent activity.",
-    candidate: "Wake up your LinkedIn. European recruiters search there directly, and a quiet profile is invisible to them.",
+    candidate: { en: "Wake up your LinkedIn. European recruiters search there directly, and a quiet profile is invisible to them.", th: "" },
     applies: (r) => r.linkedin === "none" || r.linkedin === "basic",
     apply: (r) => ({ ...r, linkedin: "active" }),
   },
@@ -106,7 +110,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "Have them name the specific visa route (Blue Card, Chancenkarte, zoekjaar...). Research prompts provided; verification stays coach-side.",
-    candidate: "Find and name the specific visa route you would use. Knowing the route changes which employers are even worth applying to.",
+    candidate: { en: "Find and name the specific visa route you would use. Knowing the route changes which employers are even worth applying to.", th: "" },
     applies: (r) => r.workAuth === "sponsor_no_route",
     apply: (r) => ({ ...r, workAuth: "sponsor_route_named" }),
   },
@@ -117,7 +121,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "They don't yet know what work authorisation requires. One research session moves them from unsure to sponsorship-aware.",
-    candidate: "Spend one session learning what working in Europe legally requires. It is the single fastest gap to close.",
+    candidate: { en: "Spend one session learning what working in Europe legally requires. It is the single fastest gap to close.", th: "" },
     applies: (r) => r.workAuth === "unsure",
     apply: (r) => ({ ...r, workAuth: "sponsor_no_route" }),
   },
@@ -128,7 +132,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "Get a stated salary expectation with currency and period. AI benchmark research against the target country/role; realism check stays a coach call.",
-    candidate: "Work out a salary expectation for your target country, with currency and period. It anchors every later conversation.",
+    candidate: { en: "Work out a salary expectation for your target country, with currency and period. It anchors every later conversation.", th: "" },
     applies: (r) => !r.salary || !r.salary.hasFigure || !r.salary.hasCurrency || !r.salary.hasPeriod,
     apply: (r) => ({ ...r, salary: { hasFigure: true, hasCurrency: true, hasPeriod: true } }),
   },
@@ -138,7 +142,7 @@ export const MOVES: Move[] = [
     module: "Candidate Profile Optimization",
     horizon: "weeks",
     coach: "Seed a partial portfolio: 2-3 case studies with outcomes. Only after CV and LinkedIn are done.",
-    candidate: "Put two or three pieces of your work somewhere an employer can see them. Evidence argues better than adjectives.",
+    candidate: { en: "Put two or three pieces of your work somewhere an employer can see them. Evidence argues better than adjectives.", th: "" },
     applies: (r) => r.portfolio === "none",
     apply: (r) => ({ ...r, portfolio: "partial" }),
   },
@@ -148,7 +152,7 @@ export const MOVES: Move[] = [
     module: "Job Application Lifecycle",
     horizon: "weeks",
     coach: "First five targeted applications, tracked. Volume without targeting is noise; five tracked beats fifty sprayed.",
-    candidate: "Send your first five targeted applications and track each one. Nothing downstream starts until these go out.",
+    candidate: { en: "Send your first five targeted applications and track each one. Nothing downstream starts until these go out.", th: "" },
     applies: (r) => r.applicationCount === 0,
     apply: (r) => ({ ...r, applicationCount: 5 }),
   },
@@ -158,7 +162,7 @@ export const MOVES: Move[] = [
     module: "Self-serve",
     horizon: "months",
     coach: "Structured push from conversational toward C1. Slow lever; start it early precisely because it is slow.",
-    candidate: "Start a steady English routine aiming at fluent professional level. It moves slowly, which is exactly why starting now matters.",
+    candidate: { en: "Start a steady English routine aiming at fluent professional level. It moves slowly, which is exactly why starting now matters.", th: "" },
     applies: (r) => r.englishCefr === "A1" || r.englishCefr === "A2" || r.englishCefr === "B1" || r.englishCefr === "B2",
     apply: (r) => ({ ...r, englishCefr: "C1" }),
   },
@@ -171,7 +175,7 @@ export const MOVES: Move[] = [
     horizon: "weeks",
     ai: true,
     coach: "Q32 unanswered: onboard the full AI toolstack (weekly AI research, EU workplace tools, AI-tailored materials, one self-adopted tool) and capture the answers.",
-    candidate: "Set up your AI job-search toolkit: weekly AI research, the workplace tools European teams use, AI-tailored applications, and one tracker you pick yourself.",
+    candidate: { en: "Set up your AI job-search toolkit: weekly AI research, the workplace tools European teams use, AI-tailored applications, and one tracker you pick yourself.", th: "" },
     applies: (r) => r.aiIndicatorFlags === null || r.aiIndicatorFlags === undefined,
     apply: (r) => ({ ...r, aiIndicatorFlags: [true, true, true, true], aiIndicators: 4 }),
   },
@@ -182,7 +186,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "Missing indicator 1: weekly AI research habit. Give them the job-search prompt pack.",
-    candidate: "Make AI research a weekly habit: companies, visa rules, salary ranges, one hour, every week.",
+    candidate: { en: "Make AI research a weekly habit: companies, visa rules, salary ranges, one hour, every week.", th: "" },
     applies: (r) => aiFlagKnownMissing(r, 0),
     apply: (r) => withAiFlag(r, 0),
   },
@@ -193,7 +197,7 @@ export const MOVES: Move[] = [
     horizon: "weeks",
     ai: true,
     coach: "Missing indicator 2: EU workplace tools. Self-onboarding onto Slack, Teams and Notion free tiers.",
-    candidate: "Get hands-on with Slack, Teams and Notion. They are the default furniture of a European office.",
+    candidate: { en: "Get hands-on with Slack, Teams and Notion. They are the default furniture of a European office.", th: "" },
     applies: (r) => aiFlagKnownMissing(r, 1),
     apply: (r) => withAiFlag(r, 1),
   },
@@ -204,7 +208,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "Missing indicator 3: AI-tailored materials. Teach the tailor-per-role workflow, not generic output.",
-    candidate: "Use AI to tailor your CV and cover letter to each specific role instead of sending one version everywhere.",
+    candidate: { en: "Use AI to tailor your CV and cover letter to each specific role instead of sending one version everywhere.", th: "" },
     applies: (r) => aiFlagKnownMissing(r, 2),
     apply: (r) => withAiFlag(r, 2),
   },
@@ -215,7 +219,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "Missing indicator 4: self-adopted tooling. Have them pick and run an application tracker of their own choice.",
-    candidate: "Pick one tool nobody told you to use, an application tracker is the obvious one, and make it yours.",
+    candidate: { en: "Pick one tool nobody told you to use, an application tracker is the obvious one, and make it yours.", th: "" },
     applies: (r) => aiFlagKnownMissing(r, 3),
     apply: (r) => withAiFlag(r, 3),
   },

@@ -15,7 +15,22 @@
  */
 
 import { COPY } from "./content/copy";
-import type { Copy, CopyKey } from "./content/copy";
+import type { Copy } from "./content/copy";
+import { NARRATIVE_COPY } from "./content/narrative-copy";
+import { CONSENT_COPY } from "./consent-copy";
+
+/**
+ * Every keyed bank, resolved through one lookup. Split across files by who
+ * reviews them (UI chrome, the result narrative, PDPA text with its own legal
+ * gate) rather than by how they are read.
+ */
+export const ALL_COPY = {
+  ...COPY,
+  ...NARRATIVE_COPY,
+  ...CONSENT_COPY,
+} as const;
+
+export type AnyCopyKey = keyof typeof ALL_COPY;
 
 export const LOCALES = ["th", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
@@ -38,11 +53,11 @@ export function pick(copy: Copy, locale: Locale): string {
  * only the step counter uses today.
  */
 export function t(
-  key: CopyKey,
+  key: AnyCopyKey,
   locale: Locale,
   vars?: Record<string, string | number>,
 ): string {
-  let out = pick(COPY[key], locale);
+  let out = pick(ALL_COPY[key], locale);
   if (vars) {
     for (const [name, value] of Object.entries(vars)) {
       out = out.replaceAll(`{${name}}`, String(value));

@@ -15,8 +15,27 @@
 
 import { writeFileSync } from "node:fs";
 import { COPY } from "../src/lib/content/copy.js";
+import { NARRATIVE_COPY } from "../src/lib/content/narrative-copy.js";
 import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "../src/lib/consent-copy.js";
+import { MOVES } from "../src/lib/levers.js";
 import type { CopyEntry } from "../src/lib/content/copy.js";
+
+/**
+ * The 15 lever actions live in `levers.ts` as data, not as keyed copy, because
+ * each one carries its own scoring predicate. They are surfaced here under a
+ * synthetic key so the founder sees every candidate-facing sentence in one
+ * place rather than having to know which file a string lives in.
+ */
+const MOVE_COPY: Record<string, CopyEntry> = Object.fromEntries(
+  MOVES.map((m) => [
+    `move.${m.key}`,
+    {
+      screen: `Next-step card, shown when the priority is "${m.itemKey}"`,
+      en: m.candidate.en,
+      th: m.candidate.th,
+    },
+  ]),
+);
 
 const OUT =
   process.argv[2] ??
@@ -51,9 +70,12 @@ function section(title: string, note: string, entries: Record<string, CopyEntry>
   return lines.join("\n");
 }
 
-const totalMissing = [...Object.values(COPY), ...Object.values(CONSENT_COPY)].filter(
-  (e) => !e.th,
-).length;
+const totalMissing = [
+  ...Object.values(COPY),
+  ...Object.values(NARRATIVE_COPY),
+  ...Object.values(MOVE_COPY),
+  ...Object.values(CONSENT_COPY),
+].filter((e) => !e.th).length;
 
 const doc = `---
 status: generated, do not hand-maintain
@@ -86,6 +108,20 @@ ${section(
   "App copy",
   "Landing, the assessment, the teaser chart. Admin and login are English on purpose and are not listed.",
   COPY,
+)}
+---
+
+${section(
+  "Result summary",
+  "The personalized read on the result page. The engine SELECTS which of these apply from the candidate's own scores; it never writes a sentence. So each one has to make sense on its own, for the situation named in its note, without knowing which others appear alongside it. Keep `{area}` and `{count}` exactly as they are: they are filled in at render, and a Thai line that drops one renders a gap.",
+  NARRATIVE_COPY,
+)}
+---
+
+${section(
+  "Next-step actions",
+  "One per lever. The result page shows exactly one, whichever the scores make the highest-impact next move. These are the most-read sentences in the product, since every candidate sees one.",
+  MOVE_COPY,
 )}
 ---
 

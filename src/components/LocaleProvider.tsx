@@ -12,14 +12,15 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, t } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
-import type { Copy, CopyKey } from "@/lib/content/copy";
+import type { Copy } from "@/lib/content/copy";
+import type { AnyCopyKey } from "@/lib/locale";
 import { pick } from "@/lib/locale";
 
 interface LocaleContextValue {
   locale: Locale;
   setLocale: (next: Locale) => void;
   /** Resolve a key from COPY. */
-  t: (key: CopyKey, vars?: Record<string, string | number>) => string;
+  t: (key: AnyCopyKey, vars?: Record<string, string | number>) => string;
   /** Resolve any {en, th} pair, for question and option copy. */
   pick: (copy: Copy) => string;
 }

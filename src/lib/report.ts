@@ -15,12 +15,12 @@
  * self-reported labelling to be impossible to miss.
  */
 
-import { radarSvg } from "./radar.js";
-import { BRAND_FONT_LINK, BRAND_FONT_STACKS, BRAND_TOKENS_CSS } from "./design-tokens.js";
-import type { RadarAxis } from "./radar.js";
-import { buildNarrative } from "./narrative.js";
-import type { ProfileScore } from "./scoring.js";
-import type { Tier } from "./model.js";
+import { radarSvg } from "./radar";
+import { BRAND_FONT_LINK, BRAND_FONT_STACKS, BRAND_TOKENS_CSS } from "./design-tokens";
+import type { RadarAxis } from "./radar";
+import { buildNarrative } from "./narrative";
+import type { ProfileScore } from "./scoring";
+import type { Tier } from "./model";
 
 export interface ReportMeta {
   /** Display name or a pseudonymous reference. */

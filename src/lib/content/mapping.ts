@@ -7,7 +7,7 @@
  * item drops out of its dimension's mean).
  */
 
-import type { ScoringInput } from "../scoring.js";
+import type { ScoringInput } from "../scoring";
 
 type Responses = Record<string, unknown>;
 

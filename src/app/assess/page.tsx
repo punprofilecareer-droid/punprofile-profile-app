@@ -8,6 +8,8 @@ import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
+import { buildTeaserSummary } from "@/lib/views";
+import { toScoringInput } from "@/lib/content/mapping";
 
 /**
  * TASK-018..022: the Stage 1 flow. The nine questions from
@@ -32,8 +34,11 @@ type Answer = string | string[];
 const isAnswer = (v: unknown): v is Answer =>
   typeof v === "string" || (Array.isArray(v) && v.every((x) => typeof x === "string"));
 
+/** Set once TASK-046 picks a booking mechanism. The CTA hides until then. */
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL;
+
 export default function AssessPage() {
-  const { t, pick } = useCopy();
+  const { t, pick, locale } = useCopy();
   const [leadId, setLeadId] = useState<Id<"leads"> | null>(null);
   const [local, setLocal] = useState<Record<string, Answer>>({});
   const [step, setStep] = useState(0); // 0..8 = questions, 9 = teaser
@@ -72,6 +77,21 @@ export default function AssessPage() {
   }, [session]);
 
   const scores = useMemo(() => session?.scores ?? {}, [session]);
+
+  // Selected from the sentence bank, never composed. Recomputed client-side
+  // from the same responses the server scored, so the words and the chart
+  // cannot disagree.
+  const summary = useMemo(
+    () =>
+      session
+        ? buildTeaserSummary(
+            toScoringInput(session.responses),
+            session.pathway as Parameters<typeof buildTeaserSummary>[1],
+            locale,
+          )
+        : null,
+    [session, locale],
+  );
 
   if (!leadId) {
     return (
@@ -125,10 +145,48 @@ export default function AssessPage() {
         <SpiderChart scores={scores} variant="teaser" />
       </div>
       <p className="mt-2 text-caption text-neutral-500">{t("teaser.hollowMarkers")}</p>
+
+      {/* The personalized read. Every sentence is selected from the bank in
+          `narrative-copy.ts` by the candidate's own scores, so nothing here can
+          claim more than the answers support. */}
+      {summary && (
+        <div className="mt-8 space-y-4 text-left">
+          <p className="text-body-lg text-ink">{summary.opener}</p>
+          <p className="text-body text-slate">{summary.standing}</p>
+          {summary.strengthLead && (
+            <p className="text-body text-slate">{summary.strengthLead}</p>
+          )}
+          {summary.next && (
+            <div className="rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6">
+              <p className="text-label text-primary-deep">{summary.nextLead}</p>
+              <p className="mt-2 text-body text-ink">{summary.next}</p>
+            </div>
+          )}
+          {summary.unmeasured && (
+            <p className="text-caption text-neutral-500">{summary.unmeasured}</p>
+          )}
+        </div>
+      )}
+
       {/* card-bordered: border-only, because it sits on white. */}
       <p className="mt-6 rounded-lg border border-neutral-300 bg-surface px-6 py-6 text-body text-slate">
         {t("teaser.locked")}
       </p>
+
+      {/* TASK-046. Hidden until a booking mechanism exists, rather than
+          shipping a button that goes nowhere. */}
+      {BOOKING_URL && (
+        <div className="mt-8 text-left">
+          <h2 className="text-h4">{t("narrative.cta.heading")}</h2>
+          <p className="mt-2 text-body text-slate">{t("narrative.cta.body")}</p>
+          <a
+            href={BOOKING_URL}
+            className="mt-4 inline-block rounded-md bg-accent px-7 py-3.5 text-label text-on-accent transition-colors hover:bg-accent-bright"
+          >
+            {t("narrative.cta.button")}
+          </a>
+        </div>
+      )}
       {/* Without this the chart is a dead end, and PRD § 11 allows changing an
           answer after moving forward. Quiet, and below the chart, so it never
           competes with the reveal. */}

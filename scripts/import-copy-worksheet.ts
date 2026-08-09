@@ -21,6 +21,7 @@ const DRY = process.argv.includes("--dry");
 
 const TARGETS = [
   { file: "src/lib/content/copy.ts", label: "app copy" },
+  { file: "src/lib/content/narrative-copy.ts", label: "result summary" },
   { file: "src/lib/consent-copy.ts", label: "consent copy" },
 ];
 
@@ -84,6 +85,43 @@ for (const target of TARGETS) {
   if (changed && !DRY) writeFileSync(target.file, lines.join("\n"));
   written += changed;
   console.log(`${target.label}: ${changed} updated${DRY ? " (dry run)" : ""}`);
+}
+
+// The 15 lever actions are data in `levers.ts`, not keyed copy, so they need
+// their own pass: find `key: "x"`, then rewrite the `th` inside that move's
+// one-line `candidate: { en: ..., th: ... }`.
+{
+  const file = "src/lib/levers.ts";
+  const lines = readFileSync(file, "utf8").split(/\r?\n/);
+  let moveKey: string | null = null;
+  let changed = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const k = lines[i].match(/^\s*key: "([^"]+)",$/);
+    if (k) {
+      moveKey = k[1];
+      continue;
+    }
+    if (!moveKey) continue;
+
+    const c = lines[i].match(/^(\s*candidate: \{ en: ".*", th: )(".*")( \},)$/);
+    if (c) {
+      const value = supplied.get(`move.${moveKey}`);
+      if (value !== undefined) {
+        unplaced.delete(`move.${moveKey}`);
+        const next = `${c[1]}${JSON.stringify(value)}${c[3]}`;
+        if (next !== lines[i]) {
+          lines[i] = next;
+          changed++;
+        }
+      }
+      moveKey = null;
+    }
+  }
+
+  if (changed && !DRY) writeFileSync(file, lines.join("\n"));
+  written += changed;
+  console.log(`next-step actions: ${changed} updated${DRY ? " (dry run)" : ""}`);
 }
 
 if (unplaced.size) {

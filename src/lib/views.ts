@@ -15,12 +15,15 @@
  * measurement, not a verdict.
  */
 
-import { scoreResponse, topStrengths, firstAction } from "./scoring.js";
-import type { ScoringInput, ProfileScore, Highlight } from "./scoring.js";
-import { rankMoves, projectUnlock, MOVES } from "./levers.js";
-import type { MoveImpact, UnlockProjection, Module } from "./levers.js";
-import { DIMENSIONS, BAND_COPY } from "./model.js";
-import { AI_INDICATOR_LABELS } from "./normalize.js";
+import { scoreResponse, topStrengths, firstAction } from "./scoring";
+import type { ScoringInput, ProfileScore, Highlight } from "./scoring";
+import { rankMoves, projectUnlock, MOVES } from "./levers";
+import type { MoveImpact, UnlockProjection, Module } from "./levers";
+import { DIMENSIONS, BAND_COPY } from "./model";
+import { AI_INDICATOR_LABELS } from "./normalize";
+import { pick, t } from "./locale";
+import type { Locale } from "./locale";
+import { NARRATIVE_COPY, standingFor } from "./content/narrative-copy";
 
 // -------------------------------------------------------------- coach view
 
@@ -114,7 +117,16 @@ const STEPS: { itemKey: string; label: string; doneAt: number }[] = [
   { itemKey: "applicationActivity", label: "Get applications going out", doneAt: 3 },
 ];
 
-export function buildCandidateJourney(input: ScoringInput, candidate: string): CandidateJourney {
+export function buildCandidateJourney(
+  input: ScoringInput,
+  candidate: string,
+  /**
+   * Candidate-facing strings resolve here rather than at render, so the whole
+   * projection stays a flat shape. Defaults to English for the offline coach
+   * tooling, which has no locale of its own.
+   */
+  locale: Locale = "en",
+): CandidateJourney {
   const profile = scoreResponse(input);
   const itemScores = new Map<string, number | null>();
   for (const d of profile.dimensions) for (const i of d.items) itemScores.set(i.key, i.score);
@@ -143,7 +155,7 @@ export function buildCandidateJourney(input: ScoringInput, candidate: string): C
     .filter((x) => (x.changes[0]?.delta ?? 0) > 0)
     .slice(0, 2)
     .map((x) => ({
-      action: x.move.candidate,
+      action: pick(x.move.candidate, locale),
       area: x.changes[0].label,
       from: x.changes[0].from,
       to: x.changes[0].to,
@@ -155,7 +167,7 @@ export function buildCandidateJourney(input: ScoringInput, candidate: string): C
     strengths: topStrengths(profile, 3).map((h) => ({ label: h.label.replace(/ \(self-declared\)$/, ""), score: h.score, area: h.dimension })),
     next: fa
       ? faMove
-        ? { title: faMove.candidate, why: "" }
+        ? { title: pick(faMove.candidate, locale), why: "" }
         : { title: `Start with ${fa.label.replace(/ \(self-declared\)$/, "")}`, why: fa.actionWhy ?? "" }
       : null,
     steps,
@@ -167,6 +179,74 @@ export function buildCandidateJourney(input: ScoringInput, candidate: string): C
       line: `Your answers so far measure ${unlock.measuredNow} of ${unlock.totalItems} areas. A free 30-minute conversation can measure ${unlock.measuredAfter - unlock.measuredNow} more, the parts no form can see.`,
     },
     caveat: "Everything here is self-reported and preliminary. It is a first read of where you stand, not a verdict.",
+  };
+}
+
+// ----------------------------------------------------------- teaser summary
+
+export interface TeaserSummary {
+  /** Pathway-aware opening line, FR-008. */
+  opener: string;
+  /** Where they stand overall, from the mean of the scored dimensions. */
+  standing: string;
+  /** Their best area, named. Null when nothing scored yet. */
+  strengthLead: string | null;
+  /** The single highest-impact next move, named but not explained. */
+  nextLead: string;
+  next: string | null;
+  /** Present only when something could not be scored. Never softened. */
+  unmeasured: string | null;
+}
+
+type Pathway = "job_first" | "study_first" | "family" | "not_sure";
+
+/**
+ * The short version, for the pre-unlock teaser.
+ *
+ * Deliberately thinner than `buildCandidateJourney`. PRD FR-004 keeps the
+ * teaser free of any contact ask, and FR-005 makes the full chart AND narrative
+ * the reward for giving contact details, so the whole journey here would leave
+ * the unlock with nothing to give. This names the next move; it does not
+ * explain how to make it.
+ *
+ * Every sentence is selected from `NARRATIVE_COPY`, never composed, so nothing
+ * can reach a candidate untranslated or unreviewed.
+ */
+export function buildTeaserSummary(
+  input: ScoringInput,
+  pathway: Pathway | null,
+  locale: Locale = "en",
+): TeaserSummary {
+  const profile = scoreResponse(input);
+  const scored = profile.dimensions.filter((d) => d.score !== null);
+  const mean =
+    scored.length > 0
+      ? scored.reduce((sum, d) => sum + (d.score as number), 0) / scored.length
+      : 0;
+
+  const best = topStrengths(profile, 1)[0] ?? null;
+  const fa = firstAction(profile);
+  const faMove = fa ? MOVES.find((m) => m.itemKey === fa.key && m.applies(input)) : undefined;
+
+  const unmeasuredCount = profile.dimensions.reduce(
+    (n, d) => n + (d.totalCount - d.scoredCount),
+    0,
+  );
+
+  return {
+    opener: t(`narrative.opener.${pathway ?? "not_sure"}` as const, locale),
+    standing: t(`narrative.standing.${standingFor(mean)}` as const, locale),
+    strengthLead: best
+      ? t("narrative.strength.lead", locale, {
+          area: best.label.replace(/ \(self-declared\)$/, ""),
+        })
+      : null,
+    nextLead: t("narrative.next.lead", locale),
+    next: faMove ? pick(faMove.candidate, locale) : null,
+    unmeasured:
+      unmeasuredCount > 0
+        ? t("narrative.unmeasured", locale, { count: unmeasuredCount })
+        : null,
   };
 }
 

@@ -10,9 +10,9 @@
  * that document and this file in the same commit, or they drift.
  */
 
-import { DIMENSIONS, TIER_WEIGHT, bandFor } from "./model.js";
-import type { DimensionKey, ConfidenceBand, Tier } from "./model.js";
-import type { SurveyResponse, SalaryShape } from "./normalize.js";
+import { DIMENSIONS, TIER_WEIGHT, bandFor } from "./model";
+import type { DimensionKey, ConfidenceBand, Tier } from "./model";
+import type { SurveyResponse, SalaryShape } from "./normalize";
 
 export interface ItemScore {
   key: string;

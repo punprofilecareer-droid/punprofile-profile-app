@@ -8,9 +8,9 @@
  * the literal-translated corporate register that rule exists to prevent.
  */
 
-import { BAND_COPY } from "./model.js";
-import type { ProfileScore, DimensionScore, Highlight } from "./scoring.js";
-import { topStrengths, developmentPriorities, firstAction } from "./scoring.js";
+import { BAND_COPY } from "./model";
+import type { ProfileScore, DimensionScore, Highlight } from "./scoring";
+import { topStrengths, developmentPriorities, firstAction } from "./scoring";
 
 export interface Narrative {
   headline: string;

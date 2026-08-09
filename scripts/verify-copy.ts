@@ -16,8 +16,11 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { COPY } from "../src/lib/content/copy.js";
+import { NARRATIVE_COPY } from "../src/lib/content/narrative-copy.js";
 import { CONSENT_COPY } from "../src/lib/consent-copy.js";
 import { STAGE1 } from "../src/lib/content/questions.js";
+import { MOVES } from "../src/lib/levers.js";
+import { assertCandidateSafe } from "../src/lib/views.js";
 
 let failures = 0;
 const fail = (msg: string) => {
@@ -25,10 +28,17 @@ const fail = (msg: string) => {
   console.error("FAIL " + msg);
 };
 
-const ALL = { ...COPY, ...CONSENT_COPY } as Record<
-  string,
-  { en: string; th: string; screen: string }
->;
+const ALL = {
+  ...COPY,
+  ...NARRATIVE_COPY,
+  ...CONSENT_COPY,
+  ...Object.fromEntries(
+    MOVES.map((m) => [
+      `move.${m.key}`,
+      { screen: `Next-step card for ${m.itemKey}`, en: m.candidate.en, th: m.candidate.th },
+    ]),
+  ),
+} as Record<string, { en: string; th: string; screen: string }>;
 
 // 1. Every key must have English. Without it the fallback has nothing to fall
 // back to and the UI renders empty.
@@ -81,8 +91,29 @@ for (const key of Object.keys(ALL)) {
   if (!sources.includes(`"${key}"`)) {
     // Consent copy is defined ahead of the screen that renders it (TASK-027).
     if (key.startsWith("consent.")) continue;
+    // Move and narrative-band keys are selected at runtime by score, not
+    // referenced literally, so a source scan cannot see them.
+    if (key.startsWith("move.")) continue;
+    if (/^narrative\.(opener|standing)\./.test(key)) continue;
     fail(`${key}: defined but never used`);
   }
+}
+
+// 4b. Every branch the engine can select must exist, or a real candidate hits
+// an undefined key at render.
+for (const p of ["job_first", "study_first", "family", "not_sure"]) {
+  if (!(`narrative.opener.${p}` in ALL)) fail(`no opener for pathway "${p}"`);
+}
+for (const b of ["advantage", "strong", "typical", "developing", "earliest"]) {
+  if (!(`narrative.standing.${b}` in ALL)) fail(`no standing line for band "${b}"`);
+}
+
+// 4c. Candidate-facing copy must not carry internal vocabulary. The same check
+// `views.ts` runs on rendered output, applied to the source strings so a slip
+// is caught when it is written rather than when someone reads it.
+for (const [key, entry] of Object.entries(ALL)) {
+  const leaks = assertCandidateSafe(`${entry.en} ${entry.th}`);
+  if (leaks.length) fail(`${key}: internal vocabulary (${leaks.join(", ")})`);
 }
 for (const used of sources.matchAll(/\bt\(\s*"([a-z][a-zA-Z.]+)"/g)) {
   if (!(used[1] in ALL)) fail(`${used[1]}: used in code but not defined`);
