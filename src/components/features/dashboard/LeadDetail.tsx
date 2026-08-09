@@ -18,6 +18,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { QUESTION_INDEX } from "@/lib/content/questions";
+import LeadBriefing from "./LeadBriefing";
 
 const stamp = (ms: number | null) =>
   ms === null ? null : new Date(ms).toISOString().replace("T", " ").slice(0, 16);
@@ -140,20 +141,9 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
         />
       </Section>
 
-      <Section title="Scores">
-        {Object.keys(lead.scores).length === 0 ? (
-          <p className="text-body text-neutral-500">Nothing scored yet.</p>
-        ) : (
-          Object.entries(lead.scores).map(([k, v]) => (
-            <div key={k} className="flex justify-between border-b border-neutral-300 py-2">
-              <span className="text-body text-slate">{k}</span>
-              <span className="tabular-nums text-body text-ink">
-                {typeof v === "number" ? v.toFixed(1) : "not scored"}
-              </span>
-            </div>
-          ))
-        )}
-      </Section>
+      {/* The briefing replaces the bare score list that used to sit here. Four
+          numbers told you nothing you could open a conversation with. */}
+      <LeadBriefing responses={lead.responses} fullName={lead.fullName} />
 
       <Section title="Answers">
         {/* Raw responses, resolved to the question text where the content model
