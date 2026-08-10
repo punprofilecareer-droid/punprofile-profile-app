@@ -116,6 +116,28 @@ export default defineSchema({
     .index("by_token", ["token"])
     .index("by_lead", ["leadId"]),
 
+  /**
+   * Proof that a deletion happened, holding nothing about who it was.
+   *
+   * A deletion log that stored an email, or even a hash of one, would retain
+   * data about the very person who asked to be forgotten, and a weak hash is
+   * reversible enough to be the same thing. So this records the event and the
+   * counts only. Tying it to a person is the coach's own record-keeping, which
+   * is what `note` is for: "request received on LINE, 10/08/2026".
+   */
+  deletionLog: defineTable({
+    deletedAt: v.number(),
+    /** Which admin performed it. Their own data, not the subject's. */
+    performedBy: v.string(),
+    /** Free-text reference the coach supplies. Never paste the subject's details here. */
+    note: v.optional(v.string()),
+    counts: v.object({
+      leads: v.number(),
+      assessments: v.number(),
+      magicLinks: v.number(),
+    }),
+  }).index("by_time", ["deletedAt"]),
+
   // Point-in-time evidence snapshots, the trajectory layer. A delta between
   // two snapshots is what makes "get their score up" measurable, and the
   // source field carries attribution: an "app" change stays self-reported, a

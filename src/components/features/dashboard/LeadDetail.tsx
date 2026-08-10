@@ -14,7 +14,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { QUESTION_INDEX } from "@/lib/content/questions";
@@ -68,9 +69,25 @@ async function downloadReport(lead: {
   URL.revokeObjectURL(url);
 }
 
+/** Hands a generated file to the browser. Nothing is stored server-side. */
+function download(contents: string, filename: string, mime: string) {
+  const url = URL.createObjectURL(new Blob([contents], { type: mime }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
+  const router = useRouter();
   const lead = useQuery(api.leads.getForAdmin, { leadId });
+  const deleteLead = useMutation(api.leads.deleteLeadOnRequest);
   const [building, setBuilding] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const [deleteNote, setDeleteNote] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   if (lead === undefined) {
     return <p className="text-body text-neutral-500">Loading...</p>;
@@ -106,6 +123,37 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           className="mt-4 h-12 rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
         >
           {building ? "Building..." : "Download report"}
+        </button>
+
+        {/* Subject-access request. Two formats: the HTML is what you send the
+            person, the JSON is the portable copy if they ask for one. */}
+        <button
+          type="button"
+          onClick={async () => {
+            const { renderSubjectExportHtml } = await import("@/lib/subjectExport");
+            download(
+              renderSubjectExportHtml(lead),
+              `punprofile-data-${slug(lead.fullName ?? "record")}.html`,
+              "text/html;charset=utf-8",
+            );
+          }}
+          className="ml-3 mt-4 h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate transition-colors hover:bg-neutral-100"
+        >
+          Export their data (readable)
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            const { buildSubjectExport } = await import("@/lib/subjectExport");
+            download(
+              JSON.stringify(buildSubjectExport(lead), null, 2),
+              `punprofile-data-${slug(lead.fullName ?? "record")}.json`,
+              "application/json",
+            );
+          }}
+          className="ml-3 mt-4 h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate transition-colors hover:bg-neutral-100"
+        >
+          Export (JSON)
         </button>
         {Object.keys(lead.responses).length === 0 && (
           <p className="mt-2 text-caption text-neutral-500">
@@ -144,6 +192,54 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
       {/* The briefing replaces the bare score list that used to sit here. Four
           numbers told you nothing you could open a conversation with. */}
       <LeadBriefing responses={lead.responses} fullName={lead.fullName} />
+
+      <Section title="Delete on request">
+        <p className="text-body text-slate">
+          Erases this person entirely: the lead, their answers, and any saved
+          links. This cannot be undone and there is no backup to restore from.
+          A record that <em>a</em> deletion happened is kept, holding nothing
+          about who it was.
+        </p>
+        <label className="mt-4 block text-label text-slate">
+          Your reference for this request
+          <input
+            value={deleteNote}
+            onChange={(e) => setDeleteNote(e.target.value)}
+            placeholder="e.g. requested on LINE, 10/08/2026"
+            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink"
+          />
+          <span className="mt-1 block text-caption font-normal text-neutral-500">
+            Do not paste their name or contact details here. This row outlives them.
+          </span>
+        </label>
+        <label className="mt-4 block text-label text-slate">
+          Type DELETE to confirm
+          <input
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink"
+          />
+        </label>
+        {deleteError && <p className="mt-3 text-body text-error">{deleteError}</p>}
+        <button
+          type="button"
+          disabled={confirmText !== "DELETE" || deleting}
+          onClick={async () => {
+            setDeleting(true);
+            setDeleteError(null);
+            try {
+              await deleteLead({ leadId, note: deleteNote.trim() || undefined });
+              router.push("/admin");
+            } catch (err) {
+              setDeleteError(err instanceof Error ? err.message : "Deletion failed.");
+              setDeleting(false);
+            }
+          }}
+          className="mt-4 h-12 rounded-md bg-error px-7 text-label text-on-error transition-opacity hover:opacity-90 disabled:bg-neutral-300 disabled:text-neutral-500"
+        >
+          {deleting ? "Deleting..." : "Delete this person permanently"}
+        </button>
+      </Section>
 
       <Section title="Answers">
         {/* Raw responses, resolved to the question text where the content model

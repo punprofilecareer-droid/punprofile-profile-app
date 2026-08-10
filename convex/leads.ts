@@ -1,5 +1,5 @@
 import { mutation, query } from "./_generated/server";
-import type { QueryCtx } from "./_generated/server";
+import type { QueryCtx, MutationCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v, ConvexError } from "convex/values";
 import { computeScores } from "./scoring";
@@ -195,7 +195,7 @@ export const captureContact = mutation({
  * nothing to an attacker looks identical to one returning nothing because
  * there is no data, and that difference matters when reading logs.
  */
-async function requireAdmin(ctx: QueryCtx) {
+async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string> {
   // The email comes from the user record, NOT from the token. Convex Auth mints
   // a JWT carrying only sub, iss, aud, iat and exp, so `identity.email` is
   // always undefined and comparing against it rejects everyone, including the
@@ -208,6 +208,8 @@ async function requireAdmin(ctx: QueryCtx) {
   const admin = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
   const email = String(user?.email ?? "").trim().toLowerCase();
   if (!admin || email !== admin) throw new ConvexError("Not authorised.");
+  // Returned so a write path can record who acted without re-reading the user.
+  return email;
 }
 
 /**
@@ -280,6 +282,11 @@ export const getForAdmin = query({
     if (!lead) return null;
     return {
       _id: lead._id,
+      // Both the split fields and the composed one. `fullName` is what every
+      // screen reads; the split pair is what a subject-access export needs,
+      // since a person asking what is held should see the fields as stored.
+      firstName: lead.firstName ?? null,
+      lastName: lead.lastName ?? null,
       fullName: lead.fullName ?? null,
       email: lead.email ?? null,
       phone: lead.phone ?? null,
@@ -299,6 +306,64 @@ export const getForAdmin = query({
       updatedAt: lead.updatedAt,
       lastActivityAt: lead.lastActivityAt,
     };
+  },
+});
+
+/**
+ * Erase one person, on request.
+ *
+ * There is no candidate login, so a request arrives by LINE, phone or email and
+ * the coach acts on it here. Admin-guarded like every other admin path.
+ *
+ * Cascades deliberately. Deleting the lead alone would leave their answers
+ * behind in `assessments` and a live token in `magicLinks`, which is a deletion
+ * that did not delete. Everything keyed to the lead goes in one transaction, so
+ * a failure halfway cannot leave a half-erased person.
+ *
+ * What survives is a row in `deletionLog` recording that a deletion happened,
+ * how much went, and who did it. It holds nothing about the subject, not even a
+ * hashed address: retaining an identifier for the person who asked to be
+ * forgotten is the thing being avoided, and a weak hash is reversible enough to
+ * count as retaining it.
+ *
+ * The rate limiter keeps a throttling entry keyed on the lead's id. It holds no
+ * personal data, only a counter against an id that no longer resolves to
+ * anything, and it ages out on its own.
+ */
+export const deleteLeadOnRequest = mutation({
+  args: {
+    leadId: v.id("leads"),
+    /** The coach's own reference. Never the subject's details. */
+    note: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const adminEmail = await requireAdmin(ctx);
+
+    const lead = await ctx.db.get(args.leadId);
+    if (!lead) throw new ConvexError("Lead not found.");
+
+    const assessments = await ctx.db
+      .query("assessments")
+      .withIndex("by_lead_time", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    for (const a of assessments) await ctx.db.delete(a._id);
+
+    const links = await ctx.db
+      .query("magicLinks")
+      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    for (const l of links) await ctx.db.delete(l._id);
+
+    await ctx.db.delete(args.leadId);
+
+    await ctx.db.insert("deletionLog", {
+      deletedAt: Date.now(),
+      performedBy: adminEmail,
+      note: args.note,
+      counts: { leads: 1, assessments: assessments.length, magicLinks: links.length },
+    });
+
+    return { assessments: assessments.length, magicLinks: links.length };
   },
 });
 
