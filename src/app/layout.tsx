@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { Fraunces, Inter, Noto_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
 import "./globals.css";
@@ -72,8 +73,11 @@ export default async function RootLayout({
             <ConvexClientProvider>
               <main className="flex flex-1 flex-col">{children}</main>
             </ConvexClientProvider>
-            <footer className="border-t border-neutral-300 bg-surface px-6 py-12 text-caption text-slate">
-              {t("footer.brand", locale)}
+            <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-300 bg-surface px-6 py-12 text-caption text-slate">
+              <span>{t("footer.brand", locale)}</span>
+              <Link href="/privacy" className="text-primary underline">
+                {t("consent.privacyLink", locale)}
+              </Link>
             </footer>
           </LocaleProvider>
         </body>

@@ -18,6 +18,7 @@ import { join } from "node:path";
 import { COPY } from "../src/lib/content/copy.js";
 import { NARRATIVE_COPY } from "../src/lib/content/narrative-copy.js";
 import { CONSENT_COPY } from "../src/lib/consent-copy.js";
+import { PRIVACY_INTRO, PRIVACY_SECTIONS } from "../src/lib/content/privacy.js";
 import { STAGE1 } from "../src/lib/content/questions.js";
 import { MOVES } from "../src/lib/levers.js";
 import { DIMENSIONS } from "../src/lib/model.js";
@@ -152,6 +153,39 @@ for (const d of DIMENSIONS) {
       if (first) fail(`${key}.${lang} is identical to ${first}.${lang}`);
       else seen.set(text, key);
     }
+  }
+}
+
+// 4d. The privacy notice, held to the same rules as everything else. It is
+// long-form prose in its own module rather than keyed strings, so none of the
+// checks above reach it, and it is the one candidate-facing surface where an
+// untranslated paragraph reads as evasion rather than as a to-do.
+{
+  const paras = [
+    { where: "intro", copy: PRIVACY_INTRO },
+    ...PRIVACY_SECTIONS.flatMap((sec, i) => [
+      { where: `section ${i + 1} heading`, copy: sec.heading },
+      ...sec.body.map((b, j) => ({ where: `section ${i + 1} para ${j + 1}`, copy: b })),
+    ]),
+  ];
+  for (const { where, copy } of paras) {
+    if (!copy.en.trim()) fail(`privacy ${where}: no English`);
+    if (!copy.th.trim()) fail(`privacy ${where}: no Thai`);
+    for (const lang of ["en", "th"] as const) {
+      if (copy[lang].includes("—")) fail(`privacy ${where}.${lang}: em dash`);
+    }
+    // A list marker that survives in one language and not the other renders as
+    // a bullet in Thai and a sentence in English, or the reverse.
+    if (copy.en.startsWith("- ") !== copy.th.startsWith("- ")) {
+      fail(`privacy ${where}: list marker present in one language only`);
+    }
+  }
+  // Unresolved placeholders are allowed, but they must be visible in the run
+  // rather than discovered by a candidate.
+  const todos = paras.filter((p) => /TODO/.test(p.copy.en) || /TODO/.test(p.copy.th));
+  if (todos.length) {
+    console.log(`\nPrivacy notice has ${todos.length} unresolved placeholder(s):`);
+    for (const t of todos) console.log(`  ${t.where}`);
   }
 }
 

@@ -24,6 +24,7 @@
  * stays translatable.
  */
 
+import Link from "next/link";
 import { useState } from "react";
 import { useCopy } from "@/components/LocaleProvider";
 import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
@@ -114,7 +115,10 @@ export default function ContactGate({
       )}
 
       <p className="mt-6 text-caption text-neutral-500">
-        {pick(CONSENT_COPY["consent.purpose"])}
+        {pick(CONSENT_COPY["consent.purpose"])}{" "}
+        <Link href="/privacy" className="text-primary underline">
+          {pick(CONSENT_COPY["consent.privacyLink"])}
+        </Link>
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">

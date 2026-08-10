@@ -41,8 +41,19 @@ export const CONSENT_COPY = {
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
-    en: "PunProfile uses your required email address to send your assessment result. To request career-coaching follow-up, provide a phone number or LINE ID and select the corresponding optional consent. We retain your information for 12 months and do not share it with third parties. You may withdraw your phone or LINE consent at any time through [contact method TODO]. See our [Privacy Notice TODO] for details.",
-    th: "PunProfile ใช้อีเมลที่จำเป็นต้องระบุเพื่อส่งผลการประเมินให้คุณ หากต้องการให้ติดต่อกลับเกี่ยวกับบริการแนะแนวอาชีพ โปรดระบุหมายเลขโทรศัพท์หรือ LINE ID และเลือกให้ความยินยอมสำหรับช่องทางนั้น เราจะเก็บข้อมูลไว้เป็นเวลา 12 เดือนและไม่เปิดเผยต่อบุคคลที่สาม คุณสามารถถอนความยินยอมสำหรับการติดต่อทางโทรศัพท์หรือ LINE ได้ทุกเมื่อผ่าน [ช่องทางติดต่อ TODO] ดูรายละเอียดเพิ่มเติมใน [ประกาศความเป็นส่วนตัว TODO]",
+    en: "PunProfile uses your required email address to send your assessment result. To request career-coaching follow-up, provide a phone number or LINE ID and select the corresponding optional consent. We retain your information for 12 months and do not share it with third parties. You may withdraw your phone or LINE consent at any time through [contact method TODO].",
+    th: "PunProfile ใช้อีเมลที่จำเป็นต้องระบุเพื่อส่งผลการประเมินให้คุณ หากต้องการให้ติดต่อกลับเกี่ยวกับบริการแนะแนวอาชีพ โปรดระบุหมายเลขโทรศัพท์หรือ LINE ID และเลือกให้ความยินยอมสำหรับช่องทางนั้น เราจะเก็บข้อมูลไว้เป็นเวลา 12 เดือนและไม่เปิดเผยต่อบุคคลที่สาม คุณสามารถถอนความยินยอมสำหรับการติดต่อทางโทรศัพท์หรือ LINE ได้ทุกเมื่อผ่าน [ช่องทางติดต่อ TODO]",
+  },
+  /**
+   * Rendered as a link to `/privacy`, which is why it is its own key: an
+   * anchor buried inside `consent.purpose` would mean splitting a translated
+   * sentence on a substring, and that breaks the moment the Thai word order
+   * differs from the English.
+   */
+  "consent.privacyLink": {
+    screen: "Contact gate, under the purpose paragraph",
+    en: "Read our Privacy Notice",
+    th: "อ่านประกาศความเป็นส่วนตัว",
   },
 } as const satisfies Record<string, CopyEntry>;
 
