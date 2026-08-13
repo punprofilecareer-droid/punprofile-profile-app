@@ -115,6 +115,7 @@ export const DIMENSIONS: DimensionDef[] = [
     items: [
       { key: "businessEnglish", label: "Business English", tier: "ecra", sources: ["Q16"] },
       { key: "targetClarity", label: "Target Clarity", tier: "proxy", sources: ["Q8"], actionRank: 1, actionWhy: "Every step after it — which visa route applies, which language matters, which employers to approach — is specific to a country and a role. Without those two fixed, the rest is guesswork." },
+      { key: "countryReach", label: "Country Reach", tier: "proxy", sources: ["Q7", "Q16"], actionRank: 1.5, actionWhy: "Naming a country you cannot legally or linguistically work in is not direction. Which of your targets are actually open to you decides the visa route, the language, and every employer worth approaching." },
       { key: "salaryStated", label: "Salary Expectation Stated", tier: "proxy", sources: ["Q35"] },
       { key: "crossCultural", label: "Cross-cultural Communication", tier: "coach", sources: [], note: "Needs observed adjustment to a different cultural context." },
       { key: "independence", label: "Independence", tier: "coach", sources: [], note: "Needs observed autonomous decision-making." },
@@ -131,6 +132,32 @@ export const DIMENSIONS: DimensionDef[] = [
 
 /** An ECRA-tier item counts fully toward coverage; a proxy counts half. */
 export const TIER_WEIGHT: Record<Tier, number> = { ecra: 1, proxy: 0.5, coach: 0 };
+
+/**
+ * The gate bars from `10_Methodology.md` § 3, in dependency order.
+ *
+ * Mobility first, because a candidate with no route is optimising a CV for a job
+ * they cannot legally take. Order matters more than the numbers: `firstAction`
+ * walks this array and stops at the first uncleared gate.
+ *
+ * Financial Readiness is a fifth gate in that document and is deliberately absent
+ * here. Its ECRA competency has no survey input at all, so a bar would be checked
+ * against a permanently null score. Flagged, not invented.
+ */
+export const GATES: { key: DimensionKey; bar: number }[] = [
+  { key: "mobilityReadiness", bar: 4.0 },
+  { key: "employability", bar: 4.0 },
+  { key: "europeanMarketFit", bar: 3.5 },
+  { key: "professionalCapability", bar: 3.0 },
+];
+
+/**
+ * Direction is Stage 0 and precedes every gate, but its evidence is scored inside
+ * European Market Fit, which gates fourth. That mismatch made the funnel picker
+ * and the gate order disagree on a real candidate, so Direction is an explicit
+ * precondition rather than a gate. See `09_Decision_Log.md` 2026-08-13.
+ */
+export const DIRECTION_ITEMS = ["targetClarity", "countryReach"] as const;
 
 export type ConfidenceBand = "moderate" | "limited" | "indicative";
 

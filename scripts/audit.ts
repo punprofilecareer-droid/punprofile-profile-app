@@ -10,6 +10,7 @@ import { readFileSync } from "node:fs";
 import { mapColumns, importRow, COLUMN_MATCHERS } from "./import-sheet.js";
 import type { ColumnKey } from "./import-sheet.js";
 import { scoreResponse } from "../src/lib/scoring.js";
+import { COUNTRY_ENGLISH } from "../src/lib/country-english.js";
 
 const raw = JSON.parse(readFileSync(process.argv[2], "utf8")) as { header: string[]; rows: string[][] };
 const cols = mapColumns(raw.header);
@@ -151,6 +152,66 @@ console.log("\n=== target clarity independence (13/08/2026 decision) ===");
     console.log("  VIOLATION: scoreTargetClarity still references targetCountries.");
   } else {
     console.log("  holds: scoreTargetClarity does not reference targetCountries");
+  }
+}
+
+/**
+ * Country Reach must reward breadth a candidate can actually use, and must not
+ * collapse into a third copy of the English score.
+ *
+ * Both properties were broken in the first draft and found by running the real
+ * leads, so they are asserted rather than trusted.
+ */
+console.log("\n=== country reach (13/08/2026 decision) ===");
+{
+  const reachFor = (targetCountries: string[], englishCefr: string) => {
+    const p = scoreResponse({ targetCountries, englishCefr } as Parameters<typeof scoreResponse>[0]);
+    return p.dimensions.find((d) => d.key === "europeanMarketFit")
+      ?.items.find((i) => i.key === "countryReach")?.score ?? null;
+  };
+
+  // Four reachable countries must score ABOVE one. This is the whole decision.
+  const four = reachFor(["Netherlands", "Denmark", "Sweden", "Norway"], "C1");
+  const one = reachFor(["Netherlands"], "C1");
+  if (four !== null && one !== null && four >= one) {
+    console.log(`  holds: four reachable countries ${four} >= one country ${one}`);
+  } else {
+    violations++;
+    console.log(`  VIOLATION: four reachable countries ${four} scored below one country ${one}`);
+  }
+
+  // A scattergun must score low without any count rule in the code.
+  const scatter = reachFor(
+    ["Germany", "Netherlands", "France", "Denmark", "Sweden", "Norway", "Finland",
+     "Ireland", "Belgium", "Austria", "Switzerland", "Spain", "Italy", "Portugal",
+     "Poland", "Czech Republic"], "B1");
+  if (scatter !== null && scatter <= 2) {
+    console.log(`  holds: sixteen countries at B1 scores ${scatter}`);
+  } else {
+    violations++;
+    console.log(`  VIOLATION: scattergun scored ${scatter}, expected 2 or less`);
+  }
+
+  // Reach must separate candidates who share an English level, or it is just
+  // measuring English, which two other items already do.
+  const nl = reachFor(["Netherlands"], "B1");
+  const fr = reachFor(["France"], "B1");
+  if (nl !== null && fr !== null && nl > fr) {
+    console.log(`  holds: at B1, Netherlands ${nl} > France ${fr}`);
+  } else {
+    violations++;
+    console.log(`  VIOLATION: at B1, Netherlands ${nl} did not beat France ${fr}. Country Reach is measuring English, not reach.`);
+  }
+
+  // Every country the data actually contains needs a band, including the ones
+  // the app's own list omits. The UK was the third most-named in the backfill.
+  const missing = ["United Kingdom", "Iceland", "Luxembourg", "Greece"]
+    .filter((c) => COUNTRY_ENGLISH[c] === undefined);
+  if (missing.length) {
+    violations++;
+    console.log(`  VIOLATION: no English band for ${missing.join(", ")}`);
+  } else {
+    console.log("  holds: every backfill country has a band");
   }
 }
 

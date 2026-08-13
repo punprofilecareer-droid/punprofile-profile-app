@@ -6,11 +6,14 @@
  * client calls the same function for the optimistic teaser render; the offline
  * report renderer calls it too. One implementation, three callers.
  *
- * Every lookup table here is specified in `docs/self-report-scoring.md`. Change
- * that document and this file in the same commit, or they drift.
+ * Every lookup table here is specified in `self-report-scoring.md`, which lives in
+ * the COACHING repo at `punprofile-context/ctxt-product/`, not in this repo's
+ * `docs/`, which is empty. Change that document and this file in the same commit,
+ * or they drift.
  */
 
-import { DIMENSIONS, TIER_WEIGHT, bandFor } from "./model";
+import { DIMENSIONS, TIER_WEIGHT, bandFor, GATES, DIRECTION_ITEMS } from "./model";
+import { countryWeight } from "./country-english";
 import type { DimensionKey, ConfidenceBand, Tier } from "./model";
 import type { SurveyResponse, SalaryShape } from "./normalize";
 
@@ -205,6 +208,33 @@ function scoreTargetClarity(r: SurveyResponse): number | null {
   return hasRole ? 3 : 1;
 }
 
+/**
+ * Country Reach: the fraction of the candidate's named countries they can
+ * realistically work in, `reachable / selected`.
+ *
+ * Decided 13/08/2026 (`09_Decision_Log.md`): country count is reach, not clarity.
+ * **Four countries a candidate can genuinely reach score ABOVE one country**,
+ * because a set held together by a language they hold is capability, not
+ * vagueness. A scattergun still scores low with no count rule anywhere: B1
+ * English across twelve countries produces a low ratio on its own, which is also
+ * how the live form's real answer "สนใจทุกประเทศ" resolves correctly.
+ *
+ * English only, for now. `otherLanguageCefr` stores the highest level in ANY
+ * European language without saying which, so it cannot be matched to a country.
+ * See `REACH_IS_ENGLISH_ONLY` in `country-english.ts`.
+ */
+function scoreCountryReach(r: SurveyResponse): number | null {
+  const countries = (r.targetCountries ?? []).filter((c) => c && c !== "not_sure");
+  if (!countries.length) return 1;
+  const total = countries.reduce((sum, c) => sum + countryWeight(c, r.englishCefr ?? null), 0);
+  const ratio = total / countries.length;
+  if (ratio >= 1) return 5;
+  if (ratio >= 0.6) return 4;
+  if (ratio >= 0.4) return 3;
+  if (ratio >= 0.2) return 2;
+  return 1;
+}
+
 function scoreSalaryStated(s: SalaryShape | null | undefined): number | null {
   if (!s) return null;
   if (!s.hasFigure) return 1;
@@ -233,6 +263,7 @@ const SCORERS: Record<string, (r: ScoringInput) => number | null> = {
   relocationTimeline: scoreRelocationTimeline,
   businessEnglish: scoreBusinessEnglish,
   targetClarity: scoreTargetClarity,
+  countryReach: scoreCountryReach,
   salaryStated: (r) => scoreSalaryStated(r.salary),
 };
 
@@ -345,6 +376,39 @@ export function firstAction(profile: ProfileScore): Highlight | null {
     .filter((h) => h.actionRank !== undefined)
     .sort((a, b) => (a.actionRank as number) - (b.actionRank as number));
   if (!actionable.length) return null;
+
+  // Step 1. Direction is a precondition, not a gate. Settled 13/08/2026: this
+  // funnel order and `10_Methodology.md`'s gate order picked different actions
+  // for the same candidate, one choosing the CV while the other chose the visa
+  // route, and the app has one slot. The root cause was structural rather than a
+  // tie: Direction is Stage 0 and precedes every gate, but its evidence sits
+  // inside European Market Fit, which gates fourth. So it is checked first and
+  // explicitly.
+  const direction = actionable
+    .filter((h) => (DIRECTION_ITEMS as readonly string[]).includes(h.key))
+    .filter((h) => h.score <= 2)
+    .sort((a, b) => a.score - b.score || (a.actionRank as number) - (b.actionRank as number));
+  if (direction.length) return direction[0];
+
+  // Step 2. The lowest uncleared gate, in dependency order, sets the stage.
+  // Step 3. Funnel order picks the item inside it. A gate with no actionable item
+  // is skipped rather than ending the search: its items are coach-tier or life
+  // circumstances, which are never offered as "the first thing to move".
+  for (const gate of GATES) {
+    const dim = profile.dimensions.find((d) => d.key === gate.key);
+    if (!dim || dim.score === null || dim.score >= gate.bar) continue;
+    const keys = new Set(dim.items.map((i) => i.key));
+    const inGate = actionable.filter((h) => keys.has(h.key));
+    if (!inGate.length) continue;
+    return (
+      inGate.find((h) => h.score <= 2) ??
+      inGate.find((h) => h.score <= 3) ??
+      [...inGate].sort((a, b) => a.score - b.score)[0]
+    );
+  }
+
+  // Every gate cleared, or no gate had anything actionable. Fall back to the
+  // funnel across the whole profile, which is what this function did before.
   return (
     actionable.find((h) => h.score <= 2) ??
     actionable.find((h) => h.score <= 3) ??
