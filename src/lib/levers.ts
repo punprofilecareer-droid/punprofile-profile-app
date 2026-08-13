@@ -74,13 +74,19 @@ export const MOVES: Move[] = [
     module: "Career Coaching",
     horizon: "days",
     ai: true,
-    coach: "Narrow to one target country and one target role. AI-assisted country/role research prompts make this a session, not a month.",
-    candidate: { en: "Pick one country and one role to aim at first. Everything after this step gets easier once it is specific.", th: "เลือกหนึ่งประเทศและหนึ่งตำแหน่งงานเป็นเป้าหมายแรก เมื่อเป้าหมายชัด ทุกขั้นตอนหลังจากนี้จะง่ายขึ้น" },
-    applies: (r) => !((r.targetCountries?.length ?? 0) === 1 && !!r.targetRole?.trim()),
+    // Revised 13/08/2026 with the Target Clarity split. This used to fire
+    // whenever a candidate had named more than one country, and its `apply`
+    // truncated their list to the first entry — advice that reads narrowing as
+    // progress. Under `10_Methodology.md` Stage 0 as revised, a reachable set
+    // of several countries is capability, not vagueness, so the move is now
+    // about the ROLE only. Sequencing advice, start with one country, belongs
+    // in the narrative, not in a lever that re-scores them for breadth.
+    coach: "Fix the target role. AI-assisted role research makes this a session, not a month.",
+    candidate: { en: "Name the one role you are aiming at. Everything after this step gets easier once it is specific.", th: "ระบุตำแหน่งงานที่คุณตั้งเป้าให้ชัดเจนก่อน เมื่อเป้าหมายชัด ทุกขั้นตอนหลังจากนี้จะง่ายขึ้น" },
+    applies: (r) => !r.targetRole?.trim() || r.targetRole.trim() === "not_sure",
     apply: (r) => ({
       ...r,
-      targetCountries: [(r.targetCountries ?? [])[0] ?? "Chosen country"],
-      targetRole: r.targetRole?.trim() || "Chosen role",
+      targetRole: r.targetRole?.trim() && r.targetRole.trim() !== "not_sure" ? r.targetRole.trim() : "Chosen role",
     }),
   },
   {

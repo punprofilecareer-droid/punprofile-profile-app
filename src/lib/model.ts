@@ -114,7 +114,7 @@ export const DIMENSIONS: DimensionDef[] = [
     question: "How competitive is this person in the European labour market?",
     items: [
       { key: "businessEnglish", label: "Business English", tier: "ecra", sources: ["Q16"] },
-      { key: "targetClarity", label: "Target Clarity", tier: "proxy", sources: ["Q7", "Q8"], actionRank: 1, actionWhy: "Every step after it — which visa route applies, which language matters, which employers to approach — is specific to a country and a role. Without those two fixed, the rest is guesswork." },
+      { key: "targetClarity", label: "Target Clarity", tier: "proxy", sources: ["Q8"], actionRank: 1, actionWhy: "Every step after it — which visa route applies, which language matters, which employers to approach — is specific to a country and a role. Without those two fixed, the rest is guesswork." },
       { key: "salaryStated", label: "Salary Expectation Stated", tier: "proxy", sources: ["Q35"] },
       { key: "crossCultural", label: "Cross-cultural Communication", tier: "coach", sources: [], note: "Needs observed adjustment to a different cultural context." },
       { key: "independence", label: "Independence", tier: "coach", sources: [], note: "Needs observed autonomous decision-making." },

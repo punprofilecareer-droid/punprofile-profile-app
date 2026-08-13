@@ -102,3 +102,56 @@ for (const row of raw.rows) {
   }
 }
 console.log(violations === 0 ? `  all invariants hold across ${raw.rows.length} rows` : `  ${violations} violations`);
+
+/**
+ * Target Clarity must be independent of how many countries a candidate names.
+ *
+ * Decided 13/08/2026 (`09_Decision_Log.md`): country count is reach, not
+ * clarity. A rule that survives in an if-statement long after the document says
+ * it is gone is worse than one nobody agreed to, so this asserts the property
+ * behaviourally rather than trusting the code to have been changed. Renaming a
+ * variable does not get past it: it holds the role constant, varies only the
+ * country list, and requires the score not to move.
+ *
+ * The source scan underneath catches a dormant branch that today's inputs
+ * happen not to reach.
+ */
+console.log("\n=== target clarity independence (13/08/2026 decision) ===");
+{
+  const roleHeld = { targetRole: "Marketing Manager" } as Parameters<typeof scoreResponse>[0];
+  const sets: string[][] = [
+    ["Netherlands"],
+    ["Netherlands", "Germany"],
+    ["Germany", "Austria", "Switzerland"],
+    ["Netherlands", "Germany", "France", "Denmark"],
+    ["Germany", "Netherlands", "France", "Denmark", "Sweden", "Norway", "Finland",
+     "Ireland", "Belgium", "Austria", "Switzerland", "Spain", "Italy", "Portugal",
+     "Poland", "Czech Republic"],
+  ];
+  const scoreFor = (countries: string[]) => {
+    const p = scoreResponse({ ...roleHeld, targetCountries: countries });
+    const emf = p.dimensions.find((d) => d.key === "europeanMarketFit");
+    return emf?.items.find((i) => i.key === "targetClarity")?.score ?? null;
+  };
+  const observed = sets.map(scoreFor);
+  const distinct = [...new Set(observed.map((v) => String(v)))];
+  if (distinct.length === 1) {
+    console.log(`  holds: every country set scores ${distinct[0]} with the role held constant`);
+  } else {
+    violations++;
+    console.log(`  VIOLATION: Target Clarity moved with country count -> ${observed.join(", ")}`);
+    console.log("  Country count is reach, not clarity. Score reach in Country Reach (TASK-073).");
+  }
+
+  const src = readFileSync(new URL("../src/lib/scoring.ts", import.meta.url), "utf8");
+  const fn = src.slice(src.indexOf("function scoreTargetClarity"));
+  const body = fn.slice(0, fn.indexOf("\n}") + 2);
+  if (/targetCountries|countries\s*\.\s*length/.test(body)) {
+    violations++;
+    console.log("  VIOLATION: scoreTargetClarity still references targetCountries.");
+  } else {
+    console.log("  holds: scoreTargetClarity does not reference targetCountries");
+  }
+}
+
+if (violations > 0) process.exitCode = 1;

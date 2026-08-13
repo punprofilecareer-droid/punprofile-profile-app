@@ -178,19 +178,31 @@ function scoreRelocationTimeline(r: SurveyResponse): number | null {
   return clamp(base);
 }
 
+/**
+ * Target Clarity scores the ROLE only.
+ *
+ * Decided 13/08/2026 (`09_Decision_Log.md`): country count is reach, not
+ * clarity, and it moved out of this item entirely. Counting countries could
+ * never tell a language market from a scattergun, because it never asked what
+ * the candidate holds — someone with German at B2 naming Germany, Austria and
+ * Switzerland has named one language market spanning three states, and the old
+ * rule penalised them against someone who ticked one country at random. The
+ * 08/08/2026 taper was a patch on that same premise and is gone with it, which
+ * also removes the model's only half-point.
+ *
+ * **This function must never read `targetCountries`.** Reach is scored by
+ * Country Reach (TASK-073), owned by `08_Coaching_Business.md` → Country Fit.
+ * `scripts/audit.ts` asserts the independence behaviourally, so reintroducing a
+ * country branch here fails the audit rather than surviving quietly.
+ *
+ * The 4 and 2 bands need a CV and are unreachable until the Document tier lands
+ * (TASK-066): a role the document supports scores above a role merely named,
+ * and a role the document contradicts scores below it. Until then every named
+ * role sits at 3, which is the honest ceiling for an unevidenced self-report.
+ */
 function scoreTargetClarity(r: SurveyResponse): number | null {
-  const countries = r.targetCountries ?? [];
-  const hasRole = !!(r.targetRole && r.targetRole.trim().length > 2);
-  const hasCountry = countries.length > 0;
-  if (!hasRole && !hasCountry) return 1;
-  if (!hasRole || !hasCountry) return 2;
-  // Taper, decided 08/08/2026 when the country question became multi-select.
-  // Focus still outranks breadth, because every downstream step — visa route,
-  // language, market knowledge — is country-specific. But a two-or-three
-  // shortlist is a real search strategy, not a scattergun, and the old
-  // one-versus-several rule collapsed almost every multi-select answer onto 3.
-  if (countries.length === 1) return 4;
-  return countries.length <= 3 ? 3.5 : 3;
+  const hasRole = !!(r.targetRole && r.targetRole.trim().length > 2 && r.targetRole.trim() !== "not_sure");
+  return hasRole ? 3 : 1;
 }
 
 function scoreSalaryStated(s: SalaryShape | null | undefined): number | null {
