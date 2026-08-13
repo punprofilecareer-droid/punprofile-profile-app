@@ -397,6 +397,15 @@ export const COPY = {
     en: "Target Clarity",
     th: "ความชัดเจนของเป้าหมาย",
   },
+  "item.countryReach": {
+    screen: "Named when this is the candidate's strongest or weakest area",
+    en: "Country Reach",
+    // Draft, 13/08/2026, for Paul to correct. "Countries you can actually work
+    // in", rather than a literal rendering of "reach", which has no natural Thai
+    // noun here. Deliberately says ทำงาน rather than ไป: the item is about being
+    // employable there, not about being able to travel there.
+    th: "ประเทศเป้าหมายที่ทำงานได้จริง",
+  },
   "item.salaryStated": {
     screen: "Named when this is the candidate's strongest area",
     en: "Salary Expectation Stated",

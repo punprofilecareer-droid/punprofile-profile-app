@@ -67,6 +67,10 @@ export const ROLE_CATEGORIES = [
 const COUNTRIES = [
   "Germany",
   "Netherlands",
+  // Added 13/08/2026. Absent by omission rather than by decision: it was the
+  // third most-named country across the 90 imported survey leads, `07_Reference.md`
+  // already carries its visa rules, and Country Fit already tiers it as harder.
+  "United Kingdom",
   "France",
   "Denmark",
   "Sweden",
