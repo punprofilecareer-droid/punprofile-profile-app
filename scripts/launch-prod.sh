@@ -107,14 +107,12 @@ npx vercel link            # team slug is pun-profile, project punprofile-profil
 open "https://vercel.com/pun-profile/punprofile-profile-app/settings/environment-variables"
 npx vercel env add CONVEX_DEPLOY_KEY production      # paste the key from step 4
 
-# Also verified 14/08/2026: Build Command has NO override, so Vercel runs the
-# Next.js framework default. The `vercel-build` script in package.json is
-# documented to take precedence over it, but the whole deploy rests on that
-# behaviour and a wrong bet ships a frontend with no backend behind it. Set the
-# override explicitly instead, in the same dashboard:
-#   Settings -> Build and Deployment -> Build Command -> Override ->
-#   npx convex deploy --cmd 'npm run build'
-open "https://vercel.com/pun-profile/punprofile-profile-app/settings/build-and-deployment"
+# The Build Command override is ALREADY SET, done 14/08/2026 and verified in
+# the dashboard: `npx convex deploy --cmd 'npm run build'`. Nothing to do here.
+# The `vercel-build` script was removed from package.json in the same change,
+# so there is exactly one definition of the build and no question about which
+# of the two Vercel would have picked. Convex deploys before Next builds, so a
+# schema change can never land ahead of the frontend that needs it.
 
 # The new-lead notification. RESEND_API_KEY is a CONVEX env var, not a Vercel
 # one, because the action runs in Convex. Sign up at resend.com with
