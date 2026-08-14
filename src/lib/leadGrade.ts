@@ -128,15 +128,42 @@ export function toGradeInput(responses: Record<string, unknown>): ScoringInput {
   const EXPERIENCE = new Set(["0-1", "2-10", "11-15", "16+"]);
   const INVESTMENT = new Set(["none", "unrelated", "relevant", "unclassified"]);
 
+  /**
+   * Two shapes reach this field and both have to collapse to the same three
+   * states the score understands.
+   *
+   * The 90 imported survey rows hold a single string from the old vocabulary.
+   * App rows since 14/08/2026 hold an array of the areas the candidate paid
+   * for, because Paul wanted to know what they bought rather than only whether
+   * they bought. The score deliberately does not read the areas: the framework
+   * asks about prior spend and not its aim, so any paid area is `unrelated`,
+   * which is the band that already means "paid for something, relevance not
+   * established". `never` is the exclusive no, and it maps to `none`.
+   *
+   * An empty array is not a no. It means the question was reached and left,
+   * which is unmeasured, and the whole product rests on not confusing the two.
+   */
+  const readInvestment = (): ScoringInput["priorInvestment"] => {
+    if (typeof investment === "string") {
+      return INVESTMENT.has(investment)
+        ? (investment as ScoringInput["priorInvestment"])
+        : null;
+    }
+    if (Array.isArray(investment)) {
+      const picked = investment.filter((v): v is string => typeof v === "string");
+      if (!picked.length) return null;
+      if (picked.includes("never")) return "none";
+      return "unrelated";
+    }
+    return null;
+  };
+
   return {
     experienceYears:
       typeof experience === "string" && EXPERIENCE.has(experience)
         ? (experience as ScoringInput["experienceYears"])
         : null,
-    priorInvestment:
-      typeof investment === "string" && INVESTMENT.has(investment)
-        ? (investment as ScoringInput["priorInvestment"])
-        : null,
+    priorInvestment: readInvestment(),
   };
 }
 

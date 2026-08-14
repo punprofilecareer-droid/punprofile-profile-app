@@ -45,7 +45,11 @@ export interface Question {
  * answer in a many-select question. "Germany, Netherlands, not sure yet" is not
  * a coherent answer.
  */
-export const EXCLUSIVE_VALUES = new Set(["not_sure"]);
+// `never` joins `not_sure` on 14/08/2026, for the investment question: "I have
+// not paid for any of these" cannot coexist with an item from the same list.
+// A distinct value rather than reusing `none`, which several single-select
+// questions already use for something that is not exclusive of anything.
+export const EXCLUSIVE_VALUES = new Set(["not_sure", "never"]);
 
 /**
  * Role categories come from the Job Title Pool in `08_Coaching_Business.md`,
@@ -278,23 +282,44 @@ export const STAGE1: Question[] = [
     // budget question, and it reads as a normal closing question rather than
     // a price probe when it comes after everything else.
     //
-    // The survey's free-text answer collapsed to `unclassified`; three closed
-    // options cannot produce that, so the grade never has to guess. The 0 band
-    // ("named money as a blocker") still cannot be reached from the app, since
-    // it comes from free text nothing here collects.
+    // **Multi-select since later the same day, on Paul's call: he wanted to
+    // know WHAT they paid for, not just whether they had.** Asking the areas
+    // directly answers both, so this stayed one question rather than becoming
+    // a yes/no plus a follow-up. That matters more than it looks: the app has
+    // no conditional question display, so a follow-up would have shown to
+    // everyone including the people who just said no.
+    //
+    // The score does not change with the areas, and should not. The framework
+    // asks about prior spend and not its aim: "having paid for anything before
+    // is the signal". The areas are for the coach's call preparation, and
+    // `toGradeInput` collapses them back to paid or not paid.
+    //
+    // The 0 band ("named money as a blocker") still cannot be reached from the
+    // app, since it comes from free text nothing here collects.
     key: "priorInvestment",
     stage: 1,
-    select: "one",
-    en: "Have you paid for a course, certification or coaching for your career before?",
-    th: "ที่ผ่านมาเคยลงทุนกับคอร์สเรียน ใบรับรอง หรือโค้ชด้านอาชีพมาก่อนไหม",
+    select: "many",
+    en: "Have you ever paid for any of these? Choose all that apply.",
+    th: "ที่ผ่านมาคุณเคยจ่ายเงินเรียนหรือพัฒนาตัวเองด้านไหนบ้าง เลือกได้มากกว่า 1 ข้อ",
     options: [
-      { value: "none", en: "Not yet", th: "ยังไม่เคย" },
+      { value: "language", en: "Learning a language", th: "เรียนภาษา" },
       {
-        value: "relevant",
-        en: "Yes, for the field I'm aiming at",
-        th: "เคย และเกี่ยวกับสายงานที่อยากไปทำ",
+        value: "soft_skills",
+        en: "Soft skills, for example communication or leadership",
+        th: "ทักษะการทำงาน เช่น การสื่อสาร ภาวะผู้นำ",
       },
-      { value: "unrelated", en: "Yes, but in a different field", th: "เคย แต่คนละสายงาน" },
+      {
+        value: "technical",
+        en: "A technical skill or a programming language",
+        th: "ทักษะเฉพาะทาง หรือเขียนโปรแกรม",
+      },
+      {
+        value: "certification",
+        en: "A professional certification or qualification",
+        th: "ใบรับรองหรือคุณวุฒิวิชาชีพ",
+      },
+      { value: "career_coach", en: "A career coach", th: "โค้ชด้านอาชีพ" },
+      { value: "never", en: "None of these yet", th: "ยังไม่เคย" },
     ],
   },
 ];
