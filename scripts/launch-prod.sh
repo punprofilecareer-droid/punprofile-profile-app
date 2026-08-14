@@ -42,6 +42,23 @@ npx convex deploy
 
 
 # ---------------------------------------------------------------------------
+# 2b. Commit the regenerated Convex types, then run the invariant checks
+# ---------------------------------------------------------------------------
+# `convex/notify.ts` is new, so `convex/_generated/api.d.ts` has to be
+# regenerated before anything typechecks. That file IS tracked in git, and the
+# Cowork bridge has no network so it could not be regenerated there. Step 2
+# above already did it as part of the deploy.
+npx tsc --noEmit                       # expect silence
+npx tsx scripts/verify-content.ts      # expect "content model OK: ..."
+npx tsx scripts/verify-copy.ts         # reports missing Thai, does not fail
+
+git -c user.name=agentsiam -c user.email=hi@agentsiam.com \
+  add convex/_generated
+git -c user.name=agentsiam -c user.email=hi@agentsiam.com \
+  commit -m "Regenerate Convex types for the new-lead notification" || true
+
+
+# ---------------------------------------------------------------------------
 # 3. Generate the auth keys and set the admin address on production
 # ---------------------------------------------------------------------------
 # Fresh RS256 keypair for prod, plus ADMIN_EMAIL and SITE_URL. Dev keys are
@@ -76,6 +93,14 @@ npx convex dashboard
 npx vercel link            # pick team PunProfile, project punprofile-profile-app
 npx vercel env rm NEXT_PUBLIC_CONVEX_URL production
 npx vercel env add CONVEX_DEPLOY_KEY production      # paste the key from step 4
+
+# The new-lead notification. RESEND_API_KEY is a CONVEX env var, not a Vercel
+# one, because the action runs in Convex. Sign up at resend.com with
+# paul.bussabong@gmail.com, take the default API key, and no domain needs
+# verifying: the mail carries no candidate details and only ever goes to the
+# account owner's own address, so Resend's shared sender is enough.
+# Skip this and there is simply no notification, no error.
+npx convex env set RESEND_API_KEY re_xxxxxxxx --prod
 
 # Preview deployments keep pointing at dev, which is what you want, so leave
 # the preview-scoped NEXT_PUBLIC_CONVEX_URL alone.
@@ -124,6 +149,9 @@ npx convex run --prod importLeads:importLegacyLeads "$(cat data/backfill.json)"
 #   $SITE/privacy    has NO draft banner, says hi@agentsiam.com, twelve
 #                    months from last contact
 #   $SITE/admin      your test lead appears, scored, email visible
+#   your inbox       a "EU Fit Check: new lead" mail with NO candidate
+#                    details in it. If you answered the stage question as
+#                    interviewing, the subject says it cleared the gate.
 #
 # Then the launch itself: repoint the Free Consultation Hook and the pinned
 # Facebook Group post from the Google Form to $SITE, and retire the Form.

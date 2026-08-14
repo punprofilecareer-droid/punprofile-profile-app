@@ -1,4 +1,5 @@
 import { mutation, query } from "./_generated/server";
+import { internal } from "./_generated/api";
 import type { QueryCtx, MutationCtx } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v, ConvexError } from "convex/values";
@@ -178,6 +179,23 @@ export const captureContact = mutation({
       status: "email_captured",
       updatedAt: now,
       lastActivityAt: now,
+    });
+
+    // Tell the coach, with no candidate details in the message. Scheduled
+    // rather than awaited: the candidate's next screen must not wait on an
+    // outbound HTTP call, and a notification that fails must not fail a
+    // contact capture that has already committed. See `notify.ts`.
+    const grade = gradeLead(toGradeInput(lead.responses ?? {}));
+    const stage = typeof lead.responses?.stage === "string" ? lead.responses.stage : null;
+    await ctx.scheduler.runAfter(0, internal.notify.newLead, {
+      tier: grade.tier,
+      stage,
+      // The booking gate decided 14/08/2026, and the only rule in the whole
+      // framework that decides whether someone gets a link rather than what to
+      // say to them. `offer` is the app's merge of "has an offer" and
+      // "negotiating", both of which the rule names.
+      sqlGate: stage === "interviewing" || stage === "offer",
+      routingNote: grade.routingNote,
     });
   },
 });
