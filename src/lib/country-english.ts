@@ -100,13 +100,106 @@ export function countryWeight(country: string, english: Cefr | null | undefined)
 }
 
 /**
- * Why a local language cannot be read yet.
+ * The working language of each country on the list. TASK-072, 14/08/2026.
  *
- * `SurveyResponse.otherLanguageCefr` stores the highest level reached in ANY
- * European language, not which language it is, so it cannot be matched to a
- * country. A candidate with German at B2 and one with Italian at B2 are
- * identical in the data. Guessing which country the level belongs to would
- * invent evidence, so reach is computed on English alone until TASK-072 lands
- * the per-language grid in the app's Stage 2, and the report says so.
+ * "Working language" means the language a workplace outside the international
+ * and tech bubble actually runs in, which is the same standard the English
+ * bands above use. Countries with more than one are listed with all of them and
+ * any single one counts, because a candidate needs one language to work in, not
+ * the set.
+ *
+ * Ireland and the United Kingdom are deliberately absent: their working
+ * language is English, which `countryWeight` already scores through the band,
+ * and listing it twice would let a candidate score the same evidence twice.
  */
-export const REACH_IS_ENGLISH_ONLY = true;
+export const COUNTRY_LANGUAGE: Record<string, readonly string[]> = {
+  Germany: ["German"],
+  Austria: ["German"],
+  Switzerland: ["German", "French", "Italian"],
+  Netherlands: ["Dutch"],
+  Belgium: ["Dutch", "French"],
+  France: ["French"],
+  Spain: ["Spanish"],
+  Italy: ["Italian"],
+  Portugal: ["Portuguese"],
+  Poland: ["Polish"],
+  "Czech Republic": ["Czech"],
+  Denmark: ["Danish"],
+  Sweden: ["Swedish"],
+  Norway: ["Norwegian"],
+  Finland: ["Finnish"],
+};
+
+/** The grid's options. `Other` is collected but never matches a country. */
+export const EUROPEAN_LANGUAGES = [
+  "German",
+  "French",
+  "Spanish",
+  "Italian",
+  "Dutch",
+  "Portuguese",
+  "Polish",
+  "Swedish",
+  "Danish",
+  "Norwegian",
+  "Finnish",
+  "Czech",
+  "Other",
+] as const;
+
+/**
+ * A local working language at B2 or above opens a country on its own.
+ *
+ * B2, not C1: B2 is the level European employers name in job adverts, and it is
+ * the same threshold `countryWeight` already uses for a native or very-high
+ * English country. Below B2 the language contributes nothing rather than a
+ * fraction, because a half-credit for A2 German would say a candidate is
+ * halfway into a German-speaking workplace, and they are not.
+ *
+ * This is what `REACH_IS_ENGLISH_ONLY` existed to flag. A "lower" band country
+ * such as Italy or Poland scored zero on English alone no matter what, which
+ * was correct while the data could not say which language a level belonged to,
+ * and wrong the moment it could.
+ */
+export function localLanguageOpens(
+  country: string,
+  languages: Readonly<Record<string, string>> | null | undefined,
+): boolean {
+  if (!languages) return false;
+  const needed = COUNTRY_LANGUAGE[country];
+  if (!needed) return false;
+  return needed.some((lang) => atLeast(languages[lang] as Cefr | undefined, "B2"));
+}
+
+/**
+ * Reach, counting the local language when the grid has been filled in.
+ *
+ * A country is worth 1 if the local language clears B2, otherwise it falls back
+ * to the English-only weight. Never the sum of both: two routes into one
+ * country is still one country, and adding them would score a bilingual
+ * candidate above a full-credit monolingual one on an item that is measured
+ * out of 1.
+ */
+export function countryWeightWithLanguages(
+  country: string,
+  english: Cefr | null | undefined,
+  languages: Readonly<Record<string, string>> | null | undefined,
+): number {
+  if (localLanguageOpens(country, languages)) return 1;
+  return countryWeight(country, english);
+}
+
+/**
+ * True while a candidate has no language grid. Was a module-level constant
+ * asserting reach could never see a local language; it is now a per-candidate
+ * question, because for anyone who fills the grid in the answer is no.
+ *
+ * The report reads this to decide whether to say so, which is the whole point:
+ * a score computed on English alone and a score computed on English plus a
+ * language are different claims and must not look identical.
+ */
+export function reachIsEnglishOnly(
+  languages: Readonly<Record<string, string>> | null | undefined,
+): boolean {
+  return !languages || Object.keys(languages).length === 0;
+}

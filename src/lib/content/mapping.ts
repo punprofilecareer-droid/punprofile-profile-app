@@ -72,6 +72,21 @@ export function toScoringInput(responses: Responses): ScoringInput {
     input.timeline = tl;
   }
 
+  // Stage 2's language grid, TASK-072. A record rather than a scalar, so it is
+  // copied across whole after checking every level, which is the only shape
+  // check that matters here: the mutation already filtered the language names.
+  const langs = responses.otherLanguages;
+  if (langs && typeof langs === "object" && !Array.isArray(langs)) {
+    const LEVELS = new Set(["A1", "A2", "B1", "B2", "C1", "C2"]);
+    const clean: Record<string, "A1" | "A2" | "B1" | "B2" | "C1" | "C2"> = {};
+    for (const [lang, level] of Object.entries(langs as Record<string, unknown>)) {
+      if (typeof level === "string" && LEVELS.has(level)) {
+        clean[lang] = level as "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+      }
+    }
+    if (Object.keys(clean).length) input.otherLanguages = clean;
+  }
+
   // Stage 2 fields (portfolio, AI habits, family, salary...) map here as their
   // questions land in Phase 2. One function, one direction.
   //

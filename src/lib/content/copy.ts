@@ -114,6 +114,51 @@ export const COPY = {
   },
 
   // ------------------------------------------------------------ teaser chart
+  // ---- Stage 2, question one: the per-language grid (TASK-072, 14/08/2026).
+  // Placed after the first read on purpose: Stage 1 had no room left inside
+  // the 90-second budget, and this is accuracy a candidate volunteers rather
+  // than something the first read depends on.
+  "lang.heading": {
+    screen: "Stage 2, language grid",
+    en: "Do you speak any other European languages?",
+    th: "คุณพูดภาษายุโรปอื่นได้บ้างไหม",
+  },
+  "lang.body": {
+    screen: "Stage 2, language grid",
+    en: "This changes which countries are genuinely open to you. Without it we can only judge reach on your English.",
+    th: "ข้อนี้เปลี่ยนว่าประเทศไหนเปิดรับคุณได้จริง ถ้าไม่ระบุ เราจะดูได้จากภาษาอังกฤษอย่างเดียว",
+  },
+  "lang.levelLabel": {
+    screen: "Stage 2, language grid",
+    en: "level",
+    th: "ระดับ",
+  },
+  "lang.scale": {
+    screen: "Stage 2, language grid",
+    en: "A1 beginner, B2 able to work in it, C2 native-level.",
+    th: "A1 เริ่มต้น, B2 ใช้ทำงานได้, C2 ใกล้เคียงเจ้าของภาษา",
+  },
+  "lang.offerLead": {
+    screen: "First read, the Stage 2 offer",
+    en: "Make this more accurate",
+    th: "ทำให้ผลแม่นยำขึ้น",
+  },
+  "lang.offerBody": {
+    screen: "First read, the Stage 2 offer",
+    en: "Tell us which European languages you speak, and we can say which countries are actually open to you.",
+    th: "บอกเราว่าคุณพูดภาษายุโรปไหนได้บ้าง แล้วเราจะบอกได้ว่าประเทศไหนเปิดรับคุณจริง",
+  },
+  "lang.submit": {
+    screen: "Stage 2, language grid",
+    en: "Update my result",
+    th: "อัปเดตผลของฉัน",
+  },
+  "lang.skip": {
+    screen: "Stage 2, language grid",
+    en: "Skip",
+    th: "ข้าม",
+  },
+
   "teaser.headline": {
     screen: "Teaser, after the last question",
     en: "Here's your first read",

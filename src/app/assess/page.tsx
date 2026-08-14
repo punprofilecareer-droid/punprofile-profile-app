@@ -9,6 +9,7 @@ import QuestionCard from "@/components/features/assessment/QuestionCard";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
+import LanguageGrid from "@/components/features/assessment/LanguageGrid";
 import { buildTeaserSummary } from "@/lib/views";
 import { toScoringInput } from "@/lib/content/mapping";
 
@@ -70,6 +71,15 @@ export default function AssessPage() {
   const startSession = useMutation(api.leads.startSession);
   const submitAnswer = useMutation(api.leads.submitAnswer);
   const captureContact = useMutation(api.leads.captureContact);
+  const submitLanguages = useMutation(api.leads.submitLanguages);
+
+  /**
+   * Stage 2 opens from the first read rather than replacing it (TASK-072,
+   * 14/08/2026). The candidate has their chart and their contact details are
+   * in; this is extra accuracy they choose to give, so it is behind a button
+   * and the grid itself carries a real Skip.
+   */
+  const [showGrid, setShowGrid] = useState(false);
   const [startFailed, setStartFailed] = useState(false);
   /** Bumping this re-runs the session effect, which is what Try again does. */
   const [attempt, setAttempt] = useState(0);
@@ -108,6 +118,12 @@ export default function AssessPage() {
   }, [session]);
 
   const scores = useMemo(() => session?.scores ?? {}, [session]);
+  const hasLanguages = Boolean(
+    session?.responses &&
+      typeof session.responses.otherLanguages === "object" &&
+      session.responses.otherLanguages !== null &&
+      Object.keys(session.responses.otherLanguages as Record<string, unknown>).length > 0,
+  );
 
   // Selected from the sentence bank, never composed. Recomputed client-side
   // from the same responses the server scored, so the words and the chart
@@ -210,6 +226,18 @@ export default function AssessPage() {
     );
   }
 
+  if (showGrid) {
+    return (
+      <LanguageGrid
+        onSubmit={async (levels) => {
+          await submitLanguages({ leadId, levels });
+          setShowGrid(false);
+        }}
+        onSkip={() => setShowGrid(false)}
+      />
+    );
+  }
+
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
@@ -243,6 +271,25 @@ export default function AssessPage() {
             <p className="text-caption text-neutral-500">{summary.unmeasured}</p>
           )}
         </div>
+      )}
+
+      {/* Stage 2's one question, offered rather than imposed. Country Reach is
+          computed on English alone until this is answered, which is a real gap
+          in the chart above it, so the offer names what it buys instead of
+          asking for more answers in the abstract. Hidden once answered: a
+          candidate who has filled it in is being asked for nothing. */}
+      {!hasLanguages && (
+        <button
+          type="button"
+          onClick={() => setShowGrid(true)}
+          className="material mt-8 flex w-full items-center justify-between gap-3 rounded-lg px-6 py-5 text-left transition-colors hover:border-eufit"
+        >
+          <span>
+            <span className="block text-label text-eufit-deep">{t("lang.offerLead")}</span>
+            <span className="mt-1 block text-body text-slate">{t("lang.offerBody")}</span>
+          </span>
+          <span aria-hidden className="text-eufit-deep">&rarr;</span>
+        </button>
       )}
 
       {/* Contact is already in by the time this renders, so this says what

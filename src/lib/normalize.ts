@@ -34,6 +34,18 @@ export interface SurveyResponse {
   englishCefr?: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null;
   /** Q17 — other European languages, highest CEFR level reached in any of them. */
   otherLanguageCefr?: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null;
+
+  /**
+   * The per-language grid, TASK-072, 14/08/2026. Language name to CEFR level,
+   * e.g. `{ German: "B2", French: "A2" }`.
+   *
+   * This is what `otherLanguageCefr` could never be. That field holds the
+   * highest level in ANY European language, so a candidate with German at B2
+   * and one with Italian at B2 were identical in the data and neither could be
+   * matched to a country. Both are kept: the old field still scores Language
+   * Readiness for the 90 imported leads, which have no grid and never will.
+   */
+  otherLanguages?: Record<string, "A1" | "A2" | "B1" | "B2" | "C1" | "C2"> | null;
   /** Q18 — work authorisation. */
   workAuth?: "eu_rights" | "sponsor_route_named" | "sponsor_no_route" | "unsure" | "no_awareness" | null;
   /**
