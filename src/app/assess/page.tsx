@@ -9,6 +9,7 @@ import QuestionCard from "@/components/features/assessment/QuestionCard";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
+import LanguageGrid from "@/components/features/assessment/LanguageGrid";
 import { buildTeaserSummary } from "@/lib/views";
 import { toScoringInput } from "@/lib/content/mapping";
 
@@ -56,16 +57,29 @@ export default function AssessPage() {
    * A floor, not a delay added on top. If the mutation is slow the wait is the
    * mutation's, not this; the two overlap rather than stack, so a bad
    * connection never pays twice.
+   *
+   * 900ms first, raised to 1500ms on Paul's read. The upper bound is the PRD
+   * § 1 budget of 90 seconds from landing to first read, which this spends
+   * 1.5s of, so there is room but not unlimited room.
    */
   const [minWaitDone, setMinWaitDone] = useState(false);
   useEffect(() => {
-    const id = setTimeout(() => setMinWaitDone(true), 900);
+    const id = setTimeout(() => setMinWaitDone(true), 1500);
     return () => clearTimeout(id);
   }, []);
 
   const startSession = useMutation(api.leads.startSession);
   const submitAnswer = useMutation(api.leads.submitAnswer);
   const captureContact = useMutation(api.leads.captureContact);
+  const submitLanguages = useMutation(api.leads.submitLanguages);
+
+  /**
+   * Stage 2 opens from the first read rather than replacing it (TASK-072,
+   * 14/08/2026). The candidate has their chart and their contact details are
+   * in; this is extra accuracy they choose to give, so it is behind a button
+   * and the grid itself carries a real Skip.
+   */
+  const [showGrid, setShowGrid] = useState(false);
   const [startFailed, setStartFailed] = useState(false);
   /** Bumping this re-runs the session effect, which is what Try again does. */
   const [attempt, setAttempt] = useState(0);
@@ -104,6 +118,12 @@ export default function AssessPage() {
   }, [session]);
 
   const scores = useMemo(() => session?.scores ?? {}, [session]);
+  const hasLanguages = Boolean(
+    session?.responses &&
+      typeof session.responses.otherLanguages === "object" &&
+      session.responses.otherLanguages !== null &&
+      Object.keys(session.responses.otherLanguages as Record<string, unknown>).length > 0,
+  );
 
   // Selected from the sentence bank, never composed. Recomputed client-side
   // from the same responses the server scored, so the words and the chart
@@ -143,7 +163,7 @@ export default function AssessPage() {
                 work. Ring on the brand primary, one revolution a second. */}
             <span
               aria-hidden
-              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-neutral-300 border-t-primary"
+              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-neutral-300 border-t-eufit"
             />
             <p className="text-body text-neutral-500" role="status">
               {t("assess.starting")}
@@ -206,12 +226,27 @@ export default function AssessPage() {
     );
   }
 
+  if (showGrid) {
+    return (
+      <LanguageGrid
+        onSubmit={async (levels) => {
+          await submitLanguages({ leadId, levels });
+          setShowGrid(false);
+        }}
+        onSkip={() => setShowGrid(false)}
+      />
+    );
+  }
+
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
       <h1 className="text-h3">{t("teaser.headline")}</h1>
       <p className="mt-1 text-body text-slate">{t("teaser.selfReported")}</p>
-      <div className="mt-4">
+      {/* The chart gets its own surface. The radar's grid is 1px neutral-300
+          and the field's gradient moves through the same value range, so on
+          the field alone the grid reads as noise rather than as structure. */}
+      <div className="material mt-4 rounded-lg px-2 py-4">
         <SpiderChart scores={scores} variant="teaser" />
       </div>
       <p className="mt-2 text-caption text-neutral-500">{t("teaser.hollowMarkers")}</p>
@@ -227,8 +262,8 @@ export default function AssessPage() {
             <p className="text-body text-slate">{summary.strengthLead}</p>
           )}
           {summary.next && (
-            <div className="rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6">
-              <p className="text-label text-primary-deep">{summary.nextLead}</p>
+            <div className="material-mint rounded-lg px-6 py-6">
+              <p className="text-label text-eufit-deep">{summary.nextLead}</p>
               <p className="mt-2 text-body text-ink">{summary.next}</p>
             </div>
           )}
@@ -238,14 +273,44 @@ export default function AssessPage() {
         </div>
       )}
 
+      {/* Stage 2's one question, offered rather than imposed. Country Reach is
+          computed on English alone until this is answered, which is a real gap
+          in the chart above it, so the offer names what it buys instead of
+          asking for more answers in the abstract. Hidden once answered: a
+          candidate who has filled it in is being asked for nothing. */}
+      {!hasLanguages && (
+        <div className="material-mint mt-8 rounded-lg px-6 py-6 text-left">
+          <p className="text-h4">{t("lang.offerLead")}</p>
+          <p className="mt-2 text-body text-slate">{t("lang.offerBody")}</p>
+          {/* Terracotta, and it does not break the one-action rule: this screen
+              has no primary action at all otherwise. Paul, 14/08: the quiet
+              version was easy to miss, and a skipped grid means Country Reach
+              stays English-only for that candidate, which is the score the
+              question exists to fix. A card that reads as information gets
+              read as information. */}
+          <button
+            type="button"
+            onClick={() => setShowGrid(true)}
+            className="mt-4 flex min-h-14 w-full items-center justify-center gap-2 rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright"
+          >
+            {t("lang.offerButton")}
+            <span aria-hidden>&rarr;</span>
+          </button>
+        </div>
+      )}
+
       {/* Contact is already in by the time this renders, so this says what
           happens next rather than asking for anything. */}
-      <p className="mt-6 rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6 text-body text-ink">
+      <p className="material-mint mt-6 rounded-lg px-6 py-6 text-body text-ink">
         {t("teaser.nextStep")}
       </p>
 
       {/* TASK-046. Hidden until a booking mechanism exists, rather than
           shipping a button that goes nowhere. */}
+      {/* When TASK-046 turns this on, this screen will hold two Terracotta
+          actions and one of them has to give way. The booking CTA wins, since
+          it is the revenue step; the language offer drops to a secondary
+          treatment at that point rather than both shouting. */}
       {BOOKING_URL && (
         <div className="mt-8 text-left">
           <h2 className="text-h4">{t("narrative.cta.heading")}</h2>
@@ -264,7 +329,7 @@ export default function AssessPage() {
       <button
         type="button"
         onClick={() => setStep(STAGE1.length - 1)}
-        className="mt-6 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-primary"
+        className="mt-6 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-eufit-deep"
       >
         {t("teaser.revise")}
       </button>

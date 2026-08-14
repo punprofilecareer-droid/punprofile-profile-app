@@ -48,8 +48,17 @@
   --color-on-warning: #242425;
   --color-error: #b3261e;
   --color-on-error: #ffffff;
-  --color-info: #6b63c7;
-  --color-on-info: #ffffff;
+  /* EU Fit Check's own identity, the Lavender family (design.md, 14/08/2026).
+     Three stops because `lavender-wash` is a background and nothing else: ink
+     on it holds 12.7:1, white on it is unreadable. `eufit` is AA at 4.96:1, so
+     body and above; `eufit-deep` at 8.41:1 carries white text and captions.
+     Neither ever goes on a button. Terracotta is the action, lavender is the
+     product, and a screen with two things asking to be pressed has neither.
+     These replace the `info` token, which was never used and held this exact
+     value. */
+  --color-eufit: #6b63c7;
+  --color-eufit-deep: #4a3f9e;
+  --color-on-eufit: #ffffff;
 
   --text-display: 56px;
   --text-display--line-height: 1.05;
@@ -147,7 +156,11 @@
   --viz-surface: var(--color-surface);
   --viz-grid: var(--color-neutral-300);
   --viz-muted: var(--color-neutral-500);
-  --viz-series-1: var(--color-primary);
+  /* The chart is the product's own surface, so it takes the product's colour
+     rather than the company's. 14/08/2026. `eufit`, not `eufit-deep`: the
+     series is a 2px stroke over a 16% fill, read as a shape rather than as
+     text, and the deeper stop would sit too heavily against the grid. */
+  --viz-series-1: var(--color-eufit);
 }
 .viz-root .viz-radar { display: block; }
 .viz-root .viz-axis-label { font: 500 11px var(--font-sans); fill: var(--color-slate); }
@@ -158,3 +171,214 @@
 .viz-root .viz-caption { font: 11px var(--font-sans); fill: var(--viz-muted); }
 /* Emitted by radarSvg when fewer than three axes exist; previously unstyled. */
 .viz-root .viz-empty { color: var(--color-neutral-500); font-size: var(--text-caption); }
+
+/* ---------------------------------------------------------------------------
+   Liquid Glass, adapted from Apple's material to the web. 14/08/2026.
+
+   Read the HIG before touching this. Two rules from it decided the whole
+   shape of this block:
+
+   1. "Don't use Liquid Glass in the content layer." It is a FUNCTIONAL layer
+      for controls and navigation that floats above content. So exactly three
+      surfaces here are glass, all of them chrome: the sticky header, the
+      language menu, and the floating action bar. Option tiles, cards and the
+      chart stay flat. They are content.
+   2. "Use Liquid Glass effects sparingly." Three surfaces is the budget, not
+      a starting point.
+
+   Only the REGULAR variant is implemented. Apple's clear variant is for
+   components floating over visually rich backgrounds like photos and video,
+   and needs a 35% dimming layer when what is behind it is bright. Nothing in
+   this app floats over media, so building clear would be building a thing
+   with no correct use.
+
+   The material is four layers, not a blur: a translucent tint that keeps text
+   legible, a backdrop blur plus saturation that does the lensing, a hairline
+   border that gives it an edge, and an inset highlight along the top that
+   reads as light catching a bevel. Drop any one and it stops looking like
+   glass and starts looking like a semi-transparent div.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  .glass {
+    background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, #ffffff 65%, transparent),
+      0 8px 24px rgba(36, 36, 37, 0.08);
+  }
+
+  /* The header is a bar, not a card: it needs an edge underneath and nothing
+     else, or it reads as a floating panel that happens to be full width. */
+  .glass-bar {
+    background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow: inset 0 1px 0 0 color-mix(in srgb, #ffffff 65%, transparent);
+  }
+
+  /* The action bar sits at the bottom, so its highlight and its edge flip. */
+  .glass-bar-bottom {
+    background-color: color-mix(in srgb, var(--color-surface) 76%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow: 0 -8px 24px rgba(36, 36, 37, 0.06);
+  }
+
+  /* The lavender field the glass has something to bend. Without a background
+     with structure in it, glass over white is an expensive way to draw a
+     1px border. Three soft radial pools rather than a linear gradient,
+     because a linear ramp has no local variation for the blur to pick up as
+     the page scrolls under the bar. */
+  /* Deepened 14/08/2026 after looking at it. The first values were measured
+     for subtlety and produced a page that was white with a faint stain at the
+     bottom, which is worse than either a plain white page or a real field:
+     the material had nothing to bend, so the cost of the blur bought a 1px
+     border. Smaller pools at higher strength, on the wash rather than on
+     white, so there is local variation for a bar to lens as content scrolls
+     under it. */
+  .eufit-field {
+    background-image:
+      radial-gradient(38rem 26rem at 8% -6%, color-mix(in srgb, var(--color-eufit) 34%, transparent), transparent 62%),
+      radial-gradient(30rem 24rem at 102% 4%, color-mix(in srgb, var(--color-eufit) 24%, transparent), transparent 60%),
+      radial-gradient(34rem 30rem at 50% 106%, color-mix(in srgb, var(--color-eufit) 22%, transparent), transparent 64%);
+    background-color: var(--color-lavender-wash);
+    background-attachment: fixed;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Fallbacks. Three separate reasons the material must become solid, and each
+   one is somebody for whom the effect is worse than nothing.
+   -------------------------------------------------------------------------- */
+
+/* 1. The browser cannot do it. Without this the tint alone renders and text
+      sits on 72% white over a gradient, which is the one genuinely unreadable
+      outcome in this file. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-bar,
+  .glass-bar-bottom {
+    background-color: var(--color-surface);
+  }
+}
+
+/* 2. The device cannot do it cheaply. `data-perf="low"` is set by a small
+      inline script in the layout from deviceMemory and hardwareConcurrency.
+      A sustained backdrop-filter on a scrolling page is one of the most
+      expensive things a mid-range Android phone can be asked to do, and that
+      phone on mobile data is this product's actual audience, not its edge
+      case. */
+[data-perf="low"] .glass,
+[data-perf="low"] .glass-bar,
+[data-perf="low"] .glass-bar-bottom {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--color-surface);
+}
+
+[data-perf="low"] .eufit-field {
+  background-attachment: scroll;
+}
+
+/* 3. The person asked for it off. Apple's own material changes behaviour
+      under these settings rather than ignoring them. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-bar,
+  .glass-bar-bottom {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--color-surface);
+  }
+  .eufit-field {
+    background-image: none;
+    background-color: var(--color-surface);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .glass,
+  .glass-bar,
+  .glass-bar-bottom {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--color-surface);
+    border-color: var(--color-ink);
+  }
+  .eufit-field {
+    background-image: none;
+    background-color: var(--color-surface);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Standard material, for the CONTENT layer. Added 14/08/2026.
+
+   Paul asked for glass on everything, including cards and option tiles. The
+   HIG says not to put Liquid Glass there, and it also says what to use
+   instead: "use standard materials for elements in the content layer". Apple
+   ships two material families for exactly this split, and the difference is
+   thickness. "Thicker materials, which are more opaque, can provide better
+   contrast for text and other elements with fine features."
+
+   So content gets the same optical treatment, tuned the other way: 88% tint
+   against chrome's 72%, and half the blur radius. It reads as the same
+   material family from across the room and keeps Thai body text legible over
+   the lavender field, which chrome-weight glass would not. Noto Sans Thai has
+   fine features and tone marks that disappear first when contrast drops.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  .material {
+    background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 7%, transparent);
+  }
+
+  /* The tinted variants keep their hue but stop being flat fills, so a callout
+     still separates from a plain card sitting next to it on the same field. */
+  .material-mint {
+    background-color: color-mix(in srgb, var(--color-mint-wash) 88%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 7%, transparent);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .material { background-color: var(--color-surface); }
+  .material-mint { background-color: var(--color-mint-wash); }
+}
+
+[data-perf="low"] .material,
+[data-perf="low"] .material-mint {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-perf="low"] .material { background-color: var(--color-surface); }
+[data-perf="low"] .material-mint { background-color: var(--color-mint-wash); }
+
+@media (prefers-reduced-transparency: reduce) {
+  .material, .material-mint {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .material { background-color: var(--color-surface); }
+  .material-mint { background-color: var(--color-mint-wash); }
+}
+
+@media (prefers-contrast: more) {
+  .material, .material-mint {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: var(--color-ink);
+  }
+  .material { background-color: var(--color-surface); }
+  .material-mint { background-color: var(--color-mint-wash); }
+}

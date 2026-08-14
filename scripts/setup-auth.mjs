@@ -32,7 +32,11 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "paul.bussabong@gmail.com";
 // punprofile-profile-app.vercel.app stays alive and serves the same
 // deployment, it is just no longer the address anything refers to.
 const PROD_SITE_URL = "https://punprofile.vercel.app";
-const DEV_SITE_URL = "http://localhost:3000";
+// 3100, not 3000: another project owns 3000 on Paul's machine. This has to
+// match the port `npm run dev` actually serves on, because Convex Auth builds
+// its redirects from SITE_URL, so a mismatch breaks admin sign-in locally with
+// an error that points at auth rather than at a port number.
+const DEV_SITE_URL = "http://localhost:3100";
 
 function setEnv(name, value, prod) {
   const args = ["convex", "env", "set"];

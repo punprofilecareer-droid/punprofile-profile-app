@@ -52,8 +52,11 @@ export const COPY = {
   },
   "footer.brand": {
     screen: "Footer, every screen",
-    en: "PunProfile Career Coaching",
-    th: "PunProfile Career Coaching",
+    // Not translated. The brand name, the year and a rights line read the same
+    // to both audiences, and a Thai transliteration of a legal formula reads
+    // as a mistake rather than as a courtesy.
+    en: "PunProfile Career Coaching | 2026 | All Rights Reserved",
+    th: "PunProfile Career Coaching | 2026 | All Rights Reserved",
   },
 
   // ---------------------------------------------------------------- landing
@@ -111,6 +114,56 @@ export const COPY = {
   },
 
   // ------------------------------------------------------------ teaser chart
+  // ---- Stage 2, question one: the per-language grid (TASK-072, 14/08/2026).
+  // Placed after the first read on purpose: Stage 1 had no room left inside
+  // the 90-second budget, and this is accuracy a candidate volunteers rather
+  // than something the first read depends on.
+  "lang.heading": {
+    screen: "Stage 2, language grid",
+    en: "Do you speak any other European languages?",
+    th: "คุณพูดภาษายุโรปอื่นได้บ้างไหม",
+  },
+  "lang.body": {
+    screen: "Stage 2, language grid",
+    en: "This changes which countries are genuinely open to you. Without it we can only judge reach on your English.",
+    th: "ข้อนี้เปลี่ยนว่าประเทศไหนเปิดรับคุณได้จริง ถ้าไม่ระบุ เราจะดูได้จากภาษาอังกฤษอย่างเดียว",
+  },
+  "lang.levelLabel": {
+    screen: "Stage 2, language grid",
+    en: "level",
+    th: "ระดับ",
+  },
+  "lang.scale": {
+    screen: "Stage 2, language grid",
+    en: "A1 beginner, B2 able to work in it, C2 native-level.",
+    th: "A1 เริ่มต้น, B2 ใช้ทำงานได้, C2 ใกล้เคียงเจ้าของภาษา",
+  },
+  "lang.offerLead": {
+    screen: "First read, the Stage 2 offer",
+    en: "Make this more accurate",
+    th: "ทำให้ผลแม่นยำขึ้น",
+  },
+  "lang.offerBody": {
+    screen: "First read, the Stage 2 offer",
+    en: "Tell us which European languages you speak, and we can say which countries are actually open to you.",
+    th: "บอกเราว่าคุณพูดภาษายุโรปไหนได้บ้าง แล้วเราจะบอกได้ว่าประเทศไหนเปิดรับคุณจริง",
+  },
+  "lang.offerButton": {
+    screen: "First read, the Stage 2 offer",
+    en: "Add my languages",
+    th: "เพิ่มภาษาที่ฉันพูดได้",
+  },
+  "lang.submit": {
+    screen: "Stage 2, language grid",
+    en: "Update my result",
+    th: "อัปเดตผลของฉัน",
+  },
+  "lang.skip": {
+    screen: "Stage 2, language grid",
+    en: "Skip",
+    th: "ข้าม",
+  },
+
   "teaser.headline": {
     screen: "Teaser, after the last question",
     en: "Here's your first read",
@@ -166,13 +219,13 @@ export const COPY = {
   // FR-005. Full name, email, and at least one of LINE ID or phone.
   "gate.heading": {
     screen: "Contact step, the heading. Last step of the survey",
-    en: "One last step",
-    th: "อีกขั้นเดียว",
+    en: "Last step",
+    th: "ขั้นตอนสุดท้าย",
   },
   "gate.body": {
     screen: "Contact step, under the heading. Says what happens next",
-    en: "Your name, and a way we can actually reach you. Your first read comes up straight after, and PunProfile follows up with the full one.",
-    th: "กรอกชื่อและช่องทางที่เราติดต่อคุณได้ แล้วรู้ผลเบื้องต้นทันที จากนั้นทีม PunProfile จะส่งผลฉบับเต็มให้อีกครั้ง",
+    en: "Your name, and whichever channel suits you for us to get back to you.",
+    th: "กรอกชื่อและช่องทางที่คุณสะดวกให้เราติดต่อกลับ",
   },
   "gate.firstName": {
     screen: "Contact step, first name field label",
@@ -191,8 +244,8 @@ export const COPY = {
   },
   "gate.channelHint": {
     screen: "Contact gate, above the LINE and phone fields. Explains why one is required",
-    en: "At least one of these, whichever you actually check.",
-    th: "เลือกช่องทางที่คุณใช้บ่อยที่สุด อย่างน้อยหนึ่งช่อง เพื่อให้เราติดต่อกลับได้จริง",
+    en: "Choose at least one channel so the team can reach you.",
+    th: "เลือกอย่างน้อยหนึ่งช่องทางให้ทีมติดต่อกลับได้",
   },
   "gate.lineId": {
     screen: "Contact gate, LINE ID field label",

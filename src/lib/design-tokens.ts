@@ -22,9 +22,12 @@
 export const BRAND_TOKENS_CSS = `  :root {
     color-scheme: light;
 
-    /* Chart roles, consumed by radar.ts through these names only. Teal
-       replaces the placeholder blue, a hue the brand forbids. */
-    --viz-series-1: #068376;
+    /* Chart roles, consumed by radar.ts through these names only. The series
+       is EU Fit Check's own Lavender (14/08/2026), not the company Teal that
+       replaced the original placeholder blue: the chart belongs to the
+       assessment, and a coach report and the candidate's own screen have to
+       show the same chart in the same colour. */
+    --viz-series-1: #6b63c7;
     --viz-grid: #d9d8dc;
     --viz-muted: #8d8997;
     --viz-surface: #ffffff;
@@ -36,6 +39,8 @@ export const BRAND_TOKENS_CSS = `  :root {
 
     --primary: #068376;
     --primary-deep: #04524a;
+    --eufit: #6b63c7;
+    --eufit-deep: #4a3f9e;
     --accent: #cc3f00;
     --accent-bright: #ff4f00;
     --error: #b3261e;

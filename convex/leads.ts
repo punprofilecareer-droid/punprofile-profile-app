@@ -6,6 +6,7 @@ import { v, ConvexError } from "convex/values";
 import { computeScores } from "./scoring";
 import { toScoringInput } from "../src/lib/content/mapping";
 import { isValidAnswer } from "../src/lib/content/questions";
+import { EUROPEAN_LANGUAGES } from "../src/lib/country-english";
 import { rateLimiter } from "./rateLimits";
 import { gradeLead, toGradeInput } from "../src/lib/leadGrade";
 
@@ -196,6 +197,50 @@ export const captureContact = mutation({
       // "negotiating", both of which the rule names.
       sqlGate: stage === "interviewing" || stage === "offer",
       routingNote: grade.routingNote,
+    });
+  },
+});
+
+/**
+ * TASK-072, Stage 2: the per-language grid.
+ *
+ * Its own mutation rather than another `submitAnswer` key, because the shape
+ * is different in a way the validator cannot absorb. Every Stage 1 answer is a
+ * string or a list of strings drawn from a fixed option set, and
+ * `isValidAnswer` checks membership against `QUESTION_INDEX`. This is a map of
+ * language to level, so it needs its own vocabulary check, and widening
+ * `submitAnswer` to accept a record would weaken the guarantee that protects
+ * eleven questions in order to serve one.
+ *
+ * Validated against both lists rather than trusted: a client that can post an
+ * arbitrary key into `responses` can put anything into the scorer's input.
+ */
+export const submitLanguages = mutation({
+  args: {
+    leadId: v.id("leads"),
+    levels: v.record(v.string(), v.string()),
+  },
+  handler: async (ctx, args) => {
+    const lead = await ctx.db.get(args.leadId);
+    if (!lead) throw new ConvexError("Session not found.");
+
+    const LEVELS = new Set(["A1", "A2", "B1", "B2", "C1", "C2"]);
+    const clean: Record<string, string> = {};
+    for (const [lang, level] of Object.entries(args.levels)) {
+      if (!(EUROPEAN_LANGUAGES as readonly string[]).includes(lang)) continue;
+      if (!LEVELS.has(level)) continue;
+      clean[lang] = level;
+    }
+
+    const responses = { ...(lead.responses ?? {}), otherLanguages: clean };
+    const now = Date.now();
+    await ctx.db.patch(args.leadId, {
+      responses,
+      // Recomputed, not merged: Country Reach changes with the grid, which is
+      // the entire reason this question exists.
+      scores: computeScores(toScoringInput(responses)),
+      updatedAt: now,
+      lastActivityAt: now,
     });
   },
 });

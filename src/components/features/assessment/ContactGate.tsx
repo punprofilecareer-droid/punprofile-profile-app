@@ -26,6 +26,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import ActionBar, { ActionBarSpacer } from "./ActionBar";
 import { useCopy } from "@/components/LocaleProvider";
 import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
 import type { CopyKey } from "@/lib/content/copy";
@@ -62,9 +63,11 @@ export default function ContactGate({
   const [email, setEmail] = useState("");
   const [lineId, setLineId] = useState("");
   const [phone, setPhone] = useState("");
-  const [emailConsent, setEmailConsent] = useState(false);
-  const [lineConsent, setLineConsent] = useState(false);
-  const [phoneConsent, setPhoneConsent] = useState(false);
+  /**
+   * One tick, not three. It still grants per channel: see `consent-copy.ts`
+   * for why the field is the granular control and the checkbox is not.
+   */
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState<CopyKey | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -75,8 +78,15 @@ export default function ContactGate({
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
+  // Solid inputs on the panel, not translucent. From the 14/08/2026 design
+  // pass: a form field is where someone is about to type, and a translucent
+  // box with a gradient moving behind the caret is the one place in the app
+  // where the material actively gets in the way.
   const field =
-    "mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink";
+    "mt-1 h-12 w-full rounded-md border border-neutral-300 bg-surface px-4 text-body text-ink transition-colors focus:border-eufit focus:outline-none focus:ring-2 focus:ring-eufit/25";
+  const labelText = "block text-caption text-neutral-500";
+
+  const consentLabel = pick(CONSENT_COPY["consent.statement"]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -90,16 +100,8 @@ export default function ContactGate({
     // to give us the number at all; the tick is what makes holding it lawful.
     // So "phone entered, box unticked" is not a preference to respect, it is
     // an incomplete form.
-    if (!emailConsent) {
+    if (!consent) {
       setError("gate.error.consent_email");
-      return;
-    }
-    if (phone.trim() && !phoneConsent) {
-      setError("gate.error.consent_phone");
-      return;
-    }
-    if (lineId.trim() && !lineConsent) {
-      setError("gate.error.consent_line");
       return;
     }
 
@@ -110,11 +112,14 @@ export default function ContactGate({
         firstName,
         lastName,
         email,
-        emailConsent,
+        // The single tick fans back out to the per-channel flags. The server
+        // contract and the per-channel timestamps are untouched: a channel that
+        // was not filled in still sends `undefined` and still grants nothing.
+        emailConsent: consent,
         phone: phone.trim() || undefined,
-        phoneConsent: phone.trim() ? phoneConsent : undefined,
+        phoneConsent: phone.trim() ? consent : undefined,
         lineId: lineId.trim() || undefined,
-        lineConsent: lineId.trim() ? lineConsent : undefined,
+        lineConsent: lineId.trim() ? consent : undefined,
       });
     } catch (err) {
       // The server's code, mapped to translatable copy. Anything unrecognised
@@ -128,11 +133,12 @@ export default function ContactGate({
 
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-md px-6 py-10">
+      <div className="material rounded-lg px-5 py-6">
       <p className="mb-1 text-caption text-neutral-500">
         {t("assess.progress", { step: totalSteps, total: totalSteps })}
       </p>
       <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300">
-        <div className="h-full w-full rounded-full bg-primary" />
+        <div className="h-full w-full rounded-full bg-eufit" />
       </div>
       <h1 className="text-h3">{t("gate.heading")}</h1>
       <p className="mt-2 text-body text-slate">{t("gate.body")}</p>
@@ -146,13 +152,13 @@ export default function ContactGate({
 
       <p className="mt-6 text-caption text-neutral-500">
         {pick(CONSENT_COPY["consent.purpose"])}{" "}
-        <Link href="/privacy" className="text-primary underline">
+        <Link href="/privacy" className="text-eufit-deep underline">
           {pick(CONSENT_COPY["consent.privacyLink"])}
         </Link>
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <label className="block text-label text-slate">
+        <label className={labelText}>
           {t("gate.firstName")}
           <input
             className={field}
@@ -162,7 +168,7 @@ export default function ContactGate({
             required
           />
         </label>
-        <label className="block text-label text-slate">
+        <label className={labelText}>
           {t("gate.lastName")}
           <input
             className={field}
@@ -174,7 +180,7 @@ export default function ContactGate({
         </label>
       </div>
 
-      <label className="mt-4 block text-label text-slate">
+      <label className={`mt-4 ${labelText}`}>
         {t("gate.email")}
         <input
           className={field}
@@ -185,16 +191,10 @@ export default function ContactGate({
           required
         />
       </label>
-      <Consent
-        checked={emailConsent}
-        onChange={setEmailConsent}
-        label={pick(CONSENT_COPY["consent.email"])}
-        required
-      />
 
       <p className="mt-8 text-body text-slate">{t("gate.channelHint")}</p>
 
-      <label className="mt-4 block text-label text-slate">
+      <label className={`mt-4 ${labelText}`}>
         {t("gate.lineId")}
         <input
           className={field}
@@ -202,16 +202,8 @@ export default function ContactGate({
           onChange={(e) => setLineId(e.target.value)}
         />
       </label>
-      {lineId.trim() && (
-        <Consent
-          checked={lineConsent}
-          onChange={setLineConsent}
-          label={pick(CONSENT_COPY["consent.line"])}
-          required
-        />
-      )}
 
-      <label className="mt-4 block text-label text-slate">
+      <label className={`mt-4 ${labelText}`}>
         {t("gate.phone")}
         <input
           className={field}
@@ -221,14 +213,12 @@ export default function ContactGate({
           autoComplete="tel"
         />
       </label>
-      {phone.trim() && (
-        <Consent
-          checked={phoneConsent}
-          onChange={setPhoneConsent}
-          label={pick(CONSENT_COPY["consent.phone"])}
-          required
-        />
-      )}
+
+      {/* One consent, after both channel fields so it can name what was
+          actually filled in. Before them it would have to speak in
+          hypotheticals, which is the wording that made three boxes feel
+          necessary in the first place. */}
+      <Consent checked={consent} onChange={setConsent} label={consentLabel} required />
 
       {/* `error`, never Terracotta: a problem must not look like an action. */}
       {error && (
@@ -237,13 +227,21 @@ export default function ContactGate({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="mt-8 h-12 w-full rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
-      >
-        {busy ? t("gate.working") : t("gate.submit")}
-      </button>
+      </div>
+
+      <ActionBarSpacer />
+      <ActionBar>
+        <button
+          type="submit"
+          disabled={busy}
+          className="min-h-14 w-full rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+        >
+          <span className="flex items-center justify-center gap-2">
+            {busy ? t("gate.working") : t("gate.submit")}
+            {!busy && <span aria-hidden>&rarr;</span>}
+          </span>
+        </button>
+      </ActionBar>
     </form>
   );
 }
@@ -272,7 +270,7 @@ function Consent({
         checked={checked}
         required={required}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 size-5 shrink-0 accent-primary"
+        className="mt-0.5 size-5 shrink-0 accent-eufit"
       />
       <span>{label}</span>
     </label>

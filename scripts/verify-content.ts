@@ -132,7 +132,7 @@ const full: Record<string, string | string[]> = {
   // Present so the completeness check passes; both are unscored by design
   // above, so neither moves the profile the assertions below inspect.
   experienceYears: "2-10",
-  priorInvestment: "none",
+  priorInvestment: ["never"],
 };
 for (const q of STAGE1) {
   if (full[q.key] === undefined) fail(`full Stage 1 example is missing ${q.key}`);

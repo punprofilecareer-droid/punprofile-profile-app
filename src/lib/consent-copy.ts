@@ -27,7 +27,48 @@
 import type { CopyEntry } from "./content/copy";
 
 /**
- * Rewritten later the same day, 14/08/2026, on Paul's read of the live screen:
+ * **One consent, not three, 14/08/2026 (Paul).** "Why are you duplicating it?
+ * It's bad for customer experience." He is right about the experience: a
+ * candidate who filled in both channels met three separate boxes saying almost
+ * the same sentence.
+ *
+ * What had to survive the collapse is granularity, which is a PDPA property
+ * and not a UI one. It survives because **the field is the granular control,
+ * not the checkbox**. A candidate consents to a channel by giving us that
+ * channel; leaving LINE blank is a refusal of LINE, and no wording is needed
+ * for it. So a single statement names the channels and the one tick still
+ * writes a separate timestamp per channel in `convex/leads.ts`, only ever for
+ * a channel the candidate actually filled in. The audit trail is unchanged:
+ * what was consented to, per channel, and when.
+ *
+ * The statement interpolated only the filled channels at first. Paul replaced
+ * it on 14/08/2026 with all three named outright. It reads better and it stays
+ * accurate, because naming a channel in the sentence grants nothing on its
+ * own: an empty phone field sends `undefined` and no phone timestamp is ever
+ * written.
+ *
+ * The thing genuinely given up: a candidate can no longer give us a phone
+ * number while withholding permission to use it. That combination existed on
+ * the old screen and, on the evidence of the form it replaced, was never a
+ * thing anyone wanted; someone who does not want a call does not type a number.
+ *
+ * **The Thai on this screen is Paul's own wording, 14/08/2026**, given after he
+ * read the live page. Two edits were made to what he sent and both are visible
+ * changes to his text rather than tidying:
+ *
+ * 1. `นับจากการติดต่อครั้งล่าสุด` was added back to the retention sentence. His
+ *    version said twelve months with no basis, and `/privacy` says twelve
+ *    months from last contact. A consent screen that promises something
+ *    narrower than the policy it links to is the one inconsistency in here
+ *    that could actually matter.
+ * 2. The withdrawal address is `hi@agentsiam.com`. His message showed
+ *    `punprofile@gmail.com` as the link text over a `mailto:hi@agentsiam.com`
+ *    href, and the policy, the roadmap and the decision log all say
+ *    hi@agentsiam.com. Treated as a paste artefact, flagged, not guessed at
+ *    silently.
+ *
+ * Original note, from the pass his wording replaced. Rewritten the same day on
+ * his read of the live screen:
  * "you have to review all the Thai translations because it is very stiff." The
  * facts did not move, the register did. Two substantive changes went with it:
  * "(Optional)" is gone from both channel consents, because the choice is
@@ -43,25 +84,25 @@ import type { CopyEntry } from "./content/copy";
 export const CONSENT_COPY_REVIEWED = true;
 
 export const CONSENT_COPY = {
-  "consent.email": {
+  "consent.statement": {
     screen: "Contact gate, beside the email field",
-    en: "I agree that PunProfile may email me my result and follow up about it.",
-    th: "ยินยอมให้ PunProfile ส่งผลประเมินและติดต่อกลับทางอีเมล",
+    en: "I agree that PunProfile may contact me about my result and career coaching by email, LINE or phone.",
+    th: "ยินยอมให้ PunProfile ติดต่อกลับเกี่ยวกับผลประเมินและบริการแนะแนวอาชีพทางอีเมล ไลน์ หรือ โทรศัพท์",
   },
-  "consent.phone": {
+  "consent.channel.phone": {
     screen: "Contact gate, beside the phone field",
-    en: "I agree that PunProfile may call me about career coaching.",
-    th: "ยินยอมให้ PunProfile โทรหาคุณเรื่องบริการแนะแนวอาชีพ",
+    en: "phone",
+    th: "โทรศัพท์",
   },
-  "consent.line": {
+  "consent.channel.line": {
     screen: "Contact gate, beside the LINE ID field",
-    en: "I agree that PunProfile may message me on LINE about career coaching.",
-    th: "ยินยอมให้ PunProfile ทัก LINE หาคุณเรื่องบริการแนะแนวอาชีพ",
+    en: "LINE",
+    th: "LINE",
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
-    en: "We use your email to send your result and to follow up about it. If you would also like a call or a LINE message, fill in that channel and tick the consent beside it. We keep your information for twelve months from the last time you were in touch, and we do not pass it to anyone else. Change your mind at any point and email hi@agentsiam.com.",
-    th: "เราใช้อีเมลของคุณเพื่อส่งผลประเมินและติดต่อกลับเรื่องผลนั้น ถ้าอยากให้ติดต่อทางโทรศัพท์หรือ LINE ด้วย ให้กรอกช่องทางนั้นแล้วติ๊กยินยอมกำกับไว้ เราเก็บข้อมูลไว้สิบสองเดือนนับจากที่คุณติดต่อเราครั้งล่าสุด และไม่ส่งต่อให้ใคร เปลี่ยนใจเมื่อไหร่ อีเมลมาที่ hi@agentsiam.com ได้เลย",
+    en: "We use your email to send your result. If you would like us to contact you by phone or on LINE, fill in that channel and tick the consent box. We keep your information for twelve months from the last time you were in touch, and we do not pass it to anyone else. Change your mind at any point and tell us at hi@agentsiam.com.",
+    th: "เราจะใช้อีเมลของคุณเพื่อส่งผลประเมิน หากต้องการให้เราติดต่อทางโทรศัพท์หรือ LINE ให้กรอกช่องทางนั้นและติ๊กช่องยินยอม เราจะเก็บข้อมูลของคุณไว้สิบสองเดือนนับจากการติดต่อครั้งล่าสุด และจะไม่ส่งต่อข้อมูลให้บุคคลอื่น หากคุณเปลี่ยนใจ แจ้งเราได้ทุกเมื่อที่ hi@agentsiam.com",
   },
   /**
    * Rendered as a link to `/privacy`, which is why it is its own key: an
@@ -69,6 +110,23 @@ export const CONSENT_COPY = {
    * sentence on a substring, and that breaks the moment the Thai word order
    * differs from the English.
    */
+  "consent.channel.email": {
+    screen: "Contact gate, inside the consent statement",
+    en: "email",
+    th: "อีเมล",
+  },
+
+  /**
+   * The joiner between channel names. A separate entry because Thai does not
+   * take a comma-and list the way English does, and hardcoding " and " here
+   * would produce "อีเมล and LINE" on the screen that matters most.
+   */
+  "consent.channelJoin": {
+    screen: "Contact gate, between channel names",
+    en: " and ",
+    th: " และ ",
+  },
+
   "consent.privacyLink": {
     screen: "Contact gate, under the purpose paragraph",
     en: "Read our Privacy Policy",

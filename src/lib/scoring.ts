@@ -13,7 +13,7 @@
  */
 
 import { DIMENSIONS, TIER_WEIGHT, bandFor, GATES, DIRECTION_ITEMS } from "./model";
-import { countryWeight } from "./country-english";
+import { countryWeight, countryWeightWithLanguages } from "./country-english";
 import type { DimensionKey, ConfidenceBand, Tier } from "./model";
 import type { SurveyResponse, SalaryShape } from "./normalize";
 
@@ -226,7 +226,13 @@ function scoreTargetClarity(r: SurveyResponse): number | null {
 function scoreCountryReach(r: SurveyResponse): number | null {
   const countries = (r.targetCountries ?? []).filter((c) => c && c !== "not_sure");
   if (!countries.length) return 1;
-  const total = countries.reduce((sum, c) => sum + countryWeight(c, r.englishCefr ?? null), 0);
+  // The grid, when the candidate filled one in, otherwise English alone. A
+  // local working language at B2 opens a country on its own, which is the only
+  // way a "lower" band country such as Italy or Poland can score at all.
+  const total = countries.reduce(
+    (sum, c) => sum + countryWeightWithLanguages(c, r.englishCefr ?? null, r.otherLanguages),
+    0,
+  );
   const ratio = total / countries.length;
   if (ratio >= 1) return 5;
   if (ratio >= 0.6) return 4;

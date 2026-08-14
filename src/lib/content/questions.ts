@@ -45,23 +45,53 @@ export interface Question {
  * answer in a many-select question. "Germany, Netherlands, not sure yet" is not
  * a coherent answer.
  */
-export const EXCLUSIVE_VALUES = new Set(["not_sure"]);
+// `never` joins `not_sure` on 14/08/2026, for the investment question: "I have
+// not paid for any of these" cannot coexist with an item from the same list.
+// A distinct value rather than reusing `none`, which several single-select
+// questions already use for something that is not exclusive of anything.
+export const EXCLUSIVE_VALUES = new Set(["not_sure", "never"]);
 
 /**
- * Role categories come from the Job Title Pool in `08_Coaching_Business.md`,
- * as observed in the live Candidates Master lookup tab. Categories, not free
- * text: Target Clarity needs "a role is named", not an essay.
+ * Functions, not job titles. Rewritten 14/08/2026 on Paul's read: "it's not a
+ * job title, the goal is to find out what the aspiration is in terms of
+ * department or capability".
+ *
+ * Two things were wrong, and the list was only the second of them. The question
+ * itself asked `ตำแหน่งงานหรือสายงาน`, position OR field, so it asked two
+ * questions at once and a candidate could honestly answer either. And
+ * `Management & Executive` sat in a list of functions while being a seniority,
+ * which is what made the whole set read as titles: a marketing director had to
+ * choose between their function and their level, and lost the more useful of
+ * the two. Seniority is already answered by the experience question, so it is
+ * gone from here.
+ *
+ * `Other` is gone as well, and that is what removed the pressure for a free
+ * text box. It was never an answer, only a bucket that needed a text field to
+ * mean anything, and the app has no free-text question type by decision
+ * (13/08/2026, the In Scope gate reads the CV instead). `Still deciding` is a
+ * real answer in its place, and it scores honestly as low Target Clarity,
+ * which is exactly what someone who cannot yet name a field should score.
+ *
+ * Categories rather than titles for the original reason too: Target Clarity
+ * needs "a field is named", not an essay.
  */
 export const ROLE_CATEGORIES = [
   "IT & Software",
   "Engineering & Technical",
-  "Business, Strategy & Project",
+  "Data & Analytics",
+  "Finance & Accounting",
   "Marketing",
   "Sales & Business Development",
   "Customer Success & Account Management",
+  "HR & People",
+  "Design & Creative",
   "Procurement, Supply Chain & Operations",
-  "Management & Executive",
-  "Other",
+  "Business, Strategy & Project",
+  "Education & Training",
+  "Healthcare & Life Sciences",
+  "Hospitality & Tourism",
+  "Legal & Compliance",
+  "Research & Science",
 ] as const;
 
 const COUNTRIES = [
@@ -122,15 +152,16 @@ export const STAGE1: Question[] = [
     ],
   },
   {
-    // SLOT: targetRole [proxy: Target Clarity].
+    // SLOT: targetRole [proxy: Target Clarity]. The field, not the title, since
+    // 14/08/2026: see the note on ROLE_CATEGORIES above.
     key: "targetRole",
     stage: 1,
     select: "one",
-    en: "Target role or field in Europe",
-    th: "ตำแหน่งงานหรือสายงานที่อยากทำในยุโรป",
+    en: "Which field do you want to work in in Europe?",
+    th: "สายงานที่อยากทำในยุโรป",
     options: [
       ...ROLE_CATEGORIES.map((r) => ({ value: r, en: r, th: r })),
-      { value: "not_sure", en: "Not sure yet", th: "ยังไม่แน่ใจ" },
+      { value: "not_sure", en: "Still deciding", th: "ยังตัดสินใจไม่ได้" },
     ],
   },
   {
@@ -210,17 +241,27 @@ export const STAGE1: Question[] = [
   {
     // SLOT: englishCefr [ECRA: Language Readiness + Business English]. Feeds
     // two of the four dimensions. Founder decision 08/08/2026: no test-score
-    // follow-up, four buttons is enough.
+    // follow-up, buttons are enough.
+    //
+    // Six levels since 14/08/2026, the full CEFR ladder, on Paul's call. The
+    // four-button version folded A1 into A2 and B2 into B1, which cost the two
+    // distinctions that matter most in this pool: a true beginner scored the
+    // same as someone with school English, and B2, the level most European
+    // employers actually ask for, had nowhere to land. The scale, the
+    // normaliser and `parseCefr` already carried all six; only the question
+    // was short.
     key: "english",
     stage: 1,
     select: "one",
     en: "Your English level",
     th: "ระดับภาษาอังกฤษของคุณ",
     options: [
-      { value: "A2", en: "Basic", th: "พื้นฐาน" },
-      { value: "B1", en: "Conversational", th: "พอสื่อสารได้" },
-      { value: "C1", en: "Fluent", th: "คล่องแคล่ว" },
-      { value: "C2", en: "Native-level", th: "ใกล้เคียงเจ้าของภาษา" },
+      { value: "A1", en: "Beginner (A1)", th: "เริ่มต้น (A1)" },
+      { value: "A2", en: "Elementary (A2)", th: "พื้นฐาน (A2)" },
+      { value: "B1", en: "Conversational (B1)", th: "พอสื่อสารได้ (B1)" },
+      { value: "B2", en: "Working proficiency (B2)", th: "ใช้ทำงานได้ (B2)" },
+      { value: "C1", en: "Fluent (C1)", th: "คล่องแคล่ว (C1)" },
+      { value: "C2", en: "Native-level (C2)", th: "ใกล้เคียงเจ้าของภาษา (C2)" },
     ],
   },
   {
@@ -268,23 +309,44 @@ export const STAGE1: Question[] = [
     // budget question, and it reads as a normal closing question rather than
     // a price probe when it comes after everything else.
     //
-    // The survey's free-text answer collapsed to `unclassified`; three closed
-    // options cannot produce that, so the grade never has to guess. The 0 band
-    // ("named money as a blocker") still cannot be reached from the app, since
-    // it comes from free text nothing here collects.
+    // **Multi-select since later the same day, on Paul's call: he wanted to
+    // know WHAT they paid for, not just whether they had.** Asking the areas
+    // directly answers both, so this stayed one question rather than becoming
+    // a yes/no plus a follow-up. That matters more than it looks: the app has
+    // no conditional question display, so a follow-up would have shown to
+    // everyone including the people who just said no.
+    //
+    // The score does not change with the areas, and should not. The framework
+    // asks about prior spend and not its aim: "having paid for anything before
+    // is the signal". The areas are for the coach's call preparation, and
+    // `toGradeInput` collapses them back to paid or not paid.
+    //
+    // The 0 band ("named money as a blocker") still cannot be reached from the
+    // app, since it comes from free text nothing here collects.
     key: "priorInvestment",
     stage: 1,
-    select: "one",
-    en: "Have you paid for a course, certification or coaching for your career before?",
-    th: "ที่ผ่านมาเคยลงทุนกับคอร์สเรียน ใบรับรอง หรือโค้ชด้านอาชีพมาก่อนไหม",
+    select: "many",
+    en: "Have you ever paid for any of these? Choose all that apply.",
+    th: "ที่ผ่านมาคุณเคยจ่ายเงินเรียนหรือพัฒนาตัวเองด้านไหนบ้าง เลือกได้มากกว่า 1 ข้อ",
     options: [
-      { value: "none", en: "Not yet", th: "ยังไม่เคย" },
+      { value: "language", en: "Learning a language", th: "เรียนภาษา" },
       {
-        value: "relevant",
-        en: "Yes, for the field I'm aiming at",
-        th: "เคย และเกี่ยวกับสายงานที่อยากไปทำ",
+        value: "soft_skills",
+        en: "Soft skills, for example communication or leadership",
+        th: "ทักษะการทำงาน เช่น การสื่อสาร ภาวะผู้นำ",
       },
-      { value: "unrelated", en: "Yes, but in a different field", th: "เคย แต่คนละสายงาน" },
+      {
+        value: "technical",
+        en: "A technical skill or a programming language",
+        th: "ทักษะเฉพาะทาง หรือเขียนโปรแกรม",
+      },
+      {
+        value: "certification",
+        en: "A professional certification or qualification",
+        th: "ใบรับรองหรือคุณวุฒิวิชาชีพ",
+      },
+      { value: "career_coach", en: "A career coach", th: "โค้ชด้านอาชีพ" },
+      { value: "never", en: "None of these yet", th: "ยังไม่เคย" },
     ],
   },
 ];

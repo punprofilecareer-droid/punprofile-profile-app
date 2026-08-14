@@ -64,10 +64,28 @@ export default async function RootLayout({
         className={`${fontVars} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col">
+          {/* Capability gate for the glass material, before first paint so the
+              bar never renders blurred and then snaps solid. `deviceMemory`
+              and `hardwareConcurrency` are Chrome-only, which is exactly the
+              browser this audience is on. A device that reports nothing is
+              treated as capable, because the common no-report case is desktop
+              Safari and Firefox. */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "try{var n=navigator,m=n.deviceMemory,c=n.hardwareConcurrency;" +
+                "if((m&&m<=4)||(c&&c<=4))document.documentElement.dataset.perf='low';}catch(e){}",
+            }}
+          />
           <LocaleProvider initial={locale}>
-            {/* nav-header: surface, ink, 72px, and never competing with page
-                content for colour attention. */}
-            <header className="flex h-[72px] shrink-0 items-center justify-between gap-4 border-b border-neutral-300 bg-surface px-6">
+            {/* nav-header, Liquid Glass. Sticky rather than static since
+                14/08/2026: a material whose whole effect is bending the
+                content behind it does nothing at all if content never passes
+                underneath. Apple's rule is that glass is for the functional
+                layer above content, and this bar plus the language menu plus
+                the bottom action bar are the only three surfaces in the app
+                that qualify. */}
+            <header className="glass-bar sticky top-0 z-40 flex h-[72px] shrink-0 items-center justify-between gap-4 px-6">
               {/* The wordmark, not the word. Deliberately not a link: the
                   header sits above a running assessment, and a logo that
                   navigates home is a one-tap way to lose ten answers.
