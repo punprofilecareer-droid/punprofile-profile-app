@@ -210,17 +210,27 @@ export const STAGE1: Question[] = [
   {
     // SLOT: englishCefr [ECRA: Language Readiness + Business English]. Feeds
     // two of the four dimensions. Founder decision 08/08/2026: no test-score
-    // follow-up, four buttons is enough.
+    // follow-up, buttons are enough.
+    //
+    // Six levels since 14/08/2026, the full CEFR ladder, on Paul's call. The
+    // four-button version folded A1 into A2 and B2 into B1, which cost the two
+    // distinctions that matter most in this pool: a true beginner scored the
+    // same as someone with school English, and B2, the level most European
+    // employers actually ask for, had nowhere to land. The scale, the
+    // normaliser and `parseCefr` already carried all six; only the question
+    // was short.
     key: "english",
     stage: 1,
     select: "one",
     en: "Your English level",
     th: "ระดับภาษาอังกฤษของคุณ",
     options: [
-      { value: "A2", en: "Basic", th: "พื้นฐาน" },
-      { value: "B1", en: "Conversational", th: "พอสื่อสารได้" },
-      { value: "C1", en: "Fluent", th: "คล่องแคล่ว" },
-      { value: "C2", en: "Native-level", th: "ใกล้เคียงเจ้าของภาษา" },
+      { value: "A1", en: "Beginner (A1)", th: "เริ่มต้น (A1)" },
+      { value: "A2", en: "Elementary (A2)", th: "พื้นฐาน (A2)" },
+      { value: "B1", en: "Conversational (B1)", th: "พอสื่อสารได้ (B1)" },
+      { value: "B2", en: "Working proficiency (B2)", th: "ใช้ทำงานได้ (B2)" },
+      { value: "C1", en: "Fluent (C1)", th: "คล่องแคล่ว (C1)" },
+      { value: "C2", en: "Native-level (C2)", th: "ใกล้เคียงเจ้าของภาษา (C2)" },
     ],
   },
   {

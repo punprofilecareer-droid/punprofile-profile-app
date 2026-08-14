@@ -86,17 +86,7 @@ export default function ContactGate({
     "mt-1 h-12 w-full rounded-md border border-neutral-300 bg-surface px-4 text-body text-ink transition-colors focus:border-eufit focus:outline-none focus:ring-2 focus:ring-eufit/25";
   const labelText = "block text-caption text-neutral-500";
 
-  // Email is always in the list because it is always required. The other two
-  // appear only once their field has something in it, so the sentence describes
-  // this candidate's actual choice rather than every channel on offer.
-  const channels = [
-    pick(CONSENT_COPY["consent.channel.email"]),
-    ...(phone.trim() ? [pick(CONSENT_COPY["consent.channel.phone"])] : []),
-    ...(lineId.trim() ? [pick(CONSENT_COPY["consent.channel.line"])] : []),
-  ];
-  const consentLabel = t("consent.statement", {
-    channels: channels.join(pick(CONSENT_COPY["consent.channelJoin"])),
-  });
+  const consentLabel = pick(CONSENT_COPY["consent.statement"]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();

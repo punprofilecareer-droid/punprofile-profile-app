@@ -36,10 +36,16 @@ import type { CopyEntry } from "./content/copy";
  * and not a UI one. It survives because **the field is the granular control,
  * not the checkbox**. A candidate consents to a channel by giving us that
  * channel; leaving LINE blank is a refusal of LINE, and no wording is needed
- * for it. So the single statement NAMES the channels that were actually filled
- * in, `consent.statement` interpolating them, and the one tick still writes a
- * separate timestamp per channel in `convex/leads.ts`. The audit trail is
- * unchanged: what was consented to, per channel, and when.
+ * for it. So a single statement names the channels and the one tick still
+ * writes a separate timestamp per channel in `convex/leads.ts`, only ever for
+ * a channel the candidate actually filled in. The audit trail is unchanged:
+ * what was consented to, per channel, and when.
+ *
+ * The statement interpolated only the filled channels at first. Paul replaced
+ * it on 14/08/2026 with all three named outright. It reads better and it stays
+ * accurate, because naming a channel in the sentence grants nothing on its
+ * own: an empty phone field sends `undefined` and no phone timestamp is ever
+ * written.
  *
  * The thing genuinely given up: a candidate can no longer give us a phone
  * number while withholding permission to use it. That combination existed on
@@ -80,8 +86,8 @@ export const CONSENT_COPY_REVIEWED = true;
 export const CONSENT_COPY = {
   "consent.statement": {
     screen: "Contact gate, beside the email field",
-    en: "I agree that PunProfile may contact me about my result and career coaching by {channels}.",
-    th: "ยินยอมให้ PunProfile ติดต่อกลับเรื่องผลประเมินและบริการแนะแนวอาชีพทาง{channels}",
+    en: "I agree that PunProfile may contact me about my result and career coaching by email, LINE or phone.",
+    th: "ยินยอมให้ PunProfile ติดต่อกลับเกี่ยวกับผลประเมินและบริการแนะแนวอาชีพทางอีเมล ไลน์ หรือ โทรศัพท์",
   },
   "consent.channel.phone": {
     screen: "Contact gate, beside the phone field",

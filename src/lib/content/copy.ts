@@ -52,8 +52,11 @@ export const COPY = {
   },
   "footer.brand": {
     screen: "Footer, every screen",
-    en: "PunProfile Career Coaching",
-    th: "PunProfile Career Coaching",
+    // Not translated. The brand name, the year and a rights line read the same
+    // to both audiences, and a Thai transliteration of a legal formula reads
+    // as a mistake rather than as a courtesy.
+    en: "PunProfile Career Coaching | 2026 | All Rights Reserved",
+    th: "PunProfile Career Coaching | 2026 | All Rights Reserved",
   },
 
   // ---------------------------------------------------------------- landing

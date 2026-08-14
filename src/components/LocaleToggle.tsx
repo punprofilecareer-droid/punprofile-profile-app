@@ -37,36 +37,53 @@ import { useCopy } from "./LocaleProvider";
  * bands stay horizontal and centred; the Union Jack is drawn at 2:1 and scaled
  * up so the centre of the cross lands in the centre of the circle.
  */
+/**
+ * Both flags are drawn at their own aspect ratio (Thailand 3:2, the Union Jack
+ * 2:1) and cropped to the circle with `preserveAspectRatio="xMidYMid slice"`.
+ * Fixed 14/08/2026: they were previously redrawn into a square viewBox by hand
+ * with nested transforms, which put the Union Jack's cross visibly off centre.
+ * Letting the browser do the centring is both correct and shorter, and it
+ * means the geometry in each file is the flag's real geometry rather than a
+ * hand-fitted copy of it.
+ */
 function FlagTh() {
   return (
-    <svg viewBox="0 0 60 60" className="size-full" aria-hidden focusable="false">
-      <rect width="60" height="60" fill="#A51931" />
-      <rect y="10" width="60" height="40" fill="#F4F5F8" />
-      <rect y="20" width="60" height="20" fill="#2D2A4A" />
+    <svg
+      viewBox="0 0 60 40"
+      preserveAspectRatio="xMidYMid slice"
+      className="size-full"
+      aria-hidden
+      focusable="false"
+    >
+      <rect width="60" height="40" fill="#A51931" />
+      <rect y="6.667" width="60" height="26.666" fill="#F4F5F8" />
+      <rect y="13.333" width="60" height="13.334" fill="#2D2A4A" />
     </svg>
   );
 }
 
 function FlagEn() {
   return (
-    <svg viewBox="0 0 60 60" className="size-full" aria-hidden focusable="false">
-      <g transform="translate(0,-15) scale(1,1)">
-        <clipPath id="locale-uk-saltire">
-          <path d="M45,45 h45 v45 z v45 h-45 z h-45 v-45 z v-45 h45 z" transform="translate(-15,-15)" />
-        </clipPath>
-        <rect y="0" width="60" height="90" fill="#012169" />
-        <g transform="translate(0,15)">
-          <path d="M-15,-15 L75,45 M75,-15 L-15,45" stroke="#FFFFFF" strokeWidth="12" />
-          <path
-            d="M-15,-15 L75,45 M75,-15 L-15,45"
-            clipPath="url(#locale-uk-saltire)"
-            stroke="#C8102E"
-            strokeWidth="8"
-          />
-          <path d="M30,-15 v90 M-15,15 h90" stroke="#FFFFFF" strokeWidth="20" />
-          <path d="M30,-15 v90 M-15,15 h90" stroke="#C8102E" strokeWidth="12" />
-        </g>
-      </g>
+    <svg
+      viewBox="0 0 60 30"
+      preserveAspectRatio="xMidYMid slice"
+      className="size-full"
+      aria-hidden
+      focusable="false"
+    >
+      <clipPath id="locale-uk-saltire">
+        <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+      </clipPath>
+      <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#FFFFFF" strokeWidth="6" />
+      <path
+        d="M0,0 L60,30 M60,0 L0,30"
+        clipPath="url(#locale-uk-saltire)"
+        stroke="#C8102E"
+        strokeWidth="4"
+      />
+      <path d="M30,0 v30 M0,15 h60" stroke="#FFFFFF" strokeWidth="10" />
+      <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
     </svg>
   );
 }
