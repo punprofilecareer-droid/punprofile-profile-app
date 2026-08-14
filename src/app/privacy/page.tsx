@@ -35,7 +35,7 @@ export default function PrivacyPage() {
         </p>
       )}
 
-      <h1 className="text-h2">{th ? "ประกาศความเป็นส่วนตัว" : "Privacy Notice"}</h1>
+      <h1 className="text-h2">{th ? "นโยบายความเป็นส่วนตัว" : "Privacy Policy"}</h1>
       <p className="mt-2 text-caption text-neutral-500">
         {th ? "ปรับปรุงล่าสุด" : "Last updated"} {PRIVACY_LAST_UPDATED}
       </p>
