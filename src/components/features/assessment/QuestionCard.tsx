@@ -94,7 +94,7 @@ export default function QuestionCard({
           <button
             type="button"
             onClick={onBack}
-            className="-mr-2 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-primary"
+            className="-mr-2 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-eufit-deep"
           >
             {t("assess.back")}
           </button>
@@ -109,7 +109,7 @@ export default function QuestionCard({
       >
         {/* Teal, not Terracotta: progress is feedback, not the view's action. */}
         <div
-          className="h-full rounded-full bg-primary transition-all"
+          className="h-full rounded-full bg-eufit transition-all"
           style={{ width: `${(step / total) * 100}%` }}
         />
       </div>
@@ -128,7 +128,7 @@ export default function QuestionCard({
             aria-pressed={isChosen(o.value)}
             className={`min-h-12 rounded-md border px-4 py-3 text-left text-body transition-colors ${
               isChosen(o.value)
-                ? "border-primary bg-primary text-on-primary"
+                ? "border-eufit-deep bg-eufit-deep text-on-eufit"
                 : "border-neutral-300 bg-surface hover:bg-mint-wash"
             }`}
           >

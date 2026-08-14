@@ -48,8 +48,17 @@
   --color-on-warning: #242425;
   --color-error: #b3261e;
   --color-on-error: #ffffff;
-  --color-info: #6b63c7;
-  --color-on-info: #ffffff;
+  /* EU Fit Check's own identity, the Lavender family (design.md, 14/08/2026).
+     Three stops because `lavender-wash` is a background and nothing else: ink
+     on it holds 12.7:1, white on it is unreadable. `eufit` is AA at 4.96:1, so
+     body and above; `eufit-deep` at 8.41:1 carries white text and captions.
+     Neither ever goes on a button. Terracotta is the action, lavender is the
+     product, and a screen with two things asking to be pressed has neither.
+     These replace the `info` token, which was never used and held this exact
+     value. */
+  --color-eufit: #6b63c7;
+  --color-eufit-deep: #4a3f9e;
+  --color-on-eufit: #ffffff;
 
   --text-display: 56px;
   --text-display--line-height: 1.05;
@@ -147,7 +156,11 @@
   --viz-surface: var(--color-surface);
   --viz-grid: var(--color-neutral-300);
   --viz-muted: var(--color-neutral-500);
-  --viz-series-1: var(--color-primary);
+  /* The chart is the product's own surface, so it takes the product's colour
+     rather than the company's. 14/08/2026. `eufit`, not `eufit-deep`: the
+     series is a 2px stroke over a 16% fill, read as a shape rather than as
+     text, and the deeper stop would sit too heavily against the grid. */
+  --viz-series-1: var(--color-eufit);
 }
 .viz-root .viz-radar { display: block; }
 .viz-root .viz-axis-label { font: 500 11px var(--font-sans); fill: var(--color-slate); }

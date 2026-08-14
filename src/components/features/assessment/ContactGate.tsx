@@ -141,7 +141,7 @@ export default function ContactGate({
         {t("assess.progress", { step: totalSteps, total: totalSteps })}
       </p>
       <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300">
-        <div className="h-full w-full rounded-full bg-primary" />
+        <div className="h-full w-full rounded-full bg-eufit" />
       </div>
       <h1 className="text-h3">{t("gate.heading")}</h1>
       <p className="mt-2 text-body text-slate">{t("gate.body")}</p>
@@ -155,7 +155,7 @@ export default function ContactGate({
 
       <p className="mt-6 text-caption text-neutral-500">
         {pick(CONSENT_COPY["consent.purpose"])}{" "}
-        <Link href="/privacy" className="text-primary underline">
+        <Link href="/privacy" className="text-eufit-deep underline">
           {pick(CONSENT_COPY["consent.privacyLink"])}
         </Link>
       </p>
@@ -265,7 +265,7 @@ function Consent({
         checked={checked}
         required={required}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 size-5 shrink-0 accent-primary"
+        className="mt-0.5 size-5 shrink-0 accent-eufit"
       />
       <span>{label}</span>
     </label>

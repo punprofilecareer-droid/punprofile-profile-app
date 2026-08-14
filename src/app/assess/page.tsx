@@ -147,7 +147,7 @@ export default function AssessPage() {
                 work. Ring on the brand primary, one revolution a second. */}
             <span
               aria-hidden
-              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-neutral-300 border-t-primary"
+              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-neutral-300 border-t-eufit"
             />
             <p className="text-body text-neutral-500" role="status">
               {t("assess.starting")}
@@ -232,7 +232,7 @@ export default function AssessPage() {
           )}
           {summary.next && (
             <div className="rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6">
-              <p className="text-label text-primary-deep">{summary.nextLead}</p>
+              <p className="text-label text-eufit-deep">{summary.nextLead}</p>
               <p className="mt-2 text-body text-ink">{summary.next}</p>
             </div>
           )}
@@ -268,7 +268,7 @@ export default function AssessPage() {
       <button
         type="button"
         onClick={() => setStep(STAGE1.length - 1)}
-        className="mt-6 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-primary"
+        className="mt-6 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-eufit-deep"
       >
         {t("teaser.revise")}
       </button>
