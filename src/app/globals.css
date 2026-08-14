@@ -28,6 +28,21 @@
   --color-on-accent: #ffffff;
 
   /* Section-background washes. One per section, never blended. */
+  /* Mascot Orange. Named in `design.md` as the one colour the character may be
+     drawn in, and added to the theme 14/08/2026 when the founder section asked
+     for a strong orange ground.
+
+     NOT `accent`. Terracotta (#cc3f00) is reserved for the single primary
+     action on a screen, and a full-bleed section in the button colour spends
+     the persuasive weight the reservation exists to protect. Mascot Orange is
+     the brand's illustration orange, so it can carry a large fill without
+     competing with anything that asks to be pressed.
+
+     It takes INK text, not white: white on this holds 3.08:1 and fails AA at
+     body size, ink holds 5.12:1 and passes. The founder section is the longest
+     body of running text on the site, so that difference is the whole decision
+     rather than a detail. */
+  --color-mascot: #e7703a;
   --color-lavender-wash: #e9e6ff;
   --color-mint-wash: #e3faf3;
   --color-mint-tint: #c9faee;
@@ -111,6 +126,40 @@
 }
 
 @layer base {
+  /* Reserve the scrollbar's space permanently. Added 14/08/2026.
+
+     Opening the menu locks body scrolling, which removes the scrollbar, which
+     used to widen the viewport by its width and slide every centred thing on
+     the page a few pixels right at the exact moment a panel was animating in.
+     Small, and unmistakable once seen, because the movement is sideways while
+     the animation is sideways.
+
+     `scrollbar-gutter` is the fix rather than a workaround: the gutter is
+     reserved whether or not a scrollbar is currently drawn, so nothing shifts
+     when one appears or disappears for ANY reason, including navigating from a
+     long page to a short one. It costs nothing where the platform draws
+     overlay scrollbars, because there the gutter is already zero.
+
+     On both html and body because the viewport reads its overflow from html
+     unless html is `visible`, in which case it reads body, and this layout has
+     html visible. Declaring it on both means the gutter survives whichever
+     element the viewport ends up consulting.
+
+     Worth recording what went wrong while getting here, because the measurement
+     that finally settled it is not the obvious one. The gutter was working the
+     whole time: with the menu open, `document.body` stayed 1455px wide, exactly
+     as it was closed. What changed was `documentElement.clientWidth`, which
+     went 1455 to 1470, because that reports the VIEWPORT and the viewport does
+     widen when a scrollbar goes away. `SiteMenu`'s fallback was probing
+     `clientWidth`, believed 15px had appeared, padded for it, and slid the page
+     left by half a scrollbar. It now probes `document.body.getBoundingClientRect()`,
+     which is a layout measurement and reads zero here, so nothing is padded and
+     nothing moves. */
+  html,
+  body {
+    scrollbar-gutter: stable;
+  }
+
   html {
     color-scheme: light;
   }
@@ -198,6 +247,73 @@
    reads as light catching a bevel. Drop any one and it stops looking like
    glass and starts looking like a semi-transparent div.
    --------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+   The site menu's entrance and exit. TASK-085, added 14/08/2026.
+
+   A drawer that appears instantly reads as a glitch rather than as a panel:
+   there is no moment where the eye can see WHERE it came from, so it registers
+   as the page changing rather than as something opening. 220ms is enough to
+   show the direction and short enough that a second tap never feels blocked.
+
+   `cubic-bezier(0.32, 0.72, 0, 1)` rather than `ease-out`: it decelerates hard
+   at the end, which is what makes a panel feel like it has weight and settles
+   rather than gliding to a stop. The scrim uses plain opacity on a slightly
+   shorter curve, so the dimming has already begun before the panel arrives.
+
+   Only `transform` and `opacity` are animated, so both stay on the compositor
+   and neither triggers layout. Worth being deliberate about here because the
+   panel also carries `backdrop-filter`, and animating anything that forces a
+   repaint would make the blur recompute every frame on exactly the mid-range
+   Android hardware this audience is on.
+   --------------------------------------------------------------------------- */
+
+@keyframes menu-panel-in {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes menu-panel-out {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+@keyframes menu-scrim-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes menu-scrim-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@layer components {
+  .menu-panel-in {
+    animation: menu-panel-in 220ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+  .menu-panel-out {
+    animation: menu-panel-out 200ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+  .menu-scrim-in {
+    animation: menu-scrim-in 200ms ease-out both;
+  }
+  .menu-scrim-out {
+    animation: menu-scrim-out 180ms ease-in both;
+  }
+}
+
+/* Someone who has asked the system for less motion has asked for less motion,
+   not for a shorter version of it. The panel still appears and still
+   disappears; it simply does so without travelling. */
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel-in,
+  .menu-panel-out,
+  .menu-scrim-in,
+  .menu-scrim-out {
+    animation: none;
+  }
+}
 
 @layer components {
   .glass {

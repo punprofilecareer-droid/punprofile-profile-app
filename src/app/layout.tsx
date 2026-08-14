@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
 import { cookies } from "next/headers";
 import { Fraunces, Inter, Noto_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
@@ -8,6 +7,9 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import LocaleProvider from "@/components/LocaleProvider";
 import LocaleToggle from "@/components/LocaleToggle";
+import SiteMenu from "@/components/SiteMenu";
+import SiteFooter from "@/components/SiteFooter";
+import NavLockGate from "@/components/NavLockGate";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, isLocale, t } from "@/lib/locale";
 
 /**
@@ -85,31 +87,46 @@ export default async function RootLayout({
                 layer above content, and this bar plus the language menu plus
                 the bottom action bar are the only three surfaces in the app
                 that qualify. */}
-            <header className="glass-bar sticky top-0 z-40 flex h-[72px] shrink-0 items-center justify-between gap-4 px-6">
-              {/* The wordmark, not the word. Deliberately not a link: the
-                  header sits above a running assessment, and a logo that
-                  navigates home is a one-tap way to lose ten answers.
-                  `nav.brand` stays as the alt text, which is the only place
-                  the string is still needed. */}
-              <Image
-                src="/punprofile-wordmark.png"
-                alt={t("nav.brand", locale)}
-                width={594}
-                height={96}
-                priority
-                className="h-6 w-auto"
-              />
-              <LocaleToggle />
+            {/* Three columns, not a flex row with the logo in the middle:
+                the wordmark is centred on the SCREEN, and a flex row would
+                centre it on whatever space the two controls left over, so it
+                would shift sideways whenever the menu hides itself during an
+                assessment. The outer columns are the same fixed width and the
+                centre takes the rest, which keeps it still. */}
+            <header className="glass-bar sticky top-0 z-40 grid h-[72px] shrink-0 grid-cols-[3rem_1fr_3rem] items-center gap-2 px-4 sm:px-6">
+              <div className="flex justify-start">
+                <SiteMenu />
+              </div>
+              {/* The wordmark, not the word. Still deliberately not a link,
+                  and more deliberately now that it is centred and looks like
+                  one: the header sits above a running assessment, and a logo
+                  that navigates home is a one-tap way to lose ten answers.
+                  Navigation has its own control on the left. `nav.brand` stays
+                  as the alt text, which is the only place the string is still
+                  needed. */}
+              <div className="flex justify-center">
+                <Image
+                  src="/punprofile-wordmark.png"
+                  alt={t("nav.brand", locale)}
+                  width={594}
+                  height={96}
+                  priority
+                  className="h-6 w-auto"
+                />
+              </div>
+              <div className="flex justify-end">
+                <LocaleToggle />
+              </div>
             </header>
             <ConvexClientProvider>
               <main className="flex flex-1 flex-col">{children}</main>
             </ConvexClientProvider>
-            <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-300 bg-surface px-6 py-12 text-caption text-slate">
-              <span>{t("footer.brand", locale)}</span>
-              <Link href="/privacy" className="text-primary underline">
-                {t("consent.privacyLink", locale)}
-              </Link>
-            </footer>
+            {/* Hidden for the same reason and by the same signal as the
+                menu: during the check, every link out costs the candidate
+                their answers. */}
+            <NavLockGate>
+              <SiteFooter locale={locale} />
+            </NavLockGate>
           </LocaleProvider>
         </body>
       </html>

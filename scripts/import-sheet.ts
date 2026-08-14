@@ -43,6 +43,20 @@ export const COLUMN_MATCHERS = {
   dependents: "who would relocate with you",
   familyReady: "how ready is your family",
   salary: "your expected salary",
+  /**
+   * Paul's own two columns at the far right of the sheet, added to the importer
+   * 14/08/2026 on his instruction to bring every column across.
+   *
+   * Neither is a form question: they are triage the coach did on the sheet, so
+   * they are evidence about the LEAD rather than answers from the candidate.
+   * That distinction is why they travel as `_`-prefixed keys inside `responses`
+   * and never as `ScoringInput` fields. Nothing in `toScoringInput` reads a
+   * key beginning with an underscore, so a suggested entry point cannot leak
+   * into a score, which would be circular: the suggestion was made by reading
+   * the answers the score is computed from.
+   */
+  entryPoint: "auto-suggested entry point",
+  manualCheck: "manual check needed",
 } as const;
 
 export type ColumnKey = keyof typeof COLUMN_MATCHERS;
@@ -91,6 +105,10 @@ export interface ImportedRow {
     targetRole: string;
     targetCountries: string[];
     emailHash: string;
+    /** Paul's suggested service entry point for this lead, verbatim. */
+    entryPoint: string;
+    /** His flag that the row needs a human look. Empty means it does not. */
+    manualCheck: string;
   };
   /**
    * Real contact details, added for the TASK-053 backfill. The offline scoring
@@ -201,6 +219,9 @@ export function importRow(row: string[], cols: ColumnMap): ImportedRow {
       targetRole,
       targetCountries: countries,
       emailHash: hash(g("email").trim().toLowerCase()),
+      /** Coach triage from the sheet, not candidate answers. See COLUMN_MATCHERS. */
+      entryPoint: g("entryPoint").trim(),
+      manualCheck: g("manualCheck").trim(),
     },
     contact: parseContact(g("email"), g("contact")),
   };

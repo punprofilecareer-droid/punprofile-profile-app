@@ -15,6 +15,7 @@ import type * as leads from "../leads.js";
 import type * as notify from "../notify.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as scoring from "../scoring.js";
+import type * as stats from "../stats.js";
 
 import type {
   ApiFromModules,
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   notify: typeof notify;
   rateLimits: typeof rateLimits;
   scoring: typeof scoring;
+  stats: typeof stats;
 }>;
 
 /**

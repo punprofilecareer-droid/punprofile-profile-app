@@ -45,6 +45,54 @@ export const COPY = {
     // The wordmark is a fixed asset and never translated or transliterated.
     th: "PunProfile",
   },
+  // ------------------------------------------------------------- site menu
+  // The burger's destinations. `nav.brand` is not among them: the wordmark is
+  // centred and inert, so nothing here is a second way to say "home" except
+  // the one entry that says it.
+  "nav.menu": {
+    screen: "Header, the burger button's accessible name",
+    en: "Menu",
+    th: "เมนู",
+  },
+  "nav.menuClose": {
+    screen: "Header, the open menu's close button",
+    en: "Close menu",
+    th: "ปิดเมนู",
+  },
+  "nav.assess": {
+    screen: "Site menu, the one action in the list",
+    en: "EU Fit Check",
+    th: "EU Fit Check",
+  },
+  "nav.services": {
+    screen: "Site menu",
+    // "Our Services", not "Services". The possessive is doing work in Thai:
+    // บริการ alone reads as a section label on any website, บริการของเรา reads
+    // as this business telling you what it offers.
+    en: "Our Services",
+    th: "บริการของเรา",
+  },
+  "nav.coaching": {
+    screen: "Site menu",
+    // Not "About". The page sells the coaching and introduces Paul at the end,
+    // so the label names what the reader gets rather than who wrote it.
+    //
+    // Identical in both languages, on Paul's call. "Coaching 1:1" is already
+    // how this is said in Thai professional contexts, and โค้ชชิ่งตัวต่อตัว is
+    // the longest item in a menu whose other entries are two words.
+    en: "Coaching 1:1",
+    th: "Coaching 1:1",
+  },
+  "nav.faq": {
+    screen: "Site menu",
+    en: "FAQ",
+    th: "คำถามที่พบบ่อย",
+  },
+  "nav.contact": {
+    screen: "Site menu",
+    en: "Contact",
+    th: "ติดต่อเรา",
+  },
   "nav.language": {
     screen: "Header, the TH/EN switch",
     en: "Language",
@@ -166,13 +214,101 @@ export const COPY = {
   },
   "teaser.nextStep": {
     screen: "First read, the closing card. What happens after this screen",
-    en: "PunProfile will be in touch with your full result, and what to do about it.",
-    th: "ทีม PunProfile จะติดต่อกลับพร้อมผลฉบับเต็ม และคำแนะนำว่าควรทำอะไรต่อ",
+    // Paul's wording, 14/08/2026, and a deliberate downgrade of the promise.
+    // The line before it said the team would be in touch, full stop, which is
+    // a commitment made to every single finisher by a team of one. Naming the
+    // queue costs nothing and buys the thing a promise cannot: a candidate who
+    // waits a week has been told a week is normal, rather than concluding they
+    // were the one who did not qualify.
+    en: "We are getting a lot of enquiries at the moment, so the team may not reach you until your turn comes round.",
+    th: "เนื่องจากมีผู้ติดต่อเข้ามาเป็นจำนวนมาก ทีมงานอาจไม่ได้ติดต่อกลับไปจนกว่าจะถึงคิวของคุณ",
   },
   "teaser.revise": {
     screen: "Teaser, the link back to the last question",
     en: "Go back and change an answer",
     th: "กลับไปแก้ไขคำตอบ",
+  },
+
+  // ------------------------------------------------------- community stats
+  // The three lines under the first read, TASK-083. Their job is to give a
+  // candidate something to hold and something to repeat: the countries line is
+  // the one that gets screenshotted, the language line is the one that gets
+  // quoted, and the percentile is the only sentence on the screen about them
+  // in relation to anyone else.
+  //
+  // Placeholders are substituted at render, never composed here. `{n}`, `{max}`
+  // and `{dimension}` appear in both languages and Thai puts them in a
+  // different place, which is exactly why the whole sentence is a copy entry
+  // rather than three fragments joined in a component.
+  "stats.heading": {
+    screen: "First read, above the community stats",
+    en: "From everyone who has taken this",
+    th: "จากผู้ที่ทำแบบประเมินนี้ทั้งหมด",
+  },
+  "stats.countries.label": {
+    screen: "First read, the top-countries stat",
+    en: "The five countries this group is aiming at",
+    th: "5 ประเทศที่คนกลุ่มนี้ตั้งเป้าไว้มากที่สุด",
+  },
+  "stats.countries.foot": {
+    screen: "First read, under the top-countries list",
+    // No sample size, on Paul's call 14/08/2026: the number of people who have
+    // taken the check is PunProfile's own information. What survives is WHO
+    // was counted, which is the part that stops a ranking being read as a
+    // claim about Europe rather than about this group.
+    en: "From people who took the EU Fit Check and named a target country.",
+    th: "จากผู้ที่ทำ EU Fit Check และระบุประเทศเป้าหมาย",
+  },
+  "stats.languages.label": {
+    screen: "First read, the most-languages stat",
+    en: "The most languages any one person here speaks",
+    th: "จำนวนภาษาที่คนคนเดียวในกลุ่มนี้พูดได้มากที่สุด",
+  },
+  "stats.languages.value": {
+    screen: "First read, the most-languages figure. {max} is the number",
+    en: "{max} languages",
+    th: "{max} ภาษา",
+  },
+  "stats.languages.foot": {
+    screen: "First read, under the most-languages stat",
+    // Says which bar was used, because "speaks" is the whole disagreement. A
+    // count that included A1 would be a bigger, less true number.
+    en: "Counting English and European languages at conversational level or above.",
+    th: "นับภาษาอังกฤษและภาษายุโรปที่สื่อสารได้ (B1) ขึ้นไป",
+  },
+  "stats.percentile": {
+    screen: "First read, the personal comparison. {dimension} and {n}",
+    // The one sentence on this screen that is about the candidate rather than
+    // the pool, which is why it sits with the stats rather than in the
+    // narrative: the narrative is selected from a bank and cannot say this.
+    en: "Your {dimension} is higher than {n}% of them.",
+    th: "คะแนน{dimension}ของคุณสูงกว่า {n}% ของคนกลุ่มนี้",
+  },
+  "stats.percentile.foot": {
+    screen: "First read, under the percentile line",
+    en: "Compared on self-reported answers, the same as yours.",
+    th: "เทียบจากคำตอบที่แต่ละคนกรอกเอง เช่นเดียวกับของคุณ",
+  },
+
+  // ------------------------------------------------------------- services CTA
+  "services.cta.heading": {
+    screen: "First read, the secondary CTA to /services",
+    en: "While you wait",
+    th: "ระหว่างรอ",
+  },
+  "services.cta.body": {
+    screen: "First read, the secondary CTA to /services",
+    // Pitched at the wait, not at the sale. The candidate has just been told
+    // there is a queue; the honest offer is something to read, and a page that
+    // explains what the coaching actually is does more for a later call than a
+    // second booking button on the same screen.
+    en: "Here is what working with PunProfile actually involves, and which part of it your result points at.",
+    th: "ดูว่าการทำงานร่วมกับ PunProfile เป็นอย่างไร และผลของคุณชี้ไปที่บริการไหน",
+  },
+  "services.cta.button": {
+    screen: "First read, the secondary CTA to /services",
+    en: "See what PunProfile does",
+    th: "ดูบริการของ PunProfile",
   },
 
   // --------------------------------------------------------- chart dimensions

@@ -83,6 +83,20 @@ import type { CopyEntry } from "./content/copy";
 /** TASK-047 cleared on Paul's sign-off, 14/08/2026. */
 export const CONSENT_COPY_REVIEWED = true;
 
+/**
+ * The one address PunProfile publishes, exported 14/08/2026 for the contact
+ * page. It lives here rather than in a generic constants file because this is
+ * the document that settled it: it is the PDPA withdrawal contact first, and a
+ * general enquiries address second. Anything that changes it has to change the
+ * consent copy and the privacy notice in the same breath, which is easier to
+ * remember when they share a file.
+ *
+ * The copy strings below still spell it out inline. That is deliberate: they
+ * are reviewed as sentences, and a template hole in a consent clause is a
+ * sentence nobody actually read.
+ */
+export const CONTACT_EMAIL = 'hi@agentsiam.com';
+
 export const CONSENT_COPY = {
   "consent.statement": {
     screen: "Contact gate, beside the email field",

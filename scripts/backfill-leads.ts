@@ -60,7 +60,15 @@ for (const row of raw.rows) {
     emailNominated: contact.emailNominated !== null,
     contactRaw: contact.raw,
     submittedAt: Date.parse(meta.submittedAt) || Date.now(),
-    responses: input,
+    // The coach's two triage columns ride along with the answers, under
+    // `_`-prefixed keys so no scorer can ever read them. `_contactRaw` is
+    // already carried the same way by the mutation, for the same reason:
+    // nothing on the sheet should be lost because no parser knew its shape.
+    responses: {
+      ...input,
+      ...(meta.entryPoint ? { _entryPoint: meta.entryPoint } : {}),
+      ...(meta.manualCheck ? { _manualCheck: meta.manualCheck } : {}),
+    },
     scores,
   });
 }

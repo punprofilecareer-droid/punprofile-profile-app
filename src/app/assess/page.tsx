@@ -10,6 +10,9 @@ import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
 import LanguageGrid from "@/components/features/assessment/LanguageGrid";
+import CommunityStats from "@/components/features/assessment/CommunityStats";
+import Link from "next/link";
+import { setNavLocked } from "@/lib/navLock";
 import { buildTeaserSummary } from "@/lib/views";
 import { toScoringInput } from "@/lib/content/mapping";
 
@@ -141,7 +144,47 @@ export default function AssessPage() {
     setStep(Math.min(answered, TOTAL_STEPS));
   }, [session]);
 
+  /**
+   * Hide the site menu for as long as leaving would cost the candidate their
+   * answers, TASK-085.
+   *
+   * The condition is the flow's own two facts, not a route match: still inside
+   * the questions, or through them but not yet past the contact step. After
+   * that the session is a real lead with an email, the result is on screen, and
+   * navigating away loses nothing, so the menu comes back.
+   *
+   * Publishing to an external store from an effect is the intended direction
+   * for `useSyncExternalStore`, and the cleanup releases the lock on unmount so
+   * a candidate who leaves by any other means cannot strand the menu hidden.
+   */
+  const navLocked = step < FLOW.length || session?.status === "partial";
+  useEffect(() => {
+    setNavLocked(navLocked);
+    return () => setNavLocked(false);
+  }, [navLocked]);
+
   const scores = useMemo(() => session?.scores ?? {}, [session]);
+
+  /**
+   * The lowest scored axis, which aims the services link and nothing else.
+   *
+   * It is a hint about which section of `/services` to open on, not a verdict:
+   * the page highlights one card and shows all three regardless. Undefined
+   * scores are skipped rather than treated as zero, because a hollow marker
+   * means "not measured", which is the distinction the chart caption makes and
+   * this must not quietly contradict.
+   */
+  const weakest = useMemo(() => {
+    let key: string | null = null;
+    let low = Infinity;
+    for (const [k, v] of Object.entries(scores)) {
+      if (typeof v === "number" && v < low) {
+        low = v;
+        key = k;
+      }
+    }
+    return key;
+  }, [scores]);
 
   // Selected from the sentence bank, never composed. Recomputed client-side
   // from the same responses the server scored, so the words and the chart
@@ -308,6 +351,35 @@ export default function AssessPage() {
       <p className="material-mint mt-6 rounded-lg px-6 py-6 text-body text-ink">
         {t("teaser.nextStep")}
       </p>
+
+      {/* TASK-083. Two facts about everyone who has taken this and one about
+          the candidate, so the screen after the queue message has something on
+          it other than waiting. Renders nothing at all until each statistic
+          clears its own sample floor. */}
+      <CommunityStats scores={scores} />
+
+      {/* TASK-084. The second action on this screen, and deliberately not a
+          second booking button: the candidate has just been told there is a
+          queue, so what they can usefully do now is read what the work is.
+          Secondary treatment throughout, because when TASK-046 turns the
+          booking CTA on below, that one is the revenue step and only one
+          Terracotta action belongs on a view. */}
+      <div className="material mt-8 rounded-lg px-6 py-7 text-left">
+        <h2 className="text-h4">{t("services.cta.heading")}</h2>
+        <p className="mt-2 text-body text-slate">{t("services.cta.body")}</p>
+        {/* Still hand-rolled, and the one deliberate exception to the table:
+            this link carries `?focus=` so the services page opens on the axis
+            the candidate scored lowest, which no shared component can know.
+            It is the table's `/assess-result` primary in every other respect,
+            including its destination. */}
+        <Link
+          href={weakest ? `/services?focus=${weakest}` : "/services"}
+          className="mt-5 inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright"
+        >
+          {t("services.cta.button")}
+          <span aria-hidden>&rarr;</span>
+        </Link>
+      </div>
 
       {/* TASK-046. Hidden until a booking mechanism exists, rather than
           shipping a button that goes nowhere. */}

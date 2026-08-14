@@ -18,6 +18,8 @@ import { STAGE1, isValidAnswer, EXCLUSIVE_VALUES } from "../src/lib/content/ques
 import type { Question } from "../src/lib/content/questions";
 import { toScoringInput } from "../src/lib/content/mapping";
 import { scoreResponse } from "../src/lib/scoring";
+import { DESTINATIONS, PAGE_ACTIONS } from "../src/lib/content/cta";
+import type { DestinationId } from "../src/lib/content/cta";
 
 let failures = 0;
 const fail = (msg: string) => { failures++; console.error("FAIL " + msg); };
@@ -233,5 +235,68 @@ if (JSON.stringify(legacy) !== JSON.stringify(
   fail("legacy targetCountry key no longer scores like targetCountries");
 }
 
+
+// 6. The call-to-action framework, TASK-090, 14/08/2026.
+//
+// The rules live in `src/lib/content/cta.ts`. This is the part that makes them
+// binding: a framework nobody checks is a document, and the reason this exists
+// at all is that the site drifted into three CTAs on one page and none on
+// another while every individual change looked reasonable.
+//
+// It has already earned its place. Its first run rejected three of the six
+// pages, and the pages were right and the rule was wrong: it was ranking
+// actions on a scale built to describe readers. See rule 4's note.
+for (const [page, actions] of Object.entries(PAGE_ACTIONS)) {
+  const ids: DestinationId[] = Array.isArray(actions.primary)
+    ? [...actions.primary]
+    : [actions.primary as DestinationId];
+
+  // Rule 1: exactly one primary. A channel pair counts as one, which is what
+  // the cost comparison below actually verifies.
+  if (ids.length === 0) fail(`${page} declares no primary action`);
+  for (const id of ids) {
+    if (!DESTINATIONS[id]) fail(`${page} names an unknown destination ${id}`);
+  }
+
+  const costs = ids.map((id) => DESTINATIONS[id].cost);
+
+  // Rule 2: channels of one action must cost the same. Two destinations at
+  // different weights are two actions, however they are styled.
+  if (new Set(costs).size > 1) {
+    fail(
+      `${page} lists ${ids.join(" + ")} as one primary, but they cost the reader different things (${costs.join(", ")}). That is a fork, not two routes to one place.`,
+    );
+  }
+
+  // Every primary must be reachable. An empty href is how an unset channel is
+  // represented, correct for LINE today, but a page whose ENTIRE primary is
+  // unset has no action at all.
+  if (ids.every((id) => DESTINATIONS[id].href === "")) {
+    fail(`${page} has a primary action with no reachable destination`);
+  }
+
+  if (actions.secondary) {
+    const secondary = DESTINATIONS[actions.secondary];
+    if (!secondary) {
+      fail(`${page} names an unknown secondary ${actions.secondary}`);
+    } else {
+      // Rule 4: different weight, in either direction.
+      if (secondary.cost === costs[0]) {
+        fail(
+          `${page} primary and secondary both cost ${costs[0]}. Two actions of the same weight are a fork, not a hierarchy: make one of them cheaper, or drop it.`,
+        );
+      }
+      // A secondary that repeats the primary is a duplicate, not a fallback.
+      if (ids.includes(actions.secondary)) {
+        fail(`${page} lists ${actions.secondary} as both its primary and its secondary`);
+      }
+    }
+  }
+
+  if (!actions.because || actions.because.length < 20) {
+    fail(`${page} does not say why its primary is its primary`);
+  }
+}
+
 if (failures) { console.error(`${failures} failures`); process.exit(1); }
-console.log("content model OK: keys unique, Thai present, select contract enforced, all options scoreable, all four dimensions score");
+console.log("content model OK: keys unique, Thai present, select contract enforced, all options scoreable, all four dimensions score, one primary CTA per page");

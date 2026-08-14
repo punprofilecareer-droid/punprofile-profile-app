@@ -507,6 +507,22 @@ export const STAGE1: Question[] = [
         en: "A professional certification or qualification",
         th: "ใบรับรองหรือคุณวุฒิวิชาชีพ",
       },
+      {
+        // Added 14/08/2026 on Paul's call: portfolio had to be one of the
+        // subjects. It is the highest-signal option in the list for this
+        // business, because it is the only one that names something PunProfile
+        // itself sells: someone who has already paid to have a CV or a
+        // LinkedIn profile written has priced this category of work before,
+        // and their objection on a call is never "why would anyone pay for
+        // that".
+        //
+        // The score is unaffected, as with every other area here. The
+        // framework asks about prior spend and not its aim, so `toGradeInput`
+        // collapses any paid area to the same band. This is for the call.
+        value: "profile_docs",
+        en: "Having a CV, LinkedIn profile or portfolio written or reviewed",
+        th: "จ้างเขียนหรือรีวิว CV, LinkedIn หรือพอร์ตโฟลิโอ",
+      },
       { value: "career_coach", en: "A career coach", th: "โค้ชด้านอาชีพ" },
       { value: "never", en: "None of these yet", th: "ยังไม่เคย" },
     ],

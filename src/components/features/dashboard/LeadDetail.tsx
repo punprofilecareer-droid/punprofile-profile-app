@@ -189,6 +189,21 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
         />
       </Section>
 
+      {/* Your own triage from the survey sheet, imported 14/08/2026 alongside
+          the answers. Rendered here rather than left in the data, because a
+          column carried across and never shown is a column that was not really
+          imported. Absent on app-native leads, which never had it. */}
+      {(typeof lead.responses._entryPoint === "string" ||
+        typeof lead.responses._manualCheck === "string") && (
+        <Section title="From the survey sheet">
+          <Row label="Suggested entry point" value={String(lead.responses._entryPoint ?? "")} consentAt={null} />
+          {typeof lead.responses._manualCheck === "string" &&
+            lead.responses._manualCheck.trim() !== "" && (
+              <Row label="Flagged for manual check" value={String(lead.responses._manualCheck)} consentAt={null} />
+            )}
+        </Section>
+      )}
+
       {/* The briefing replaces the bare score list that used to sit here. Four
           numbers told you nothing you could open a conversation with. */}
       <LeadBriefing responses={lead.responses} fullName={lead.fullName} />
