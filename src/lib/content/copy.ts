@@ -148,6 +148,11 @@ export const COPY = {
     en: "Tell us which European languages you speak, and we can say which countries are actually open to you.",
     th: "บอกเราว่าคุณพูดภาษายุโรปไหนได้บ้าง แล้วเราจะบอกได้ว่าประเทศไหนเปิดรับคุณจริง",
   },
+  "lang.offerButton": {
+    screen: "First read, the Stage 2 offer",
+    en: "Add my languages",
+    th: "เพิ่มภาษาที่ฉันพูดได้",
+  },
   "lang.submit": {
     screen: "Stage 2, language grid",
     en: "Update my result",

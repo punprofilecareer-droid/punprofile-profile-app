@@ -279,17 +279,24 @@ export default function AssessPage() {
           asking for more answers in the abstract. Hidden once answered: a
           candidate who has filled it in is being asked for nothing. */}
       {!hasLanguages && (
-        <button
-          type="button"
-          onClick={() => setShowGrid(true)}
-          className="material mt-8 flex w-full items-center justify-between gap-3 rounded-lg px-6 py-5 text-left transition-colors hover:border-eufit"
-        >
-          <span>
-            <span className="block text-label text-eufit-deep">{t("lang.offerLead")}</span>
-            <span className="mt-1 block text-body text-slate">{t("lang.offerBody")}</span>
-          </span>
-          <span aria-hidden className="text-eufit-deep">&rarr;</span>
-        </button>
+        <div className="material-mint mt-8 rounded-lg px-6 py-6 text-left">
+          <p className="text-h4">{t("lang.offerLead")}</p>
+          <p className="mt-2 text-body text-slate">{t("lang.offerBody")}</p>
+          {/* Terracotta, and it does not break the one-action rule: this screen
+              has no primary action at all otherwise. Paul, 14/08: the quiet
+              version was easy to miss, and a skipped grid means Country Reach
+              stays English-only for that candidate, which is the score the
+              question exists to fix. A card that reads as information gets
+              read as information. */}
+          <button
+            type="button"
+            onClick={() => setShowGrid(true)}
+            className="mt-4 flex min-h-14 w-full items-center justify-center gap-2 rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright"
+          >
+            {t("lang.offerButton")}
+            <span aria-hidden>&rarr;</span>
+          </button>
+        </div>
       )}
 
       {/* Contact is already in by the time this renders, so this says what
@@ -300,6 +307,10 @@ export default function AssessPage() {
 
       {/* TASK-046. Hidden until a booking mechanism exists, rather than
           shipping a button that goes nowhere. */}
+      {/* When TASK-046 turns this on, this screen will hold two Terracotta
+          actions and one of them has to give way. The booking CTA wins, since
+          it is the revenue step; the language offer drops to a secondary
+          treatment at that point rather than both shouting. */}
       {BOOKING_URL && (
         <div className="mt-8 text-left">
           <h2 className="text-h4">{t("narrative.cta.heading")}</h2>
