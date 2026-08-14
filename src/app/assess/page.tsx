@@ -215,7 +215,10 @@ export default function AssessPage() {
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
       <h1 className="text-h3">{t("teaser.headline")}</h1>
       <p className="mt-1 text-body text-slate">{t("teaser.selfReported")}</p>
-      <div className="mt-4">
+      {/* The chart gets its own surface. The radar's grid is 1px neutral-300
+          and the field's gradient moves through the same value range, so on
+          the field alone the grid reads as noise rather than as structure. */}
+      <div className="material mt-4 rounded-lg px-2 py-4">
         <SpiderChart scores={scores} variant="teaser" />
       </div>
       <p className="mt-2 text-caption text-neutral-500">{t("teaser.hollowMarkers")}</p>
@@ -231,7 +234,7 @@ export default function AssessPage() {
             <p className="text-body text-slate">{summary.strengthLead}</p>
           )}
           {summary.next && (
-            <div className="rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6">
+            <div className="material-mint rounded-lg px-6 py-6">
               <p className="text-label text-eufit-deep">{summary.nextLead}</p>
               <p className="mt-2 text-body text-ink">{summary.next}</p>
             </div>
@@ -244,7 +247,7 @@ export default function AssessPage() {
 
       {/* Contact is already in by the time this renders, so this says what
           happens next rather than asking for anything. */}
-      <p className="mt-6 rounded-lg border border-neutral-300 bg-mint-wash px-6 py-6 text-body text-ink">
+      <p className="material-mint mt-6 rounded-lg px-6 py-6 text-body text-ink">
         {t("teaser.nextStep")}
       </p>
 

@@ -130,7 +130,7 @@ export default function QuestionCard({
             className={`min-h-12 rounded-md border px-4 py-3 text-left text-body transition-colors ${
               isChosen(o.value)
                 ? "border-eufit-deep bg-eufit-deep text-on-eufit"
-                : "border-neutral-300 bg-surface hover:bg-mint-wash"
+                : "material hover:bg-mint-wash"
             }`}
           >
             {o.label}

@@ -79,7 +79,7 @@ export default function ContactGate({
   }, []);
 
   const field =
-    "mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink";
+    "material mt-1 h-12 w-full rounded-sm px-4 py-3 text-body text-ink";
 
   // Email is always in the list because it is always required. The other two
   // appear only once their field has something in it, so the sentence describes

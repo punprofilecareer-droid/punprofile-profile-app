@@ -308,3 +308,70 @@
     background-color: var(--color-surface);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Standard material, for the CONTENT layer. Added 14/08/2026.
+
+   Paul asked for glass on everything, including cards and option tiles. The
+   HIG says not to put Liquid Glass there, and it also says what to use
+   instead: "use standard materials for elements in the content layer". Apple
+   ships two material families for exactly this split, and the difference is
+   thickness. "Thicker materials, which are more opaque, can provide better
+   contrast for text and other elements with fine features."
+
+   So content gets the same optical treatment, tuned the other way: 88% tint
+   against chrome's 72%, and half the blur radius. It reads as the same
+   material family from across the room and keeps Thai body text legible over
+   the lavender field, which chrome-weight glass would not. Noto Sans Thai has
+   fine features and tone marks that disappear first when contrast drops.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  .material {
+    background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 7%, transparent);
+  }
+
+  /* The tinted variants keep their hue but stop being flat fills, so a callout
+     still separates from a plain card sitting next to it on the same field. */
+  .material-mint {
+    background-color: color-mix(in srgb, var(--color-mint-wash) 88%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 7%, transparent);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .material { background-color: var(--color-surface); }
+  .material-mint { background-color: var(--color-mint-wash); }
+}
+
+[data-perf="low"] .material,
+[data-perf="low"] .material-mint {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-perf="low"] .material { background-color: var(--color-surface); }
+[data-perf="low"] .material-mint { background-color: var(--color-mint-wash); }
+
+@media (prefers-reduced-transparency: reduce) {
+  .material, .material-mint {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .material { background-color: var(--color-surface); }
+  .material-mint { background-color: var(--color-mint-wash); }
+}
+
+@media (prefers-contrast: more) {
+  .material, .material-mint {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: var(--color-ink);
+  }
+  .material { background-color: var(--color-surface); }
+  .material-mint { background-color: var(--color-mint-wash); }
+}
