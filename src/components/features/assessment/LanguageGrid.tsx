@@ -20,9 +20,11 @@
  * otherwise face four screens for one question, and the whole reason this sits
  * after the first read is that the assessment had no room left before it.
  *
- * Everything here is optional. The candidate has already given their contact
- * details and seen their chart; this is extra accuracy they are volunteering,
- * so the skip is a real button and not a small grey link.
+ * The skip is a real button rather than a grey link, and it WRITES rather than
+ * passing through: "I speak no other European language" is an answer, and a
+ * different fact from "never reached this question". The first lets Country
+ * Reach stand on English honestly; the second leaves it unmeasured. Those two
+ * must never look the same, which is the rule the whole product rests on.
  */
 
 import { useState } from "react";
@@ -53,9 +55,15 @@ const LANGUAGE_TH: Record<string, string> = {
 export default function LanguageGrid({
   onSubmit,
   onSkip,
+  step,
+  total,
+  onBack,
 }: {
   onSubmit: (levels: Record<string, Level>) => Promise<void>;
-  onSkip: () => void;
+  onSkip: () => Promise<void> | void;
+  step: number;
+  total: number;
+  onBack?: () => void;
 }) {
   const { t, locale } = useCopy();
   const [levels, setLevels] = useState<Record<string, Level>>({});
@@ -76,6 +84,11 @@ export default function LanguageGrid({
     });
   }
 
+  async function skip() {
+    setBusy(true);
+    await onSkip();
+  }
+
   async function submit() {
     setBusy(true);
     // `Other` is collected for the coach but matches no country, so it never
@@ -89,6 +102,37 @@ export default function LanguageGrid({
   return (
     <div className="mx-auto w-full max-w-md px-6 py-8">
       <div className="material rounded-lg px-5 py-6">
+        {/* The same header a QuestionCard shows, because since 14/08/2026 this
+            IS one of the questions rather than a bonus round after the result.
+            A step in a sequence that hides the counter reads as an
+            interruption. */}
+        <div className="mb-1 flex min-h-6 items-center justify-between">
+          <p className="text-caption text-neutral-500">
+            {t("assess.progress", { step, total })}
+          </p>
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="-mr-2 flex items-center gap-1 rounded-sm px-2 py-1 text-caption text-slate transition-colors hover:text-eufit-deep"
+            >
+              <span aria-hidden>&larr;</span>
+              {t("assess.back")}
+            </button>
+          )}
+        </div>
+        <div
+          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={step}
+        >
+          <div
+            className="h-full rounded-full bg-eufit transition-all"
+            style={{ width: `${(step / total) * 100}%` }}
+          />
+        </div>
         <h2 className="text-h4">{t("lang.heading")}</h2>
         <p className="mt-2 text-body text-slate">{t("lang.body")}</p>
 
@@ -154,7 +198,8 @@ export default function LanguageGrid({
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={onSkip}
+            onClick={skip}
+            disabled={busy}
             className="min-h-14 rounded-md border border-neutral-300 bg-surface px-5 text-body text-slate transition-colors hover:bg-neutral-100"
           >
             {t("lang.skip")}

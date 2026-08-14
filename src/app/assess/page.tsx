@@ -28,7 +28,39 @@ import { toScoringInput } from "@/lib/content/mapping";
  * only through the magic link, which needs an email and its consent first.
  */
 
-const TOTAL_STEPS = STAGE1.length;
+/**
+ * The flow, as one sequence. Stage 2 was collapsed into Stage 1 on 14/08/2026.
+ *
+ * There had been two stages and no principle behind the split: Stage 1 was
+ * whatever the retiring quiz used to ask, and Stage 2 meant "everything we did
+ * not get to". The moment that was written down it stopped surviving contact
+ * with the actual boundary, which is the contact step. Before it, every
+ * question is a conversion cost paid by a stranger; after it, questions are
+ * nearly free. A second stage on the far side of that boundary is optional by
+ * construction, so nothing the business actually needs can live there, which
+ * made it the wrong home for the one question that was in it.
+ *
+ * So there is one flow and one budget. "Which stage does this go in" becomes
+ * "does this question earn its place at all", which is a question with an
+ * answer.
+ *
+ * The language grid is a step in the sequence rather than an entry in STAGE1
+ * because it is not a QuestionCard: it is one question whose follow-ups depend
+ * on its own answer. `FLOW` keeps the engine index-based by holding either a
+ * question or that one marker.
+ */
+const LANGUAGES_STEP = { custom: "languages" } as const;
+type FlowStep = (typeof STAGE1)[number] | typeof LANGUAGES_STEP;
+
+/** Straight after English, where a candidate is already thinking about language. */
+const ENGLISH_AT = STAGE1.findIndex((q) => q.key === "english");
+const FLOW: FlowStep[] = [
+  ...STAGE1.slice(0, ENGLISH_AT + 1),
+  LANGUAGES_STEP,
+  ...STAGE1.slice(ENGLISH_AT + 1),
+];
+
+const TOTAL_STEPS = FLOW.length;
 
 type Answer = string | string[];
 
@@ -72,14 +104,6 @@ export default function AssessPage() {
   const submitAnswer = useMutation(api.leads.submitAnswer);
   const captureContact = useMutation(api.leads.captureContact);
   const submitLanguages = useMutation(api.leads.submitLanguages);
-
-  /**
-   * Stage 2 opens from the first read rather than replacing it (TASK-072,
-   * 14/08/2026). The candidate has their chart and their contact details are
-   * in; this is extra accuracy they choose to give, so it is behind a button
-   * and the grid itself carries a real Skip.
-   */
-  const [showGrid, setShowGrid] = useState(false);
   const [startFailed, setStartFailed] = useState(false);
   /** Bumping this re-runs the session effect, which is what Try again does. */
   const [attempt, setAttempt] = useState(0);
@@ -118,12 +142,6 @@ export default function AssessPage() {
   }, [session]);
 
   const scores = useMemo(() => session?.scores ?? {}, [session]);
-  const hasLanguages = Boolean(
-    session?.responses &&
-      typeof session.responses.otherLanguages === "object" &&
-      session.responses.otherLanguages !== null &&
-      Object.keys(session.responses.otherLanguages as Record<string, unknown>).length > 0,
-  );
 
   // Selected from the sentence bank, never composed. Recomputed client-side
   // from the same responses the server scored, so the words and the chart
@@ -174,9 +192,33 @@ export default function AssessPage() {
     );
   }
 
-  // Steps 0..8: the nine Stage 1 questions (TASK-019/020).
-  if (step < STAGE1.length) {
-    const q = STAGE1[step];
+  // The question sequence (TASK-019/020), now including the language grid.
+  if (step < FLOW.length) {
+    const item = FLOW[step];
+
+    if ("custom" in item) {
+      return (
+        <LanguageGrid
+          // Skip writes an empty grid rather than nothing. "I speak no other
+          // European language" is an answer, and it is a different fact from
+          // "never reached this question": the first lets Country Reach stand
+          // on English honestly, the second leaves it unmeasured.
+          onSubmit={async (levels) => {
+            await submitLanguages({ leadId, levels });
+            setStep(step + 1);
+          }}
+          onSkip={async () => {
+            await submitLanguages({ leadId, levels: {} });
+            setStep(step + 1);
+          }}
+          step={step + 1}
+          total={TOTAL_STEPS}
+          onBack={() => setStep(step - 1)}
+        />
+      );
+    }
+
+    const q = item;
     const commit = (value: Answer) => {
       void submitAnswer({ leadId, questionKey: q.key, value });
       setStep(step + 1);
@@ -226,18 +268,6 @@ export default function AssessPage() {
     );
   }
 
-  if (showGrid) {
-    return (
-      <LanguageGrid
-        onSubmit={async (levels) => {
-          await submitLanguages({ leadId, levels });
-          setShowGrid(false);
-        }}
-        onSkip={() => setShowGrid(false)}
-      />
-    );
-  }
-
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
@@ -270,32 +300,6 @@ export default function AssessPage() {
           {summary.unmeasured && (
             <p className="text-caption text-neutral-500">{summary.unmeasured}</p>
           )}
-        </div>
-      )}
-
-      {/* Stage 2's one question, offered rather than imposed. Country Reach is
-          computed on English alone until this is answered, which is a real gap
-          in the chart above it, so the offer names what it buys instead of
-          asking for more answers in the abstract. Hidden once answered: a
-          candidate who has filled it in is being asked for nothing. */}
-      {!hasLanguages && (
-        <div className="material-mint mt-8 rounded-lg px-6 py-6 text-left">
-          <p className="text-h4">{t("lang.offerLead")}</p>
-          <p className="mt-2 text-body text-slate">{t("lang.offerBody")}</p>
-          {/* Terracotta, and it does not break the one-action rule: this screen
-              has no primary action at all otherwise. Paul, 14/08: the quiet
-              version was easy to miss, and a skipped grid means Country Reach
-              stays English-only for that candidate, which is the score the
-              question exists to fix. A card that reads as information gets
-              read as information. */}
-          <button
-            type="button"
-            onClick={() => setShowGrid(true)}
-            className="mt-4 flex min-h-14 w-full items-center justify-center gap-2 rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright"
-          >
-            {t("lang.offerButton")}
-            <span aria-hidden>&rarr;</span>
-          </button>
         </div>
       )}
 

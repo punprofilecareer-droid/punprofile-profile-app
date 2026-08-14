@@ -60,6 +60,20 @@ export function mapColumns(header: string[]): ColumnMap {
     const i = lower.findIndex((h) => h.includes(needle));
     if (i >= 0) index[key] = i;
   }
+
+  /**
+   * The address column has two names depending on how the sheet was exported.
+   * A Google Sheets add-on export calls it "Username"; a plain CSV export of
+   * the same sheet calls it "Email Address". Found 14/08/2026 pulling the form
+   * one last time before retiring it: the CSV had no "Username" at all, so
+   * every one of the hundred rows would have imported with no address, which
+   * `looksShifted` cannot catch because a genuinely blank cell is treated as
+   * unanswered rather than broken.
+   */
+  if (index.email === undefined) {
+    const i = lower.findIndex((h) => h.includes("email address"));
+    if (i >= 0) index.email = i;
+  }
   const otherLanguages = lower
     .map((h, i) => (h.includes("other european languages") ? i : -1))
     .filter((i) => i >= 0);
