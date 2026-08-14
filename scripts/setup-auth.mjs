@@ -25,7 +25,13 @@ import { exportJWK, exportPKCS8, generateKeyPair } from "jose";
 import { execFileSync } from "node:child_process";
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "paul.bussabong@gmail.com";
-const PROD_SITE_URL = "https://punprofile-profile-app.vercel.app";
+// Changed 14/08/2026 when punprofile.vercel.app was claimed. This must match
+// the address candidates actually visit: Convex Auth builds its redirects from
+// SITE_URL, so a mismatch breaks admin sign-in on the domain being published
+// while still working on the old one, which is the confusing way round.
+// punprofile-profile-app.vercel.app stays alive and serves the same
+// deployment, it is just no longer the address anything refers to.
+const PROD_SITE_URL = "https://punprofile.vercel.app";
 const DEV_SITE_URL = "http://localhost:3000";
 
 function setEnv(name, value, prod) {

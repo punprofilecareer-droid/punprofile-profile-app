@@ -13,12 +13,13 @@
 set -euo pipefail
 
 REPO="/Users/paulb/Documents/LTD OS/punprofile-career/punprofile-profile-app"
-SITE="https://punprofile-profile-app.vercel.app"
+SITE="https://punprofile.vercel.app"
 
 # Verified in the Vercel dashboard, 14/08/2026:
 #   GitHub punprofilecareer-droid/punprofile-profile-app, connected 4 Aug
 #   Production branch: master. A push to master auto-deploys, no CLI needed.
-#   Domain punprofile-profile-app.vercel.app assigned to Production
+#   Domains punprofile.vercel.app (primary, claimed 14/08) and
+#   punprofile-profile-app.vercel.app, both on Production
 #   Vercel account punprofile.career@gmail.com, team slug pun-profile, Hobby
 
 
