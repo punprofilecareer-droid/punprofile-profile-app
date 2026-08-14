@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { Fraunces, Inter, Noto_Sans_Thai, Noto_Serif_Thai } from "next/font/google";
 import "./globals.css";
@@ -67,7 +68,19 @@ export default async function RootLayout({
             {/* nav-header: surface, ink, 72px, and never competing with page
                 content for colour attention. */}
             <header className="flex h-[72px] shrink-0 items-center justify-between gap-4 border-b border-neutral-300 bg-surface px-6">
-              <span className="text-label text-ink">{t("nav.brand", locale)}</span>
+              {/* The wordmark, not the word. Deliberately not a link: the
+                  header sits above a running assessment, and a logo that
+                  navigates home is a one-tap way to lose ten answers.
+                  `nav.brand` stays as the alt text, which is the only place
+                  the string is still needed. */}
+              <Image
+                src="/punprofile-wordmark.png"
+                alt={t("nav.brand", locale)}
+                width={594}
+                height={96}
+                priority
+                className="h-6 w-auto"
+              />
               <LocaleToggle />
             </header>
             <ConvexClientProvider>
