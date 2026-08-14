@@ -78,8 +78,13 @@ export default function ContactGate({
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
+  // Solid inputs on the panel, not translucent. From the 14/08/2026 design
+  // pass: a form field is where someone is about to type, and a translucent
+  // box with a gradient moving behind the caret is the one place in the app
+  // where the material actively gets in the way.
   const field =
-    "material mt-1 h-12 w-full rounded-sm px-4 py-3 text-body text-ink";
+    "mt-1 h-12 w-full rounded-md border border-neutral-300 bg-surface px-4 text-body text-ink transition-colors focus:border-eufit focus:outline-none focus:ring-2 focus:ring-eufit/25";
+  const labelText = "block text-caption text-neutral-500";
 
   // Email is always in the list because it is always required. The other two
   // appear only once their field has something in it, so the sentence describes
@@ -138,6 +143,7 @@ export default function ContactGate({
 
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-md px-6 py-10">
+      <div className="material rounded-lg px-5 py-6">
       <p className="mb-1 text-caption text-neutral-500">
         {t("assess.progress", { step: totalSteps, total: totalSteps })}
       </p>
@@ -162,7 +168,7 @@ export default function ContactGate({
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <label className="block text-label text-slate">
+        <label className={labelText}>
           {t("gate.firstName")}
           <input
             className={field}
@@ -172,7 +178,7 @@ export default function ContactGate({
             required
           />
         </label>
-        <label className="block text-label text-slate">
+        <label className={labelText}>
           {t("gate.lastName")}
           <input
             className={field}
@@ -184,7 +190,7 @@ export default function ContactGate({
         </label>
       </div>
 
-      <label className="mt-4 block text-label text-slate">
+      <label className={`mt-4 ${labelText}`}>
         {t("gate.email")}
         <input
           className={field}
@@ -198,7 +204,7 @@ export default function ContactGate({
 
       <p className="mt-8 text-body text-slate">{t("gate.channelHint")}</p>
 
-      <label className="mt-4 block text-label text-slate">
+      <label className={`mt-4 ${labelText}`}>
         {t("gate.lineId")}
         <input
           className={field}
@@ -207,7 +213,7 @@ export default function ContactGate({
         />
       </label>
 
-      <label className="mt-4 block text-label text-slate">
+      <label className={`mt-4 ${labelText}`}>
         {t("gate.phone")}
         <input
           className={field}
@@ -231,6 +237,8 @@ export default function ContactGate({
         </p>
       )}
 
+      </div>
+
       <ActionBarSpacer />
       <ActionBar>
         <button
@@ -238,7 +246,10 @@ export default function ContactGate({
           disabled={busy}
           className="min-h-14 w-full rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
         >
-          {busy ? t("gate.working") : t("gate.submit")}
+          <span className="flex items-center justify-center gap-2">
+            {busy ? t("gate.working") : t("gate.submit")}
+            {!busy && <span aria-hidden>&rarr;</span>}
+          </span>
         </button>
       </ActionBar>
     </form>

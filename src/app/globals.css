@@ -234,12 +234,19 @@
      1px border. Three soft radial pools rather than a linear gradient,
      because a linear ramp has no local variation for the blur to pick up as
      the page scrolls under the bar. */
+  /* Deepened 14/08/2026 after looking at it. The first values were measured
+     for subtlety and produced a page that was white with a faint stain at the
+     bottom, which is worse than either a plain white page or a real field:
+     the material had nothing to bend, so the cost of the blur bought a 1px
+     border. Smaller pools at higher strength, on the wash rather than on
+     white, so there is local variation for a bar to lens as content scrolls
+     under it. */
   .eufit-field {
-    background-color: var(--color-surface);
     background-image:
-      radial-gradient(60rem 40rem at 12% -10%, color-mix(in srgb, var(--color-eufit) 22%, transparent), transparent 60%),
-      radial-gradient(45rem 35rem at 100% 8%, color-mix(in srgb, var(--color-lavender-wash) 90%, transparent), transparent 62%),
-      radial-gradient(50rem 45rem at 50% 108%, color-mix(in srgb, var(--color-eufit) 14%, transparent), transparent 65%);
+      radial-gradient(38rem 26rem at 8% -6%, color-mix(in srgb, var(--color-eufit) 34%, transparent), transparent 62%),
+      radial-gradient(30rem 24rem at 102% 4%, color-mix(in srgb, var(--color-eufit) 24%, transparent), transparent 60%),
+      radial-gradient(34rem 30rem at 50% 106%, color-mix(in srgb, var(--color-eufit) 22%, transparent), transparent 64%);
+    background-color: var(--color-lavender-wash);
     background-attachment: fixed;
   }
 }
