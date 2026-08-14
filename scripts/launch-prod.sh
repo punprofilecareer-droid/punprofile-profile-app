@@ -15,6 +15,12 @@ set -euo pipefail
 REPO="/Users/paulb/Documents/LTD OS/punprofile-career/punprofile-profile-app"
 SITE="https://punprofile-profile-app.vercel.app"
 
+# Verified in the Vercel dashboard, 14/08/2026:
+#   GitHub punprofilecareer-droid/punprofile-profile-app, connected 4 Aug
+#   Production branch: master. A push to master auto-deploys, no CLI needed.
+#   Domain punprofile-profile-app.vercel.app assigned to Production
+#   Vercel account punprofile.career@gmail.com, team slug pun-profile, Hobby
+
 
 # ---------------------------------------------------------------------------
 # 1. Go to the repo and clear the lock litter the Cowork bridge leaves behind
@@ -90,9 +96,25 @@ npx convex dashboard
 # --cmd 'next build'` sets NEXT_PUBLIC_CONVEX_URL itself from the deploy key
 # during the build. A manually set one silently wins and would leave the
 # production site talking to the dev database with no visible symptom.
-npx vercel link            # pick team PunProfile, project punprofile-profile-app
-npx vercel env rm NEXT_PUBLIC_CONVEX_URL production
+npx vercel link            # team slug is pun-profile, project punprofile-profile-app
+
+# Verified in the dashboard 14/08/2026: the project has exactly ONE environment
+# variable, NEXT_PUBLIC_CONVEX_URL, added 4 Aug and scoped to Production AND
+# Preview in a single entry. Preview should keep pointing at dev, so this is an
+# EDIT, not a delete. The CLI cannot narrow an entry's scope, so do it in the
+# dashboard: Settings -> Environment Variables -> the three dots -> Edit ->
+# untick Production, leave Preview ticked -> Save.
+open "https://vercel.com/pun-profile/punprofile-profile-app/settings/environment-variables"
 npx vercel env add CONVEX_DEPLOY_KEY production      # paste the key from step 4
+
+# Also verified 14/08/2026: Build Command has NO override, so Vercel runs the
+# Next.js framework default. The `vercel-build` script in package.json is
+# documented to take precedence over it, but the whole deploy rests on that
+# behaviour and a wrong bet ships a frontend with no backend behind it. Set the
+# override explicitly instead, in the same dashboard:
+#   Settings -> Build and Deployment -> Build Command -> Override ->
+#   npx convex deploy --cmd 'npm run build'
+open "https://vercel.com/pun-profile/punprofile-profile-app/settings/build-and-deployment"
 
 # The new-lead notification. RESEND_API_KEY is a CONVEX env var, not a Vercel
 # one, because the action runs in Convex. Sign up at resend.com with
