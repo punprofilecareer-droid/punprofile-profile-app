@@ -2,11 +2,12 @@
  * The privacy notice, Thai-first. Resolves `[Privacy Notice TODO]` in
  * `consent-copy.ts`.
  *
- * **Not reviewed. `PRIVACY_REVIEWED` is false and the page renders a visible
- * draft banner while it stays false.** Same gate as the consent copy, same
- * reason: TASK-047 is a legal checkpoint and an LLM's paraphrase of the PDPA is
- * not a legal instrument. The banner exists so this cannot quietly start
- * reading as a real notice just because the route works.
+ * **Founder-signed off 14/08/2026, same gate as the consent copy.** Paul
+ * settled the withdrawal contact (`hi@agentsiam.com`) and the retention basis
+ * (twelve months rolling from last contact), which were the two placeholders
+ * holding this back. `PRIVACY_REVIEWED` is true from that sign-off. It is a
+ * founder sign-off, not an external legal opinion; a lawyer's wording would
+ * replace these strings wholesale rather than being merged into them.
  *
  * What IS reliable here is the factual half. Every claim about what the system
  * collects, where it stores it, who processes it and what leaves Thailand was
@@ -18,13 +19,10 @@
  * Two statements in here are commitments rather than descriptions, and both are
  * flagged at their section:
  *
- * - **Twelve-month retention is not implemented.** No job deletes anything. The
- *   figure matches `consent.purpose`, which is the existing commitment, and it
- *   stays a promise until the retention job is built.
- * - **The withdrawal contact is still a placeholder.** Inventory § 9 question 6
- *   asks what it should be and who monitors it. Inventing an address here would
- *   be worse than an obvious gap, because a notice that names an unmonitored
- *   inbox is a rights mechanism that silently fails.
+ * - **Retention is not enforced by anything.** No job deletes on a schedule.
+ *   The clock now runs from last contact rather than from submission, so the
+ *   earliest record falls due in July 2027; deletion on request already works
+ *   and covers the interim. It stays a promise until the retention job exists.
  *
  * Structured as sections rather than flat keys because it is long-form prose,
  * and a `privacy.section4.para2` key space would be unreadable in the worksheet
@@ -33,11 +31,11 @@
 
 import type { Copy } from "./copy";
 
-/** Flipped to true only after TASK-047 clears, and not by an agent. */
-export const PRIVACY_REVIEWED = false;
+/** TASK-047 cleared on Paul's sign-off, 14/08/2026. */
+export const PRIVACY_REVIEWED = true;
 
 /** Last substantive change to the text, DD/MM/YYYY. Shown to the reader. */
-export const PRIVACY_LAST_UPDATED = "10/08/2026";
+export const PRIVACY_LAST_UPDATED = "14/08/2026";
 
 export interface PrivacySection {
   heading: Copy;
@@ -166,8 +164,8 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     },
     body: [
       {
-        en: "Twelve months from the date you submit, unless you ask us to delete it sooner.",
-        th: "สิบสองเดือนนับจากวันที่คุณส่งข้อมูล เว้นแต่คุณจะขอให้เราลบก่อนกำหนด",
+        en: "Twelve months from your last contact with us, whether that is the day you submit or a later conversation, unless you ask us to delete it sooner.",
+        th: "สิบสองเดือนนับจากการติดต่อครั้งล่าสุดของคุณ ไม่ว่าจะเป็นวันที่คุณส่งข้อมูลหรือการติดต่อครั้งหลังจากนั้น เว้นแต่คุณจะขอให้เราลบก่อนกำหนด",
       },
     ],
   },
@@ -210,8 +208,8 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     },
     body: [
       {
-        en: "[Contact method TODO]",
-        th: "[ช่องทางติดต่อ TODO]",
+        en: "Email hi@agentsiam.com. We answer data requests from that address.",
+        th: "อีเมล hi@agentsiam.com เราตอบคำขอเกี่ยวกับข้อมูลส่วนบุคคลจากที่อยู่นี้",
       },
     ],
   },

@@ -1,12 +1,18 @@
 /**
  * PDPA consent copy, Thai-first (TASK-023, PRD FR-006).
  *
- * **Nothing here has been reviewed. Do not ship it to a real candidate.**
- * TASK-047 is a legal-review checkpoint and it has not happened. Every string
- * below is a placeholder written to define the shape of the consent flow, not
- * to be the consent itself. Thailand's PDPA requires consent that is specific,
- * informed and freely given, and an LLM's paraphrase of that is not a legal
- * instrument.
+ * **Founder-signed off 14/08/2026 (TASK-047).** Paul settled the two open
+ * decisions the review was waiting on: the withdrawal contact is
+ * `hi@agentsiam.com`, and retention is twelve months rolling from the
+ * candidate's last contact rather than twelve months from submission. The
+ * purpose text was also corrected, because it previously promised an emailed
+ * result and no email is sent by the system; the result is delivered by a
+ * person. `CONSENT_COPY_REVIEWED` is true from that sign-off.
+ *
+ * This is a founder sign-off, not an external legal opinion. Thailand's PDPA
+ * requires consent that is specific, informed and freely given. If a lawyer
+ * reviews this later, their wording replaces these strings wholesale rather
+ * than being merged into them.
  *
  * Separate from `copy.ts` on purpose, even though the shape is identical and
  * both flow through the same worksheet. Mixing them would blur which strings
@@ -20,14 +26,14 @@
 
 import type { CopyEntry } from "./content/copy";
 
-/** Flipped to true only after TASK-047 clears, and not by an agent. */
-export const CONSENT_COPY_REVIEWED = false;
+/** TASK-047 cleared on Paul's sign-off, 14/08/2026. */
+export const CONSENT_COPY_REVIEWED = true;
 
 export const CONSENT_COPY = {
   "consent.email": {
     screen: "Contact gate, beside the email field",
-    en: "Email is required so PunProfile can send you your assessment result.",
-    th: "จำเป็นต้องระบุอีเมลเพื่อให้ PunProfile ส่งผลการประเมินให้คุณ",
+    en: "Email is required so PunProfile can send you your result and follow up about it.",
+    th: "จำเป็นต้องระบุอีเมลเพื่อให้ PunProfile ส่งผลการประเมินและติดต่อกลับเกี่ยวกับผลนั้น",
   },
   "consent.phone": {
     screen: "Contact gate, beside the phone field",
@@ -41,8 +47,8 @@ export const CONSENT_COPY = {
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
-    en: "PunProfile uses your required email address to send your assessment result. To request career-coaching follow-up, provide a phone number or LINE ID and select the corresponding optional consent. We retain your information for 12 months and do not share it with third parties. You may withdraw your phone or LINE consent at any time through [contact method TODO].",
-    th: "PunProfile ใช้อีเมลที่จำเป็นต้องระบุเพื่อส่งผลการประเมินให้คุณ หากต้องการให้ติดต่อกลับเกี่ยวกับบริการแนะแนวอาชีพ โปรดระบุหมายเลขโทรศัพท์หรือ LINE ID และเลือกให้ความยินยอมสำหรับช่องทางนั้น เราจะเก็บข้อมูลไว้เป็นเวลา 12 เดือนและไม่เปิดเผยต่อบุคคลที่สาม คุณสามารถถอนความยินยอมสำหรับการติดต่อทางโทรศัพท์หรือ LINE ได้ทุกเมื่อผ่าน [ช่องทางติดต่อ TODO]",
+    en: "PunProfile uses your required email address to send you your assessment result and to follow up about it. To be contacted about career coaching on another channel, provide a phone number or LINE ID and select the corresponding optional consent. We keep your information for twelve months from your last contact with us and do not share it with third parties. You may withdraw your phone or LINE consent at any time by emailing hi@agentsiam.com.",
+    th: "PunProfile ใช้อีเมลที่จำเป็นต้องระบุเพื่อส่งผลการประเมินให้คุณและติดต่อกลับเกี่ยวกับผลนั้น หากต้องการให้ติดต่อกลับเกี่ยวกับบริการแนะแนวอาชีพทางช่องทางอื่น โปรดระบุหมายเลขโทรศัพท์หรือ LINE ID และเลือกให้ความยินยอมสำหรับช่องทางนั้น เราจะเก็บข้อมูลไว้สิบสองเดือนนับจากการติดต่อครั้งล่าสุดของคุณ และไม่เปิดเผยต่อบุคคลที่สาม คุณสามารถถอนความยินยอมสำหรับการติดต่อทางโทรศัพท์หรือ LINE ได้ทุกเมื่อโดยส่งอีเมลถึง hi@agentsiam.com",
   },
   /**
    * Rendered as a link to `/privacy`, which is why it is its own key: an
