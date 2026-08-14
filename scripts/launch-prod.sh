@@ -29,9 +29,12 @@ cd "$REPO"
 find .git -name '*.lock.s*' -delete
 find .git -name 'tmp_obj_*' -delete
 
-# Two commits from today should be at the top, and nothing uncommitted.
-git log --oneline -2
+# Today's work should be at the top and nothing uncommitted. The count that
+# matters is how far ahead of the remote you are: everything in it goes out in
+# one push at block 6.
+git log --oneline -12
 git status --short
+git rev-list --count origin/master..HEAD
 
 
 # ---------------------------------------------------------------------------
@@ -57,6 +60,12 @@ npx convex deploy
 npx tsc --noEmit                       # expect silence
 npx tsx scripts/verify-content.ts      # expect "content model OK: ..."
 npx tsx scripts/verify-copy.ts         # reports missing Thai, does not fail
+
+# Build it locally before the push. Vercel has never built this app: it has
+# only ever built the Phase 0 placeholder, so block 6 is a first build on a
+# 60-commit jump and that is where a missing dependency would surface. Two
+# minutes here beats debugging it in a deploy log.
+npm run build
 
 git -c user.name=agentsiam -c user.email=hi@agentsiam.com \
   add convex/_generated
@@ -92,10 +101,11 @@ npx convex dashboard
 # ---------------------------------------------------------------------------
 # 5. Point Vercel's production environment at production Convex
 # ---------------------------------------------------------------------------
-# The old NEXT_PUBLIC_CONVEX_URL has to GO, not be updated. `convex deploy
-# --cmd 'next build'` sets NEXT_PUBLIC_CONVEX_URL itself from the deploy key
-# during the build. A manually set one silently wins and would leave the
-# production site talking to the dev database with no visible symptom.
+# The old NEXT_PUBLIC_CONVEX_URL has to GO, not be updated. The build command
+# `npx convex deploy --cmd 'npm run build'` sets NEXT_PUBLIC_CONVEX_URL itself
+# from the deploy key during the build. A manually set one silently wins and
+# would leave the production site talking to the dev database with no visible
+# symptom at all.
 npx vercel link            # team slug is pun-profile, project punprofile-profile-app
 
 # Verified in the dashboard 14/08/2026: the project has exactly ONE environment
@@ -130,14 +140,16 @@ npx vercel env ls
 # ---------------------------------------------------------------------------
 # 6. Push. This is the deploy.
 # ---------------------------------------------------------------------------
-# The branch is master, not main, and local is far ahead of it: as of
-# 14/08/2026 origin/master was 53 commits behind, so what Vercel has been
-# serving all along is the Phase 0 placeholder page. This push is the first
-# time the real app reaches the internet.
+# The branch is master, not main, and local is far ahead of it: origin/master
+# still sits on Phase 0, which is why Vercel has been serving the placeholder
+# page all along. This push is the first time the real app reaches the
+# internet, and it carries every commit at once.
 git push origin master
 
-# Watch it. The build must show `convex deploy` running before `next build`.
-npx vercel logs --follow || true
+# Watch the build in the dashboard. It must show `convex deploy` running
+# BEFORE `next build`. If it does not, the build command override was lost and
+# you would ship a frontend with no backend behind it.
+open "https://vercel.com/pun-profile/punprofile-profile-app/deployments"
 
 
 # ---------------------------------------------------------------------------
