@@ -10,7 +10,8 @@
  * CLI. Private keys never print and never leave this machine.
  *
  * Safe to re-run: it simply rotates the keys, which signs the admin out
- * everywhere until the next sign-in.
+ * everywhere until the next sign-in. That property is also the recovery path
+ * if a key is ever exposed: re-run, and the exposed one signs nothing.
  */
 import { exportJWK, exportPKCS8, generateKeyPair } from "jose";
 import { execFileSync } from "node:child_process";
@@ -22,7 +23,12 @@ const DEV_SITE_URL = "http://localhost:3000";
 function setEnv(name, value, prod) {
   const args = ["convex", "env", "set"];
   if (prod) args.push("--prod");
-  args.push(name, value);
+  // `--` ends option parsing, and it is not optional here. A PKCS#8 private
+  // key begins `-----BEGIN PRIVATE KEY-----`, which the CLI's argument parser
+  // reads as an unknown option and rejects with `error: unknown option`,
+  // printing the whole key to the terminal as it complains. Found on
+  // 14/08/2026, the first time this script ran against a real deployment.
+  args.push("--", name, value);
   // stdout inherited so Convex's own confirmation lines show; values are
   // passed as arguments, not echoed.
   execFileSync("npx", args, { stdio: ["ignore", "inherit", "inherit"] });
