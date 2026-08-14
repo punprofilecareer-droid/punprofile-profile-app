@@ -12,6 +12,7 @@ import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as importLeads from "../importLeads.js";
 import type * as leads from "../leads.js";
+import type * as notify from "../notify.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as scoring from "../scoring.js";
 
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   importLeads: typeof importLeads;
   leads: typeof leads;
+  notify: typeof notify;
   rateLimits: typeof rateLimits;
   scoring: typeof scoring;
 }>;
