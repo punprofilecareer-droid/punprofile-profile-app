@@ -27,7 +27,23 @@
 import type { CopyEntry } from "./content/copy";
 
 /**
- * Rewritten later the same day, 14/08/2026, on Paul's read of the live screen:
+ * **The Thai on this screen is Paul's own wording, 14/08/2026**, given after he
+ * read the live page. Two edits were made to what he sent and both are visible
+ * changes to his text rather than tidying:
+ *
+ * 1. `นับจากการติดต่อครั้งล่าสุด` was added back to the retention sentence. His
+ *    version said twelve months with no basis, and `/privacy` says twelve
+ *    months from last contact. A consent screen that promises something
+ *    narrower than the policy it links to is the one inconsistency in here
+ *    that could actually matter.
+ * 2. The withdrawal address is `hi@agentsiam.com`. His message showed
+ *    `punprofile@gmail.com` as the link text over a `mailto:hi@agentsiam.com`
+ *    href, and the policy, the roadmap and the decision log all say
+ *    hi@agentsiam.com. Treated as a paste artefact, flagged, not guessed at
+ *    silently.
+ *
+ * Original note, from the pass his wording replaced. Rewritten the same day on
+ * his read of the live screen:
  * "you have to review all the Thai translations because it is very stiff." The
  * facts did not move, the register did. Two substantive changes went with it:
  * "(Optional)" is gone from both channel consents, because the choice is
@@ -60,8 +76,8 @@ export const CONSENT_COPY = {
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
-    en: "We use your email to send your result and to follow up about it. If you would also like a call or a LINE message, fill in that channel and tick the consent beside it. We keep your information for twelve months from the last time you were in touch, and we do not pass it to anyone else. Change your mind at any point and email hi@agentsiam.com.",
-    th: "เราใช้อีเมลของคุณเพื่อส่งผลประเมินและติดต่อกลับเรื่องผลนั้น ถ้าอยากให้ติดต่อทางโทรศัพท์หรือ LINE ด้วย ให้กรอกช่องทางนั้นแล้วติ๊กยินยอมกำกับไว้ เราเก็บข้อมูลไว้สิบสองเดือนนับจากที่คุณติดต่อเราครั้งล่าสุด และไม่ส่งต่อให้ใคร เปลี่ยนใจเมื่อไหร่ อีเมลมาที่ hi@agentsiam.com ได้เลย",
+    en: "We use your email to send your result. If you would like us to contact you by phone or on LINE, fill in that channel and tick the consent box. We keep your information for twelve months from the last time you were in touch, and we do not pass it to anyone else. Change your mind at any point and tell us at hi@agentsiam.com.",
+    th: "เราจะใช้อีเมลของคุณเพื่อส่งผลประเมิน หากต้องการให้เราติดต่อทางโทรศัพท์หรือ LINE ให้กรอกช่องทางนั้นและติ๊กช่องยินยอม เราจะเก็บข้อมูลของคุณไว้สิบสองเดือนนับจากการติดต่อครั้งล่าสุด และจะไม่ส่งต่อข้อมูลให้บุคคลอื่น หากคุณเปลี่ยนใจ แจ้งเราได้ทุกเมื่อที่ hi@agentsiam.com",
   },
   /**
    * Rendered as a link to `/privacy`, which is why it is its own key: an

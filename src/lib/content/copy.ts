@@ -166,13 +166,13 @@ export const COPY = {
   // FR-005. Full name, email, and at least one of LINE ID or phone.
   "gate.heading": {
     screen: "Contact step, the heading. Last step of the survey",
-    en: "One last step",
-    th: "อีกขั้นเดียว",
+    en: "Last step",
+    th: "ขั้นตอนสุดท้าย",
   },
   "gate.body": {
     screen: "Contact step, under the heading. Says what happens next",
-    en: "Your name, and a way we can actually reach you. Your first read comes up straight after, and PunProfile follows up with the full one.",
-    th: "กรอกชื่อและช่องทางที่เราติดต่อคุณได้ แล้วรู้ผลเบื้องต้นทันที จากนั้นทีม PunProfile จะส่งผลฉบับเต็มให้อีกครั้ง",
+    en: "Your name, and whichever channel suits you for us to get back to you.",
+    th: "กรอกชื่อและช่องทางที่คุณสะดวกให้เราติดต่อกลับ",
   },
   "gate.firstName": {
     screen: "Contact step, first name field label",
@@ -191,8 +191,8 @@ export const COPY = {
   },
   "gate.channelHint": {
     screen: "Contact gate, above the LINE and phone fields. Explains why one is required",
-    en: "At least one of these, whichever you actually check.",
-    th: "เลือกช่องทางที่คุณใช้บ่อยที่สุด อย่างน้อยหนึ่งช่อง เพื่อให้เราติดต่อกลับได้จริง",
+    en: "Choose at least one channel so the team can reach you.",
+    th: "เลือกอย่างน้อยหนึ่งช่องทางให้ทีมติดต่อกลับได้",
   },
   "gate.lineId": {
     screen: "Contact gate, LINE ID field label",

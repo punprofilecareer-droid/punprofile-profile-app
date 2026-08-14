@@ -56,10 +56,14 @@ export default function AssessPage() {
    * A floor, not a delay added on top. If the mutation is slow the wait is the
    * mutation's, not this; the two overlap rather than stack, so a bad
    * connection never pays twice.
+   *
+   * 900ms first, raised to 1500ms on Paul's read. The upper bound is the PRD
+   * § 1 budget of 90 seconds from landing to first read, which this spends
+   * 1.5s of, so there is room but not unlimited room.
    */
   const [minWaitDone, setMinWaitDone] = useState(false);
   useEffect(() => {
-    const id = setTimeout(() => setMinWaitDone(true), 900);
+    const id = setTimeout(() => setMinWaitDone(true), 1500);
     return () => clearTimeout(id);
   }, []);
 
