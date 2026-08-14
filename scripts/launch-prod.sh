@@ -110,7 +110,11 @@ npx vercel env ls
 # ---------------------------------------------------------------------------
 # 6. Push. This is the deploy.
 # ---------------------------------------------------------------------------
-git push origin main
+# The branch is master, not main, and local is far ahead of it: as of
+# 14/08/2026 origin/master was 53 commits behind, so what Vercel has been
+# serving all along is the Phase 0 placeholder page. This push is the first
+# time the real app reaches the internet.
+git push origin master
 
 # Watch it. The build must show `convex deploy` running before `next build`.
 npx vercel logs --follow || true
