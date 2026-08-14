@@ -62,9 +62,11 @@ export default function ContactGate({
   const [email, setEmail] = useState("");
   const [lineId, setLineId] = useState("");
   const [phone, setPhone] = useState("");
-  const [emailConsent, setEmailConsent] = useState(false);
-  const [lineConsent, setLineConsent] = useState(false);
-  const [phoneConsent, setPhoneConsent] = useState(false);
+  /**
+   * One tick, not three. It still grants per channel: see `consent-copy.ts`
+   * for why the field is the granular control and the checkbox is not.
+   */
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState<CopyKey | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -78,6 +80,18 @@ export default function ContactGate({
   const field =
     "mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink";
 
+  // Email is always in the list because it is always required. The other two
+  // appear only once their field has something in it, so the sentence describes
+  // this candidate's actual choice rather than every channel on offer.
+  const channels = [
+    pick(CONSENT_COPY["consent.channel.email"]),
+    ...(phone.trim() ? [pick(CONSENT_COPY["consent.channel.phone"])] : []),
+    ...(lineId.trim() ? [pick(CONSENT_COPY["consent.channel.line"])] : []),
+  ];
+  const consentLabel = t("consent.statement", {
+    channels: channels.join(pick(CONSENT_COPY["consent.channelJoin"])),
+  });
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -90,16 +104,8 @@ export default function ContactGate({
     // to give us the number at all; the tick is what makes holding it lawful.
     // So "phone entered, box unticked" is not a preference to respect, it is
     // an incomplete form.
-    if (!emailConsent) {
+    if (!consent) {
       setError("gate.error.consent_email");
-      return;
-    }
-    if (phone.trim() && !phoneConsent) {
-      setError("gate.error.consent_phone");
-      return;
-    }
-    if (lineId.trim() && !lineConsent) {
-      setError("gate.error.consent_line");
       return;
     }
 
@@ -110,11 +116,14 @@ export default function ContactGate({
         firstName,
         lastName,
         email,
-        emailConsent,
+        // The single tick fans back out to the per-channel flags. The server
+        // contract and the per-channel timestamps are untouched: a channel that
+        // was not filled in still sends `undefined` and still grants nothing.
+        emailConsent: consent,
         phone: phone.trim() || undefined,
-        phoneConsent: phone.trim() ? phoneConsent : undefined,
+        phoneConsent: phone.trim() ? consent : undefined,
         lineId: lineId.trim() || undefined,
-        lineConsent: lineId.trim() ? lineConsent : undefined,
+        lineConsent: lineId.trim() ? consent : undefined,
       });
     } catch (err) {
       // The server's code, mapped to translatable copy. Anything unrecognised
@@ -185,12 +194,6 @@ export default function ContactGate({
           required
         />
       </label>
-      <Consent
-        checked={emailConsent}
-        onChange={setEmailConsent}
-        label={pick(CONSENT_COPY["consent.email"])}
-        required
-      />
 
       <p className="mt-8 text-body text-slate">{t("gate.channelHint")}</p>
 
@@ -202,14 +205,6 @@ export default function ContactGate({
           onChange={(e) => setLineId(e.target.value)}
         />
       </label>
-      {lineId.trim() && (
-        <Consent
-          checked={lineConsent}
-          onChange={setLineConsent}
-          label={pick(CONSENT_COPY["consent.line"])}
-          required
-        />
-      )}
 
       <label className="mt-4 block text-label text-slate">
         {t("gate.phone")}
@@ -221,14 +216,12 @@ export default function ContactGate({
           autoComplete="tel"
         />
       </label>
-      {phone.trim() && (
-        <Consent
-          checked={phoneConsent}
-          onChange={setPhoneConsent}
-          label={pick(CONSENT_COPY["consent.phone"])}
-          required
-        />
-      )}
+
+      {/* One consent, after both channel fields so it can name what was
+          actually filled in. Before them it would have to speak in
+          hypotheticals, which is the wording that made three boxes feel
+          necessary in the first place. */}
+      <Consent checked={consent} onChange={setConsent} label={consentLabel} required />
 
       {/* `error`, never Terracotta: a problem must not look like an action. */}
       {error && (

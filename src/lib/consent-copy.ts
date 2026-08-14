@@ -27,6 +27,25 @@
 import type { CopyEntry } from "./content/copy";
 
 /**
+ * **One consent, not three, 14/08/2026 (Paul).** "Why are you duplicating it?
+ * It's bad for customer experience." He is right about the experience: a
+ * candidate who filled in both channels met three separate boxes saying almost
+ * the same sentence.
+ *
+ * What had to survive the collapse is granularity, which is a PDPA property
+ * and not a UI one. It survives because **the field is the granular control,
+ * not the checkbox**. A candidate consents to a channel by giving us that
+ * channel; leaving LINE blank is a refusal of LINE, and no wording is needed
+ * for it. So the single statement NAMES the channels that were actually filled
+ * in, `consent.statement` interpolating them, and the one tick still writes a
+ * separate timestamp per channel in `convex/leads.ts`. The audit trail is
+ * unchanged: what was consented to, per channel, and when.
+ *
+ * The thing genuinely given up: a candidate can no longer give us a phone
+ * number while withholding permission to use it. That combination existed on
+ * the old screen and, on the evidence of the form it replaced, was never a
+ * thing anyone wanted; someone who does not want a call does not type a number.
+ *
  * **The Thai on this screen is Paul's own wording, 14/08/2026**, given after he
  * read the live page. Two edits were made to what he sent and both are visible
  * changes to his text rather than tidying:
@@ -59,20 +78,20 @@ import type { CopyEntry } from "./content/copy";
 export const CONSENT_COPY_REVIEWED = true;
 
 export const CONSENT_COPY = {
-  "consent.email": {
+  "consent.statement": {
     screen: "Contact gate, beside the email field",
-    en: "I agree that PunProfile may email me my result and follow up about it.",
-    th: "ยินยอมให้ PunProfile ส่งผลประเมินและติดต่อกลับทางอีเมล",
+    en: "I agree that PunProfile may contact me about my result and career coaching by {channels}.",
+    th: "ยินยอมให้ PunProfile ติดต่อกลับเรื่องผลประเมินและบริการแนะแนวอาชีพทาง{channels}",
   },
-  "consent.phone": {
+  "consent.channel.phone": {
     screen: "Contact gate, beside the phone field",
-    en: "I agree that PunProfile may call me about career coaching.",
-    th: "ยินยอมให้ PunProfile โทรหาคุณเรื่องบริการแนะแนวอาชีพ",
+    en: "phone",
+    th: "โทรศัพท์",
   },
-  "consent.line": {
+  "consent.channel.line": {
     screen: "Contact gate, beside the LINE ID field",
-    en: "I agree that PunProfile may message me on LINE about career coaching.",
-    th: "ยินยอมให้ PunProfile ทัก LINE หาคุณเรื่องบริการแนะแนวอาชีพ",
+    en: "LINE",
+    th: "LINE",
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
@@ -85,6 +104,23 @@ export const CONSENT_COPY = {
    * sentence on a substring, and that breaks the moment the Thai word order
    * differs from the English.
    */
+  "consent.channel.email": {
+    screen: "Contact gate, inside the consent statement",
+    en: "email",
+    th: "อีเมล",
+  },
+
+  /**
+   * The joiner between channel names. A separate entry because Thai does not
+   * take a comma-and list the way English does, and hardcoding " and " here
+   * would produce "อีเมล and LINE" on the screen that matters most.
+   */
+  "consent.channelJoin": {
+    screen: "Contact gate, between channel names",
+    en: " and ",
+    th: " และ ",
+  },
+
   "consent.privacyLink": {
     screen: "Contact gate, under the purpose paragraph",
     en: "Read our Privacy Policy",
