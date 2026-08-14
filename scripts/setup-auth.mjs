@@ -12,6 +12,14 @@
  * Safe to re-run: it simply rotates the keys, which signs the admin out
  * everywhere until the next sign-in. That property is also the recovery path
  * if a key is ever exposed: re-run, and the exposed one signs nothing.
+ *
+ * **Never run `npx convex env list` to check this worked.** It prints every
+ * value in full, including JWT_PRIVATE_KEY, so a routine "did that land?"
+ * check dumps the deployment's signing key into a terminal buffer, a
+ * screenshot, or a pasted chat message. Confirmed the hard way on 14/08/2026.
+ * List names only:
+ *
+ *   npx convex env list --prod | grep -oE '^[A-Z_]+=' | tr -d '='
  */
 import { exportJWK, exportPKCS8, generateKeyPair } from "jose";
 import { execFileSync } from "node:child_process";

@@ -81,8 +81,11 @@ git -c user.name=agentsiam -c user.email=hi@agentsiam.com \
 # again. Private keys never leave the Mac.
 ADMIN_EMAIL=paul.bussabong@gmail.com node scripts/setup-auth.mjs
 
-# Confirm all four landed on prod.
-npx convex env list --prod
+# Confirm all four landed on prod, BY NAME ONLY. Plain `convex env list`
+# prints every value in full, JWT_PRIVATE_KEY included, which puts the
+# deployment's signing key into your scrollback. Learned on 14/08/2026 by
+# doing it.
+npx convex env list --prod | grep -oE '^[A-Z_]+=' | tr -d '='
 
 
 # ---------------------------------------------------------------------------
