@@ -93,7 +93,7 @@ export default function LeadList() {
                 <Th>Name</Th>
                 <Th>Email</Th>
                 <Th>LINE / phone</Th>
-                <Th title="Fit: should we work with them. ICP score out of 10.">Fit</Th>
+                <Th title="Fit: should we work with them. Investment Readiness, 0 to 3.">Fit</Th>
                 <Th title="Readiness: how close they are to landing a job, out of 5.">Ready</Th>
                 <Th>Status</Th>
                 <Th>Last</Th>
@@ -133,9 +133,15 @@ export default function LeadList() {
                     {l.grade.tier ? (
                       <span
                         className={`whitespace-nowrap rounded-full px-2 py-0.5 text-caption ${TIER_STYLE[l.grade.tier]}`}
-                        title={`Role fit ${l.grade.parts.roleFit}, experience ${l.grade.parts.experience ?? "?"}, investment ${l.grade.parts.investment ?? "?"}`}
+                        title={
+                          l.grade.routingNote ??
+                          (l.grade.unmeasured.length
+                            ? `Unmeasured: ${l.grade.unmeasured.join("; ")}`
+                            : "Both gates pass")
+                        }
                       >
-                        {l.grade.tier} {l.grade.score}
+                        {l.grade.tier}
+                        {l.grade.offeringMatch === "fail" ? " *" : ""}
                       </span>
                     ) : (
                       <span className="text-neutral-500">not scored</span>
@@ -166,11 +172,14 @@ export default function LeadList() {
       {/* Named rather than hidden: a score that quietly stands in for a missing
           input is the failure mode this product exists to avoid. */}
       <p className="mt-4 text-caption text-neutral-500">
-        Fit uses the ICP framework in <code>08_Coaching_Business.md</code>. Role/Industry
-        Fit currently takes the documented fallback of 2 for everyone, because the Job
-        Title Pool is not loaded, so the score varies only by experience and prior
-        investment. Temperature is not shown at all: its tiers are specified but its
-        per-answer points live in the response sheet&apos;s formulas (TASK-055).
+        Fit uses the ICP framework in <code>08_Coaching_Business.md</code>, as
+        restructured 13/08/2026: two gates and one score. The badge is Investment
+        Readiness, the only criterion measured to separate this pool. A{" "}
+        <strong>*</strong> means the Offering Match gate failed, so they need a different
+        offering rather than the standard pitch, which is a routing note and not a worse
+        lead. The In Scope gate reads a CV and the CV pipeline is not built, so everyone
+        passes it by default. Temperature is not shown at all: it is not what gates a
+        booking, the stage question is.
       </p>
     </div>
   );

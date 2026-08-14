@@ -6,7 +6,7 @@ import { computeScores } from "./scoring";
 import { toScoringInput } from "../src/lib/content/mapping";
 import { isValidAnswer } from "../src/lib/content/questions";
 import { rateLimiter } from "./rateLimits";
-import { gradeLead } from "../src/lib/leadGrade";
+import { gradeLead, toGradeInput } from "../src/lib/leadGrade";
 
 /**
  * TASK-012/013/015/016: the candidate session lifecycle, per PRD § 4.
@@ -265,7 +265,10 @@ export const listForAdmin = query({
         scores: l.scores ?? {},
         // Graded here rather than in the browser, so the list does not have to
         // ship every candidate's full answer set to render a badge.
-        grade: gradeLead(toScoringInput(l.responses ?? {})),
+        // `toGradeInput`, not `toScoringInput`: the grade reads the raw record
+        // so imported survey leads grade too, and so the two ICP answers never
+        // reach the candidate's chart. See `leadGrade.ts`.
+        grade: gradeLead(toGradeInput(l.responses ?? {})),
         answered: Object.keys(l.responses ?? {}).length,
         createdAt: l.createdAt,
         lastActivityAt: l.lastActivityAt,

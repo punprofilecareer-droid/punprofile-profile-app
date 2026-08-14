@@ -24,7 +24,7 @@ import { toScoringInput } from "@/lib/content/mapping";
 import { scoreResponse } from "@/lib/scoring";
 import { buildNarrative } from "@/lib/narrative";
 import { buildCoachView } from "@/lib/views";
-import { gradeLead } from "@/lib/leadGrade";
+import { gradeLead, toGradeInput } from "@/lib/leadGrade";
 
 export default function LeadBriefing({
   responses,
@@ -39,7 +39,9 @@ export default function LeadBriefing({
       profile: scoreResponse(input),
       narrative: buildNarrative(scoreResponse(input)),
       coach: buildCoachView(input, fullName ?? "Lead"),
-      grade: gradeLead(input),
+      // Raw responses, not `input`: the two ICP answers are deliberately kept
+      // out of ScoringInput so they cannot reach the candidate's chart.
+      grade: gradeLead(toGradeInput(responses)),
     };
   }, [responses, fullName]);
 
@@ -164,8 +166,11 @@ export default function LeadBriefing({
         <p className="mt-2 text-body text-slate">
           {grade.score === null
             ? "Not enough answered to grade."
-            : `${grade.tier} fit, ${grade.score}/10. Role ${grade.parts.roleFit}, experience ${grade.parts.experience ?? "?"}, investment ${grade.parts.investment ?? "?"}.`}
+            : `${grade.tier} fit. Investment Readiness ${grade.score} of 3.`}
         </p>
+        {grade.routingNote && (
+          <p className="mt-1 text-body text-ink">{grade.routingNote}</p>
+        )}
         <p className="mt-1 text-caption text-neutral-500">
           Unmeasured: {grade.unmeasured.join("; ")}.
         </p>
