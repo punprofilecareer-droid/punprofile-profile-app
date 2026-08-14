@@ -52,20 +52,46 @@ export interface Question {
 export const EXCLUSIVE_VALUES = new Set(["not_sure", "never"]);
 
 /**
- * Role categories come from the Job Title Pool in `08_Coaching_Business.md`,
- * as observed in the live Candidates Master lookup tab. Categories, not free
- * text: Target Clarity needs "a role is named", not an essay.
+ * Functions, not job titles. Rewritten 14/08/2026 on Paul's read: "it's not a
+ * job title, the goal is to find out what the aspiration is in terms of
+ * department or capability".
+ *
+ * Two things were wrong, and the list was only the second of them. The question
+ * itself asked `ตำแหน่งงานหรือสายงาน`, position OR field, so it asked two
+ * questions at once and a candidate could honestly answer either. And
+ * `Management & Executive` sat in a list of functions while being a seniority,
+ * which is what made the whole set read as titles: a marketing director had to
+ * choose between their function and their level, and lost the more useful of
+ * the two. Seniority is already answered by the experience question, so it is
+ * gone from here.
+ *
+ * `Other` is gone as well, and that is what removed the pressure for a free
+ * text box. It was never an answer, only a bucket that needed a text field to
+ * mean anything, and the app has no free-text question type by decision
+ * (13/08/2026, the In Scope gate reads the CV instead). `Still deciding` is a
+ * real answer in its place, and it scores honestly as low Target Clarity,
+ * which is exactly what someone who cannot yet name a field should score.
+ *
+ * Categories rather than titles for the original reason too: Target Clarity
+ * needs "a field is named", not an essay.
  */
 export const ROLE_CATEGORIES = [
   "IT & Software",
   "Engineering & Technical",
-  "Business, Strategy & Project",
+  "Data & Analytics",
+  "Finance & Accounting",
   "Marketing",
   "Sales & Business Development",
   "Customer Success & Account Management",
+  "HR & People",
+  "Design & Creative",
   "Procurement, Supply Chain & Operations",
-  "Management & Executive",
-  "Other",
+  "Business, Strategy & Project",
+  "Education & Training",
+  "Healthcare & Life Sciences",
+  "Hospitality & Tourism",
+  "Legal & Compliance",
+  "Research & Science",
 ] as const;
 
 const COUNTRIES = [
@@ -126,15 +152,16 @@ export const STAGE1: Question[] = [
     ],
   },
   {
-    // SLOT: targetRole [proxy: Target Clarity].
+    // SLOT: targetRole [proxy: Target Clarity]. The field, not the title, since
+    // 14/08/2026: see the note on ROLE_CATEGORIES above.
     key: "targetRole",
     stage: 1,
     select: "one",
-    en: "Target role or field in Europe",
-    th: "ตำแหน่งงานหรือสายงานที่อยากทำในยุโรป",
+    en: "Which field do you want to work in in Europe?",
+    th: "สายงานที่อยากทำในยุโรป",
     options: [
       ...ROLE_CATEGORIES.map((r) => ({ value: r, en: r, th: r })),
-      { value: "not_sure", en: "Not sure yet", th: "ยังไม่แน่ใจ" },
+      { value: "not_sure", en: "Still deciding", th: "ยังตัดสินใจไม่ได้" },
     ],
   },
   {
