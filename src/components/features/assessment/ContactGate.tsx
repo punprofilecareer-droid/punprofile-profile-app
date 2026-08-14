@@ -25,7 +25,7 @@
  */
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCopy } from "@/components/LocaleProvider";
 import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
 import type { CopyKey } from "@/lib/content/copy";
@@ -68,11 +68,41 @@ export default function ContactGate({
   const [error, setError] = useState<CopyKey | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Same reason as QuestionCard: the last question can leave the window
+  // scrolled down, and this screen opening mid-form hides the one thing it has
+  // to explain, which is what the contact details are for.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   const field =
     "mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink";
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Consent is checked here as well as on the server. Added 14/08/2026: it
+    // was server-only, so a candidate who filled in a phone number and missed
+    // the tick made a round trip to be told. The server checks stay exactly as
+    // they are; this is the same rule stated earlier, not instead of.
+    //
+    // A consent tied to a filled field is NOT optional. The choice is whether
+    // to give us the number at all; the tick is what makes holding it lawful.
+    // So "phone entered, box unticked" is not a preference to respect, it is
+    // an incomplete form.
+    if (!emailConsent) {
+      setError("gate.error.consent_email");
+      return;
+    }
+    if (phone.trim() && !phoneConsent) {
+      setError("gate.error.consent_phone");
+      return;
+    }
+    if (lineId.trim() && !lineConsent) {
+      setError("gate.error.consent_line");
+      return;
+    }
+
     setBusy(true);
     setError(null);
     try {
@@ -159,6 +189,7 @@ export default function ContactGate({
         checked={emailConsent}
         onChange={setEmailConsent}
         label={pick(CONSENT_COPY["consent.email"])}
+        required
       />
 
       <p className="mt-8 text-body text-slate">{t("gate.channelHint")}</p>
@@ -176,6 +207,7 @@ export default function ContactGate({
           checked={lineConsent}
           onChange={setLineConsent}
           label={pick(CONSENT_COPY["consent.line"])}
+          required
         />
       )}
 
@@ -194,6 +226,7 @@ export default function ContactGate({
           checked={phoneConsent}
           onChange={setPhoneConsent}
           label={pick(CONSENT_COPY["consent.phone"])}
+          required
         />
       )}
 
@@ -215,20 +248,29 @@ export default function ContactGate({
   );
 }
 
+/**
+ * `required` is passed rather than assumed: the email consent is always
+ * required, while phone and LINE become required only once their field has
+ * something in it. The native attribute gives the browser's own blocking and
+ * its own message in the user's language, before any of our validation runs.
+ */
 function Consent({
   checked,
   onChange,
   label,
+  required,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
   label: string;
+  required?: boolean;
 }) {
   return (
     <label className="mt-2 flex items-start gap-3 text-caption text-slate">
       <input
         type="checkbox"
         checked={checked}
+        required={required}
         onChange={(e) => onChange(e.target.checked)}
         className="mt-0.5 size-5 shrink-0 accent-primary"
       />

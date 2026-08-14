@@ -166,13 +166,13 @@ export const COPY = {
   // FR-005. Full name, email, and at least one of LINE ID or phone.
   "gate.heading": {
     screen: "Contact step, the heading. Last step of the survey",
-    en: "Last step",
-    th: "ขั้นตอนสุดท้าย",
+    en: "One last step",
+    th: "อีกขั้นเดียว",
   },
   "gate.body": {
     screen: "Contact step, under the heading. Says what happens next",
-    en: "Tell us who you are and how to reach you. Your first read comes up next, and PunProfile will follow up with the full result.",
-    th: "บอกชื่อและช่องทางติดต่อของคุณ แล้วดูผลประเมินเบื้องต้นได้เลย จากนั้นทีม PunProfile จะติดต่อกลับพร้อมผลฉบับเต็ม",
+    en: "Your name, and a way we can actually reach you. Your first read comes up straight after, and PunProfile follows up with the full one.",
+    th: "กรอกชื่อและช่องทางที่เราติดต่อคุณได้ แล้วรู้ผลเบื้องต้นทันที จากนั้นทีม PunProfile จะส่งผลฉบับเต็มให้อีกครั้ง",
   },
   "gate.firstName": {
     screen: "Contact step, first name field label",
@@ -191,13 +191,13 @@ export const COPY = {
   },
   "gate.channelHint": {
     screen: "Contact gate, above the LINE and phone fields. Explains why one is required",
-    en: "And one way we can actually reach you. Choose whichever you check most.",
-    th: "ระบุเบอร์โทรหรือ LINE ID อย่างน้อยหนึ่งช่องทาง เพื่อให้เราติดต่อคุณได้ เลือกช่องทางที่คุณใช้บ่อยที่สุด",
+    en: "At least one of these, whichever you actually check.",
+    th: "เลือกช่องทางที่คุณใช้บ่อยที่สุด อย่างน้อยหนึ่งช่อง เพื่อให้เราติดต่อกลับได้จริง",
   },
   "gate.lineId": {
     screen: "Contact gate, LINE ID field label",
     en: "LINE ID",
-    th: "LINE ไอดี",
+    th: "LINE ID",
   },
   "gate.phone": {
     screen: "Contact gate, phone field label",
@@ -207,7 +207,7 @@ export const COPY = {
   "gate.submit": {
     screen: "Contact step, the submit button",
     en: "See my first read",
-    th: "ดูผลประเมินเบื้องต้น",
+    th: "รู้ผลเบื้องต้นเลย",
   },
   "gate.working": {
     screen: "Contact gate, submit button while the write is in flight",
@@ -220,42 +220,42 @@ export const COPY = {
   "gate.error.first_name_required": {
     screen: "Contact step, when the first name is empty",
     en: "Please enter your first name.",
-    th: "กรุณากรอกชื่อของคุณ",
+    th: "กรุณากรอกชื่อ",
   },
   "gate.error.last_name_required": {
     screen: "Contact step, when the last name is empty",
     en: "Please enter your last name.",
-    th: "กรุณากรอกนามสกุลของคุณ",
+    th: "กรุณากรอกนามสกุล",
   },
   "gate.error.email_invalid": {
     screen: "Contact gate, when the email is missing or malformed",
     en: "That email doesn't look right. Please check it.",
-    th: "อีเมลไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง",
+    th: "อีเมลดูไม่ถูก ลองเช็กอีกครั้ง",
   },
   "gate.error.channel_required": {
     screen: "Contact gate, when neither LINE nor phone was given",
     en: "Please add a LINE ID or a phone number.",
-    th: "กรุณาระบุ LINE ID หรือเบอร์โทรศัพท์อย่างใดอย่างหนึ่ง",
+    th: "กรอก LINE ID หรือเบอร์โทรอย่างน้อยหนึ่งช่อง",
   },
   "gate.error.consent_email": {
     screen: "Contact gate, when email consent is unticked",
     en: "We need your permission before we can send anything.",
-    th: "กรุณายินยอมให้เราติดต่อคุณทางอีเมลก่อน",
+    th: "ติ๊กยินยอมให้ส่งผลทางอีเมลก่อน",
   },
   "gate.error.consent_phone": {
     screen: "Contact gate, when a phone was given without consent",
-    en: "Please confirm we may contact you by phone, or clear the field.",
-    th: "กรุณายืนยันว่าเราสามารถติดต่อคุณทางโทรศัพท์ได้ หรือลบเบอร์โทรศัพท์ออก",
+    en: "Tick the consent for phone, or clear the number.",
+    th: "ติ๊กยินยอมให้โทรหาคุณด้วย หรือลบเบอร์ออกก็ได้",
   },
   "gate.error.consent_line": {
     screen: "Contact gate, when a LINE ID was given without consent",
-    en: "Please confirm we may contact you on LINE, or clear the field.",
-    th: "กรุณายืนยันว่าเราสามารถติดต่อคุณทาง LINE ได้ หรือลบ LINE ID ออก",
+    en: "Tick the consent for LINE, or clear the ID.",
+    th: "ติ๊กยินยอมให้ทัก LINE หาคุณด้วย หรือลบ LINE ID ออกก็ได้",
   },
   "gate.error.unknown": {
     screen: "Contact gate, any failure with no specific cause. Network, mostly",
     en: "That didn't go through. Please try again.",
-    th: "ส่งข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง",
+    th: "ส่งข้อมูลไม่สำเร็จ ลองอีกครั้ง",
   },
 
   // ------------------------------------------------------- full result screen
