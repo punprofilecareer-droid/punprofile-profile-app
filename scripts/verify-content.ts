@@ -35,7 +35,14 @@ const asAnswer = (q: Question, value: string): string | string[] =>
 // tap-only single-select, which is about five seconds each against a budget
 // that measured near 75. Raising it again without re-timing the flow on a real
 // phone would be guessing.
-if (STAGE1.length > 11) fail(`Stage 1 has ${STAGE1.length} questions, cap is 11`);
+// Raised to 17 on 14/08/2026 when Stage 2 was collapsed into Stage 1 and the
+// five remaining Google Form questions came across. The count is no longer the
+// interesting constraint: the evidence for going longer is that 100 people
+// completed the 21-question form this replaces, with free-text boxes, and a
+// tap-only version has no business being shorter than the thing it replaces.
+// The real check is now drop-off, which the app can measure and the form never
+// could, because a lead row exists from the first tap.
+if (STAGE1.length > 17) fail(`Stage 1 has ${STAGE1.length} questions, cap is 17`);
 
 // 1. Key uniqueness, option validity, and the select-mode contract.
 const keys = new Set<string>();
@@ -133,12 +140,40 @@ const full: Record<string, string | string[]> = {
   // above, so neither moves the profile the assertions below inspect.
   experienceYears: "2-10",
   priorInvestment: ["never"],
+  portfolio: "partial",
+  aiTools: ["ai_weekly"],
+  applications: "1-4",
+  family: ["none"],
+  salary: "2500_3500",
 };
 for (const q of STAGE1) {
   if (full[q.key] === undefined) fail(`full Stage 1 example is missing ${q.key}`);
 }
 const profile = scoreResponse(toScoringInput(full));
-const EXPECT_SCORED = new Set(["employability", "mobilityReadiness", "europeanMarketFit"]);
+// All four dimensions score, since 14/08/2026. The hollow axis is gone.
+//
+// It went the moment `applications` was added, because Search Follow-through
+// is a Professional Capability item and that dimension had simply never had a
+// question it could reach. This assertion caught it on the first run, which is
+// what it was written for.
+//
+// Changed deliberately, and the reasoning is that the hollow axis was a
+// consequence of Stage 1's scope rather than a property of the model.
+// `self-report-scoring.md` always had this dimension rendering on proxies at
+// "indicative" confidence, with the report saying so in words; Stage 1 just
+// could not reach a single one of them. It now reaches one of eleven items, so
+// the axis renders at the lowest confidence the model has, which is honest,
+// and the label still says so.
+//
+// What has NOT changed: experience and prior investment stay out of the
+// scorer. They are the coach's ICP inputs, and mapping them would raise this
+// dimension's coverage on answers the candidate gave for a different purpose.
+const EXPECT_SCORED = new Set([
+  "professionalCapability",
+  "employability",
+  "mobilityReadiness",
+  "europeanMarketFit",
+]);
 for (const d of profile.dimensions) {
   if (EXPECT_SCORED.has(d.key) && d.score === null) fail(`full Stage 1 leaves ${d.key} unscored`);
   if (!EXPECT_SCORED.has(d.key) && d.score !== null)
@@ -199,4 +234,4 @@ if (JSON.stringify(legacy) !== JSON.stringify(
 }
 
 if (failures) { console.error(`${failures} failures`); process.exit(1); }
-console.log("content model OK: keys unique, Thai present, select contract enforced, all options scoreable, Stage 1 scores 3 dimensions and leaves Professional Capability hollow by design");
+console.log("content model OK: keys unique, Thai present, select contract enforced, all options scoreable, all four dimensions score");

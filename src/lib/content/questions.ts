@@ -49,7 +49,7 @@ export interface Question {
 // not paid for any of these" cannot coexist with an item from the same list.
 // A distinct value rather than reusing `none`, which several single-select
 // questions already use for something that is not exclusive of anything.
-export const EXCLUSIVE_VALUES = new Set(["not_sure", "never"]);
+export const EXCLUSIVE_VALUES = new Set(["not_sure", "never", "none", "not_yet"]);
 
 /**
  * Functions, not job titles. Rewritten 14/08/2026 on Paul's read: "it's not a
@@ -211,6 +211,66 @@ export const STAGE1: Question[] = [
     ],
   },
   {
+    // SLOT: portfolio [proxy: Portfolio Evidence]. Added 14/08/2026, one of
+    // five questions carried over from the Google Form before it retires.
+    //
+    // Worth knowing what the answers look like: 44 of the first 63 survey
+    // respondents said no, which scores the floor, and that is precisely why
+    // the lowest-score-wins picker used to nominate "build a portfolio" as
+    // almost everyone's next action. The funnel-ordered picker handles it now.
+    key: "portfolio",
+    stage: 1,
+    select: "one",
+    en: "Do you have a portfolio or work samples showing your results?",
+    th: "มีผลงานหรือตัวอย่างงานที่แสดงผลลัพธ์ของคุณไหม",
+    options: [
+      { value: "none", en: "Not yet", th: "ยังไม่มี" },
+      { value: "partial", en: "Some pieces, not organised", th: "มีบางส่วน ยังไม่ได้จัดรวม" },
+      { value: "good", en: "Yes, and it is presentable", th: "มีแล้ว และพร้อมให้ดู" },
+    ],
+  },
+  {
+    // SLOT: aiTools [ECRA: AI & Digital Fluency]. Added 14/08/2026.
+    //
+    // This is one of only FIVE competencies out of ECRA's 34 that self-report
+    // can honestly score, so losing it with the Google Form would have taken
+    // the app from five real scores to four. The framework's formula is
+    // literally `1 + indicators met`, which is why the options are the
+    // indicators themselves rather than a satisfaction scale.
+    //
+    // The flags are stored as well as the count: "adopt indicator 3" is only
+    // prescribable if we know 3 is the missing one. Evidence stays granular,
+    // scores compress.
+    key: "aiTools",
+    stage: 1,
+    select: "many",
+    en: "Which of these are true about how you work? Choose all that apply.",
+    th: "ข้อไหนตรงกับวิธีทำงานของคุณบ้าง เลือกได้มากกว่า 1 ข้อ",
+    options: [
+      {
+        value: "ai_weekly",
+        en: "I use AI tools like ChatGPT for work or job-search tasks most weeks",
+        th: "ใช้ AI เช่น ChatGPT ช่วยงานหรือหางานเกือบทุกสัปดาห์",
+      },
+      {
+        value: "eu_tools",
+        en: "I am comfortable with the tools European teams run on, for example Slack, Notion, Jira",
+        th: "ใช้เครื่องมือที่ทีมในยุโรปใช้กันได้ เช่น Slack, Notion, Jira",
+      },
+      {
+        value: "ai_tailor",
+        en: "I have used AI to tailor a CV or an application",
+        th: "เคยใช้ AI ปรับ CV หรือใบสมัครงาน",
+      },
+      {
+        value: "self_taught",
+        en: "I picked these up on my own, not because a job required it",
+        th: "เรียนรู้เองด้วยตัวเอง ไม่ใช่เพราะงานบังคับ",
+      },
+      { value: "never", en: "None of these yet", th: "ยังไม่มีข้อไหนตรง" },
+    ],
+  },
+  {
     // SLOT: workAuth [ECRA: Visa Readiness]. `sponsor_route_named` has no live
     // equivalent: the framework scores "knows the specific route" a full point
     // above "knows sponsorship is needed", and no form ever asked it.
@@ -285,6 +345,26 @@ export const STAGE1: Question[] = [
     ],
   },
   {
+    // SLOT: applications [proxy: Application Activity with Q11, and Search
+    // Follow-through]. Added 14/08/2026.
+    //
+    // Bands, not a number: the scorer only ever asks "none / under five / five
+    // or more", so a free number would collect a precision nothing reads. The
+    // fourth band exists for the coach rather than the score, which is a fair
+    // trade at one tap.
+    key: "applications",
+    stage: 1,
+    select: "one",
+    en: "How many roles in Europe have you applied to so far?",
+    th: "สมัครงานในยุโรปไปแล้วกี่ตำแหน่ง",
+    options: [
+      { value: "0", en: "None yet", th: "ยังไม่ได้สมัคร" },
+      { value: "1-4", en: "1 to 4", th: "1–4 ตำแหน่ง" },
+      { value: "5-20", en: "5 to 20", th: "5–20 ตำแหน่ง" },
+      { value: "20+", en: "More than 20", th: "มากกว่า 20 ตำแหน่ง" },
+    ],
+  },
+  {
     // SLOT: timeline [proxy: Relocation Timeline].
     key: "timeline",
     stage: 1,
@@ -296,6 +376,88 @@ export const STAGE1: Question[] = [
       { value: "3_6m", en: "In 3 to 6 months", th: "3–6 เดือน" },
       { value: "6_12m", en: "In 6 to 12 months", th: "6–12 เดือน" },
       { value: "exploring", en: "Not sure, still exploring", th: "ยังไม่แน่ใจ กำลังศึกษาข้อมูลอยู่" },
+    ],
+  },
+  {
+    // SLOT: family [ECRA: Family Readiness]. Added 14/08/2026, and the fifth
+    // of the five real ECRA competencies self-report can reach.
+    //
+    // One question, not two, for the same reason Q11 is one: the app has no
+    // conditional question display, so a follow-up about family logistics
+    // would have shown to every single person with no partner and no children.
+    // The exclusive "no partner or dependents" option carries `hasDependents:
+    // false`, which the framework auto-scores 5, and the four indicator
+    // options carry `true` plus their own flag.
+    //
+    // `not_yet` exists so that having dependents and having done none of this
+    // is expressible. Without it, someone with a family and no plan would have
+    // had to either lie or leave the question, and those score very
+    // differently.
+    //
+    // Family Readiness is scored but never offered as a next action: it is a
+    // life circumstance, not a task, and the funnel picker excludes it.
+    key: "family",
+    stage: 1,
+    select: "many",
+    en: "If you moved, who moves with you? Choose all that apply.",
+    th: "ถ้าคุณย้ายไปยุโรป มีใครย้ายไปด้วยไหม เลือกได้มากกว่า 1 ข้อ",
+    options: [
+      {
+        value: "none",
+        en: "Nobody, I would be moving alone",
+        th: "ไม่มี ย้ายไปคนเดียว",
+      },
+      {
+        value: "discussed",
+        en: "I have talked the move through with everyone it affects",
+        th: "ได้คุยเรื่องย้ายกับทุกคนที่เกี่ยวข้องแล้ว",
+      },
+      {
+        value: "no_objection",
+        en: "Nobody close to me is against it",
+        th: "ไม่มีใครคัดค้าน",
+      },
+      {
+        value: "dependents_plan",
+        en: "We have a plan for school or care for the people who depend on me",
+        th: "มีแผนเรื่องโรงเรียนหรือการดูแลคนที่ต้องพึ่งพาเราแล้ว",
+      },
+      {
+        value: "logistics",
+        en: "We have thought through the practical side, visas, housing, my partner's work",
+        th: "คิดเรื่องวีซ่า ที่พัก และงานของคู่ครองไว้แล้ว",
+      },
+      {
+        value: "not_yet",
+        en: "Someone would move with me, but we have not worked any of this out",
+        th: "มีคนย้ายไปด้วย แต่ยังไม่ได้วางแผนอะไรเลย",
+      },
+    ],
+  },
+  {
+    // SLOT: salary [proxy: Salary Expectation Stated]. Added 14/08/2026.
+    //
+    // The proxy is named for what it measures: whether a usable figure exists,
+    // never whether the figure is realistic. Classifying it would need a
+    // country and role market benchmark, and `salaryExpectations` stays a
+    // coach-tier item for exactly that reason.
+    //
+    // Bands rather than free text, which the app has no input type for anyway,
+    // and which here is an improvement: a band guarantees a figure, a currency
+    // and a period, where the survey's free text produced "depends" often
+    // enough to need its own parser branch. Every band scores the same 3 on
+    // purpose. The band itself is for the call.
+    key: "salary",
+    stage: 1,
+    select: "one",
+    en: "What monthly salary would you be aiming for in Europe, before tax?",
+    th: "เงินเดือนที่คุณตั้งเป้าในยุโรป ก่อนหักภาษี ประมาณเท่าไหร่",
+    options: [
+      { value: "under_2500", en: "Under €2,500 a month", th: "ต่ำกว่า 2,500 ยูโรต่อเดือน" },
+      { value: "2500_3500", en: "€2,500 to €3,500 a month", th: "2,500–3,500 ยูโรต่อเดือน" },
+      { value: "3500_5000", en: "€3,500 to €5,000 a month", th: "3,500–5,000 ยูโรต่อเดือน" },
+      { value: "over_5000", en: "Over €5,000 a month", th: "มากกว่า 5,000 ยูโรต่อเดือน" },
+      { value: "not_sure", en: "I have not worked that out yet", th: "ยังไม่ได้คิดเรื่องนี้" },
     ],
   },
   {
