@@ -26,6 +26,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import ActionBar, { ActionBarSpacer } from "./ActionBar";
 import { useCopy } from "@/components/LocaleProvider";
 import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
 import type { CopyKey } from "@/lib/content/copy";
@@ -230,13 +231,16 @@ export default function ContactGate({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="mt-8 h-12 w-full rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
-      >
-        {busy ? t("gate.working") : t("gate.submit")}
-      </button>
+      <ActionBarSpacer />
+      <ActionBar>
+        <button
+          type="submit"
+          disabled={busy}
+          className="min-h-14 w-full rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+        >
+          {busy ? t("gate.working") : t("gate.submit")}
+        </button>
+      </ActionBar>
     </form>
   );
 }

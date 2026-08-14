@@ -171,3 +171,140 @@
 .viz-root .viz-caption { font: 11px var(--font-sans); fill: var(--viz-muted); }
 /* Emitted by radarSvg when fewer than three axes exist; previously unstyled. */
 .viz-root .viz-empty { color: var(--color-neutral-500); font-size: var(--text-caption); }
+
+/* ---------------------------------------------------------------------------
+   Liquid Glass, adapted from Apple's material to the web. 14/08/2026.
+
+   Read the HIG before touching this. Two rules from it decided the whole
+   shape of this block:
+
+   1. "Don't use Liquid Glass in the content layer." It is a FUNCTIONAL layer
+      for controls and navigation that floats above content. So exactly three
+      surfaces here are glass, all of them chrome: the sticky header, the
+      language menu, and the floating action bar. Option tiles, cards and the
+      chart stay flat. They are content.
+   2. "Use Liquid Glass effects sparingly." Three surfaces is the budget, not
+      a starting point.
+
+   Only the REGULAR variant is implemented. Apple's clear variant is for
+   components floating over visually rich backgrounds like photos and video,
+   and needs a 35% dimming layer when what is behind it is bright. Nothing in
+   this app floats over media, so building clear would be building a thing
+   with no correct use.
+
+   The material is four layers, not a blur: a translucent tint that keeps text
+   legible, a backdrop blur plus saturation that does the lensing, a hairline
+   border that gives it an edge, and an inset highlight along the top that
+   reads as light catching a bevel. Drop any one and it stops looking like
+   glass and starts looking like a semi-transparent div.
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  .glass {
+    background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, #ffffff 65%, transparent),
+      0 8px 24px rgba(36, 36, 37, 0.08);
+  }
+
+  /* The header is a bar, not a card: it needs an edge underneath and nothing
+     else, or it reads as a floating panel that happens to be full width. */
+  .glass-bar {
+    background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow: inset 0 1px 0 0 color-mix(in srgb, #ffffff 65%, transparent);
+  }
+
+  /* The action bar sits at the bottom, so its highlight and its edge flip. */
+  .glass-bar-bottom {
+    background-color: color-mix(in srgb, var(--color-surface) 76%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-top: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow: 0 -8px 24px rgba(36, 36, 37, 0.06);
+  }
+
+  /* The lavender field the glass has something to bend. Without a background
+     with structure in it, glass over white is an expensive way to draw a
+     1px border. Three soft radial pools rather than a linear gradient,
+     because a linear ramp has no local variation for the blur to pick up as
+     the page scrolls under the bar. */
+  .eufit-field {
+    background-color: var(--color-surface);
+    background-image:
+      radial-gradient(60rem 40rem at 12% -10%, color-mix(in srgb, var(--color-eufit) 22%, transparent), transparent 60%),
+      radial-gradient(45rem 35rem at 100% 8%, color-mix(in srgb, var(--color-lavender-wash) 90%, transparent), transparent 62%),
+      radial-gradient(50rem 45rem at 50% 108%, color-mix(in srgb, var(--color-eufit) 14%, transparent), transparent 65%);
+    background-attachment: fixed;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Fallbacks. Three separate reasons the material must become solid, and each
+   one is somebody for whom the effect is worse than nothing.
+   -------------------------------------------------------------------------- */
+
+/* 1. The browser cannot do it. Without this the tint alone renders and text
+      sits on 72% white over a gradient, which is the one genuinely unreadable
+      outcome in this file. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-bar,
+  .glass-bar-bottom {
+    background-color: var(--color-surface);
+  }
+}
+
+/* 2. The device cannot do it cheaply. `data-perf="low"` is set by a small
+      inline script in the layout from deviceMemory and hardwareConcurrency.
+      A sustained backdrop-filter on a scrolling page is one of the most
+      expensive things a mid-range Android phone can be asked to do, and that
+      phone on mobile data is this product's actual audience, not its edge
+      case. */
+[data-perf="low"] .glass,
+[data-perf="low"] .glass-bar,
+[data-perf="low"] .glass-bar-bottom {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--color-surface);
+}
+
+[data-perf="low"] .eufit-field {
+  background-attachment: scroll;
+}
+
+/* 3. The person asked for it off. Apple's own material changes behaviour
+      under these settings rather than ignoring them. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-bar,
+  .glass-bar-bottom {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--color-surface);
+  }
+  .eufit-field {
+    background-image: none;
+    background-color: var(--color-surface);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .glass,
+  .glass-bar,
+  .glass-bar-bottom {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--color-surface);
+    border-color: var(--color-ink);
+  }
+  .eufit-field {
+    background-image: none;
+    background-color: var(--color-surface);
+  }
+}

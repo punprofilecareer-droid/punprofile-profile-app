@@ -11,6 +11,7 @@
  */
 
 import { useEffect } from "react";
+import ActionBar, { ActionBarSpacer } from "./ActionBar";
 import { EXCLUSIVE_VALUES } from "@/lib/content/questions";
 import { useCopy } from "@/components/LocaleProvider";
 
@@ -142,13 +143,18 @@ export default function QuestionCard({
           only way forward would be to re-tap an option they had not come to
           change. */}
       {(select === "many" || chosen.length > 0) && (
-        <button
-          onClick={onContinue}
-          disabled={chosen.length === 0}
-          className="mt-5 min-h-12 w-full rounded-md bg-accent px-7 py-3.5 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
-        >
-          {t("assess.continue")}
-        </button>
+        <>
+          <ActionBarSpacer />
+          <ActionBar>
+            <button
+              onClick={onContinue}
+              disabled={chosen.length === 0}
+              className="min-h-14 w-full rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+            >
+              {t("assess.continue")}
+            </button>
+          </ActionBar>
+        </>
       )}
     </div>
   );

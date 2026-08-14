@@ -130,7 +130,11 @@ export default function LocaleToggle() {
       {open && (
         <ul
           role="menu"
-          className="absolute right-0 z-50 mt-1 min-w-[9rem] overflow-hidden rounded-md border border-neutral-300 bg-surface py-1 shadow-[0_8px_24px_rgba(36,36,37,0.12)]"
+          // Glass, and one of only three surfaces in the app that gets it: a
+          // menu is a control floating above content, which is exactly what
+          // Apple's material is for. `overflow-hidden` has to stay, or the
+          // rounded corners clip the blur into a square.
+          className="glass absolute right-0 z-50 mt-1 min-w-[9rem] overflow-hidden rounded-md py-1"
         >
           {LOCALES.map((l) => (
             <li key={l} role="none">
@@ -142,7 +146,7 @@ export default function LocaleToggle() {
                   setLocale(l);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-body transition-colors hover:bg-cream-wash ${
+                className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-body transition-colors hover:bg-black/5 ${
                   locale === l ? "text-ink" : "text-slate"
                 }`}
               >
