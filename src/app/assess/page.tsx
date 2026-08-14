@@ -45,6 +45,24 @@ export default function AssessPage() {
   // A latch, not render state: it only guards the one-shot resume below.
   const resumed = useRef(false);
 
+  /**
+   * A deliberate floor on how fast the first question can appear, 14/08/2026.
+   *
+   * `startSession` usually resolves in well under 200ms, so tapping the CTA
+   * swapped one screen for another with no beat in between and read as a
+   * mis-tap rather than a start. The pause is doing honest work: it says a
+   * session was created and something is being prepared, which is true.
+   *
+   * A floor, not a delay added on top. If the mutation is slow the wait is the
+   * mutation's, not this; the two overlap rather than stack, so a bad
+   * connection never pays twice.
+   */
+  const [minWaitDone, setMinWaitDone] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setMinWaitDone(true), 900);
+    return () => clearTimeout(id);
+  }, []);
+
   const startSession = useMutation(api.leads.startSession);
   const submitAnswer = useMutation(api.leads.submitAnswer);
   const captureContact = useMutation(api.leads.captureContact);
@@ -102,7 +120,7 @@ export default function AssessPage() {
     [session, locale],
   );
 
-  if (!leadId) {
+  if (!leadId || !minWaitDone) {
     return (
       <div className="mx-auto w-full max-w-md px-6 py-24 text-center">
         {startFailed ? (
@@ -120,7 +138,17 @@ export default function AssessPage() {
             </button>
           </>
         ) : (
-          <p className="text-body text-neutral-500">{t("assess.starting")}</p>
+          <>
+            {/* Something moving, or the pause reads as a stall rather than as
+                work. Ring on the brand primary, one revolution a second. */}
+            <span
+              aria-hidden
+              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-neutral-300 border-t-primary"
+            />
+            <p className="text-body text-neutral-500" role="status">
+              {t("assess.starting")}
+            </p>
+          </>
         )}
       </div>
     );

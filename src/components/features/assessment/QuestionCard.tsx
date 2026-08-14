@@ -10,12 +10,32 @@
  * button and commits once, with the full list, when that is pressed.
  */
 
+import { useEffect } from "react";
 import { EXCLUSIVE_VALUES } from "@/lib/content/questions";
 import { useCopy } from "@/components/LocaleProvider";
 
 export interface CardOption {
   value: string;
   label: string;
+}
+
+/**
+ * Every question starts at the top of the page. Added 14/08/2026: the long
+ * option lists (target countries, target role) leave the window scrolled down,
+ * and the next question then opened halfway through itself with its prompt off
+ * screen, which reads as a broken page rather than a long one.
+ *
+ * A mount effect is enough because the parent passes `key={q.key}`, so this
+ * component is remounted on every step. That covers forward, back, and the
+ * resume path without the parent knowing anything about scrolling.
+ *
+ * `instant`, not smooth: a scroll animation on top of a content swap is two
+ * motions competing, and the content has already changed by the time it runs.
+ */
+function useScrollToTop() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 }
 
 export default function QuestionCard({
@@ -43,6 +63,7 @@ export default function QuestionCard({
   total: number;
 }) {
   const { t } = useCopy();
+  useScrollToTop();
   const chosen = Array.isArray(selected) ? selected : selected ? [selected] : [];
   const isChosen = (value: string) => chosen.includes(value);
 
