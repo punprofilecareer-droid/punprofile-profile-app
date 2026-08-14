@@ -41,7 +41,7 @@ export default function AssessPage() {
   const { t, pick, locale } = useCopy();
   const [leadId, setLeadId] = useState<Id<"leads"> | null>(null);
   const [local, setLocal] = useState<Record<string, Answer>>({});
-  const [step, setStep] = useState(0); // 0..8 = questions, 9 = teaser
+  const [step, setStep] = useState(0); // 0..STAGE1.length-1 = questions, then the contact gate, then the teaser
   // A latch, not render state: it only guards the one-shot resume below.
   const resumed = useRef(false);
 

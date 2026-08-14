@@ -134,6 +134,26 @@ export const STAGE1: Question[] = [
     ],
   },
   {
+    // SLOT: experienceYears [ICP Gate 2: Offering Match]. Added 14/08/2026.
+    //
+    // Deliberately NOT mapped into ScoringInput. `experienceDepth` is an item
+    // of Professional Capability, and Stage 1 leaves that dimension hollow on
+    // purpose (PRD § 1, and `verify-content.ts` asserts both directions of it).
+    // This answer reaches the coach through `toGradeInput` only, so the
+    // candidate's first read is unchanged by it.
+    key: "experienceYears",
+    stage: 1,
+    select: "one",
+    en: "How many years of professional experience do you have?",
+    th: "คุณมีประสบการณ์ทำงานมากี่ปีแล้ว",
+    options: [
+      { value: "0-1", en: "Up to 1 year", th: "ไม่เกิน 1 ปี" },
+      { value: "2-10", en: "2 to 10 years", th: "2–10 ปี" },
+      { value: "11-15", en: "11 to 15 years", th: "11–15 ปี" },
+      { value: "16+", en: "16 years or more", th: "16 ปีขึ้นไป" },
+    ],
+  },
+  {
     // SLOT: cv [proxy: CV Status].
     key: "cv",
     stage: 1,
@@ -235,6 +255,36 @@ export const STAGE1: Question[] = [
       { value: "3_6m", en: "In 3 to 6 months", th: "3–6 เดือน" },
       { value: "6_12m", en: "In 6 to 12 months", th: "6–12 เดือน" },
       { value: "exploring", en: "Not sure, still exploring", th: "ยังไม่แน่ใจ กำลังศึกษาข้อมูลอยู่" },
+    ],
+  },
+  {
+    // SLOT: priorInvestment [ICP score: Investment Readiness]. Added
+    // 14/08/2026, and the reason the pair was added at all: measured across
+    // all 90 survey leads this was the ONLY ICP criterion that separated the
+    // pool, 41% having paid for career development against 53% who had not.
+    //
+    // Last, exactly as the Lead Discovery Survey placed it (Q21). Revealed
+    // past spend is a better willingness-to-pay signal than a hypothetical
+    // budget question, and it reads as a normal closing question rather than
+    // a price probe when it comes after everything else.
+    //
+    // The survey's free-text answer collapsed to `unclassified`; three closed
+    // options cannot produce that, so the grade never has to guess. The 0 band
+    // ("named money as a blocker") still cannot be reached from the app, since
+    // it comes from free text nothing here collects.
+    key: "priorInvestment",
+    stage: 1,
+    select: "one",
+    en: "Have you paid for a course, certification or coaching for your career before?",
+    th: "ที่ผ่านมาเคยลงทุนกับคอร์สเรียน ใบรับรอง หรือโค้ชด้านอาชีพมาก่อนไหม",
+    options: [
+      { value: "none", en: "Not yet", th: "ยังไม่เคย" },
+      {
+        value: "relevant",
+        en: "Yes, for the field I'm aiming at",
+        th: "เคย และเกี่ยวกับสายงานที่อยากไปทำ",
+      },
+      { value: "unrelated", en: "Yes, but in a different field", th: "เคย แต่คนละสายงาน" },
     ],
   },
 ];

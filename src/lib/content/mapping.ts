@@ -72,8 +72,16 @@ export function toScoringInput(responses: Responses): ScoringInput {
     input.timeline = tl;
   }
 
-  // Stage 2 fields (portfolio, AI habits, family, salary, experience...) map
-  // here as their questions land in Phase 2. One function, one direction.
+  // Stage 2 fields (portfolio, AI habits, family, salary...) map here as their
+  // questions land in Phase 2. One function, one direction.
+  //
+  // `experienceYears` and `priorInvestment` are the deliberate exception, added
+  // to Stage 1 on 14/08/2026 and NOT mapped here. Both are items of
+  // Professional Capability, which Stage 1 leaves hollow by design (PRD § 1),
+  // so routing them through this function would start scoring that dimension as
+  // a side effect of a question added for the coach's ICP grade. They reach the
+  // grade through `toGradeInput` in `leadGrade.ts` instead. `verify-content.ts`
+  // check 3 objects if this is ever reversed by accident.
 
   return input;
 }
