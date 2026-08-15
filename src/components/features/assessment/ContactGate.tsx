@@ -28,7 +28,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import ActionBar, { ActionBarSpacer } from "./ActionBar";
 import { useCopy } from "@/components/LocaleProvider";
-import { CONSENT_COPY, CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
+import {
+  CONSENT_COPY,
+  CONSENT_COPY_REVIEWED,
+  MARKETING_CONSENT_COPY_REVIEWED,
+} from "@/lib/consent-copy";
 import type { CopyKey } from "@/lib/content/copy";
 
 const ERROR_KEYS = [
@@ -55,6 +59,9 @@ export default function ContactGate({
     phoneConsent?: boolean;
     lineId?: string;
     lineConsent?: boolean;
+    /** Absent means the question was never put to them, which is not the same
+     *  as a no and must not be recorded as one. */
+    marketingConsent?: boolean;
   }) => Promise<void>;
 }) {
   const { t, pick } = useCopy();
@@ -68,6 +75,18 @@ export default function ContactGate({
    * for why the field is the granular control and the checkbox is not.
    */
   const [consent, setConsent] = useState(false);
+  /**
+   * The second, separate tick: job digests and nurture, not "your result".
+   *
+   * Unticked by default and never required. Refusing it does not block the
+   * form, which is what makes it consent rather than a second gate, and it is a
+   * different question from the one above: `consent-copy.ts` explains why a
+   * single tick covering both would make this unprovable.
+   *
+   * Rendered only when its Thai has been written and read back. Until then the
+   * flag is false, the tick does not exist, and nobody is opted in to anything.
+   */
+  const [marketingConsent, setMarketingConsent] = useState(false);
   const [error, setError] = useState<CopyKey | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -120,6 +139,10 @@ export default function ContactGate({
         phoneConsent: phone.trim() ? consent : undefined,
         lineId: lineId.trim() || undefined,
         lineConsent: lineId.trim() ? consent : undefined,
+        // Only ever true when the tick was actually shown. If the copy gate is
+        // closed the state is stuck at its initial false, so this cannot send a
+        // grant for a question nobody was asked.
+        marketingConsent: MARKETING_CONSENT_COPY_REVIEWED ? marketingConsent : undefined,
       });
     } catch (err) {
       // The server's code, mapped to translatable copy. Anything unrecognised
@@ -219,6 +242,19 @@ export default function ContactGate({
           hypotheticals, which is the wording that made three boxes feel
           necessary in the first place. */}
       <Consent checked={consent} onChange={setConsent} label={consentLabel} required />
+
+      {/* The optional marketing tick. Hidden until its Thai exists: the copy in
+          `consent-copy.ts` is machine-written and marked not for release, and a
+          consent screen is the last place a placeholder should be able to
+          appear by accident. Flipping `MARKETING_CONSENT_COPY_REVIEWED` is the
+          only thing that turns it on. */}
+      {MARKETING_CONSENT_COPY_REVIEWED && (
+        <Consent
+          checked={marketingConsent}
+          onChange={setMarketingConsent}
+          label={pick(CONSENT_COPY["consent.marketing"])}
+        />
+      )}
 
       {/* `error`, never Terracotta: a problem must not look like an action. */}
       {error && (

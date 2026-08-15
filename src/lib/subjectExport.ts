@@ -160,7 +160,51 @@ function readableCalls(calls: SubjectCall[]) {
     }));
 }
 
-export function buildSubjectExport(lead: SubjectRecord, calls: SubjectCall[] = []) {
+/**
+ * Plain-English rendering of the consent log.
+ *
+ * A withdrawal is part of what is held about someone, so an export that showed
+ * only the surviving grants would be answering a narrower question than the one
+ * asked. The basis is spelled out rather than emitted as a code, because
+ * "founder_backfill" means nothing to the person it describes and the sentence
+ * it stands for is exactly what they would want to know.
+ */
+const BASIS_PROSE: Record<string, string> = {
+  app_tick: "You ticked the consent box on the assessment's contact step.",
+  survey_import:
+    "You gave us this channel on the Lead Discovery Survey, in answer to how you preferred to be reached. The date is your submission date.",
+  founder_backfill:
+    "You did not give us this channel. The survey never offered email as a way to be reached, and your address came from the Google account you submitted with. PunProfile chose to treat that as permission to email you.",
+  coach_recorded: "You told us during a conversation and we wrote it down.",
+  unsubscribe_link: "You used an unsubscribe link.",
+  reply_or_block: "You asked us to stop, or blocked the channel.",
+};
+
+function readableConsent(events: SubjectConsentEvent[]) {
+  return events.map((e) => ({
+    when: stamp(e.at),
+    channel: e.channel,
+    what: e.purpose === "marketing" ? "Marketing messages, such as job digests" : "Contacting you about your result and coaching",
+    decision: e.action === "opt_in" ? "Permission given" : "Permission withdrawn",
+    how: BASIS_PROSE[e.basis] ?? e.basis,
+    wording: e.evidence ?? null,
+  }));
+}
+
+export interface SubjectConsentEvent {
+  channel: string;
+  purpose: string;
+  action: string;
+  at: number;
+  basis: string;
+  evidence?: string | null;
+}
+
+export function buildSubjectExport(
+  lead: SubjectRecord,
+  calls: SubjectCall[] = [],
+  consentEvents: SubjectConsentEvent[] = [],
+) {
   const answers = Object.entries(lead.responses)
     // Underscore keys are reserved for internal bookkeeping. None exist today;
     // the guard is here so adding one later cannot silently leak into an export.
@@ -187,6 +231,12 @@ export function buildSubjectExport(lead: SubjectRecord, calls: SubjectCall[] = [
         lead.consentSource === "survey_import"
           ? "Given when you submitted the Lead Discovery Survey. The timestamps are your submission date."
           : "Given at the contact step of the assessment, per channel.",
+      /**
+       * The full history, including anything withdrawn. Empty on records
+       * predating the 15/08/2026 migration until the backfill has run; the
+       * three timestamps above are the same facts in their older shape.
+       */
+      history: readableConsent(consentEvents),
     },
     answers,
     conversations: {
@@ -208,8 +258,12 @@ export function buildSubjectExport(lead: SubjectRecord, calls: SubjectCall[] = [
   };
 }
 
-export function renderSubjectExportHtml(lead: SubjectRecord, calls: SubjectCall[] = []): string {
-  const d = buildSubjectExport(lead, calls);
+export function renderSubjectExportHtml(
+  lead: SubjectRecord,
+  calls: SubjectCall[] = [],
+  consentEvents: SubjectConsentEvent[] = [],
+): string {
+  const d = buildSubjectExport(lead, calls, consentEvents);
   const name = d.identity.fullName ?? "your record";
 
   const row = (label: string, value: string | null) =>
@@ -265,6 +319,22 @@ ${BRAND_TOKENS_CSS.replace(/\n  \}$/, `\n${BRAND_FONT_STACKS}\n  }`)}
     ${row("LINE", d.consent.line)}
   </table>
   <p class="note">${esc(d.consent.basis)}</p>
+${
+  d.consent.history.length === 0
+    ? ""
+    : `
+  <h2>Every consent decision on your record</h2>
+  <table>
+    ${d.consent.history
+      .map(
+        (h) =>
+          `<tr><th scope="row">${esc(h.when ?? "")}</th><td><strong>${esc(h.decision)}</strong> &mdash; ${esc(h.channel)}. ${esc(h.what)}.<br><span class="none">${esc(h.how)}</span>${
+            h.wording ? `<br><span class="none">Wording shown: ${esc(h.wording)}</span>` : ""
+          }</td></tr>`,
+      )
+      .join("\n    ")}
+  </table>`
+}
 
   <h2>What you told us</h2>
   <table>

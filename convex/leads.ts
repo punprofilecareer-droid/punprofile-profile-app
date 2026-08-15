@@ -9,6 +9,9 @@ import { isValidAnswer } from "../src/lib/content/questions";
 import { EUROPEAN_LANGUAGES } from "../src/lib/country-english";
 import { rateLimiter } from "./rateLimits";
 import { gradeLead, toGradeInput, latestCoachIcp } from "../src/lib/leadGrade";
+import { eventsFor, recordConsent } from "./consentDb";
+import { resolveAll } from "../src/lib/consent";
+import { CONSENT_COPY } from "../src/lib/consent-copy";
 
 /**
  * TASK-012/013/015/016: the candidate session lifecycle, per PRD § 4.
@@ -132,6 +135,17 @@ export const captureContact = mutation({
     phoneConsent: v.optional(v.boolean()),
     lineId: v.optional(v.string()),
     lineConsent: v.optional(v.boolean()),
+    /**
+     * The separate, optional marketing tick. Job digests and nurture, not the
+     * result. Absent means the question was never put to them, which is
+     * `never_asked` and not a refusal.
+     *
+     * Optional in the validator rather than defaulted to false, because the
+     * screen only shows this tick once its Thai exists, and a defaulted false
+     * would write nothing anyway; keeping it undefined means the log stays
+     * silent about a question nobody was asked.
+     */
+    marketingConsent: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const lead = await ctx.db.get(args.leadId);
@@ -182,6 +196,51 @@ export const captureContact = mutation({
       updatedAt: now,
       lastActivityAt: now,
     });
+
+    // The same grants, as events. Dual-written during the `consentEvents`
+    // migration (schema note on the flat fields); the events are what every
+    // read path resolves from, the timestamps above are the rollback.
+    //
+    // `service` only. The gate asks whether PunProfile may contact this person
+    // about their result and coaching, and nothing on this screen asks about
+    // digests or nurture, so writing a `marketing` event here would be
+    // inventing an agreement nobody gave.
+    //
+    // The English statement is stored as the evidence rather than the rendered
+    // Thai, because the locale the candidate saw is not recorded anywhere and a
+    // guess about which string they read is worse than the canonical one.
+    const consentEvidence = CONSENT_COPY["consent.statement"].en;
+    for (const channel of ["email", "phone", "line"] as const) {
+      // Same rule as the timestamps: only for a channel actually filled in.
+      if (channel === "phone" && !phone) continue;
+      if (channel === "line" && !lineId) continue;
+      await recordConsent(ctx, {
+        leadId: args.leadId,
+        channel,
+        purpose: "service",
+        action: "opt_in",
+        at: now,
+        basis: "app_tick",
+        evidence: consentEvidence,
+      });
+    }
+
+    // Marketing, only if the tick was shown and ticked. An absent argument
+    // writes nothing at all: the person was never asked, and `never_asked` is
+    // the honest state. A `false` writes nothing either, because declining a
+    // box you were shown is the same as never having held the permission, and
+    // an `opt_out` event would claim they withdrew something they never had.
+    if (args.marketingConsent === true) {
+      await recordConsent(ctx, {
+        leadId: args.leadId,
+        channel: "email",
+        purpose: "marketing",
+        action: "opt_in",
+        at: now,
+        basis: "app_tick",
+        evidence: CONSENT_COPY["consent.marketing"].en,
+      });
+    }
 
     // Tell the coach, with no candidate details in the message. Scheduled
     // rather than awaited: the candidate's next screen must not wait on an
@@ -409,6 +468,7 @@ export const getForAdmin = query({
     await requireAdmin(ctx);
     const lead = await ctx.db.get(args.leadId);
     if (!lead) return null;
+    const consentEvents = await eventsFor(ctx, args.leadId);
     return {
       _id: lead._id,
       // Both the split fields and the composed one. `fullName` is what every
@@ -422,10 +482,25 @@ export const getForAdmin = query({
       lineId: lead.lineId ?? null,
       // Timestamps, not booleans. "Consented" is a fact with a date attached,
       // and the date is the part a PDPA request actually asks for.
+      //
+      // Kept during the `consentEvents` migration so the admin screen and the
+      // subject-access export do not change shape in the same commit that
+      // changes the storage. `consent` below is the field to read.
       emailConsentAt: lead.emailConsentAt ?? null,
       phoneConsentAt: lead.phoneConsentAt ?? null,
       lineConsentAt: lead.lineConsentAt ?? null,
       consentSource: lead.consentSource ?? "app",
+      /**
+       * Resolved from `consentEvents`, per channel and per purpose. This is the
+       * only field that can answer "may we send them a job digest", and today
+       * it answers `never_asked` for every lead in the database, which is
+       * correct: no screen has ever asked.
+       */
+      consent: resolveAll(consentEvents),
+      /** The raw log, oldest first, for the subject-access export. A person
+       *  asking what is held about them is entitled to the withdrawals too, not
+       *  just the grants that survived. */
+      consentEvents: [...consentEvents].sort((a, b) => a.at - b.at),
       pathway: lead.pathway ?? null,
       status: lead.status,
       source: lead.source ?? null,
@@ -493,6 +568,47 @@ export const deleteLeadOnRequest = mutation({
       .collect();
     for (const c of calls) await ctx.db.delete(c._id);
 
+    // The consent log goes too. It is a record *about* this person, holding
+    // what they agreed to and when, so keeping it would be retaining data on
+    // someone who asked to be erased. The `deletionLog` row below is what
+    // survives, and it holds no identity by design.
+    const consents = await ctx.db
+      .query("consentEvents")
+      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    for (const c of consents) await ctx.db.delete(c._id);
+
+    // The commercial record goes with them too. It is tempting to argue that an
+    // engagement is PunProfile's own business record rather than the subject's,
+    // and for the money that is arguable; but these rows name a person, say what
+    // they were sold, what was written about their CV and which jobs they
+    // applied for, and a "deletion" that kept all of that would be a deletion in
+    // name only. If a retained financial record is ever legally required, it
+    // belongs in a separate table holding no identity, the same shape as
+    // `deletionLog` itself.
+    const engagements = await ctx.db
+      .query("engagements")
+      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    const deliverables = await ctx.db
+      .query("deliverables")
+      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    const applications = await ctx.db
+      .query("applications")
+      .withIndex("by_lead_time", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    const placements = await ctx.db
+      .query("placements")
+      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    // Children first, so a failure part-way cannot orphan a deliverable under a
+    // deleted engagement.
+    for (const d of deliverables) await ctx.db.delete(d._id);
+    for (const p of placements) await ctx.db.delete(p._id);
+    for (const a of applications) await ctx.db.delete(a._id);
+    for (const e of engagements) await ctx.db.delete(e._id);
+
     await ctx.db.delete(args.leadId);
 
     await ctx.db.insert("deletionLog", {
@@ -504,6 +620,11 @@ export const deleteLeadOnRequest = mutation({
         assessments: assessments.length,
         magicLinks: links.length,
         consultations: calls.length,
+        consentEvents: consents.length,
+        engagements: engagements.length,
+        deliverables: deliverables.length,
+        applications: applications.length,
+        placements: placements.length,
       },
     });
 
@@ -511,6 +632,11 @@ export const deleteLeadOnRequest = mutation({
       assessments: assessments.length,
       magicLinks: links.length,
       consultations: calls.length,
+      consentEvents: consents.length,
+      engagements: engagements.length,
+      deliverables: deliverables.length,
+      applications: applications.length,
+      placements: placements.length,
     };
   },
 });

@@ -41,7 +41,17 @@ export default defineSchema({
     phone: v.optional(v.string()),
     lineId: v.optional(v.string()),
 
-    // Consent: each with its own timestamp for the PDPA audit trail.
+    /**
+     * Consent: each with its own timestamp for the PDPA audit trail.
+     *
+     * **Superseded 15/08/2026 by `consentEvents`, still written.** These are in
+     * the middle of the same three-step retirement `leads.scores` went through:
+     * dual-write now, stop reading next, clear and remove last. Every read path
+     * already resolves from `consentEvents`; these remain only so a rollback
+     * before the backfill is verified does not lose the grants.
+     *
+     * Do not add a fourth. A new channel or a new purpose is an event.
+     */
     emailConsentAt: v.optional(v.number()),
     phoneConsentAt: v.optional(v.number()),
     lineConsentAt: v.optional(v.number()),
@@ -119,6 +129,53 @@ export default defineSchema({
     .index("by_status_recency", ["status", "lastActivityAt"])
     .index("by_pathway", ["pathway"]),
 
+  /**
+   * Consent as an append-only event log. Spec: `lifecycle-data-model.md` § 6.
+   * Built 15/08/2026. Resolution logic is `src/lib/consent.ts`, which is where
+   * the reasoning lives; this is only the shape.
+   *
+   * It replaces the three flat timestamps on `leads`, which could record a
+   * grant and not a withdrawal, and could not tell "we may send you your
+   * result" apart from "we may send you a job digest every week". Those are
+   * different agreements and only the first has ever been asked for.
+   *
+   * Nothing here is ever patched or deleted, except by the cascade in
+   * `leads.deleteLeadOnRequest`. An amended consent record is not evidence.
+   */
+  consentEvents: defineTable({
+    leadId: v.id("leads"),
+    channel: v.union(v.literal("email"), v.literal("line"), v.literal("phone")),
+    /** `service` is your result and your booking. `marketing` is digests and
+     *  nurture, and no one has been asked for it yet. */
+    purpose: v.union(v.literal("service"), v.literal("marketing")),
+    action: v.union(v.literal("opt_in"), v.literal("opt_out")),
+    at: v.number(),
+
+    /**
+     * `founder_backfill` exists because of `data-inventory.md` § 8: 86 of the
+     * 90 imported leads never nominated email, and their consent was created
+     * on the founder's instruction. Calling that `app_tick` would be the one
+     * lie in the audit trail that a reviewer is guaranteed to ask about.
+     */
+    basis: v.union(
+      v.literal("app_tick"),
+      v.literal("survey_import"),
+      v.literal("founder_backfill"),
+      v.literal("coach_recorded"),
+      v.literal("unsubscribe_link"),
+      v.literal("reply_or_block"),
+    ),
+
+    /** The sentence actually shown at the moment of the tick, or where a
+     *  withdrawal arrived. A consent record that cannot say what was agreed to
+     *  is a timestamp, not evidence. */
+    evidence: v.optional(v.string()),
+    /** Which admin recorded it, when a human did. Their data, not the subject's. */
+    by: v.optional(v.string()),
+  })
+    .index("by_lead", ["leadId", "at"])
+    .index("by_lead_scope", ["leadId", "channel", "purpose", "at"]),
+
   // One active token per lead; regenerated on each email send. Older tokens
   // are invalidated by the generating mutation, not deleted: history stays.
   magicLinks: defineTable({
@@ -156,6 +213,16 @@ export default defineSchema({
        * table was not there to check.
        */
       consultations: v.optional(v.number()),
+      /** Optional for the same reason as `consultations`: rows written before
+       *  `consentEvents` existed have no such count, and a backfilled zero
+       *  would claim we checked when the table was not there to check. */
+      consentEvents: v.optional(v.number()),
+      /** Optional for the same reason again: rows written before these tables
+       *  existed have no such count. */
+      engagements: v.optional(v.number()),
+      deliverables: v.optional(v.number()),
+      applications: v.optional(v.number()),
+      placements: v.optional(v.number()),
     }),
   }).index("by_time", ["deletedAt"]),
 
@@ -338,6 +405,222 @@ export default defineSchema({
     .index("by_lead_time", ["leadId", "heldAt"])
     // The follow-up and reminder queues: what is coming up, across all leads.
     .index("by_time", ["heldAt"]),
+
+  /**
+   * What was sold. Spec: `lifecycle-data-model.md` § 7, built 15/08/2026.
+   *
+   * The funnel had no record past the consultation: `leads` stops at
+   * `completed` and `consultations` stops when the call ends, so the fact that
+   * somebody paid lived nowhere but Paul's memory. A row here at `agreed` is
+   * what makes a person a client; a row at `proposed` is a pipeline and not a
+   * client, which is why one status field covers both.
+   */
+  engagements: defineTable({
+    leadId: v.id("leads"),
+
+    /** Names come from `01_Project_Foundation.md` Core Offerings and must stay
+     *  in step with the module names `levers.ts` already validates. `bundle` is
+     *  its own value rather than four rows, because that is how it is priced. */
+    module: v.union(
+      v.literal("career_coaching"),
+      v.literal("profile_optimization"),
+      v.literal("job_application_lifecycle"),
+      v.literal("bundle"),
+    ),
+
+    status: v.union(
+      v.literal("proposed"),
+      v.literal("agreed"),
+      v.literal("active"),
+      v.literal("completed"),
+      v.literal("lapsed"),
+      v.literal("refunded"),
+    ),
+
+    /** THB. A fact about this one transaction, never a copy of the pricing
+     *  table, which stays owned by `01_Project_Foundation.md` and is an
+     *  explicit pilot hypothesis until real leads validate it. */
+    quotedThb: v.optional(v.number()),
+    agreedThb: v.optional(v.number()),
+
+    proposedAt: v.optional(v.number()),
+    agreedAt: v.optional(v.number()),
+    startedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+
+    /** Which call produced the sale. `consultations.moduleFit` is the coach's
+     *  pre-sale conclusion; this is what actually happened. */
+    fromConsultation: v.optional(v.id("consultations")),
+
+    notes: v.optional(v.string()),
+    createdBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_lead", ["leadId", "createdAt"])
+    .index("by_status", ["status", "updatedAt"]),
+
+  /**
+   * What was actually done inside an engagement. `lifecycle-data-model.md` § 8.
+   *
+   * The rule that keeps this table honest: **a delivered service moves
+   * coverage, never a score** (`candidate-data-architecture.md`). Doing a CV
+   * review does not raise anyone's CV Quality; what the review *observed*
+   * raises it, and that belongs in an `assessments` row with `source: "coach"`.
+   * `producedAssessment` is the pointer between the two, so "we did the work"
+   * and "here is what the work found" can never be the same record.
+   */
+  deliverables: defineTable({
+    engagementId: v.id("engagements"),
+    /** Denormalised for the per-person timeline query only. Never authoritative;
+     *  the engagement owns the relationship. */
+    leadId: v.id("leads"),
+
+    kind: v.union(
+      v.literal("base_cv"),
+      v.literal("linkedin"),
+      v.literal("portfolio"),
+      v.literal("country_research"),
+      v.literal("tailored_application"),
+      v.literal("interview_prep"),
+      v.literal("mock_interview"),
+      v.literal("offer_review"),
+      v.literal("contract_review"),
+      v.literal("coaching_session"),
+    ),
+
+    /** From `10_Methodology.md` § 4. It labels which stage's work this was. It
+     *  never decides what the candidate does next: that is the gates, and two
+     *  mechanisms answering "what do I do first" is the failure
+     *  `09_Decision_Log.md` already recorded once. */
+    methodStage: v.union(
+      v.literal("direction"),
+      v.literal("route"),
+      v.literal("legibility"),
+      v.literal("execution"),
+    ),
+
+    status: v.union(
+      v.literal("not_started"),
+      v.literal("in_progress"),
+      v.literal("delivered"),
+    ),
+    deliveredAt: v.optional(v.number()),
+    producedAssessment: v.optional(v.id("assessments")),
+
+    notes: v.optional(v.string()),
+    by: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_engagement", ["engagementId", "createdAt"])
+    .index("by_lead", ["leadId", "createdAt"]),
+
+  /**
+   * The candidate's own job list. `lifecycle-data-model.md` § 9.
+   *
+   * This absorbs the `savedJobs` table TASK-059 proposed rather than sitting
+   * beside it: a saved job and an applied job are the same job at two statuses,
+   * and two tables would need a link that is only ever one-to-one.
+   *
+   * TASK-059 is explicit that this is the candidate's notebook and **nothing
+   * infers status**. `recordedBy` is what enforces that: a coach-entered status
+   * is visibly a coach's, and no code may move a candidate's row on their
+   * behalf.
+   */
+  applications: defineTable({
+    leadId: v.id("leads"),
+    /** Absent means they did this without a paid engagement, which is the
+     *  common case and must stay representable. */
+    engagementId: v.optional(v.id("engagements")),
+
+    /** Set when the job came from the personalised feed, so the channel's own
+     *  pipeline can be joined back to what candidates did with it. */
+    jobLogId: v.optional(v.string()),
+    employer: v.string(),
+    roleTitle: v.string(),
+    country: v.string(),
+    jobUrl: v.optional(v.string()),
+
+    status: v.union(
+      v.literal("interested"), // saved, not applied: TASK-059's bookmark state
+      v.literal("applied"),
+      v.literal("screening"),
+      v.literal("interviewing"),
+      v.literal("offer"),
+      v.literal("rejected"),
+      v.literal("withdrawn"),
+      v.literal("accepted"),
+    ),
+    recordedBy: v.union(v.literal("candidate"), v.literal("coach")),
+
+    savedAt: v.number(),
+    appliedAt: v.optional(v.number()),
+    statusChangedAt: v.number(),
+    notes: v.optional(v.string()),
+  })
+    .index("by_lead_time", ["leadId", "savedAt"])
+    .index("by_lead_status", ["leadId", "status", "statusChangedAt"]),
+
+  /**
+   * The outcome the whole business is measured on.
+   * `lifecycle-data-model.md` § 9, and `01_Project_Foundation.md` Success
+   * Metrics: "interviews secured, offers received, contracts signed".
+   *
+   * `signedAt` is the moment `10_Methodology.md` Stage 3 exits, and the moment
+   * a person stops being a client and becomes a placement.
+   */
+  placements: defineTable({
+    leadId: v.id("leads"),
+    applicationId: v.optional(v.id("applications")),
+
+    employer: v.string(),
+    roleTitle: v.string(),
+    country: v.string(),
+
+    offerAt: v.optional(v.number()),
+    signedAt: v.optional(v.number()),
+    startAt: v.optional(v.number()),
+
+    /** Free text carrying its own currency and period, for the same reason
+     *  `consultations.salaryQuote` is: a bare number cannot be classified, and
+     *  the benchmark is a manual coach lookup rather than a formula. */
+    salary: v.optional(v.string()),
+
+    /** The route that actually worked. The single most valuable field here for
+     *  `07_Reference.md`, because it is the only place a claimed visa route is
+     *  ever confirmed against reality. */
+    visaRoute: v.optional(v.string()),
+
+    /**
+     * Coach judgement, recorded as judgement rather than inferred.
+     * `engagement` means PunProfile did the work on this application;
+     * `assisted` means an engagement existed but this was not it; `self` means
+     * they got there alone and told us.
+     *
+     * Success metrics read this field. A metric that counted rows instead would
+     * claim credit for every placement anyone ever reported, which is the exact
+     * shape of overstatement `01_Project_Foundation.md` Accuracy forbids.
+     */
+    attributedTo: v.union(
+      v.literal("engagement"),
+      v.literal("assisted"),
+      v.literal("self"),
+    ),
+    attributedEngagementId: v.optional(v.id("engagements")),
+
+    /** Permission to tell their story is its own grant and is implied by
+     *  nothing above. The Social Proof pillar in `Content_Strategy.md` is empty
+     *  and this is the field that eventually fills it, honestly. */
+    storyConsentAt: v.optional(v.number()),
+
+    notes: v.optional(v.string()),
+    createdBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_lead", ["leadId", "createdAt"])
+    .index("by_signed", ["signedAt"]),
 
   // Point-in-time evidence snapshots, the trajectory layer. A delta between
   // two snapshots is what makes "get their score up" measurable, and the

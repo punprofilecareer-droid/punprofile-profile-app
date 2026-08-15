@@ -146,6 +146,48 @@ export const CONSENT_COPY = {
     en: "Read our Privacy Policy",
     th: "อ่านนโยบายความเป็นส่วนตัว",
   },
+
+  /**
+   * **PLACEHOLDER. The Thai is machine-written and Paul has not read it.**
+   * Added 15/08/2026 with the `consentEvents` work. Do not ship this string.
+   *
+   * This is a second, separate tick, and separate is the point. The statement
+   * above is `service`: we may contact you about your own result and your
+   * coaching. This one is `marketing`: job digests and nurture sequences, which
+   * TASK-060 and TASK-082 both need and which nobody in the database has ever
+   * been asked for. A single tick covering both would make the marketing
+   * consent unprovable, which is the failure the whole event log exists to
+   * prevent.
+   *
+   * Three constraints on whatever wording replaces this:
+   *
+   * 1. **Unticked by default, and it must stay optional.** A pre-ticked box is
+   *    not freely given consent, and refusing it must not block the form. The
+   *    contact step is already the riskiest copy surface in the flow
+   *    (`customer-journey.md` § 3), so this must not read as a second gate.
+   * 2. **Name what actually gets sent**, not "updates". A digest of matched jobs
+   *    is a concrete thing and it is the reason someone would say yes.
+   * 3. **Say they can stop**, and mean it: the withdrawal mechanism now exists.
+   *
+   * The `th` below must be replaced by Paul's own wording before this renders,
+   * the same way the statement above was. `Language_System.md` LR-01 to LR-08
+   * and `termbase.yml` apply.
+   */
+  "consent.marketing": {
+    screen: "Contact gate, a separate optional tick under the consent statement",
+    en: "PLACEHOLDER, not for release. Optional: send me new job matches by email. You can stop at any time.",
+    th: "PLACEHOLDER, not for release. รับอีเมลแจ้งงานใหม่ที่ตรงกับคุณ ยกเลิกได้ทุกเมื่อ",
+  },
 } as const satisfies Record<string, CopyEntry>;
+
+/**
+ * False until Paul writes the Thai and reads it back on the live screen.
+ *
+ * The gate that keeps the placeholder above off a candidate's screen: the
+ * contact step renders the marketing tick only when this is true, so shipping
+ * the machine-written string requires deliberately flipping a flag rather than
+ * forgetting to remove one.
+ */
+export const MARKETING_CONSENT_COPY_REVIEWED = false;
 
 export type ConsentCopyKey = keyof typeof CONSENT_COPY;

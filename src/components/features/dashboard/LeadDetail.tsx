@@ -159,7 +159,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           onClick={async () => {
             const { renderSubjectExportHtml } = await import("@/lib/subjectExport");
             download(
-              renderSubjectExportHtml(lead, calls ?? []),
+              renderSubjectExportHtml(lead, calls ?? [], lead.consentEvents ?? []),
               `punprofile-data-${slug(lead.fullName ?? "record")}.html`,
               "text/html;charset=utf-8",
             );
@@ -173,7 +173,11 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           onClick={async () => {
             const { buildSubjectExport } = await import("@/lib/subjectExport");
             download(
-              JSON.stringify(buildSubjectExport(lead, calls ?? []), null, 2),
+              JSON.stringify(
+                buildSubjectExport(lead, calls ?? [], lead.consentEvents ?? []),
+                null,
+                2,
+              ),
               `punprofile-data-${slug(lead.fullName ?? "record")}.json`,
               "application/json",
             );

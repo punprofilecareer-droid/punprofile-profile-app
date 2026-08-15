@@ -9,12 +9,16 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as consent from "../consent.js";
+import type * as consentDb from "../consentDb.js";
 import type * as consultations from "../consultations.js";
 import type * as corrections from "../corrections.js";
+import type * as delivery from "../delivery.js";
 import type * as http from "../http.js";
 import type * as importLeads from "../importLeads.js";
 import type * as leads from "../leads.js";
 import type * as notify from "../notify.js";
+import type * as outcomes from "../outcomes.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as scoring from "../scoring.js";
 import type * as stats from "../stats.js";
@@ -27,12 +31,16 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  consent: typeof consent;
+  consentDb: typeof consentDb;
   consultations: typeof consultations;
   corrections: typeof corrections;
+  delivery: typeof delivery;
   http: typeof http;
   importLeads: typeof importLeads;
   leads: typeof leads;
   notify: typeof notify;
+  outcomes: typeof outcomes;
   rateLimits: typeof rateLimits;
   scoring: typeof scoring;
   stats: typeof stats;
