@@ -36,10 +36,12 @@ export function toScoringInput(responses: Responses): ScoringInput {
   if (role) input.targetRole = role === "not_sure" ? null : role;
 
   const cv = str(responses.cv);
-  if (cv === "none" || cv === "untailored" || cv === "europe_ready") input.cv = cv;
+  if (cv === "none" || cv === "untailored" || cv === "out_dated" || cv === "europe_ready")
+    input.cv = cv;
 
   const li = str(responses.linkedin);
-  if (li === "none" || li === "basic" || li === "active") input.linkedin = li;
+  if (li === "none" || li === "basic" || li === "active" || li === "utilized")
+    input.linkedin = li;
 
   const wa = str(responses.workAuth);
   if (
@@ -65,6 +67,7 @@ export function toScoringInput(responses: Responses): ScoringInput {
     stage === "researching" ||
     stage === "applying" ||
     stage === "interviewing" ||
+    stage === "interviewing_unsuccessful" ||
     stage === "offer" ||
     stage === "negotiating"
   ) {
@@ -82,7 +85,14 @@ export function toScoringInput(responses: Responses): ScoringInput {
   // simply stopped being the only source that could not reach them.
 
   const portfolio = str(responses.portfolio);
-  if (portfolio === "none" || portfolio === "partial" || portfolio === "good") {
+  if (
+    portfolio === "none" ||
+    portfolio === "partial" ||
+    // `good` is legacy and still accepted; records hold it.
+    portfolio === "good" ||
+    portfolio === "good_physical" ||
+    portfolio === "good_digital"
+  ) {
     input.portfolio = portfolio;
   }
 
@@ -95,7 +105,17 @@ export function toScoringInput(responses: Responses): ScoringInput {
    * 10 are not estimates of what anyone applied to, they are the middle of
    * their band, and the band is all that is ever read.
    */
-  const APPLICATIONS: Record<string, number> = { "0": 0, "1-4": 2, "5-20": 10, "20+": 25 };
+  const APPLICATIONS: Record<string, number> = {
+    "0": 0,
+    "1-4": 2,
+    "5-20": 10,
+    "21-50": 35,
+    "51-100": 75,
+    "100+": 150,
+    // Retired from the question 15/08/2026, superseded by the three bands
+    // above. Kept because existing records hold it.
+    "20+": 25,
+  };
   const apps = str(responses.applications);
   if (apps && apps in APPLICATIONS) input.applicationCount = APPLICATIONS[apps];
 
@@ -261,6 +281,7 @@ function fromImportedRecord(responses: Responses): ScoringInput {
     "researching",
     "applying",
     "interviewing",
+    "interviewing_unsuccessful",
     "offer",
     "negotiating",
   ] as const);
@@ -269,13 +290,19 @@ function fromImportedRecord(responses: Responses): ScoringInput {
   const applications = num(responses.applicationCount);
   if (applications !== undefined) input.applicationCount = applications;
 
-  const cv = oneOf(responses.cv, ["none", "untailored", "europe_ready"] as const);
+  const cv = oneOf(responses.cv, ["none", "untailored", "out_dated", "europe_ready"] as const);
   if (cv) input.cv = cv;
 
-  const linkedin = oneOf(responses.linkedin, ["none", "basic", "active"] as const);
+  const linkedin = oneOf(responses.linkedin, ["none", "basic", "active", "utilized"] as const);
   if (linkedin) input.linkedin = linkedin;
 
-  const portfolio = oneOf(responses.portfolio, ["none", "partial", "good"] as const);
+  const portfolio = oneOf(responses.portfolio, [
+    "none",
+    "partial",
+    "good",
+    "good_physical",
+    "good_digital",
+  ] as const);
   if (portfolio) input.portfolio = portfolio;
 
   const english = str(responses.englishCefr);

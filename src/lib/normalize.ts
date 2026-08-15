@@ -21,15 +21,25 @@ export interface SurveyResponse {
   /** Q10 — when they want to start. */
   timeline?: "within_3m" | "3_6m" | "6_12m" | "exploring" | null;
   /** Q11 — current stage of the job search. */
-  stage?: "not_started" | "researching" | "applying" | "interviewing" | "offer" | "negotiating" | null;
+  stage?:
+    | "not_started"
+    | "researching"
+    | "applying"
+    | "interviewing"
+    | "interviewing_unsuccessful"
+    | "offer"
+    | "negotiating"
+    | null;
   /** Q12 — roles applied to in Europe so far. */
   applicationCount?: number | null;
   /** Q13 — CV status. */
-  cv?: "none" | "untailored" | "europe_ready" | null;
+  cv?: "none" | "untailored" | "out_dated" | "europe_ready" | null;
   /** Q14 — LinkedIn status. */
-  linkedin?: "none" | "basic" | "active" | null;
+  linkedin?: "none" | "basic" | "active" | "utilized" | null;
   /** Q15 — portfolio site. */
-  portfolio?: "none" | "partial" | "good" | null;
+  /** `good` is retired from the question and still accepted: existing records
+   *  hold it and a deleted value would score them null. */
+  portfolio?: "none" | "partial" | "good" | "good_physical" | "good_digital" | null;
   /** Q16 — English level, resolved to CEFR. */
   englishCefr?: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null;
   /** Q17 — other European languages, highest CEFR level reached in any of them. */

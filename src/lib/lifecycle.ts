@@ -94,7 +94,16 @@ export function stateFor(input: LifecycleInput): LifecycleState {
  */
 export function meetsBookingGate(responses: Record<string, unknown> | undefined): boolean {
   const stage = typeof responses?.stage === "string" ? responses.stage : null;
-  return stage === "interviewing" || stage === "negotiating";
+  return (
+    stage === "interviewing" ||
+    // Added 15/08/2026 on Paul's call. Someone interviewing and not getting
+    // through clears the gate: the market is engaging with them and something
+    // specific is going wrong, which is exactly what a thirty-minute call can
+    // find. Excluding them would have sent the link to everyone doing well and
+    // nobody who was stuck, on a question whose whole job is to find the stuck.
+    stage === "interviewing_unsuccessful" ||
+    stage === "negotiating"
+  );
 }
 
 /** Ops-facing labels. Never candidate-facing; see the module note. */

@@ -95,6 +95,9 @@ function scoreCv(v: SurveyResponse["cv"]): number | null {
   switch (v) {
     case "none": return 1;
     case "untailored": return 2;
+    // Same band as untailored on purpose: both mean "exists, not sendable".
+    // What differs is the action, not the readiness, and the action is a lever.
+    case "out_dated": return 2;
     case "europe_ready": return 4;
     default: return null;
   }
@@ -105,6 +108,9 @@ function scoreLinkedin(v: SurveyResponse["linkedin"]): number | null {
     case "none": return 1;
     case "basic": return 2;
     case "active": return 4;
+    // Posting regularly is the visibility this competency actually measures,
+    // which is why it sits above a profile that is merely current.
+    case "utilized": return 5;
     default: return null;
   }
 }
@@ -113,7 +119,12 @@ function scorePortfolio(v: SurveyResponse["portfolio"]): number | null {
   switch (v) {
     case "none": return 1;
     case "partial": return 3;
-    case "good": return 4;
+    // `good` is legacy and still scores; ~160 records hold it.
+    case "good":
+    case "good_digital": return 4;
+    // A paper portfolio cannot be linked in an application, which is most of
+    // what a portfolio is for in this market.
+    case "good_physical": return 3;
     default: return null;
   }
 }
@@ -124,7 +135,11 @@ function scoreApplicationActivity(r: SurveyResponse): number | null {
     case "not_started": return 1;
     case "researching": return 2;
     case "applying": return (r.applicationCount ?? 0) >= 5 ? 4 : 3;
-    case "interviewing": return 4;
+    case "interviewing":
+    // Interviewing without getting through is still interviewing: the market is
+    // engaging with them. What it is not is progress, and the gap is what the
+    // call exists to diagnose.
+    case "interviewing_unsuccessful": return 4;
     case "offer": return 5;
     case "negotiating": return 5;
     default: return null;

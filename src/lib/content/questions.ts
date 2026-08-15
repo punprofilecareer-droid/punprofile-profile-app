@@ -200,6 +200,7 @@ export const STAGE1: Question[] = [
     options: [
       { value: "none", en: "Don't have one yet", th: "ยังไม่มี" },
       { value: "untailored", en: "Have one, not tailored for Europe", th: "มีแต่ยังไม่ปรับให้เหมาะกับยุโรป" },
+      { value: "out_dated", en: "Have one, but outdated", th: "มีแล้วแต่ไม่ได้อัพเดทมานาน" },
       { value: "europe_ready", en: "Have one, Europe-ready", th: "มีแล้วพร้อมใช้สมัครงานยุโรป" },
     ],
   },
@@ -214,6 +215,7 @@ export const STAGE1: Question[] = [
       { value: "none", en: "None", th: "ยังไม่มี" },
       { value: "basic", en: "Have one, rarely updated", th: "มี แต่ไม่ได้อัพเดต" },
       { value: "active", en: "Active and kept up to date", th: "มีและอัพเดทสม่ำเสมอ" },
+      { value: "utilized", en: "Active and posts regularly", th: "มี อัพเดท และโพสอย่างสม่ำเสมอ" },
     ],
   },
   {
@@ -232,7 +234,10 @@ export const STAGE1: Question[] = [
     options: [
       { value: "none", en: "Not yet", th: "ยังไม่มี" },
       { value: "partial", en: "Some pieces, not organised", th: "มีบางส่วน ยังไม่ได้จัดรวม" },
-      { value: "good", en: "Yes, and it is presentable", th: "มีแล้ว และพร้อมให้ดู" },
+      // `good` is retired from the question and still scores, because ~160
+      // existing records hold it. See `scorePortfolio`.
+      { value: "good_physical", en: "Yes, on paper", th: "มีแล้ว ในรูปแบบกระดาษ" },
+      { value: "good_digital", en: "Yes, digital or online", th: "มีแล้ว ในรูปแบบ digital หรือ online" },
     ],
   },
   {
@@ -360,6 +365,11 @@ export const STAGE1: Question[] = [
       { value: "researching", en: "Researching", th: "กำลังหาข้อมูล" },
       { value: "applying", en: "Actively applying", th: "กำลังสมัครงาน" },
       { value: "interviewing", en: "Interviewing", th: "มีนัดสัมภาษณ์แล้ว" },
+      {
+        value: "interviewing_unsuccessful",
+        en: "Interviewing but not getting through",
+        th: "มีนัดสัมภาษณ์แล้ว แต่ยังไม่เข้ารอบ",
+      },
       { value: "offer", en: "Have an offer", th: "ได้รับข้อเสนองานแล้ว" },
       { value: "negotiating", en: "Negotiating a contract", th: "กำลังเจรจาสัญญา" },
     ],
@@ -381,7 +391,12 @@ export const STAGE1: Question[] = [
       { value: "0", en: "None yet", th: "ยังไม่ได้สมัคร" },
       { value: "1-4", en: "1 to 4", th: "1–4" },
       { value: "5-20", en: "5 to 20", th: "5–20" },
-      { value: "20+", en: "More than 20", th: "มากกว่า 20 ตำแหน่ง" },
+      { value: "21-50", en: "21 to 50", th: "21–50" },
+      { value: "51-100", en: "51 to 100", th: "51–100" },
+      { value: "100+", en: "More than 100", th: "มากกว่า 100" },
+      // `20+` is retired from the question, superseded by the three bands
+      // above on Paul's pass 15/08/2026. It still maps in `mapping.ts` because
+      // existing records hold it.
     ],
   },
   {
