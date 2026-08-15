@@ -170,9 +170,10 @@ export const DESTINATIONS = {
     // a browser lands on LINE's own interstitial, so it degrades sensibly on a
     // desktop where LINE is not installed.
     //
-    // It belongs in `00_Quick_Facts.md` too, which owns every volatile URL for
-    // the business precisely so a republished link changes in one place. This
-    // is the second copy until that happens.
+    // `00_Quick_Facts.md` owns it, as of 15/08/2026, under Public contact
+    // channels, which is where every volatile URL for the business belongs so a
+    // republished link changes in one place. This line is the app's copy of it:
+    // if the two ever disagree, that file is right and this one is stale.
     href: "https://line.me/ti/p/m5CG2t8Aa4",
     cost: COST.contact,
     external: true,
