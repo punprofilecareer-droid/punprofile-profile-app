@@ -101,7 +101,7 @@ export const CONSENT_COPY = {
   "consent.statement": {
     screen: "Contact gate, beside the email field",
     en: "I agree that PunProfile may contact me about my result and career coaching by email, LINE or phone.",
-    th: "ยินยอมให้ PunProfile ติดต่อกลับเกี่ยวกับผลประเมินและบริการแนะแนวอาชีพทางอีเมล ไลน์ หรือ โทรศัพท์",
+    th: "ยินยอมให้ PunProfile ติดต่อกลับเกี่ยวกับผลประเมินและบริการแนะแนวอาชีพทางอีเมล LINE หรือ โทรศัพท์",
   },
   "consent.channel.phone": {
     screen: "Contact gate, beside the phone field",
