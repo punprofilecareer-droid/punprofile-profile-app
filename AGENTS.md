@@ -110,6 +110,97 @@ Some things worth knowing before you touch styling:
 Still placeholder: the wordmark, the mascot, section wash rotation and the editorial
 spacing pass. Those need assets from the sibling repo's `ctxt-brand/assets/`.
 
+## Deploying
+
+Written 15/08/2026, after a session asked how work gets deployed as one package
+rather than half at a time when several sessions are open at once.
+
+### Two deployments, and they are not interchangeable
+
+| Name | Role | Notes |
+|---|---|---|
+| `dashing-shepherd-41` | **Production**, serves `punprofile.vercel.app` | Created 14/08/2026 |
+| `quiet-mule-251` | **Development** | Holds the 90 leads imported on 10/08/2026, so it is real personal data, not a scratch environment |
+
+`.env.local` says `dev:quiet-mule-251`, so **every CLI command without `--prod`
+hits dev.** `data-inventory.md` in the sibling repo carries the same table and
+the PDPA consequence.
+
+### The one rule
+
+**Production is deployed by pushing `master`. Never from a laptop.**
+
+Vercel's build command override is `npx convex deploy --cmd 'npm run build'`, so
+one push runs the Convex backend deploy *and then* the Next build, in that
+order, as one build. That is already the atomic package, and it is why a schema
+change can never land ahead of the frontend that needs it.
+
+So: do not run `npx convex deploy --prod`. It would put code in production that
+is in nobody's git history, and the next real push would silently revert it.
+
+Consequence worth having: **what is in production equals what is in `master`**,
+and that is checkable in one command rather than believed.
+
+### Why a half-deploy happens, and what actually prevents it
+
+Three different risks. Only the third needs care.
+
+1. **Within one deploy: not possible.** Convex pushes the schema and every
+   function as a unit, validating the schema against existing documents first.
+   It succeeds whole or fails whole.
+2. **Frontend ahead of backend: not possible**, because of the build command
+   above. Convex goes first.
+3. **Code and data migration: genuinely two steps, and nothing can make them
+   one.** A backfill is not part of a deploy and never will be.
+
+   The fix is not a lock, it is writing the change so **any interleaving is
+   safe**. The consent migration is the worked example and the pattern to copy:
+
+   - **Dual-write.** `captureContact` writes the old flat timestamps *and* the
+     new events, so code from before the migration still works.
+   - **Reads degrade honestly.** `resolveConsent` returns `never_asked` when
+     there are no events, which is correct rather than merely safe, so a read
+     that runs before the backfill is not wrong.
+   - **The backfill is idempotent.** Verified 15/08/2026 on dev: first run wrote
+     200 events, the immediate re-run reported 0 written and 200 already
+     present. A run that dies half way is resumed by running it again.
+
+   Deploy-then-backfill, backfill-then-deploy, and backfill-crashed-halfway are
+   all safe. That is what "packaged together" actually buys you, and a lock
+   would not have bought it.
+
+### Several sessions open at once
+
+The real hazard is not the deploy, it is the **working tree**. `npx convex dev`
+and `npx convex deploy` push the files on disk, not a commit. Two sessions
+editing this repo at the same time means whichever runs the command pushes the
+union of both sessions' work, including the half-finished half.
+
+Git is the lock. In practice:
+
+- **Commit before deploying anything.** `git status --short` empty is the gate.
+- Dev will drift, and that is fine; it is where work in progress lands. Do not
+  try to hold dev and prod equal continuously. Make dev *reproducible* instead:
+  from a clean tree, `npx convex dev --once` rebuilds it from what is committed.
+- If a deploy "changed nothing", you deployed a different deployment. Re-check
+  the target rather than deploying again.
+
+### Before a production push
+
+```
+git status --short                        # must be empty
+git rev-list --count origin/master..HEAD  # know what is going out
+npx tsc --noEmit -p tsconfig.json
+npx tsc --noEmit -p convex/tsconfig.json
+npm run lint
+npm run verify:copy
+npm run verify:consent
+git push origin master
+```
+
+Then watch the Vercel build show `convex deploy` running **before** `next
+build`, and run any pending backfill against `--prod` afterwards.
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 
