@@ -195,7 +195,8 @@ const surfaces = Object.fromEntries(
 
 // `--surface post` to measure against the feed register instead of the app's.
 const surfaceArg = process.argv.indexOf("--surface");
-const surfaceName = surfaceArg > -1 ? process.argv[surfaceArg + 1] : "app";
+const surfaceChosen = surfaceArg > -1;
+const surfaceName = surfaceChosen ? process.argv[surfaceArg + 1] : "app";
 if (!surfaces[surfaceName]) {
   console.error(`Unknown surface "${surfaceName}". Known: ${Object.keys(CORPUS).join(", ")}`);
   process.exit(1);
@@ -209,6 +210,20 @@ if (surfaces[surfaceName].stats.thaiChars === 0) {
   process.exit(1);
 }
 const baseline = surfaces[surfaceName].stats;
+
+/**
+ * Say when the baseline was a default rather than a choice.
+ *
+ * Added 15/08/2026, after measuring eight LINE messages and reading seven of
+ * them as HIGH on particles. They were not: they were 1:1 messages measured
+ * against app chrome, because `golden-th/line/` is empty and `app` is the
+ * default. Buttons and error labels are not addressed to a person, so they
+ * carry almost no `นะ` or `เลย`, and any real message will read HIGH forever.
+ *
+ * The surface table above already marks the choice with an arrow, which was
+ * evidently not loud enough to stop me drawing the conclusion anyway.
+ */
+const defaulted = !surfaceChosen;
 
 const arg = process.argv.filter((a, i) => i >= 2 && a !== "--surface" && process.argv[i - 1] !== "--surface")[0];
 
@@ -274,6 +289,13 @@ const results = [
 ];
 
 console.log(
+  (defaulted
+    ? `\n  BASELINE IS "app" BY DEFAULT, not because it fits this text. App copy is\n` +
+      `  chrome: buttons, labels, errors, nobody is addressed. A 1:1 message or an\n` +
+      `  email will read HIGH on particles against it every time, and that is the\n` +
+      `  baseline being wrong, not the copy. Pass --surface <name> once the right\n` +
+      `  one has material in golden-th/.\n`
+    : "") +
   "\n  This measures register only. It says nothing about whether the Thai is\n" +
     "  correct, idiomatic or true. A LOW nominalisation score usually means the\n" +
     "  text is chopped; a HIGH particle score usually means it reads like chat.\n",
