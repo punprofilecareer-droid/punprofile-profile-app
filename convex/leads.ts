@@ -11,6 +11,7 @@ import { rateLimiter } from "./rateLimits";
 import { gradeLead, toGradeInput, latestCoachIcp } from "../src/lib/leadGrade";
 import { eventsFor, recordConsent } from "./consentDb";
 import { resolveAll } from "../src/lib/consent";
+import { meetsBookingGate } from "../src/lib/lifecycle";
 import { CONSENT_COPY } from "../src/lib/consent-copy";
 
 /**
@@ -251,17 +252,10 @@ export const captureContact = mutation({
     await ctx.scheduler.runAfter(0, internal.notify.newLead, {
       tier: grade.tier,
       stage,
-      // The booking gate decided 14/08/2026, and the only rule in the whole
-      // framework that decides whether someone gets a link rather than what to
-      // say to them.
-      //
-      // `offer` dropped out of it on 15/08/2026, when the question stopped
-      // merging "has an offer" with "negotiating". The rule in
-      // `08_Coaching_Business.md` names interviewing and negotiating, and while
-      // the two were one option the merged value had to be included. Now that
-      // they are separate, including `offer` would widen a cut the owning
-      // document has not widened.
-      sqlGate: stage === "interviewing" || stage === "negotiating",
+      // The booking gate. Moved to `lifecycle.ts` on 15/08/2026 with its
+      // reasoning, because the admin surface needs the same answer and two
+      // copies would drift the day wave 2 opens.
+      sqlGate: meetsBookingGate(lead.responses),
       routingNote: grade.routingNote,
     });
   },

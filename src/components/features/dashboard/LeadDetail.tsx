@@ -3,13 +3,28 @@
 /**
  * TASK-035, FR-013: one lead in full.
  *
- * English, coach-facing. Every field the app holds, including the raw answers
- * and every consent timestamp.
+ * English, coach-facing. Every field the app holds, including the raw answers,
+ * the full consent history, and everything past the consultation.
  *
  * Missing data is shown explicitly as "not provided" rather than omitted. A
  * blank row and an absent row look identical on screen, and the difference
  * between "they declined to give a phone number" and "we never asked" is the
- * whole point of a PDPA audit trail.
+ * whole point of a PDPA audit trail. The same principle now runs through the
+ * consent panel, where `never_asked` is drawn differently from `opted_out`.
+ *
+ * **Rebuilt 15/08/2026** for the lifecycle data model. What changed and why:
+ *
+ * - Consent left this file. It was three timestamps that could not express a
+ *   purpose or a withdrawal, so a founder-backfilled email consent was
+ *   indistinguishable on screen from a candidate ticking a box.
+ * - Contact rows are actionable on resolved consent rather than on a
+ *   timestamp, so a withdrawn channel stops being a live link.
+ * - The header leads with the derived lifecycle state. `status` stays beside
+ *   it because it answers a different question, how far through the assessment
+ *   they got, and the two were being read as one thing.
+ * - Engagement, delivery and outcome panels exist and are empty for everyone
+ *   today. Their empty states say why, because a panel that reads as broken
+ *   gets ignored.
  */
 
 import Link from "next/link";
@@ -23,6 +38,11 @@ import { applyCorrections } from "@/lib/corrections";
 import LeadBriefing from "./LeadBriefing";
 import CallLog from "./CallLog";
 import AnswerSheet from "./AnswerSheet";
+import ConsentPanel from "./ConsentPanel";
+import EngagementPanel from "./EngagementPanel";
+import OutcomePanel from "./OutcomePanel";
+import { stateFor, meetsBookingGate, LIFECYCLE_LABELS } from "@/lib/lifecycle";
+import { CONSENT_CHANNELS, CONSENT_PURPOSES } from "@/lib/consent";
 
 const stamp = (ms: number | null) =>
   ms === null ? null : new Date(ms).toISOString().replace("T", " ").slice(0, 16);
@@ -94,6 +114,11 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   const calls = useQuery(api.consultations.listForLead, { leadId });
   const coachIcp = useMemo(() => latestCoachIcp(calls ?? []), [calls]);
   const corrections = useQuery(api.corrections.listForLead, { leadId });
+  // Read for the lifecycle state in the header. The panels below subscribe to
+  // the same queries; Convex dedupes identical subscriptions, so the state
+  // badge and the panels can never disagree about what exists.
+  const engagements = useQuery(api.delivery.forLead, { leadId });
+  const outcomes = useQuery(api.outcomes.forLead, { leadId });
   const deleteLead = useMutation(api.leads.deleteLeadOnRequest);
   const [building, setBuilding] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -108,14 +133,32 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
     return <p className="text-body text-error">No lead with that id.</p>;
   }
 
-  if (lead === undefined) {
-    return <p className="text-body text-neutral-500">Loading...</p>;
-  }
-  if (lead === null) {
-    return <p className="text-body text-error">No lead with that id.</p>;
-  }
-
   const corrected = applyCorrections(lead.responses, corrections ?? []);
+
+  /**
+   * Derived, never stored. Same rule as the scores: the booking gate is
+   * expected to change and wave 2 is already written down, so a stored stage
+   * would be silently wrong the day it moves.
+   *
+   * `fullyWithdrawn` reads every channel the person actually gave us. Someone
+   * who withdrew email but still has a live LINE consent is not withdrawn, and
+   * treating them as such would lose a channel that is still open.
+   */
+  const heldChannels = CONSENT_CHANNELS.filter(
+    (c) => (c === "email" && lead.email) || (c === "line" && lead.lineId) || (c === "phone" && lead.phone),
+  );
+  const lifecycle = stateFor({
+    hasContact: lead.status !== "partial",
+    meetsSqlRule: meetsBookingGate(lead.responses),
+    consultationsHeld: (calls ?? []).filter((c) => c.outcome === "held").length,
+    engagementsAgreed: (engagements ?? []).filter((e) => e.status !== "proposed").length,
+    placementsSigned: (outcomes?.placements ?? []).filter((p) => p.signedAt !== undefined).length,
+    fullyWithdrawn:
+      heldChannels.length > 0 &&
+      heldChannels.every((c) =>
+        CONSENT_PURPOSES.every((p) => lead.consent[p][c].status !== "opted_in"),
+      ),
+  });
 
   return (
     <div className="w-full space-y-8">
@@ -124,10 +167,27 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           Back to all leads
         </Link>
         <h1 className="mt-2 text-h3">{lead.fullName ?? "Anonymous lead"}</h1>
-        <p className="mt-1 text-caption text-slate">
-          {lead.status} · started {stamp(lead.createdAt)} · last active{" "}
-          {stamp(lead.lastActivityAt)}
-          {lead.source ? ` · from ${lead.source}` : ""}
+        {/* The derived lifecycle state leads, because it is the question the
+            coach opens this page with. `status` stays beside it rather than
+            being replaced: it is a different fact, how far through the
+            assessment they got, and the two were being read as one. */}
+        <p className="mt-2 flex flex-wrap items-center gap-2">
+          <span
+            className={`rounded-sm border px-2 py-0.5 text-caption ${
+              lifecycle === "withdrawn"
+                ? "border-error text-error"
+                : lifecycle === "placed" || lifecycle === "client"
+                  ? "border-primary text-primary"
+                  : "border-neutral-300 text-slate"
+            }`}
+          >
+            {LIFECYCLE_LABELS[lifecycle]}
+          </span>
+          <span className="text-caption text-slate">
+            assessment {lead.status} · started {stamp(lead.createdAt)} · last active{" "}
+            {stamp(lead.lastActivityAt)}
+            {lead.source ? ` · from ${lead.source}` : ""}
+          </span>
         </p>
 
         <button
@@ -200,30 +260,47 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           second column to be had. */}
       <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
         <div className="space-y-8">
-          <Section title="Contact and consent">
+          <Section title="Contact">
             {lead.consentSource === "survey_import" && (
               <p className="mb-3 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
                 Imported from the Lead Discovery Survey. That form asked how best to
-                reach them but carried no consent clause, so the timestamps below are
-                their submission date, not a per-channel grant. Judge outreach against
-                what the form actually said.
+                reach them but carried no consent clause, so the dates below are their
+                submission date, not a per-channel grant. Judge outreach against what
+                the form actually said.
               </p>
             )}
+            {/* Actionable now follows the resolved SERVICE consent, not a flat
+                timestamp. A withdrawn channel stops being a live link the moment
+                the withdrawal is recorded, which is the whole point of building
+                the mechanism. */}
             <Row
               label="Email"
               value={lead.email}
-              consentAt={lead.emailConsentAt}
+              contactable={lead.consent.service.email.status === "opted_in"}
               href={lead.email ? `mailto:${lead.email}` : null}
             />
             {/* LINE has no reliable "message this id" URL scheme, so the id is
                 offered for copying rather than linked to something that may not
                 open. */}
-            <Row label="LINE ID" value={lead.lineId} consentAt={lead.lineConsentAt} copyable />
+            <Row
+              label="LINE ID"
+              value={lead.lineId}
+              contactable={lead.consent.service.line.status === "opted_in"}
+              copyable
+            />
             <Row
               label="Phone"
               value={lead.phone}
-              consentAt={lead.phoneConsentAt}
+              contactable={lead.consent.service.phone.status === "opted_in"}
               href={lead.phone ? `tel:${lead.phone.replace(/[^\d+]/g, "")}` : null}
+            />
+          </Section>
+
+          <Section title="Consent">
+            <ConsentPanel
+              leadId={leadId}
+              consent={lead.consent}
+              events={lead.consentEvents}
             />
           </Section>
 
@@ -241,7 +318,6 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
               <Row
                 label="Suggested entry point"
                 value={String(lead.responses._entryPoint ?? "")}
-                consentAt={null}
                 showConsent={false}
               />
               {typeof lead.responses._manualCheck === "string" &&
@@ -249,7 +325,6 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
                   <Row
                     label="Flagged for manual check"
                     value={String(lead.responses._manualCheck)}
-                    consentAt={null}
                     showConsent={false}
                   />
                 )}
@@ -268,6 +343,17 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           />
 
           <CallLog leadId={leadId} />
+
+          {/* Right column is "what we did about it", so the commercial record
+              belongs under the call log: invitation, call, sale, work, outcome,
+              in the order they happen. */}
+          <Section title="Engagement and delivery">
+            <EngagementPanel leadId={leadId} />
+          </Section>
+
+          <Section title="Applications and outcome">
+            <OutcomePanel leadId={leadId} />
+          </Section>
         </div>
       </div>
 
@@ -335,23 +421,29 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Row({
   label,
   value,
-  consentAt,
+  contactable = false,
   href,
   copyable,
   showConsent = true,
 }: {
   label: string;
   value: string | null;
-  consentAt: number | null;
+  /**
+   * Resolved from `consentEvents` by the caller, not from a timestamp on the
+   * lead. Changed 15/08/2026: the old flat field could not represent a
+   * withdrawal, so a channel someone had asked us to stop using stayed a live
+   * link forever.
+   */
+  contactable?: boolean;
   href?: string | null;
   copyable?: boolean;
   /** False for rows that are not contact channels, so no consent line is drawn. */
   showConsent?: boolean;
 }) {
-  // Only actionable once consent exists. A channel with no consent timestamp is
-  // one you must not use, so it stays plain text rather than a live link that
-  // invites a click.
-  const actionable = !!value && consentAt !== null;
+  // Only actionable while consent is live. A channel without it is one you must
+  // not use, so it stays plain text rather than a live link that invites a
+  // click.
+  const actionable = !!value && contactable;
 
   return (
     <div className="border-b border-neutral-300 py-2">
@@ -378,11 +470,10 @@ function Row({
       </div>
       {showConsent && (
         <p className="text-caption text-neutral-500">
-          {consentAt
-            ? `Consent given ${stamp(consentAt)}`
-            : value
-              ? "No consent recorded, do not contact"
-              : ""}
+          {/* Dates and bases live in the Consent section below, which can show
+              per purpose and can show a withdrawal. This line says only whether
+              the channel may be used right now. */}
+          {contactable ? "" : value ? "Do not contact on this channel" : ""}
         </p>
       )}
     </div>

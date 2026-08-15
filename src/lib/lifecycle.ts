@@ -78,6 +78,25 @@ export function stateFor(input: LifecycleInput): LifecycleState {
   return "visitor";
 }
 
+/**
+ * The wave 1 booking gate, and the only rule in the whole framework that
+ * decides whether someone gets a link rather than what to say to them. Decided
+ * 14/08/2026, owned by `08_Coaching_Business.md`.
+ *
+ * Lifted out of `convex/leads.ts` on 15/08/2026 when the admin surface needed
+ * the same answer. One rule, one home: a second copy would drift the day wave 2
+ * opens, and wave 2 is already written down and deliberately held.
+ *
+ * `offer` is excluded. It dropped out on 15/08/2026 when the question stopped
+ * merging "has an offer" with "negotiating"; while the two were one option the
+ * merged value had to be included, and including it now would widen a cut the
+ * owning document has not widened.
+ */
+export function meetsBookingGate(responses: Record<string, unknown> | undefined): boolean {
+  const stage = typeof responses?.stage === "string" ? responses.stage : null;
+  return stage === "interviewing" || stage === "negotiating";
+}
+
 /** Ops-facing labels. Never candidate-facing; see the module note. */
 export const LIFECYCLE_LABELS: Record<LifecycleState, string> = {
   visitor: "Started, no contact",
