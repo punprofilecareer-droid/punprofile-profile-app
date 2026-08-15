@@ -15,6 +15,11 @@
  */
 
 @theme {
+  /* The app's one opinion about weight. Chosen for the site menu, TASK-085,
+     because it decelerates hard so a panel settles rather than glides, and
+     reused by the assessment's question transitions so there is one curve
+     rather than two. */
+  --ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
   /* Teal. The colour PunProfile is known by: washes, secondary actions. */
   --color-primary: #068376;
   --color-primary-deep: #04524a;
@@ -497,4 +502,85 @@
   }
   .material { background-color: var(--color-surface); }
   .material-mint { background-color: var(--color-mint-wash); }
+}
+
+/* ---------------------------------------------------------------------------
+   The assessment, question to question. 16/08/2026.
+
+   Studied from a Typeform reference Paul supplied, by reading its computed
+   styles rather than watching it, which mattered: the thing carrying the feel
+   is a delay that is invisible in a recording and obvious in a stylesheet.
+
+   **The hold is the mechanic.** Tap an option and nothing moves for 260ms. The
+   option takes its selected state, the candidate sees their own answer land,
+   and only then does the screen leave. Advance in the same frame as the tap and
+   the tap reads as unacknowledged, because the confirmation and the departure
+   compete for one pair of eyes. This is the part that looks like a bug in a
+   spec and is the entire reason the reference feels considered.
+
+   Three deliberate departures from the reference:
+
+   - **700ms per question, not 1200.** The reference is a fifteen-second quiz
+     where motion is most of the product. This is sixteen questions plus a
+     language grid, so 1200ms each is twenty seconds of watching animation.
+   - **`--ease-settle`, not `ease-in-out`.** The site menu above already chose
+     this curve and wrote down why. A second opinion about weight in the same
+     app is worse than either opinion.
+   - **Options stagger.** The reference does not do this. It is free on a
+     compositor-only property and it is the difference between a list appearing
+     and a list arriving.
+
+   Both screens travel the same direction, up, so the sequence reads as a reel
+   advancing rather than as cards dealt sideways. Only `transform` and
+   `opacity` animate, same discipline as the menu, which matters on the
+   mid-range Android this audience is on.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --q-hold: 260ms;
+  --q-out: 200ms;
+  --q-in: 240ms;
+  --q-rise: 16px;
+  --q-stagger: 40ms;
+}
+
+@keyframes q-leave {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(calc(var(--q-rise) * -1)); }
+}
+
+@keyframes q-enter {
+  from { opacity: 0; transform: translateY(var(--q-rise)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer components {
+  .q-leaving {
+    animation: q-leave var(--q-out) var(--ease-settle) both;
+    pointer-events: none;
+  }
+  .q-entering {
+    animation: q-enter var(--q-in) var(--ease-settle) both;
+  }
+  /* Options arrive after the card they sit in, one after another. Capped at
+     eight: past that the last option waits longer than the whole transition,
+     and the longest question here has six. */
+  .q-entering .q-stagger > *:nth-child(1) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 1); }
+  .q-entering .q-stagger > *:nth-child(2) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 2); }
+  .q-entering .q-stagger > *:nth-child(3) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 3); }
+  .q-entering .q-stagger > *:nth-child(4) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 4); }
+  .q-entering .q-stagger > *:nth-child(5) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 5); }
+  .q-entering .q-stagger > *:nth-child(6) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 6); }
+  .q-entering .q-stagger > *:nth-child(7) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 7); }
+  .q-entering .q-stagger > *:nth-child(n + 8) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 8); }
+}
+
+/* Travel and stagger go; the fade and the hold stay. The hold is what confirms
+   the answer registered, and that is not decoration. Same stance as the menu
+   above: less motion, not a faster version of the same motion. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --q-rise: 0px;
+    --q-stagger: 0ms;
+  }
 }

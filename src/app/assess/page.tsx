@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -78,8 +78,8 @@ export default function AssessPage() {
   const [leadId, setLeadId] = useState<Id<"leads"> | null>(null);
   const [local, setLocal] = useState<Record<string, Answer>>({});
   const [step, setStep] = useState(0); // 0..STAGE1.length-1 = questions, then the contact gate, then the teaser
-  // A latch, not render state: it only guards the one-shot resume below.
-  const resumed = useRef(false);
+  /** Which half of the question transition is on screen. See `commit` below. */
+  const [phase, setPhase] = useState<"entering" | "leaving">("entering");
 
   /**
    * A deliberate floor on how fast the first question can appear, 14/08/2026.
@@ -142,19 +142,27 @@ export default function AssessPage() {
       .catch(() => setStartFailed(true));
   }, [startSession, attempt]);
 
-  // Resume position from server state on reload. Runs once: after that, local
-  // state is ahead of the server and must not be overwritten by it.
-  useEffect(() => {
-    if (!session || resumed.current) return;
-    resumed.current = true;
+  /**
+   * Resume position from server state on reload. Runs once: after that, local
+   * state is ahead of the server and must not be overwritten by it.
+   *
+   * Adjusted during render rather than in an effect, 16/08/2026. The effect
+   * version was a visible bug as well as a lint error: it painted question one,
+   * then jumped to wherever the candidate actually was, so a returning
+   * candidate saw a question they had already answered flash past.
+   */
+  const [resumed, setResumed] = useState(false);
+  if (session && !resumed) {
+    setResumed(true);
     const answers = Object.fromEntries(
       Object.entries(session.responses).filter(([, v]) => isAnswer(v)),
     ) as Record<string, Answer>;
-    if (Object.keys(answers).length === 0) return;
-    setLocal(answers);
-    const answered = STAGE1.filter((q) => answers[q.key] !== undefined).length;
-    setStep(Math.min(answered, TOTAL_STEPS));
-  }, [session]);
+    if (Object.keys(answers).length > 0) {
+      setLocal(answers);
+      const answered = STAGE1.filter((q) => answers[q.key] !== undefined).length;
+      setStep(Math.min(answered, TOTAL_STEPS));
+    }
+  }
 
   /**
    * Hide the site menu for as long as leaving would cost the candidate their
@@ -274,9 +282,29 @@ export default function AssessPage() {
     }
 
     const q = item;
+    /**
+     * Hold, then leave, then advance.
+     *
+     * The write goes out immediately; only the screen waits. A candidate who
+     * closes the tab during the 460ms still has their answer saved, which is
+     * the whole reason the two are not sequenced together.
+     *
+     * Durations are read from the stylesheet rather than repeated here, so
+     * `--q-hold` and `--q-out` stay the single definition and a reduced-motion
+     * user gets whatever those resolve to for them.
+     */
     const commit = (value: Answer) => {
       void submitAnswer({ leadId, questionKey: q.key, value });
-      setStep(step + 1);
+      const css = getComputedStyle(document.documentElement);
+      const ms = (name: string) => parseFloat(css.getPropertyValue(name)) || 0;
+      setPhase("leaving");
+      window.setTimeout(
+        () => {
+          setStep(step + 1);
+          setPhase("entering");
+        },
+        ms("--q-hold") + ms("--q-out"),
+      );
     };
     return (
       <QuestionCard
@@ -287,6 +315,7 @@ export default function AssessPage() {
         selected={local[q.key]}
         step={step + 1}
         total={TOTAL_STEPS}
+        phase={phase}
         onSelect={(value) => {
           setLocal((prev) => ({ ...prev, [q.key]: value }));
           // A "many" question waits for Continue: the scorer should only ever

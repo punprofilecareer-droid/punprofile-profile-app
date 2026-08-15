@@ -49,6 +49,7 @@ export default function QuestionCard({
   onBack,
   step,
   total,
+  phase = "entering",
 }: {
   prompt: string;
   options: CardOption[];
@@ -56,6 +57,12 @@ export default function QuestionCard({
   /** A string in "one" mode, a list in "many" mode. */
   selected?: string | string[];
   onSelect: (value: string | string[]) => void;
+  /**
+   * Which half of the question transition this card is in. The page holds the
+   * card in `leaving` for the exit before it swaps the step, which is what
+   * gives the candidate time to see their own answer register.
+   */
+  phase?: "entering" | "leaving";
   /** Required in "many" mode: the only way forward. */
   onContinue?: () => void;
   /** Omitted on the first question, where there is nothing to go back to. */
@@ -84,7 +91,11 @@ export default function QuestionCard({
   }
 
   return (
-    <div className="mx-auto w-full max-w-md px-6 py-8">
+    <div
+      className={`mx-auto w-full max-w-md px-6 py-8 ${
+        phase === "leaving" ? "q-leaving" : "q-entering"
+      }`}
+    >
       {/* A panel, not a bare column. From the 14/08/2026 design pass: on the
           lavender field, content with no surface under it floated with nothing
           holding it together, and the option rows in particular read as four
@@ -126,7 +137,7 @@ export default function QuestionCard({
           {prompt}
         </h2>
         <div
-          className="flex flex-col gap-2"
+          className="q-stagger flex flex-col gap-2"
           role="group"
           aria-labelledby={`q-${step}`}
         >
