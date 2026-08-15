@@ -15,7 +15,10 @@ export default function LeadPage({ params }: { params: Promise<{ id: string }> }
   const { id } = use(params);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-16 leading-normal">
+    // Wider than the rest of the site on purpose. Every other page is a reading
+    // column; this one is two working columns side by side, and 48rem split in
+    // half leaves both too narrow to scan.
+    <div className="mx-auto w-full max-w-6xl px-6 py-16 leading-normal">
       <AdminGate>
         <LeadDetail leadId={id as Id<"leads">} />
       </AdminGate>

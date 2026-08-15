@@ -13,10 +13,11 @@
  * Do not add admin, login or coach-report strings here. Those surfaces are
  * English on purpose; only the founder reads them.
  *
- * Language rules live in `03_Content_System.md` → Language Guidelines, which
- * states that they cover the app and not only posts, and names the three
- * post-only rules that do not transfer. Read them there rather than trusting a
- * summary, because they change.
+ * Language rules live in `Language_System.md`, LR-01 to LR-08, with the decided
+ * terms in `termbase.yml` beside it. Read them there rather than trusting a
+ * summary, because they change. `scripts/lint-thai.ts` enforces the mechanical
+ * ones against every string in this file on each `verify-copy` run, so a banned
+ * term or a paraphrased fixed string fails rather than ships.
  *
  * The founder fills these in through the worksheet, not by editing this file:
  *   npx tsx scripts/export-copy-worksheet.ts   # code  -> worksheet
@@ -118,11 +119,10 @@ export const COPY = {
     en: "An honest first read on your EU job-market readiness, in a few minutes, on your phone.",
     th: "ดูผลประเมินเบื้องต้นแบบตรงไปตรงมาว่า คุณพร้อมแค่ไหนสำหรับตลาดงานยุโรป ใช้เวลาเพียงไม่กี่นาทีบนมือถือ",
   },
-  "landing.cta": {
-    screen: "Landing, the main button",
-    en: "Check where you stand",
-    th: "เช็กว่าคุณพร้อมแค่ไหน",
-  },
+  // No `landing.cta` here. The landing button's label comes from the table in
+  // `cta.ts`, which owns every action on every page. A second definition of the
+  // same button is a second wording of it, which is the failure this file's
+  // one-string-one-place rule exists to prevent.
   "landing.reassurance": {
     screen: "Landing, under the button",
     en: "Under 2 minutes. No sign-up before you see your first result.",

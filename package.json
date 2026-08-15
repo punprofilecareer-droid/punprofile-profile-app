@@ -6,7 +6,10 @@
     "dev": "next dev -p 3100",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "termbase": "tsx scripts/sync-termbase.ts",
+    "verify:copy": "tsx scripts/verify-copy.ts",
+    "lint:thai": "tsx scripts/lint-thai.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
@@ -20,12 +23,14 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "jose": "^6.2.8",
+    "js-yaml": "^5.3.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.5",
     "typescript": "^5"

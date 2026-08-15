@@ -23,6 +23,10 @@ import { STAGE1 } from "../src/lib/content/questions.js";
 import { MOVES } from "../src/lib/levers.js";
 import { DIMENSIONS } from "../src/lib/model.js";
 import { assertCandidateSafe } from "../src/lib/views.js";
+import { DESTINATIONS } from "../src/lib/content/cta.js";
+import { lintThai, type LintTarget } from "./lint-thai.js";
+import { readSource, hashOf } from "./sync-termbase.js";
+import { TERMBASE } from "../src/lib/content/termbase.generated.js";
 
 let failures = 0;
 const fail = (msg: string) => {
@@ -207,6 +211,106 @@ for (const [key, entry] of Object.entries(ALL)) {
 }
 for (const used of sources.matchAll(/\bt\(\s*"([a-z][a-zA-Z.]+)"/g)) {
   if (!(used[1] in ALL)) fail(`${used[1]}: used in code but not defined`);
+}
+
+// 4e. The termbase, and the Thai rules that hang off it.
+//
+// Until 15/08/2026 this file checked everything about a Thai string except
+// whether the Thai was any good: em dashes, placeholders, dead keys, all of it
+// language-blind. The rules existed, in prose, in the coaching repo, enforced by
+// a model reading a checklist about work it had just written. LR-08 is here
+// because three different wordings of one button survived that arrangement.
+{
+  // The generated termbase must match the YAML it came from. A stale copy is a
+  // rule that silently stopped being enforced, which is worse than no rule.
+  const { yaml, missing } = readSource();
+  if (missing) {
+    console.log(
+      "\nNote: the coaching repo is not beside this one, so the termbase could not be" +
+        "\nchecked for staleness. The generated copy was still used.",
+    );
+  } else if (hashOf(yaml) !== TERMBASE.sourceHash) {
+    fail("termbase.generated.ts is stale. Run: npx tsx scripts/sync-termbase.ts");
+  }
+
+  /**
+   * Strings whose wording was decided and must not be paraphrased. The binding
+   * is explicit rather than inferred from the English, because the drift LR-08
+   * was written from had different English on both sides too.
+   */
+  const BINDINGS: Record<string, string> = {
+    "nav.brand": "brand-name",
+    "nav.assess": "product-eu-fit-check",
+    "nav.coaching": "coaching-1-1",
+    "nav.services": "our-services",
+    "footer.brand": "footer-legal",
+    "cta.assess": "cta-start-assessment",
+    "cta.contact": "contact-talk-to-me",
+  };
+
+  // Consent, errors and the privacy notice are `system`: plain before they are
+  // warm, and not subject to the voice rules that govern a landing page.
+  const surfaceOf = (key: string): LintTarget["surface"] =>
+    /^(consent\.|gate\.error\.)/.test(key) ? "system" : "app";
+
+  const targets: LintTarget[] = [
+    ...Object.entries(ALL).map(([key, e]) => ({
+      id: key,
+      th: e.th,
+      en: e.en,
+      surface: surfaceOf(key),
+      binding: BINDINGS[key],
+    })),
+    // The action labels. `cta.ts` owns every button on every page and is where
+    // the landing CTA actually comes from, so a check that skipped it would miss
+    // the one string this rule exists for.
+    ...Object.entries(DESTINATIONS).map(([id, d]) => ({
+      id: `cta.${id}`,
+      th: d.label.th,
+      en: d.label.en,
+      surface: "app" as const,
+      binding: BINDINGS[`cta.${id}`],
+    })),
+    // LR-02: these two option sets are data, not interface. Their values stay
+    // English so they are comparable across candidates and matchable against a
+    // posting. `not_sure` is the exception in both, because "still deciding" is
+    // a meta-answer rather than a country or a role.
+    ...STAGE1.flatMap((q) => {
+      const isValueSet = q.key === "targetCountries" || q.key === "targetRole";
+      return [
+        { id: `question ${q.key}`, th: q.th, en: q.en, surface: "survey" as const },
+        ...q.options.map((o) => ({
+          id: `option ${q.key}/${o.value}`,
+          th: o.th,
+          en: o.en,
+          surface:
+            isValueSet && o.value !== "not_sure" && o.value !== "other"
+              ? ("value" as const)
+              : ("survey" as const),
+        })),
+      ];
+    }),
+    ...PRIVACY_SECTIONS.flatMap((sec, i) => [
+      { id: `privacy ${i + 1} heading`, th: sec.heading.th, en: sec.heading.en, surface: "system" as const },
+      ...sec.body.map((b, j) => ({
+        id: `privacy ${i + 1}.${j + 1}`,
+        th: b.th,
+        en: b.en,
+        surface: "system" as const,
+      })),
+    ]),
+    { id: "privacy intro", th: PRIVACY_INTRO.th, en: PRIVACY_INTRO.en, surface: "system" as const },
+  ];
+
+  const findings = lintThai(targets);
+  for (const f of findings.filter((f) => f.level === "fail")) {
+    fail(`[${f.rule}] ${f.target}: ${f.message}`);
+  }
+  const open = findings.filter((f) => f.level === "warn");
+  if (open.length) {
+    console.log(`\n${open.length} language decision(s) waiting on Paul:`);
+    for (const f of open) console.log(`  [${f.rule}] ${f.target}: ${f.message}`);
+  }
 }
 
 // 5. Report what is left. Not a failure.

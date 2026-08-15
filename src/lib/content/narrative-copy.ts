@@ -7,10 +7,11 @@
  * generated sentence would reach a candidate in unreviewed Thai, and could
  * claim something the scores do not support.
  *
- * Language rules live in `03_Content_System.md` → Language Guidelines, which
- * says explicitly that they cover the app and not only posts. Read them there
- * rather than trusting a summary here, because they change: two were added on
- * 09/08/2026 alone.
+ * Language rules live in `Language_System.md`, LR-01 to LR-08, with the decided
+ * terms in `termbase.yml` beside it. Read them there rather than trusting a
+ * summary here, because they change: two were added on 09/08/2026 alone.
+ * `scripts/lint-thai.ts` enforces the mechanical ones over these strings on
+ * every `verify-copy` run.
  *
  * The one constraint specific to this file: a sentence here must stand on its
  * own for the situation named in its `screen` note, without knowing which

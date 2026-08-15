@@ -21,6 +21,8 @@ moved there. Nothing here defines what the app should be.
 | EU Fit Check specs: PRD, product vision, scoring spec, survey spec | `ctxt-product/` |
 | Lead qualification, ICP, ECRA, live form URLs | `08_Coaching_Business.md` |
 | Writing standards, Thai tone, the fixed CTA pool | `03_Content_System.md` |
+| Thai language rules LR-01 to LR-08 | `Language_System.md` |
+| Decided Thai terms. `npm run termbase` syncs it here; `verify-copy` enforces it | `termbase.yml` |
 | **Design tokens: real colours, typography, spacing, components** | `ctxt-brand/design.md` |
 | Brand personality, voice, colour meaning | `Brand_Guidelines.md` |
 | Mission, offerings, scope, audience | `01_Project_Foundation.md` |

@@ -337,5 +337,18 @@ export default defineSchema({
       v.literal("coach"), // coach-verified corrections during an engagement
     ),
     responses: v.record(v.string(), v.any()),
+
+    /**
+     * Why the coach changed it. Added 15/08/2026, when this table stopped being
+     * written by nothing and became the correction layer.
+     *
+     * The reason is the point, not decoration. Candidates contradict
+     * themselves, and "they said B2 on the form and could not hold a sentence
+     * in English on the call" is the fact worth keeping. A corrected value with
+     * no reason is just a second opinion with better formatting.
+     */
+    note: v.optional(v.string()),
+    /** Which admin made the correction. Their own data, not the candidate's. */
+    by: v.optional(v.string()),
   }).index("by_lead_time", ["leadId", "takenAt"]),
 });

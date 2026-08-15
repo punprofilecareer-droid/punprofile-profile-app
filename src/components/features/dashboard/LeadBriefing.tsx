@@ -31,11 +31,19 @@ export default function LeadBriefing({
   responses,
   fullName,
   coachIcp = NO_COACH_ICP,
+  correctedCount = 0,
 }: {
+  /**
+   * The candidate's answers with the coach's corrections applied. This screen
+   * scores the best available account of the person, which is the point of the
+   * correction layer.
+   */
   responses: Record<string, unknown>;
   fullName: string | null;
   /** What a logged call collected. Fills only what the form left empty. */
   coachIcp?: CoachIcp;
+  /** How many fields are corrected, so the divergence is stated rather than silent. */
+  correctedCount?: number;
 }) {
   const { profile, narrative, coach, grade } = useMemo(() => {
     // `toScoringInputForLead`, not `toScoringInput`: the 90 imported survey
@@ -75,6 +83,16 @@ export default function LeadBriefing({
     <div className="space-y-10">
       <section>
         <h2 className="text-h4">Executive summary</h2>
+        {/* Said out loud, because this chart now differs from the one the
+            candidate was shown and from the scores stored on their record.
+            Diverging is correct, a coach-verified answer being better evidence
+            than a self-reported one. Diverging silently would not be. */}
+        {correctedCount > 0 && (
+          <p className="mt-2 rounded-sm border border-neutral-300 bg-mint-wash px-4 py-2 text-caption text-ink">
+            Scored on {correctedCount} corrected {correctedCount === 1 ? "answer" : "answers"}.
+            The candidate&apos;s own copy still shows what they told us.
+          </p>
+        )}
         <p className="mt-3 text-body-lg text-ink">{narrative.headline}</p>
         <p className="mt-2 text-caption text-neutral-500">{narrative.caveat}</p>
 

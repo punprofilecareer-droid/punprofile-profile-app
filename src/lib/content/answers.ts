@@ -32,6 +32,76 @@ export interface AnswerRow {
   question: string;
   /** Their answer in words, or null when the question went unanswered. */
   answer: string | null;
+  /**
+   * The choices a coach may correct this field to, in the same canonical
+   * vocabulary the stored answer uses.
+   *
+   * Absent means the field is not correctable from this screen. That is the
+   * case for the structured ones, the indicator flag arrays and the parsed
+   * salary shape, where a correct value is not a single pick and a free-text
+   * box would let someone write a shape the scorer cannot read.
+   */
+  options?: { value: string; label: string }[];
+  /** True when the field stores an array rather than a single value. */
+  multi?: boolean;
+}
+
+/**
+ * Which app question's option set describes an imported field.
+ *
+ * Only where the canonical values are genuinely the same set, so a correction
+ * cannot write a value the scorer does not understand. `workAuth` is the one
+ * lossy entry: the survey vocabulary also had `no_awareness`, which the app's
+ * question does not offer, so a coach correcting that field picks from four
+ * rather than five. Named here rather than discovered later.
+ */
+const IMPORT_TO_QUESTION: Record<string, string> = {
+  experienceYears: "experienceYears",
+  cv: "cv",
+  linkedin: "linkedin",
+  portfolio: "portfolio",
+  workAuth: "workAuth",
+  stage: "stage",
+  timeline: "timeline",
+  englishCefr: "english",
+  otherLanguageCefr: "english",
+  targetCountries: "targetCountries",
+  targetRole: "targetRole",
+};
+
+const PRIOR_INVESTMENT_LABELS: Record<string, string> = {
+  none: "No prior paid course, certification or coaching",
+  unrelated: "Has paid for something before, relevance to the target field not established",
+  relevant: "Has paid for something relevant to the target field",
+  unclassified: "Describes real prior investment; whether it is relevant is a coach judgment",
+};
+
+/** Option sets that belong to the survey vocabulary alone. */
+const IMPORT_OWN_OPTIONS: Record<string, { value: string; label: string }[]> = {
+  // `unclassified` is excluded: it is the free-text parser's "cannot tell"
+  // band, and a coach who has asked the question can always tell.
+  priorInvestment: Object.entries(PRIOR_INVESTMENT_LABELS)
+    .filter(([value]) => value !== "unclassified")
+    .map(([value, label]) => ({ value, label })),
+  hasDependents: [
+    { value: "false", label: "No, they would be moving alone" },
+    { value: "true", label: "Yes, someone would relocate with them" },
+  ],
+};
+
+function correctable(key: string, instrument: "app" | "survey"): Pick<AnswerRow, "options" | "multi"> {
+  const questionKey = instrument === "app" ? key : IMPORT_TO_QUESTION[key];
+  const q = questionKey ? QUESTION_INDEX[questionKey] : undefined;
+  if (q) {
+    return {
+      options: q.options.map((o) => ({ value: o.value, label: o.en })),
+      multi: q.select === "many",
+    };
+  }
+  if (instrument === "survey" && IMPORT_OWN_OPTIONS[key]) {
+    return { options: IMPORT_OWN_OPTIONS[key], multi: false };
+  }
+  return {};
 }
 
 export interface AnswerSheet {
@@ -74,13 +144,6 @@ function indicators(flags: unknown, labels: readonly string[]): string | null {
 /** Family Readiness indicators, in the framework's order, labelled as the app labels them. */
 const FAMILY_ORDER = ["discussed", "no_objection", "dependents_plan", "logistics"] as const;
 const FAMILY_LABELS = FAMILY_ORDER.map((v) => optionLabel("family", v) ?? v);
-
-const PRIOR_INVESTMENT_LABELS: Record<string, string> = {
-  none: "No prior paid course, certification or coaching",
-  unrelated: "Has paid for something before, relevance to the target field not established",
-  relevant: "Has paid for something relevant to the target field",
-  unclassified: "Describes real prior investment; whether it is relevant is a coach judgment",
-};
 
 /**
  * The survey questions this app stores an answer for, in the survey's own
@@ -240,6 +303,7 @@ export function readAnswers(responses: Responses): AnswerSheet {
         key: f.key,
         question: f.question,
         answer: answered || f.alwaysRender ? f.render(raw, responses) : null,
+        ...correctable(f.key, "survey"),
       });
     }
   } else {
@@ -247,7 +311,7 @@ export function readAnswers(responses: Responses): AnswerSheet {
       seen.add(q.key);
       const raw = responses[q.key];
       if (raw === undefined || raw === null) {
-        rows.push({ key: q.key, question: q.en, answer: null });
+        rows.push({ key: q.key, question: q.en, answer: null, ...correctable(q.key, "app") });
         continue;
       }
       const values = Array.isArray(raw) ? raw.map(String) : [String(raw)];
@@ -255,6 +319,7 @@ export function readAnswers(responses: Responses): AnswerSheet {
         key: q.key,
         question: q.en,
         answer: values.map((v) => optionLabel(q.key, v) ?? v).join(", ") || null,
+        ...correctable(q.key, "app"),
       });
     }
     // Stage 2's language grid is not a `STAGE1` question and has no options to

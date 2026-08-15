@@ -18,10 +18,11 @@ import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
-import { readAnswers } from "@/lib/content/answers";
 import { latestCoachIcp } from "@/lib/leadGrade";
+import { applyCorrections } from "@/lib/corrections";
 import LeadBriefing from "./LeadBriefing";
 import CallLog from "./CallLog";
+import AnswerSheet from "./AnswerSheet";
 
 const stamp = (ms: number | null) =>
   ms === null ? null : new Date(ms).toISOString().replace("T", " ").slice(0, 16);
@@ -92,6 +93,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   // source rather than two that can disagree.
   const calls = useQuery(api.consultations.listForLead, { leadId });
   const coachIcp = useMemo(() => latestCoachIcp(calls ?? []), [calls]);
+  const corrections = useQuery(api.corrections.listForLead, { leadId });
   const deleteLead = useMutation(api.leads.deleteLeadOnRequest);
   const [building, setBuilding] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -105,6 +107,15 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   if (lead === null) {
     return <p className="text-body text-error">No lead with that id.</p>;
   }
+
+  if (lead === undefined) {
+    return <p className="text-body text-neutral-500">Loading...</p>;
+  }
+  if (lead === null) {
+    return <p className="text-body text-error">No lead with that id.</p>;
+  }
+
+  const corrected = applyCorrections(lead.responses, corrections ?? []);
 
   return (
     <div className="w-full space-y-8">
@@ -121,11 +132,11 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
 
         <button
           type="button"
-          disabled={building || Object.keys(lead.responses).length === 0}
+          disabled={building || Object.keys(corrected.effective).length === 0}
           onClick={async () => {
             setBuilding(true);
             try {
-              await downloadReport(lead);
+              await downloadReport({ ...lead, responses: corrected.effective });
             } finally {
               setBuilding(false);
             }
@@ -136,16 +147,18 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
         </button>
 
         {/* Subject-access request. Two formats: the HTML is what you send the
-            person, the JSON is the portable copy if they ask for one. */}
+            person, the JSON is the portable copy if they ask for one.
+
+            Built from `lead`, not from the corrected record: an access request
+            asks what the person told us and what we hold, and their own answers
+            are the first half of that. Corrections are ours, and they are
+            disclosed in the conversations section rather than silently swapped
+            in over the top of what they said. */}
         <button
           type="button"
           onClick={async () => {
             const { renderSubjectExportHtml } = await import("@/lib/subjectExport");
             download(
-              // Calls included, decided 15/08/2026. A coach's written record
-              // of an identified person is their data on the ordinary reading,
-              // and the cost is a discipline rather than a feature: notes get
-              // written as though they will be read, because one day they are.
               renderSubjectExportHtml(lead, calls ?? []),
               `punprofile-data-${slug(lead.fullName ?? "record")}.html`,
               "text/html;charset=utf-8",
@@ -176,82 +189,91 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
         )}
       </div>
 
-      <Section title="Contact and consent">
-        {lead.consentSource === "survey_import" && (
-          <p className="mb-3 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
-            Imported from the Lead Discovery Survey. That form asked how best to
-            reach them but carried no consent clause, so the timestamps below are
-            their submission date, not a per-channel grant. Judge outreach against
-            what the form actually said.
-          </p>
-        )}
-        <Row
-          label="Email"
-          value={lead.email}
-          consentAt={lead.emailConsentAt}
-          href={lead.email ? `mailto:${lead.email}` : null}
-        />
-        {/* LINE has no reliable "message this id" URL scheme, so the id is
-            offered for copying rather than linked to something that may not
-            open. */}
-        <Row label="LINE ID" value={lead.lineId} consentAt={lead.lineConsentAt} copyable />
-        <Row
-          label="Phone"
-          value={lead.phone}
-          consentAt={lead.phoneConsentAt}
-          href={lead.phone ? `tel:${lead.phone.replace(/[^\d+]/g, "")}` : null}
-        />
-      </Section>
+      {/* Two columns: what we know on the left, what we did about it on the
+          right. The coach opens this page for one of those two reasons and
+          almost never both, and a single scrolling stack made every visit pass
+          through the other one. Stacks on narrow screens, where there is no
+          second column to be had. */}
+      <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+        <div className="space-y-8">
+          <Section title="Contact and consent">
+            {lead.consentSource === "survey_import" && (
+              <p className="mb-3 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
+                Imported from the Lead Discovery Survey. That form asked how best to
+                reach them but carried no consent clause, so the timestamps below are
+                their submission date, not a per-channel grant. Judge outreach against
+                what the form actually said.
+              </p>
+            )}
+            <Row
+              label="Email"
+              value={lead.email}
+              consentAt={lead.emailConsentAt}
+              href={lead.email ? `mailto:${lead.email}` : null}
+            />
+            {/* LINE has no reliable "message this id" URL scheme, so the id is
+                offered for copying rather than linked to something that may not
+                open. */}
+            <Row label="LINE ID" value={lead.lineId} consentAt={lead.lineConsentAt} copyable />
+            <Row
+              label="Phone"
+              value={lead.phone}
+              consentAt={lead.phoneConsentAt}
+              href={lead.phone ? `tel:${lead.phone.replace(/[^\d+]/g, "")}` : null}
+            />
+          </Section>
 
-      {/* Your own triage from the survey sheet, imported 14/08/2026 alongside
-          the answers. Rendered here rather than left in the data, because a
-          column carried across and never shown is a column that was not really
-          imported. Absent on app-native leads, which never had it. */}
-      {(typeof lead.responses._entryPoint === "string" ||
-        typeof lead.responses._manualCheck === "string") && (
-        <Section title="From the survey sheet">
-          {/* `showConsent={false}`: these are the coach's own triage columns, not
-            channels. Without it `Row` printed "No consent recorded, do not
-            contact" under the suggested entry point, which is not a true
-            statement about anything. */}
-          <Row
-            label="Suggested entry point"
-            value={String(lead.responses._entryPoint ?? "")}
-            consentAt={null}
-            showConsent={false}
-          />
-          {typeof lead.responses._manualCheck === "string" &&
-            lead.responses._manualCheck.trim() !== "" && (
+          {/* Your own triage from the survey sheet, imported 14/08/2026 alongside
+              the answers. Rendered here rather than left in the data, because a
+              column carried across and never shown is a column that was not really
+              imported. Absent on app-native leads, which never had it. */}
+          {(typeof lead.responses._entryPoint === "string" ||
+            typeof lead.responses._manualCheck === "string") && (
+            <Section title="From the survey sheet">
+              {/* `showConsent={false}`: these are the coach's own triage columns,
+                  not channels. Without it `Row` printed "No consent recorded, do
+                  not contact" under the suggested entry point, which is not a
+                  true statement about anything. */}
               <Row
-                label="Flagged for manual check"
-                value={String(lead.responses._manualCheck)}
+                label="Suggested entry point"
+                value={String(lead.responses._entryPoint ?? "")}
                 consentAt={null}
                 showConsent={false}
               />
-            )}
-        </Section>
-      )}
+              {typeof lead.responses._manualCheck === "string" &&
+                lead.responses._manualCheck.trim() !== "" && (
+                  <Row
+                    label="Flagged for manual check"
+                    value={String(lead.responses._manualCheck)}
+                    consentAt={null}
+                    showConsent={false}
+                  />
+                )}
+            </Section>
+          )}
 
-      {/* The briefing replaces the bare score list that used to sit here. Four
-          numbers told you nothing you could open a conversation with. */}
-      <LeadBriefing
-        responses={lead.responses}
-        fullName={lead.fullName}
-        coachIcp={coachIcp}
-      />
+          <AnswerSheet leadId={leadId} responses={lead.responses} corrected={corrected} />
+        </div>
 
-      {/* Above the answers and well above the delete panel: what happened on a
-          call is the thing most often read and the only thing on this page that
-          can be written to. */}
-      <CallLog leadId={leadId} />
+        <div className="space-y-8">
+          <LeadBriefing
+            responses={corrected.effective}
+            fullName={lead.fullName}
+            coachIcp={coachIcp}
+            correctedCount={corrected.byKey.size}
+          />
+
+          <CallLog leadId={leadId} />
+        </div>
+      </div>
 
       <Section title="Delete on request">
         <p className="text-body text-slate">
           Erases this person entirely: the lead, their answers, every call
-          logged against them, and any saved links. This cannot be undone and
-          there is no backup to restore from.
-          A record that <em>a</em> deletion happened is kept, holding nothing
-          about who it was.
+          logged against them, every correction, and any saved links. This
+          cannot be undone and there is no backup to restore from. A record
+          that <em>a</em> deletion happened is kept, holding nothing about who
+          it was.
         </p>
         <label className="mt-4 block text-label text-slate">
           Your reference for this request
@@ -293,90 +315,6 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           {deleting ? "Deleting..." : "Delete this person permanently"}
         </button>
       </Section>
-
-      <AnswerSheetSection responses={lead.responses} />
-    </div>
-  );
-}
-
-/**
- * Every question this lead was asked, beside the answer they gave.
- *
- * Question and answer sit in two columns on the same row, because the coach's
- * read is "what did they say to this", and a stacked key-then-value list makes
- * that a scan down two alternating lines instead of across one.
- *
- * Unanswered questions are rendered, not omitted, for the reason the contact
- * rows already are: a blank row and an absent row look identical on screen, and
- * "they skipped it" is a different fact from "we never asked".
- *
- * `readAnswers` resolves both vocabularies, so an imported survey lead shows
- * the survey's own Q-numbers and wording from `08_Coaching_Business.md`, and an
- * app lead shows the questionnaire's.
- */
-function AnswerSheetSection({ responses }: { responses: Record<string, unknown> }) {
-  const sheet = readAnswers(responses);
-
-  if (Object.keys(responses).length === 0) {
-    return (
-      <Section title="Questions and answers">
-        <p className="text-body text-neutral-500">No answers yet.</p>
-      </Section>
-    );
-  }
-
-  // `_entryPoint` and `_manualCheck` already have their own section above, with
-  // the framing about what that sheet did and did not ask. Repeating them here
-  // would be two copies of one fact on one screen.
-  const shown = new Set(["_entryPoint", "_manualCheck"]);
-  const columns = sheet.sheetColumns.filter((r) => !shown.has(r.key));
-
-  return (
-    <Section title="Questions and answers">
-      <p className="mb-3 text-caption text-neutral-500">
-        {sheet.answered} of {sheet.rows.length} answered.{" "}
-        {sheet.instrument === "survey"
-          ? "From the Lead Discovery Survey, imported. Question numbers are that form's."
-          : "From the app's questionnaire, in the order it was asked."}
-      </p>
-
-      {sheet.rows.map((r) => (
-        <QaRow key={r.key} question={r.question} answer={r.answer} />
-      ))}
-
-      {columns.length > 0 && (
-        <>
-          <h3 className="mt-6 text-label text-slate">Carried across from the sheet</h3>
-          {columns.map((r) => (
-            <QaRow key={r.key} question={r.question} answer={r.answer} />
-          ))}
-        </>
-      )}
-
-      {sheet.extras.length > 0 && (
-        <>
-          {/* A stored key the instrument does not account for: a leftover from
-              an older question set, or a field added since. Shown as its raw
-              key, because hiding it would lose it silently. */}
-          <h3 className="mt-6 text-label text-slate">Not part of this question set</h3>
-          {sheet.extras.map((r) => (
-            <QaRow key={r.key} question={r.question} answer={r.answer} />
-          ))}
-        </>
-      )}
-    </Section>
-  );
-}
-
-function QaRow({ question, answer }: { question: string; answer: string | null }) {
-  return (
-    <div className="grid gap-x-6 border-b border-neutral-300 py-2 sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-      <p className="text-body text-slate">{question}</p>
-      {answer === null ? (
-        <p className="text-body text-neutral-500">not answered</p>
-      ) : (
-        <p className="text-body text-ink">{answer}</p>
-      )}
     </div>
   );
 }
