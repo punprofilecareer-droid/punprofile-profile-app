@@ -152,14 +152,18 @@ export default defineSchema({
     at: v.number(),
 
     /**
-     * `founder_backfill` exists because of `data-inventory.md` § 8: 86 of the
-     * 90 imported leads never nominated email, and their consent was created
-     * on the founder's instruction. Calling that `app_tick` would be the one
-     * lie in the audit trail that a reviewer is guaranteed to ask about.
+     * How the permission was obtained. Kept granular because a PDPA request
+     * asks what someone agreed to, and "ticked a box" and "the published post
+     * said submitting means they agree" are different answers.
+     *
+     * `public_notice` is Paul's recorded basis, 15/08/2026: the social post
+     * carrying the link stated that submitting constitutes acceptance.
+     * `founder_backfill` is superseded by it and is written by nothing.
      */
     basis: v.union(
       v.literal("app_tick"),
       v.literal("survey_import"),
+      v.literal("public_notice"),
       v.literal("founder_backfill"),
       v.literal("coach_recorded"),
       v.literal("unsubscribe_link"),

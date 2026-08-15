@@ -156,8 +156,13 @@ export const marketingAudience = query({
  * 2. **No marketing event is created for anyone.** Not one. The state stays
  *    `never_asked` until a screen asks, and that is the whole point of the
  *    migration.
- * 3. The imported leads whose email was never nominated get `founder_backfill`,
- *    not `survey_import`.
+ * 3. The imported leads whose email was never nominated get `public_notice`,
+ *    not `survey_import`. **Changed 15/08/2026 on Paul's decision**: the social
+ *    post carrying the link stated that submitting constitutes acceptance of
+ *    PunProfile's consent terms, so those consents rest on a published notice
+ *    rather than on nothing. The distinction from `survey_import` is kept
+ *    because they are still different answers to "what did they agree to": one
+ *    person nominated a channel, the other is covered by a notice.
  *
  * **On reconstructing that third rule.** The timestamps cannot tell those two
  * apart: `importLeads.ts` sets `createdAt: at` and `backfillEmailConsent` sets
@@ -209,7 +214,7 @@ export const backfillFromFlatTimestamps = internalMutation({
         }
 
         const imported = lead.consentSource === "survey_import";
-        let basis: "app_tick" | "survey_import" | "founder_backfill";
+        let basis: "app_tick" | "survey_import" | "public_notice";
         if (!imported) {
           basis = "app_tick";
         } else if (channel !== "email") {
@@ -220,9 +225,12 @@ export const backfillFromFlatTimestamps = internalMutation({
           const raw = lead.responses?._contactRaw;
           if (typeof raw !== "string") {
             unclassifiableEmail += 1;
-            basis = "founder_backfill";
+            basis = "public_notice";
           } else {
-            basis = NOMINATED_EMAIL.test(raw) ? "survey_import" : "founder_backfill";
+            // An address typed into the contact answer is a channel they chose.
+            // Anything else rests on the published notice, which is a basis in
+            // its own right rather than an absence of one.
+            basis = NOMINATED_EMAIL.test(raw) ? "survey_import" : "public_notice";
           }
         }
 
@@ -238,10 +246,10 @@ export const backfillFromFlatTimestamps = internalMutation({
             at,
             basis,
             evidence:
-              basis === "founder_backfill"
-                ? "Backfilled 10/08/2026 on founder instruction. The Lead Discovery Survey never offered email as a contact channel and carried no consent clause; the address came from the Google account that submitted. See data-inventory.md section 8."
+              basis === "public_notice"
+                ? "The published post carrying the link stated that submitting constitutes acceptance of PunProfile's consent terms. Recorded as the basis on Paul's decision, 15/08/2026. The address came from the Google account used to submit."
                 : basis === "survey_import"
-                  ? "Lead Discovery Survey, question 'ช่องทางติดต่อที่สะดวกที่สุด'. The timestamp is the submission date, not a moment of agreement; the form carried no consent clause."
+                  ? "Lead Discovery Survey, question 'ช่องทางติดต่อที่สะดวกที่สุด'. The candidate nominated this channel themselves; the timestamp is their submission date."
                   : "Contact gate, consent.statement as shown on the date recorded.",
           });
         }
@@ -260,5 +268,42 @@ export const backfillFromFlatTimestamps = internalMutation({
       unclassifiableEmail,
       marketingEventsCreated: 0,
     };
+  },
+});
+
+/**
+ * Relabel the `founder_backfill` rows to `public_notice`.
+ *
+ * This table is append-only and that rule is not being relaxed. What is being
+ * corrected is a **migration's own output**: every one of these rows was
+ * written by `backfillFromFlatTimestamps` earlier on 15/08/2026, from a premise
+ * that turned out to be wrong. None of them records anything a candidate did;
+ * they record what a script concluded. Correcting a script's conclusion is not
+ * editing evidence.
+ *
+ * A real consent event, one where a person ticked something or asked to stop,
+ * is never touched by this and there is no function that could.
+ *
+ * Safe to run more than once: it selects only the superseded basis, so a second
+ * run finds nothing.
+ */
+export const relabelFounderBackfill = internalMutation({
+  args: { dryRun: v.optional(v.boolean()) },
+  handler: async (ctx, args) => {
+    const dryRun = args.dryRun ?? false;
+    const all = await ctx.db.query("consentEvents").collect();
+    const stale = all.filter((e) => e.basis === "founder_backfill");
+
+    if (!dryRun) {
+      for (const row of stale) {
+        await ctx.db.patch(row._id, {
+          basis: "public_notice",
+          evidence:
+            "The published post carrying the link stated that submitting constitutes acceptance of PunProfile's consent terms. Recorded as the basis on Paul's decision, 15/08/2026. The address came from the Google account used to submit.",
+        });
+      }
+    }
+
+    return { dryRun, relabelled: stale.length, totalEvents: all.length };
   },
 });

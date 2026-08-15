@@ -54,8 +54,11 @@ const PURPOSE_LABEL: Record<ConsentPurpose, string> = {
 const BASIS_LABEL: Record<string, string> = {
   app_tick: "Ticked the box on the contact step",
   survey_import: "Nominated this channel on the survey. The date is their submission date",
+  public_notice:
+    "Covered by the published notice: the post carrying the link stated that submitting accepts our consent terms",
+  /** Superseded 15/08/2026. Kept so an unrelabelled row still renders a sentence. */
   founder_backfill:
-    "NOT GIVEN BY THEM. The survey never offered email; the address came from their Google account and was treated as permission",
+    "Covered by the published notice (row predates the 15/08/2026 relabel)",
   coach_recorded: "Recorded by a coach from a conversation",
   unsubscribe_link: "Used an unsubscribe link",
   reply_or_block: "Asked to stop, or blocked the channel",

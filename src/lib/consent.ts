@@ -56,6 +56,25 @@ export type ConsentAction = (typeof CONSENT_ACTIONS)[number];
 export const CONSENT_BASES = [
   "app_tick",
   "survey_import",
+  /**
+   * Consent given by a published notice rather than a tick.
+   *
+   * Paul's position, recorded 15/08/2026: the social post carrying the link
+   * stated that submitting constitutes acceptance of PunProfile's consent
+   * terms. That is a real lawful basis and it is recorded as one.
+   *
+   * It stays a distinct value rather than being merged into `app_tick` for the
+   * same reason every other basis is distinct: a PDPA request asks what someone
+   * agreed to, and "they ticked a box on the form" and "the post said that
+   * submitting means they agree" are different answers to that question. Both
+   * can be good answers. They are not the same answer.
+   */
+  "public_notice",
+  /**
+   * Superseded 15/08/2026 by `public_notice`, kept so the value still parses.
+   * Nothing writes it. It was the label a migration gave the imported leads'
+   * email consent before the published notice was recorded as the basis.
+   */
   "founder_backfill",
   "coach_recorded",
   "unsubscribe_link",

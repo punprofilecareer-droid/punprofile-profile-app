@@ -173,8 +173,10 @@ const BASIS_PROSE: Record<string, string> = {
   app_tick: "You ticked the consent box on the assessment's contact step.",
   survey_import:
     "You gave us this channel on the Lead Discovery Survey, in answer to how you preferred to be reached. The date is your submission date.",
+  public_notice:
+    "The post you followed to reach us stated that submitting the form accepts our consent terms. Your email address came from the Google account you submitted with.",
   founder_backfill:
-    "You did not give us this channel. The survey never offered email as a way to be reached, and your address came from the Google account you submitted with. PunProfile chose to treat that as permission to email you.",
+    "The post you followed to reach us stated that submitting the form accepts our consent terms. Your email address came from the Google account you submitted with.",
   coach_recorded: "You told us during a conversation and we wrote it down.",
   unsubscribe_link: "You used an unsubscribe link.",
   reply_or_block: "You asked us to stop, or blocked the channel.",
