@@ -13,6 +13,7 @@ import { eventsFor, recordConsent } from "./consentDb";
 import { resolveAll, ynGrid } from "../src/lib/consent";
 import { meetsBookingGate } from "../src/lib/lifecycle";
 import { parseAttribution, attributionFromLegacySource } from "../src/lib/attribution";
+import { eraseLead } from "./erase";
 import { CONSENT_COPY } from "../src/lib/consent-copy";
 
 /**
@@ -600,98 +601,24 @@ export const deleteLeadOnRequest = mutation({
     const lead = await ctx.db.get(args.leadId);
     if (!lead) throw new ConvexError("Lead not found.");
 
-    const assessments = await ctx.db
-      .query("assessments")
-      .withIndex("by_lead_time", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    for (const a of assessments) await ctx.db.delete(a._id);
-
-    const links = await ctx.db
-      .query("magicLinks")
-      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    for (const l of links) await ctx.db.delete(l._id);
-
-    // Call records go with them. These hold a coach's written read of a named
-    // person, their salary expectation and their own question in their own
-    // words, so a deletion that left them behind would erase the tidy half of
-    // the file and keep the revealing half.
-    const calls = await ctx.db
-      .query("consultations")
-      .withIndex("by_lead_time", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    for (const c of calls) await ctx.db.delete(c._id);
-
-    // The consent log goes too. It is a record *about* this person, holding
-    // what they agreed to and when, so keeping it would be retaining data on
-    // someone who asked to be erased. The `deletionLog` row below is what
-    // survives, and it holds no identity by design.
-    const consents = await ctx.db
-      .query("consentEvents")
-      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    for (const c of consents) await ctx.db.delete(c._id);
-
-    // The commercial record goes with them too. It is tempting to argue that an
-    // engagement is PunProfile's own business record rather than the subject's,
-    // and for the money that is arguable; but these rows name a person, say what
-    // they were sold, what was written about their CV and which jobs they
-    // applied for, and a "deletion" that kept all of that would be a deletion in
-    // name only. If a retained financial record is ever legally required, it
-    // belongs in a separate table holding no identity, the same shape as
-    // `deletionLog` itself.
-    const engagements = await ctx.db
-      .query("engagements")
-      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    const deliverables = await ctx.db
-      .query("deliverables")
-      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    const applications = await ctx.db
-      .query("applications")
-      .withIndex("by_lead_time", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    const placements = await ctx.db
-      .query("placements")
-      .withIndex("by_lead", (q) => q.eq("leadId", args.leadId))
-      .collect();
-    // Children first, so a failure part-way cannot orphan a deliverable under a
-    // deleted engagement.
-    for (const d of deliverables) await ctx.db.delete(d._id);
-    for (const p of placements) await ctx.db.delete(p._id);
-    for (const a of applications) await ctx.db.delete(a._id);
-    for (const e of engagements) await ctx.db.delete(e._id);
-
-    await ctx.db.delete(args.leadId);
+    // The cascade lives in `erase.ts` and is shared with the retention sweep.
+    // Two copies is how a table gets added to one and not the other, and the
+    // failure mode is a deletion that leaves a person's answers behind.
+    //
+    // **`retentionBlockedBecause` is deliberately not called here.** A live
+    // engagement stops the clock from erasing someone; it does not stop the
+    // person themselves from asking. Someone requesting erasure is not refused
+    // because they are mid-engagement.
+    const counts = await eraseLead(ctx, args.leadId);
 
     await ctx.db.insert("deletionLog", {
       deletedAt: Date.now(),
       performedBy: adminEmail,
       note: args.note,
-      counts: {
-        leads: 1,
-        assessments: assessments.length,
-        magicLinks: links.length,
-        consultations: calls.length,
-        consentEvents: consents.length,
-        engagements: engagements.length,
-        deliverables: deliverables.length,
-        applications: applications.length,
-        placements: placements.length,
-      },
+      counts,
     });
 
-    return {
-      assessments: assessments.length,
-      magicLinks: links.length,
-      consultations: calls.length,
-      consentEvents: consents.length,
-      engagements: engagements.length,
-      deliverables: deliverables.length,
-      applications: applications.length,
-      placements: placements.length,
-    };
+    return counts;
   },
 });
 
