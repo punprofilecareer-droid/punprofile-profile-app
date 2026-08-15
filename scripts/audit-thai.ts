@@ -15,9 +15,8 @@
  * or it does not; nothing is inferred from how good the Thai looks.
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
-import { globSync } from "node:fs";
 import { TERMBASE } from "../src/lib/content/termbase.generated";
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -53,9 +52,10 @@ function strings(src: string): string[] {
     .filter((t) => THAI.test(t));
 }
 
-const files = globSync("src/lib/content/*.ts", { cwd: ROOT })
-  .concat(["src/lib/consent-copy.ts", "src/lib/levers.ts"])
-  .filter((f) => !f.includes("termbase.generated"));
+const files = readdirSync(resolve(ROOT, "src/lib/content"))
+  .filter((f: string) => f.endsWith(".ts") && !f.includes("termbase.generated"))
+  .map((f: string) => `src/lib/content/${f}`)
+  .concat(["src/lib/consent-copy.ts", "src/lib/levers.ts"]);
 
 const bannedForms = TERMBASE.terms.flatMap((t) => (t.banned ?? []) as string[]);
 
@@ -75,7 +75,10 @@ for (const rel of files) {
     strings: th.length,
     // Read from the whole header block, not the first few lines: the claim sits
     // deep in `consent-copy.ts` and a shallow read misses it.
-    paulsOwn: /Paul's own Thai|Paul's own wording|rewritten .{0,40}from Paul's own/i.test(
+    // Recognised claims. Deliberately a short list: a loose pattern would let
+    // any file mentioning Paul count itself as reviewed, which is the one way
+    // this audit could quietly start lying.
+    paulsOwn: /Paul's own Thai|Paul's own wording|rewritten .{0,40}from Paul's own|Thai wording passed by Paul/i.test(
       src.slice(0, 4000),
     ),
     banned: bannedForms.filter((b) => joined.includes(b)),

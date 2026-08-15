@@ -1,4 +1,10 @@
 /**
+ * **Thai wording passed by Paul, 15/08/2026.** Twenty-nine strings across
+ * fourteen questions were rewritten in his own words during a review of all
+ * shipped Thai. That makes this file his for the wording; the option *values*
+ * are unchanged and the additions he proposed are held as decisions, because
+ * several of them move scoring, the ICP grade or the booking gate.
+ *
  * TASK-051: the staged questionnaire, as data.
  *
  * Decided 04/08/2026: this app absorbs both Google instruments. Every question
@@ -134,7 +140,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Which route to Europe are you exploring?",
-    th: "คุณกำลังมองเส้นทางไหนในการไปยุโรป",
+    th: "คุณกำลังมองเส้นทางไหนในการย้ายไปทำงานยุโรป",
     options: PATHWAYS.map((p) => ({ value: p.value, en: p.en, th: p.th })),
   },
   {
@@ -161,7 +167,7 @@ export const STAGE1: Question[] = [
     th: "สายงานที่อยากทำในยุโรป",
     options: [
       ...ROLE_CATEGORIES.map((r) => ({ value: r, en: r, th: r })),
-      { value: "not_sure", en: "Still deciding", th: "ยังตัดสินใจไม่ได้" },
+      { value: "not_sure", en: "Not sure yet", th: "ยังไม่แน่ใจ" },
     ],
   },
   {
@@ -190,7 +196,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Do you have an updated CV?",
-    th: "ตอนนี้มี CV/เรซูเม่ที่อัปเดตแล้วหรือยัง",
+    th: "ตอนนี้มี CV/เรซูเม่ที่อัปเดตพร้อมใช้แล้วหรือยัง",
     options: [
       { value: "none", en: "Don't have one yet", th: "ยังไม่มี" },
       { value: "untailored", en: "Have one, not tailored for Europe", th: "มีแต่ยังไม่ปรับให้เหมาะกับยุโรป" },
@@ -222,7 +228,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Do you have a portfolio or work samples showing your results?",
-    th: "มีผลงานหรือตัวอย่างงานที่แสดงผลลัพธ์ของคุณไหม",
+    th: "มี portfolio ผลงานหรือตัวอย่างงานที่แสดงผลลัพธ์ของงานไหม",
     options: [
       { value: "none", en: "Not yet", th: "ยังไม่มี" },
       { value: "partial", en: "Some pieces, not organised", th: "มีบางส่วน ยังไม่ได้จัดรวม" },
@@ -245,17 +251,17 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "many",
     en: "Which of these are true about how you work? Choose all that apply.",
-    th: "ข้อไหนตรงกับวิธีทำงานของคุณบ้าง เลือกได้มากกว่า 1 ข้อ",
+    th: "ข้อไหนตรงกับวิธีการใช้ tool ในการทำงานของคุณ เลือกได้มากกว่า 1 ข้อ",
     options: [
       {
         value: "ai_weekly",
         en: "I use AI tools like ChatGPT for work or job-search tasks most weeks",
-        th: "ใช้ AI เช่น ChatGPT ช่วยงานหรือหางานเกือบทุกสัปดาห์",
+        th: "ใช้ AI เช่น ChatGPT หางาน หรือช่วยทำงาน เกือบทุกสัปดาห์",
       },
       {
         value: "eu_tools",
-        en: "I am comfortable with the tools European teams run on, for example Slack, Notion, Jira",
-        th: "ใช้เครื่องมือที่ทีมในยุโรปใช้กันได้ เช่น Slack, Notion, Jira",
+        en: "I am comfortable with the tools European teams run on, for example Slack, Notion, Jira, CRM, PM Tool",
+        th: "ใช้เครื่องมือที่ทีมในยุโรปใช้กันได้ เช่น Slack, Notion, Jira, CRM, PM Tool",
       },
       {
         value: "ai_tailor",
@@ -265,7 +271,7 @@ export const STAGE1: Question[] = [
       {
         value: "self_taught",
         en: "I picked these up on my own, not because a job required it",
-        th: "เรียนรู้เองด้วยตัวเอง ไม่ใช่เพราะงานบังคับ",
+        th: "เรียนรู้เองด้วยตัวเอง ไม่ใช่เพราะงานบังคับให้ทำ",
       },
       { value: "never", en: "None of these yet", th: "ยังไม่มีข้อไหนตรง" },
     ],
@@ -313,15 +319,15 @@ export const STAGE1: Question[] = [
     key: "english",
     stage: 1,
     select: "one",
-    en: "Your English level",
-    th: "ระดับภาษาอังกฤษของคุณ",
+    en: "Your English level (CEFR)",
+    th: "ระดับภาษาอังกฤษของคุณ (CEFR)",
     options: [
       { value: "A1", en: "Beginner (A1)", th: "เริ่มต้น (A1)" },
       { value: "A2", en: "Elementary (A2)", th: "พื้นฐาน (A2)" },
       { value: "B1", en: "Conversational (B1)", th: "พอสื่อสารได้ (B1)" },
-      { value: "B2", en: "Working proficiency (B2)", th: "ใช้ทำงานได้ (B2)" },
-      { value: "C1", en: "Fluent (C1)", th: "คล่องแคล่ว (C1)" },
-      { value: "C2", en: "Native-level (C2)", th: "ใกล้เคียงเจ้าของภาษา (C2)" },
+      { value: "B2", en: "Working proficiency (B2)", th: "ใช้ทำงานได้ / พรีเซนต์งานได้ / ขายสินค้าได้ (B2)" },
+      { value: "C1", en: "Fluent (C1)", th: "ใช้งานได้คล่อง / สื่อสารเชิงอาชีพได้ดี (C1)" },
+      { value: "C2", en: "Native-level (C2)", th: "ใกล้เคียงเจ้าของภาษา / ใช้ได้ระดับมืออาชีพ (C2)" },
     ],
   },
   {
@@ -370,11 +376,11 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "How many roles in Europe have you applied to so far?",
-    th: "สมัครงานในยุโรปไปแล้วกี่ตำแหน่ง",
+    th: "สมัครงานในยุโรปไปแล้วกี่ application",
     options: [
       { value: "0", en: "None yet", th: "ยังไม่ได้สมัคร" },
-      { value: "1-4", en: "1 to 4", th: "1–4 ตำแหน่ง" },
-      { value: "5-20", en: "5 to 20", th: "5–20 ตำแหน่ง" },
+      { value: "1-4", en: "1 to 4", th: "1–4" },
+      { value: "5-20", en: "5 to 20", th: "5–20" },
       { value: "20+", en: "More than 20", th: "มากกว่า 20 ตำแหน่ง" },
     ],
   },
@@ -414,7 +420,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "many",
     en: "If you moved, who moves with you? Choose all that apply.",
-    th: "ถ้าคุณย้ายไปยุโรป มีใครย้ายไปด้วยไหม เลือกได้มากกว่า 1 ข้อ",
+    th: "ถ้าคุณย้ายไปยุโรป มีใครต้องย้ายตามไปด้วยไหม เลือกได้มากกว่า 1 ข้อ",
     options: [
       {
         value: "none",
@@ -424,17 +430,17 @@ export const STAGE1: Question[] = [
       {
         value: "discussed",
         en: "I have talked the move through with everyone it affects",
-        th: "ได้คุยเรื่องย้ายกับทุกคนที่เกี่ยวข้องแล้ว",
+        th: "คุยเรื่องการย้ายกับทุกคนที่เกี่ยวข้องแล้ว",
       },
       {
         value: "no_objection",
         en: "Nobody close to me is against it",
-        th: "ไม่มีใครคัดค้าน",
+        th: "คนใกล้ชิดไม่มีใครคัดค้าน",
       },
       {
         value: "dependents_plan",
         en: "We have a plan for school or care for the people who depend on me",
-        th: "มีแผนเรื่องโรงเรียนหรือการดูแลคนที่ต้องพึ่งพาเราแล้ว",
+        th: "วางแผนเรื่องโรงเรียนหรือการดูแลผู้สูงอายุในความรับผิดชอบไว้แล้ว",
       },
       {
         value: "logistics",
@@ -444,7 +450,7 @@ export const STAGE1: Question[] = [
       {
         value: "not_yet",
         en: "Someone would move with me, but we have not worked any of this out",
-        th: "มีคนย้ายไปด้วย แต่ยังไม่ได้วางแผนอะไรเลย",
+        th: "มีคนจะย้ายไปด้วย แต่ยังไม่ได้วางแผนเรื่องเหล่านี้",
       },
     ],
   },
@@ -503,23 +509,23 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "many",
     en: "Have you ever paid for any of these? Choose all that apply.",
-    th: "ที่ผ่านมาคุณเคยจ่ายเงินเรียนหรือพัฒนาตัวเองด้านไหนบ้าง เลือกได้มากกว่า 1 ข้อ",
+    th: "ที่ผ่านมา คุณเคยจ่ายเงินเพื่อเรียนรู้หรือพัฒนาตัวเองในด้านใดบ้าง เลือกได้มากกว่า 1 ข้อ",
     options: [
       { value: "language", en: "Learning a language", th: "เรียนภาษา" },
       {
         value: "soft_skills",
         en: "Soft skills, for example communication or leadership",
-        th: "ทักษะการทำงาน เช่น การสื่อสาร ภาวะผู้นำ",
+        th: "ทักษะการทำงาน เช่น การสื่อสาร หรือ ภาวะผู้นำ",
       },
       {
         value: "technical",
         en: "A technical skill or a programming language",
-        th: "ทักษะเฉพาะทาง หรือเขียนโปรแกรม",
+        th: "เรียนทักษะเฉพาะทางหรือภาษาโปรแกรมมิ่ง",
       },
       {
         value: "certification",
         en: "A professional certification or qualification",
-        th: "ใบรับรองหรือคุณวุฒิวิชาชีพ",
+        th: "เรียนหลักสูตรเพื่อรับใบรับรองหรือคุณวุฒิวิชาชีพ",
       },
       {
         // Added 14/08/2026 on Paul's call: portfolio had to be one of the
@@ -535,10 +541,10 @@ export const STAGE1: Question[] = [
         // collapses any paid area to the same band. This is for the call.
         value: "profile_docs",
         en: "Having a CV, LinkedIn profile or portfolio written or reviewed",
-        th: "จ้างเขียนหรือรีวิว CV, LinkedIn หรือพอร์ตโฟลิโอ",
+        th: "จ้างเขียนหรือรีวิว CV, โปรไฟล์ LinkedIn หรือพอร์ตโฟลิโอ",
       },
-      { value: "career_coach", en: "A career coach", th: "โค้ชด้านอาชีพ" },
-      { value: "never", en: "None of these yet", th: "ยังไม่เคย" },
+      { value: "career_coach", en: "A career coach", th: "ใช้บริการโค้ชชิ่งด้านอาชีพ" },
+      { value: "never", en: "None of these yet", th: "ยังไม่เคยจ่ายเงินกับเรื่องเหล่านี้" },
     ],
   },
 ];
