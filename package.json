@@ -11,7 +11,8 @@
     "verify:copy": "tsx scripts/verify-copy.ts",
     "lint:thai": "tsx scripts/lint-thai.ts",
     "verify:consent": "tsx scripts/verify-consent.ts",
-    "dictionary": "tsx scripts/build-field-dictionary.ts"
+    "dictionary": "tsx scripts/build-field-dictionary.ts",
+    "verify:attribution": "tsx scripts/verify-attribution.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",

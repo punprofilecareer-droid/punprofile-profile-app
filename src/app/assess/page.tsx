@@ -125,7 +125,19 @@ export default function AssessPage() {
     // connection. Without this the promise fails silently and the candidate
     // watches the loading line forever, which reads as a broken app rather
     // than a busy one.
-    void startSession({ source: "direct" })
+    // The landing query string, handed over verbatim and parsed server-side.
+    //
+    // This used to send the literal "direct" on every session and never look at
+    // the URL, so every app-native lead in the database claims the same origin
+    // and none of those claims mean anything. A job post link carrying
+    // `?src=fb&job=<job-log id>` is now recoverable all the way back to the post
+    // that produced the lead.
+    //
+    // Read at call time rather than from a hook: this runs once per session and
+    // `useSearchParams` would opt the whole route into a Suspense boundary for
+    // a value that is already sitting on `location`.
+    const search = typeof window === "undefined" ? "" : window.location.search;
+    void startSession({ search })
       .then(setLeadId)
       .catch(() => setStartFailed(true));
   }, [startSession, attempt]);

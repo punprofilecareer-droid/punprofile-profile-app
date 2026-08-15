@@ -186,7 +186,17 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           <span className="text-caption text-slate">
             assessment {lead.status} · started {stamp(lead.createdAt)} · last active{" "}
             {stamp(lead.lastActivityAt)}
-            {lead.source ? ` · from ${lead.source}` : ""}
+          </span>
+          {/* Where they came from. Deliberately explicit when unknown: most
+              existing rows have no attribution because the client hardcoded
+              "direct" and never read the URL, and showing a confident origin
+              for those would be inventing one. */}
+          <span className="text-caption text-neutral-500">
+            {lead.attribution
+              ? `via ${lead.attribution.channel.replace(/_/g, " ")}${
+                  lead.attribution.campaign ? ` · post ${lead.attribution.campaign}` : ""
+                }`
+              : "origin unknown"}
           </span>
         </p>
 

@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { QueryCtx, MutationCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
@@ -12,6 +12,7 @@ import { gradeLead, toGradeInput, latestCoachIcp } from "../src/lib/leadGrade";
 import { eventsFor, recordConsent } from "./consentDb";
 import { resolveAll, ynGrid } from "../src/lib/consent";
 import { meetsBookingGate } from "../src/lib/lifecycle";
+import { parseAttribution, attributionFromLegacySource } from "../src/lib/attribution";
 import { CONSENT_COPY } from "../src/lib/consent-copy";
 
 /**
@@ -25,20 +26,72 @@ import { CONSENT_COPY } from "../src/lib/consent-copy";
  */
 
 export const startSession = mutation({
-  args: { source: v.optional(v.string()) },
+  args: {
+    source: v.optional(v.string()),
+    /**
+     * The landing page's query string, verbatim. Parsed server-side rather than
+     * on the client so one implementation decides what a URL means, and so a
+     * hand-crafted request cannot write a channel that does not exist.
+     */
+    search: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
     // TASK-039. Global, because a session that does not exist yet has nothing
     // to key on. See `rateLimits.ts` for why that is the honest ceiling here.
     await rateLimiter.limit(ctx, "startSession", { throws: true });
 
     const now = Date.now();
+    const attribution = parseAttribution(args.search ?? "", now);
     return await ctx.db.insert("leads", {
       status: "partial",
-      source: args.source,
+      // Dual-written while `source` retires. It carries the channel so the old
+      // field stays readable, not the literal "direct" the client used to send
+      // on every session regardless of where anyone came from.
+      source: attribution.raw ?? attribution.channel,
+      attribution,
       createdAt: now,
       updatedAt: now,
       lastActivityAt: now,
     });
+  },
+});
+
+/**
+ * Backfill `attribution` from the legacy `source` string. Idempotent.
+ *
+ * **Most rows get nothing, and that is the point.** `"direct"` was what the
+ * client sent unconditionally on every session, so it is a default the code
+ * chose rather than anything observed about a person. Converting it into an
+ * attribution would launder a hardcoded value into a finding, and the honest
+ * record for those leads is that their origin is unknown.
+ *
+ * `survey_import` is skipped for the same reason in reverse: those leads came
+ * from a Google Form, and `consentSource` already says so.
+ */
+export const backfillAttribution = internalMutation({
+  args: { dryRun: v.optional(v.boolean()) },
+  handler: async (ctx, args) => {
+    const dryRun = args.dryRun ?? false;
+    const leads = await ctx.db.query("leads").collect();
+    let written = 0;
+    let alreadyHad = 0;
+    let noInformation = 0;
+
+    for (const lead of leads) {
+      if (lead.attribution) {
+        alreadyHad += 1;
+        continue;
+      }
+      const attribution = attributionFromLegacySource(lead.source, lead.createdAt);
+      if (!attribution) {
+        noInformation += 1;
+        continue;
+      }
+      written += 1;
+      if (!dryRun) await ctx.db.patch(lead._id, { attribution });
+    }
+
+    return { dryRun, leadsScanned: leads.length, written, alreadyHad, noInformation };
   },
 });
 
@@ -504,6 +557,7 @@ export const getForAdmin = query({
       pathway: lead.pathway ?? null,
       status: lead.status,
       source: lead.source ?? null,
+      attribution: lead.attribution ?? null,
       responses: lead.responses ?? {},
       scores: scoresFor(lead.responses),
       createdAt: lead.createdAt,

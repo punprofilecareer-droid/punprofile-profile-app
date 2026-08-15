@@ -133,8 +133,50 @@ export default defineSchema({
       v.literal("email_captured"),
       v.literal("completed"),
     ),
+    /**
+     * **Superseded 15/08/2026 by `attribution`, still written.** Same
+     * three-step retirement as the consent timestamps: dual-write, stop
+     * reading, then clear and drop.
+     */
     /** @absent unmeasured — arrived without a source parameter, origin unknown */
     source: v.optional(v.string()), // e.g. "fb_pinned_post", "fb_consultation_hook"
+
+    /**
+     * Why this person is here. Spec: `lifecycle-data-model.md` § 5.
+     *
+     * `source` was one loose string and, worse, the client hardcoded it to
+     * `"direct"` and never read a URL parameter at all, so every lead in the
+     * database claims the same origin and none of it is true. Nothing could
+     * answer "which job post produced a lead", which is the one attribution
+     * question this business actually has.
+     *
+     * **First touch only, never overwritten.** A multi-touch table is real
+     * attribution modelling and it is not worth building at one to four leads a
+     * week; recorded as a deliberate limit in the spec rather than an oversight.
+     *
+     * `campaign` carries the `job-log.json` id when a job post sent them, which
+     * is the join that makes the channel's own pipeline measurable against what
+     * candidates did next.
+     */
+    /** @absent unmeasured — landed before attribution existed, or with no parameters */
+    attribution: v.optional(
+      v.object({
+        channel: v.union(
+          v.literal("fb_group_post"),
+          v.literal("fb_pinned_post"),
+          v.literal("line_oa"),
+          v.literal("direct"),
+          v.literal("referral"),
+          v.literal("other"),
+        ),
+        /** The `job-log.json` id, when a job post sent them. */
+        campaign: v.optional(v.string()),
+        landedAt: v.number(),
+        /** The parameter exactly as it arrived, kept so a channel added later
+         *  is recoverable rather than lost to `other`. */
+        raw: v.optional(v.string()),
+      }),
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
     lastActivityAt: v.number(),
