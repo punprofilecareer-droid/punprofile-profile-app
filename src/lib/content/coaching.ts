@@ -182,7 +182,7 @@ export const METHOD: readonly MethodStep[] = [
     body: [
       {
         en: "Hiring decisions in Europe come from a number of factors that can be named and assessed. The framework behind the EU Fit Check divides them into thirty-four items, covering professional capability, readiness to apply, readiness to move country, and fit with the European market you are aiming at.",
-        th: "การตัดสินใจจ้างงานในยุโรปเกิดจากหลายปัจจัยที่ระบุและประเมินได้ กรอบเบื้องหลัง EU Fit Check แบ่งออกเป็น 34 ข้อ ครอบคลุมความสามารถทางวิชาชีพ ความพร้อมในการสมัครงาน ความพร้อมในการย้ายประเทศ และความเหมาะสมกับตลาดยุโรปที่คุณตั้งเป้าไว้",
+        th: "การตัดสินใจจ้างงานในยุโรปเกิดจากหลายปัจจัยที่ระบุและประเมินได้ กรอบเบื้องหลัง EU Fit Check แบ่งออกเป็น 34 ข้อ ครอบคลุมความสามารถทางวิชาชีพ การสมัครงาน การย้ายประเทศ และความเหมาะสมกับตลาดยุโรปที่คุณตั้งเป้าไว้",
       },
     ],
   },

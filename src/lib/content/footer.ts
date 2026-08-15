@@ -110,7 +110,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     heading: { en: "Contact", th: "ติดต่อ" },
     links: [
       { href: "/contact", label: { en: "Contact us", th: "ติดต่อเรา" } },
-      { href: DESTINATIONS.line.href, label: { en: "LINE", th: "LINE" }, external: true },
+      { href: DESTINATIONS.line.href, label: { en: "LINE", th: "Line" }, external: true },
       {
         href: DESTINATIONS.email.href,
         label: { en: "Email", th: "อีเมล" },

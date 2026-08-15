@@ -180,7 +180,7 @@ export const DESTINATIONS = {
     brand: "line",
     // Short, because the mark beside it already says LINE. "Message us on LINE"
     // next to the LINE logo says LINE twice.
-    label: { en: "Chat on LINE", th: "ทักทาง LINE" },
+    label: { en: "Chat on LINE", th: "ทักทาง Line" },
   },
   // `satisfies` without `as const`, deliberately. `as const` froze every href
   // to its own literal type, which made the empty-href guard in the contact

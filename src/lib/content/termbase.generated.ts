@@ -64,10 +64,11 @@ export const TERMBASE: Termbase = {
       "id": "channel-line",
       "en": "LINE",
       "th": [
-        "LINE"
+        "Line"
       ],
       "banned": [
-        "ไลน์"
+        "ไลน์",
+        "LINE"
       ],
       "surfaces": [
         "all"
@@ -75,13 +76,13 @@ export const TERMBASE: Termbase = {
       "fixed": true,
       "rule": "LR-01",
       "decided": "15/08/2026",
-      "why": "A brand name, in Latin script the way the app itself writes it and the way a Thai reader sees it every day. Paul's call, 15/08/2026, after the lint found consent.statement writing the transliteration while every other string in the app wrote LINE. It is the PDPA string naming the channel consented to, which is the last place two spellings of one channel belong.\n"
+      "why": "A brand name, in Latin script rather than transliterated. Paul's call, 15/08/2026, after the lint found consent.statement writing the transliteration while every other string wrote it in Latin. It is the PDPA string naming the channel consented to, which is the last place two spellings of one channel belong.\nTitle case, revised the same day. The company styles itself LINE in caps and Paul decided PunProfile writes Line, which is the form that sits in a Thai sentence without shouting. Both the transliteration and the all-caps form are banned, so the one remaining form is the one that ships.\nThis is about the chat application, which is a different word from ออนไลน์. A term check must not match inside it.\n"
     },
     {
       "id": "field-line-id",
       "en": "LINE ID",
       "th": [
-        "LINE ID"
+        "Line ID"
       ],
       "banned": [],
       "surfaces": [
@@ -314,7 +315,7 @@ export const TERMBASE: Termbase = {
     "reader": "คุณ",
     "why": "เรา for the brand in broadcast copy, ผม in 1:1 messages where a brand plural reads evasive, คุณ for the reader always and stated rather than implied. The contact button คุยกับผม is first person on an app surface on purpose: it is the one string that opens a 1:1, so it speaks in the register of what it starts. Listed in `terms` above rather than treated as a person violation.\n"
   },
-  "sourceHash": "83f9dd369507ad60"
+  "sourceHash": "1bf2da16db3feaeb"
 } as const;
 
 export const TERMS = TERMBASE.terms;

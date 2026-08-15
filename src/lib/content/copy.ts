@@ -323,17 +323,17 @@ export const COPY = {
   "dimension.employability": {
     screen: "Spider chart axis",
     en: "Employability",
-    th: "ความพร้อมในการสมัครงาน",
+    th: "การสมัครงาน",
   },
   "dimension.mobilityReadiness": {
     screen: "Spider chart axis",
     en: "Mobility Readiness",
-    th: "ความพร้อมในการย้ายประเทศ",
+    th: "การย้ายประเทศ",
   },
   "dimension.europeanMarketFit": {
     screen: "Spider chart axis",
     en: "European Market Fit",
-    th: "ความเหมาะสมกับตลาดงานยุโรป",
+    th: "ความสอดคล้องกับตลาดยุโรป",
   },
 
   // ------------------------------------------------------------ contact gate
@@ -371,7 +371,7 @@ export const COPY = {
   "gate.lineId": {
     screen: "Contact gate, LINE ID field label",
     en: "LINE ID",
-    th: "LINE ID",
+    th: "Line ID",
   },
   "gate.phone": {
     screen: "Contact gate, phone field label",
@@ -409,7 +409,7 @@ export const COPY = {
   "gate.error.channel_required": {
     screen: "Contact gate, when neither LINE nor phone was given",
     en: "Please add a LINE ID or a phone number.",
-    th: "กรอก LINE ID หรือเบอร์โทรอย่างน้อยหนึ่งช่อง",
+    th: "กรอก Line ID หรือเบอร์โทรอย่างน้อยหนึ่งช่อง",
   },
   "gate.error.consent_email": {
     screen: "Contact gate, when email consent is unticked",
@@ -424,7 +424,7 @@ export const COPY = {
   "gate.error.consent_line": {
     screen: "Contact gate, when a LINE ID was given without consent",
     en: "Tick the consent for LINE, or clear the ID.",
-    th: "ติ๊กยินยอมให้ทัก LINE หาคุณด้วย หรือลบ LINE ID ออกก็ได้",
+    th: "ติ๊กยินยอมให้ทัก Line หาคุณด้วย หรือลบ Line ID ออกก็ได้",
   },
   "gate.error.unknown": {
     screen: "Contact gate, any failure with no specific cause. Network, mostly",

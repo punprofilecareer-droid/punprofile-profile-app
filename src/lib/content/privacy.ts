@@ -73,7 +73,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
       },
       {
         en: "Your contact details at the final step: first name, last name, email address, and a LINE ID or phone number.",
-        th: "ข้อมูลติดต่อของคุณในขั้นตอนสุดท้าย ได้แก่ ชื่อ นามสกุล อีเมล และ LINE ID หรือหมายเลขโทรศัพท์",
+        th: "ข้อมูลติดต่อของคุณในขั้นตอนสุดท้าย ได้แก่ ชื่อ นามสกุล อีเมล และ Line ID หรือหมายเลขโทรศัพท์",
       },
       {
         en: "One of those questions asks about your visa and right-to-work status, which says something about your immigration position. We hold it because it changes what advice is honest, and for no other reason.",

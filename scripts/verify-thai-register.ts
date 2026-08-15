@@ -230,22 +230,6 @@ const results = [
   row("mean phrase length (chars)", subject.phraseLen, baseline.phraseLen, 0.35),
 ];
 
-// A comma sitting inside a Thai run. Thai takes a space where English takes a
-// comma, per the Microsoft Thai style guide, and a comma there is one of the
-// most reliable single markers that a sentence was carried over from English.
-const commaLines = extract(resolve(process.cwd(), arg)).filter((l) =>
-  /[฀-๿][^,]{0,40},|,[^฀-๿]{0,3}[฀-๿]/.test(l),
-);
-if (commaLines.length) {
-  console.log(
-    `\n  ${commaLines.length} Thai line(s) contain a comma. Thai takes a space where English`,
-  );
-  console.log("  takes a comma. Check each:");
-  for (const l of commaLines.slice(0, 6)) console.log(`    ${l.slice(0, 88)}`);
-} else {
-  console.log("\n  ok   no commas inside Thai runs");
-}
-
 console.log(
   "\n  This measures register only. It says nothing about whether the Thai is\n" +
     "  correct, idiomatic or true. A LOW nominalisation score usually means the\n" +
