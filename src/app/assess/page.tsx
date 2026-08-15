@@ -334,7 +334,6 @@ export default function AssessPage() {
       <div className="material mt-4 rounded-lg px-2 py-4">
         <SpiderChart scores={scores} variant="teaser" />
       </div>
-      <p className="mt-2 text-caption text-neutral-500">{t("teaser.hollowMarkers")}</p>
 
       {/* The personalized read. Every sentence is selected from the bank in
           `narrative-copy.ts` by the candidate's own scores, so nothing here can

@@ -78,7 +78,7 @@ for (const rel of files) {
     // Recognised claims. Deliberately a short list: a loose pattern would let
     // any file mentioning Paul count itself as reviewed, which is the one way
     // this audit could quietly start lying.
-    paulsOwn: /Paul's own Thai|Paul's own wording|rewritten .{0,40}from Paul's own|Thai wording passed by Paul/i.test(
+    paulsOwn: /Paul's own Thai|Paul's own wording|rewritten .{0,40}from Paul's own|Thai wording passed by Paul|Founder-signed off|Paul's sign-off/i.test(
       src.slice(0, 4000),
     ),
     banned: bannedForms.filter((b) => joined.includes(b)),

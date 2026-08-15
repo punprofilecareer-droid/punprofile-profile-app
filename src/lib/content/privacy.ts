@@ -19,10 +19,14 @@
  * Two statements in here are commitments rather than descriptions, and both are
  * flagged at their section:
  *
- * - **Retention is not enforced by anything.** No job deletes on a schedule.
- *   The clock now runs from last contact rather than from submission, so the
- *   earliest record falls due in July 2027; deletion on request already works
- *   and covers the interim. It stays a promise until the retention job exists.
+ * - **Retention is enforced as of 15/08/2026.** `convex/retention.ts` runs
+ *   daily and erases records whose last contact is more than twelve months old.
+ *   The clock counts contact from either side, so a call or a coach note resets
+ *   it as the candidate's own activity does. A lead with a live engagement or a
+ *   placement is never swept, and neither exemption applies to a request from
+ *   the person themselves. Nothing falls due until July 2027, so the job will do
+ *   nothing for a long time, which is the promise being kept rather than the job
+ *   being useful. This paragraph was a standing caveat and is now a fact.
  *
  * Structured as sections rather than flat keys because it is long-form prose,
  * and a `privacy.section4.para2` key space would be unreadable in the worksheet

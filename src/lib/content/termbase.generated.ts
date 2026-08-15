@@ -17,16 +17,18 @@ export const TERMBASE: Termbase = {
       "id": "brand-name",
       "en": "PunProfile",
       "th": [
-        "PunProfile"
+        "PunProfile",
+        "ปั้นโปรไฟล์ (PunProfile)",
+        "ปั้นโปรไฟล์"
       ],
       "banned": [],
       "surfaces": [
         "all"
       ],
-      "fixed": true,
+      "fixed": false,
       "rule": "LR-01",
-      "decided": "09/08/2026",
-      "why": "The wordmark is a fixed asset and is never translated or transliterated. ปั้นโปรไฟล์ appears in the pinned post as a gloss beside the Latin name, which is a different move and stays allowed in prose.\n"
+      "decided": "15/08/2026",
+      "why": "The wordmark is a fixed asset and is never translated. What changed on 15/08/2026 is that the Thai form is not a translation, it is the joke the name is built on: PunProfile is a play on ปั้นโปรไฟล์, to shape or mould a profile. A Thai reader who only ever sees the Latin never gets it.\n**Where the brand opens a Thai paragraph, lead with the Thai.** The pattern is Paul's own, from the pinned post: ปั้นโปรไฟล์ (PunProfile) on first mention, then ปั้นโปรไฟล์ alone afterwards. Thai first, Latin glossing it, not the other way round.\nMid-sentence mentions stay Latin. Repeating the gloss every time turns a pun into a tic.\nThree things stay Latin whatever position they sit in: the wordmark in navigation and the logo, the legal entity PunProfile Career Coaching in the privacy notice and anywhere else it names the controller, and the copyright line. A company name in a legal notice is an identifier rather than a brand voice.\n`fixed` is false because there are now three correct renderings and which one is right depends on position. The lint cannot judge that; it is a judgement the writer makes and `Language_System.md` LR-01 records.\n"
     },
     {
       "id": "product-eu-fit-check",
@@ -315,7 +317,7 @@ export const TERMBASE: Termbase = {
     "reader": "คุณ",
     "why": "เรา for the brand in broadcast copy, ผม in 1:1 messages where a brand plural reads evasive, คุณ for the reader always and stated rather than implied. The contact button คุยกับผม is first person on an app surface on purpose: it is the one string that opens a 1:1, so it speaks in the register of what it starts. Listed in `terms` above rather than treated as a person violation.\n"
   },
-  "sourceHash": "1bf2da16db3feaeb"
+  "sourceHash": "7e1c77ae858a2e00"
 } as const;
 
 export const TERMS = TERMBASE.terms;
