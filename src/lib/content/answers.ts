@@ -120,16 +120,7 @@ const SURVEY_FIELDS: {
   {
     key: "stage",
     question: "Q11. Current stage of the job search",
-    render: (v) =>
-      // `negotiating` is a survey value the app's own question does not carry,
-      // because the app merges it into `offer`. Named here rather than shown
-      // as a bare code, and see `coach-view-proposal.md` A1 for why the merge
-      // is a problem in its own right.
-      v === "negotiating"
-        ? "Negotiating a job offer"
-        : typeof v === "string"
-          ? optionLabel("stage", v) ?? v
-          : show(v),
+    render: (v) => (typeof v === "string" ? optionLabel("stage", v) ?? v : show(v)),
   },
   {
     key: "applicationCount",

@@ -56,13 +56,17 @@ export function toScoringInput(responses: Responses): ScoringInput {
     input.englishCefr = en;
   }
 
+  // `negotiating` since 15/08/2026, when the question stopped merging it into
+  // `offer`. Both still score 5; the split exists because the booking rule and
+  // the negotiation module read the value, not the score.
   const stage = str(responses.stage);
   if (
     stage === "not_started" ||
     stage === "researching" ||
     stage === "applying" ||
     stage === "interviewing" ||
-    stage === "offer"
+    stage === "offer" ||
+    stage === "negotiating"
   ) {
     input.stage = stage;
   }

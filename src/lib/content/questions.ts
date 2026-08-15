@@ -325,8 +325,25 @@ export const STAGE1: Question[] = [
     ],
   },
   {
-    // SLOT: stage [proxy: Application Activity]. The live form's last two
-    // options scored identically, so the spec merges them into `offer`.
+    // SLOT: stage [proxy: Application Activity].
+    //
+    // **Unmerged 15/08/2026.** `survey-spec-template.md` merged the live form's
+    // last two options into one because they score identically, and they still
+    // do: both return 5 from `scoreApplicationActivity`. But the score was
+    // never the only reader. `08_Coaching_Business.md` gates the booking link
+    // on stage = interviewing or negotiating, which puts one of the two merged
+    // options inside the cut and the other outside it, and the negotiation
+    // module and its own LINE message variant exist for that value alone. So
+    // the merge made the negotiation conversation unreachable for every
+    // app-native lead.
+    //
+    // This is the same fault as the dead `already have an offer` string
+    // recorded in `08_Coaching_Business.md`, which made the quiz's negotiation
+    // floor unreachable for the whole life of that form. Fixing it costs one
+    // tap and moves no score.
+    //
+    // Thai is the live form's own wording for the two options, quoted in that
+    // document's Q11 list, not new copy.
     key: "stage",
     stage: 1,
     select: "one",
@@ -337,11 +354,8 @@ export const STAGE1: Question[] = [
       { value: "researching", en: "Researching", th: "กำลังหาข้อมูล" },
       { value: "applying", en: "Actively applying", th: "กำลังสมัครงาน" },
       { value: "interviewing", en: "Interviewing", th: "มีนัดสัมภาษณ์แล้ว" },
-      {
-        value: "offer",
-        en: "Have an offer or negotiating",
-        th: "ได้รับข้อเสนอแล้ว กำลังต่อรองเงินเดือนและ benefits",
-      },
+      { value: "offer", en: "Have an offer", th: "ได้รับข้อเสนองานแล้ว" },
+      { value: "negotiating", en: "Negotiating a contract", th: "กำลังเจรจาสัญญา" },
     ],
   },
   {
