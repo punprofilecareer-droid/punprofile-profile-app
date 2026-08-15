@@ -13,7 +13,8 @@
     "verify:consent": "tsx scripts/verify-consent.ts",
     "dictionary": "tsx scripts/build-field-dictionary.ts",
     "verify:attribution": "tsx scripts/verify-attribution.ts",
-    "verify:thai-register": "tsx scripts/verify-thai-register.ts"
+    "verify:thai-register": "tsx scripts/verify-thai-register.ts",
+    "audit:thai": "tsx scripts/audit-thai.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
