@@ -6,11 +6,10 @@ import { authTables } from "@convex-dev/auth/server";
  * Data model per `docs/prd.md` § 3, plus the `assessments` snapshot table from
  * `docs/candidate-data-architecture.md` L3.
  *
- * `leads.scores` stays denormalised (recomputed by `convex/scoring.ts` on every
- * answer submit, never on read) so reactive queries push chart updates with no
- * extra round-trip. `assessments` stores EVIDENCE, never scores: scores are a
- * pure function of responses, so a scoring fix retroactively corrects history
- * instead of contradicting it.
+ * `assessments` stores EVIDENCE, never scores: scores are a pure function of
+ * responses, so a scoring fix retroactively corrects history instead of
+ * contradicting it. Since 15/08/2026 `leads.scores` follows the same rule and
+ * is no longer written or read; see its own note below.
  */
 export default defineSchema({
   // Convex Auth's own tables (users, sessions, accounts...). Only the single
@@ -77,7 +76,23 @@ export default defineSchema({
     // every content change. Shape is validated in application code.
     responses: v.optional(v.record(v.string(), v.any())),
 
-    // Latest computed self-report dimension scores.
+    /**
+     * **Legacy. Written by nothing, read by nothing, since 15/08/2026.**
+     *
+     * This held the denormalised dimension scores, computed at answer time.
+     * PRD § 3 justified the denormalisation as what made the chart reactive
+     * without a round-trip, and that turned out not to be what it was buying:
+     * recomputing inside the query is just as reactive.
+     *
+     * What it did buy was drift. A stored score is a number produced by
+     * whichever model was running the day the candidate answered, and Country
+     * Reach landing on 13/08/2026 invalidated every score computed before it
+     * without anything noticing. Every read now calls `scoresFor`.
+     *
+     * Kept in the schema only because ~160 documents still carry the field and
+     * removing it needs a migration to clear them first. The values in those
+     * documents are stale by construction and must not be read.
+     */
     scores: v.optional(
       v.object({
         professionalCapability: v.optional(v.number()),

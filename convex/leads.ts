@@ -4,8 +4,7 @@ import type { QueryCtx, MutationCtx } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v, ConvexError } from "convex/values";
-import { computeScores } from "./scoring";
-import { toScoringInput } from "../src/lib/content/mapping";
+import { scoresFor } from "./scoring";
 import { isValidAnswer } from "../src/lib/content/questions";
 import { EUROPEAN_LANGUAGES } from "../src/lib/country-english";
 import { rateLimiter } from "./rateLimits";
@@ -78,7 +77,6 @@ export const submitAnswer = mutation({
     if (!lead) throw new ConvexError("Session not found.");
 
     const responses = { ...(lead.responses ?? {}), [args.questionKey]: args.value };
-    const scores = computeScores(toScoringInput(responses));
     const now = Date.now();
 
     // Pathway is a first-class column as well as a response, because
@@ -91,10 +89,12 @@ export const submitAnswer = mutation({
         ? { pathway: args.value as Pathway }
         : {};
 
+    // `scores` is deliberately not written. Every read recomputes from
+    // `responses` (`scoresFor`), decided 15/08/2026, so storing a second copy
+    // would only create something to go stale.
     await ctx.db.patch(args.leadId, {
       ...pathway,
       responses,
-      scores,
       updatedAt: now,
       lastActivityAt: now,
     });
@@ -243,9 +243,8 @@ export const submitLanguages = mutation({
     const now = Date.now();
     await ctx.db.patch(args.leadId, {
       responses,
-      // Recomputed, not merged: Country Reach changes with the grid, which is
-      // the entire reason this question exists.
-      scores: computeScores(toScoringInput(responses)),
+      // No `scores` write: Country Reach changes with this grid, which is the
+      // entire reason the question exists, and every read now recomputes.
       updatedAt: now,
       lastActivityAt: now,
     });
@@ -382,7 +381,7 @@ export const listForAdmin = query({
         pathway: l.pathway ?? null,
         status: l.status,
         source: l.source ?? null,
-        scores: l.scores ?? {},
+        scores: scoresFor(l.responses),
         // Graded here rather than in the browser, so the list does not have to
         // ship every candidate's full answer set to render a badge.
         // `toGradeInput`, not `toScoringInput`: the grade reads the raw record
@@ -431,7 +430,7 @@ export const getForAdmin = query({
       status: lead.status,
       source: lead.source ?? null,
       responses: lead.responses ?? {},
-      scores: lead.scores ?? {},
+      scores: scoresFor(lead.responses),
       createdAt: lead.createdAt,
       updatedAt: lead.updatedAt,
       lastActivityAt: lead.lastActivityAt,
@@ -524,7 +523,7 @@ export const getSession = query({
     // Candidate-facing subset only; contact and consent fields stay server-side.
     return {
       responses: lead.responses ?? {},
-      scores: lead.scores ?? {},
+      scores: scoresFor(lead.responses),
       status: lead.status,
       pathway: lead.pathway ?? null,
     };

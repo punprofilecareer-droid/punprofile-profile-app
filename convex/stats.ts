@@ -1,4 +1,5 @@
 import { query } from "./_generated/server";
+import { scoresFor } from "./scoring";
 
 /**
  * Community aggregates for the result screen. TASK-083, 14/08/2026.
@@ -228,7 +229,7 @@ export const community = query({
         if (hit) shareHits[name] += 1;
       }
 
-      const scores = lead.scores ?? {};
+      const scores = scoresFor(lead.responses);
       for (const d of DIMENSIONS) {
         const v = scores[d];
         if (typeof v === "number" && Number.isFinite(v)) samples[d].push(v);

@@ -14,6 +14,7 @@
  */
 
 import { scoreResponse } from "../src/lib/scoring.js";
+import { toScoringInputForLead } from "../src/lib/content/mapping.js";
 import type { ScoringInput } from "../src/lib/scoring.js";
 import type { DimensionKey } from "../src/lib/model.js";
 
@@ -35,6 +36,35 @@ export function computeScores(response: ScoringInput): StoredScores {
     if (d.score !== null) out[d.key] = d.score;
   }
   return out;
+}
+
+/**
+ * A lead's dimension scores, computed now from what they answered.
+ *
+ * **Every read path uses this. Nothing reads `leads.scores`.** Decided
+ * 15/08/2026, tracker question q9: a stored score is a number produced by
+ * whichever version of the model happened to be running the day the candidate
+ * answered, and the model has changed three times since the first leads
+ * arrived. Country Reach landing on 13/08/2026 silently invalidated every score
+ * computed before it, and the drift was found by hand on one lead rather than
+ * by anything that would have caught the other ninety-nine.
+ *
+ * Scores are a pure function of responses, so recomputing costs one pass over
+ * 45 items and makes a scoring fix retroactive instead of contradictory. It is
+ * the same principle `assessments` already follows by storing evidence and
+ * never scores.
+ *
+ * Reactivity is unaffected: this runs inside the query, so Convex re-runs it
+ * and pushes when the lead document changes. The denormalisation that PRD § 3
+ * justified for that reason is no longer buying it.
+ *
+ * `toScoringInputForLead`, not `toScoringInput`, so the 90 imported survey
+ * leads read in their own vocabulary. Reading them with the app mapper is the
+ * fault that had every one of them showing a chart that disagreed with its own
+ * stored scores.
+ */
+export function scoresFor(responses: Record<string, unknown> | undefined): StoredScores {
+  return computeScores(toScoringInputForLead(responses ?? {}));
 }
 
 /**
