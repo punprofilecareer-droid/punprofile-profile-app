@@ -196,6 +196,16 @@ export function lintThai(targets: LintTarget[]): LintFinding[] {
       if (/\*\*|__|`/.test(th)) {
         add("format", id, "markdown syntax in post copy. Facebook renders it literally.");
       }
+
+      // Em dashes, narrowed 15/08/2026. The house rule used to be a blanket ban
+      // and `verify-copy.ts` enforced it over the app's own strings; it now binds
+      // only on what PunProfile says to someone, meaning chat and LINE, email and
+      // social posts. That is exactly `post` and `message` here, and the commit
+      // that narrowed the rule noted that nothing automated was left checking the
+      // surfaces it still covers. This is that check.
+      if (th.includes("—")) {
+        add("format", id, "em dash in something PunProfile says. Use a comma or a shorter sentence.");
+      }
     }
 
     // ---------------------------------------- emphasis budget, the moves item 4
