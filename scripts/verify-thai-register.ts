@@ -106,8 +106,14 @@ const THAI_G = /[฀-๿]/g;
  * Casual sentence-final and aspectual particles. Not an exhaustive list of Thai
  * particles: these are the ones that carry spoken register, which is what is
  * being measured.
+ *
+ * **ก่อน and ได้ were removed 15/08/2026** after they made an email read as
+ * twice as chatty as it was. Both are far more often content words than
+ * register markers: ก่อน is "before" and "first", and a text about doing things
+ * in the right order is full of it legitimately; ได้ is "can" and "able to".
+ * Counting either measures the subject matter rather than the voice.
  */
-const PARTICLES = ["เลย", "ก่อน", "ไว้", "แล้ว", "ได้", "นะ", "ด้วย"];
+const PARTICLES = ["เลย", "ไว้", "แล้ว", "นะ", "ด้วย"];
 
 type Stats = {
   strings: number;
@@ -118,7 +124,7 @@ type Stats = {
 };
 
 function measure(runs: string[]): Stats {
-  const text = runs.join(" ");
+  const text = runs.join("\n");
   const thaiChars = (text.match(THAI_G) ?? []).length;
   if (thaiChars === 0) {
     return { strings: 0, thaiChars: 0, nominalisation: 0, particles: 0, phraseLen: 0 };
@@ -127,9 +133,15 @@ function measure(runs: string[]): Stats {
   // matching it inside unrelated Latin-adjacent text.
   const nom = (text.match(/ความ|การ(?=[฀-๿])/g) ?? []).length;
   const parts = PARTICLES.reduce((n, p) => n + text.split(p).length - 1, 0);
-  // Thai does not space between words; a space is a deliberate phrase break, so
-  // the mean run between spaces is a usable proxy for clause length.
-  const chunks = text.split(" ").filter((c) => THAI.test(c));
+  // Thai does not space between words, so a space is a deliberate phrase break
+  // and the mean run between breaks is a usable proxy for clause length.
+  //
+  // **A newline is a break too**, corrected 15/08/2026. Splitting on spaces
+  // alone read a line-broken email at 35.4 against a 21.5 baseline when its real
+  // figure was 20.2, because each whole line counted as one phrase. Every
+  // measurement of line-broken text before this was wrong the same way,
+  // including the post-surface baseline itself.
+  const chunks = text.split(/[ \n]+/).filter((c) => THAI.test(c));
   return {
     strings: runs.length,
     thaiChars,
@@ -222,6 +234,18 @@ if (subject.thaiChars === 0) {
 }
 
 console.log(`  measuring: ${arg}, ${subject.thaiChars} Thai characters\n`);
+
+// Small samples flip a verdict on one or two words, and a tight band invites
+// rewriting good copy to chase noise. Say so rather than letting a HIGH on 500
+// characters read with the same weight as one on 4,000.
+const SMALL = 1500;
+if (subject.thaiChars < SMALL || baseline.thaiChars < 3000) {
+  console.log(
+    `  NOTE: small sample. Subject ${subject.thaiChars} chars against a ${baseline.thaiChars}-char\n` +
+      `  baseline. A single word can move a rate here, so treat any single band miss as a\n` +
+      `  prompt to look rather than as a finding. Do not rewrite working copy to hit a number.\n`,
+  );
+}
 // Bands are wide on purpose. This is a drift detector, not a style guide, and a
 // narrow band would fail honest variation between a FAQ and a guide.
 const results = [
