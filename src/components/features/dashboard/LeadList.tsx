@@ -28,7 +28,6 @@ const TIER_STYLE: Record<FitTier, string> = {
   weak: "bg-neutral-100 text-neutral-500",
 };
 
-const TIER_RANK: Record<FitTier, number> = { strong: 3, moderate: 2, weak: 1 };
 
 function ago(ms: number): string {
   const s = Math.round((Date.now() - ms) / 1000);
@@ -43,8 +42,14 @@ const SORTS = [
   ["recent", "Most recent activity"],
   ["oldest", "Oldest activity"],
   ["status", "How far they got"],
+  ["rating", "Your rating, highest first"],
 ] as const;
 type SortKey = (typeof SORTS)[number][0];
+
+/** The dropdown that used to render these labels is gone; the labels are not.
+ *  They say which direction a column sorts, which a caret cannot, so they moved
+ *  into the heading's tooltip rather than being deleted with the control. */
+const SORT_LABEL = Object.fromEntries(SORTS) as Record<SortKey, string>;
 
 export default function LeadList() {
   const [includeAbandoned, setIncludeAbandoned] = useState(false);
@@ -83,20 +88,6 @@ export default function LeadList() {
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <label className="flex items-center gap-2 text-caption text-slate">
-            Order by
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className="rounded-sm border border-neutral-300 bg-surface px-2 py-1 text-caption text-ink"
-            >
-              {SORTS.map(([v, label]) => (
-                <option key={v} value={v}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-2 text-caption text-slate">
             <input
               type="checkbox"
               checked={includeAbandoned}
@@ -129,11 +120,37 @@ export default function LeadList() {
                 <Th>Name</Th>
                 <Th>Email</Th>
                 <Th>LINE / phone</Th>
-                <Th title="Fit: should we work with them. Investment Readiness, 0 to 3.">Fit</Th>
-                <Th title="Readiness: how close they are to landing a job, out of 5.">Ready</Th>
-                <Th>Status</Th>
+                <Th
+                  sortKey="fit"
+                  sort={sort}
+                  setSort={setSort}
+                  title={`Fit: should we work with them. Investment Readiness, 0 to 3. Sorts ${SORT_LABEL.fit}.`}
+                >
+                  Fit
+                </Th>
+                <Th
+                  sortKey="ready"
+                  sort={sort}
+                  setSort={setSort}
+                  title={`Readiness: how close they are to landing a job, out of 5. Sorts ${SORT_LABEL.ready}.`}
+                >
+                  Ready
+                </Th>
+                <Th
+                  sortKey="rating"
+                  sort={sort}
+                  setSort={setSort}
+                  title={`Your own read, 1 to 5. Set it on the lead's own page. Unrated sorts last, because nobody has judged is not the same as judged and found wanting. Sorts ${SORT_LABEL.rating}.`}
+                >
+                  Rating
+                </Th>
+                <Th sortKey="status" sort={sort} setSort={setSort} title={`Sorts ${SORT_LABEL.status}.`}>
+                  Status
+                </Th>
                 <Th title="The coach's judgement. Blank means nobody has judged, which is not the same as qualified.">Judged</Th>
-                <Th>Last</Th>
+                <Th sortKey="recent" sort={sort} setSort={setSort} title={`Sorts ${SORT_LABEL.recent}.`}>
+                  Last
+                </Th>
               </tr>
             </thead>
             <tbody>
@@ -194,6 +211,24 @@ export default function LeadList() {
                     )}
                   </Td>
                   <Td>
+                    {l.coachRating ? (
+                      <span
+                        className="whitespace-nowrap text-warning"
+                        title={`${l.coachRating} of 5, set by the coach`}
+                        aria-label={`${l.coachRating} of 5`}
+                      >
+                        {"\u2605".repeat(l.coachRating)}
+                        <span className="text-neutral-300">
+                          {"\u2605".repeat(5 - l.coachRating)}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="whitespace-nowrap text-neutral-300" title="Not rated">
+                        {"\u2605".repeat(5)}
+                      </span>
+                    )}
+                  </Td>
+                  <Td>
                     <span className="text-slate">
                       {l.status === "partial" ? "abandoned" : "contact given"}
                     </span>
@@ -240,10 +275,60 @@ export default function LeadList() {
   );
 }
 
-function Th({ children, title }: { children: React.ReactNode; title?: string }) {
+/**
+ * A column heading, and a sort control where the column can be sorted.
+ *
+ * Replaced the "Order by" dropdown on 16/08/2026. Four of the eight columns
+ * were sortable and the control that did it sat above the table naming them in
+ * different words, so the reader had to map "Readiness, highest first" onto the
+ * column marked Ready. Clicking the column says the same thing in one word.
+ *
+ * `aria-sort` is what makes this a sortable table to a screen reader rather
+ * than a heading that happens to contain a button.
+ */
+function Th({
+  children,
+  title,
+  sortKey,
+  sort,
+  setSort,
+}: {
+  children: React.ReactNode;
+  title?: string;
+  sortKey?: SortKey;
+  sort?: SortKey;
+  setSort?: (k: SortKey) => void;
+}) {
+  const sortable = sortKey && setSort;
+  const active = sortable && sort === sortKey;
   return (
-    <th scope="col" title={title} className="py-2 pr-4 font-semibold">
-      {children}
+    <th
+      scope="col"
+      title={title}
+      aria-sort={active ? "descending" : sortable ? "none" : undefined}
+      className="py-2 pr-4 font-semibold"
+    >
+      {sortable ? (
+        <button
+          type="button"
+          onClick={() => setSort(sortKey)}
+          className={`group inline-flex items-center gap-1 rounded-sm transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-eufit-deep ${
+            active ? "text-ink" : ""
+          }`}
+        >
+          {children}
+          <span
+            aria-hidden="true"
+            className={`text-[0.6em] leading-none transition-opacity ${
+              active ? "opacity-100" : "opacity-0 group-hover:opacity-40"
+            }`}
+          >
+            &#9660;
+          </span>
+        </button>
+      ) : (
+        children
+      )}
     </th>
   );
 }

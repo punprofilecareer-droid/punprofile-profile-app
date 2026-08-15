@@ -446,6 +446,7 @@ export const listForAdmin = query({
         v.literal("status"),
         v.literal("fit"),
         v.literal("ready"),
+        v.literal("rating"),
       ),
     ),
     /** Hidden by default: a judged-out lead is noise in a working queue. */
@@ -542,6 +543,13 @@ export const listForAdmin = query({
           };
           return mean(b.responses) - mean(a.responses) || b.lastActivityAt - a.lastActivityAt;
         }
+        case "rating":
+          // Unrated sorts last rather than as a zero. Nobody has judged them is
+          // not the same claim as judged and found wanting, which is the same
+          // distinction `grade.tier` already makes for the Judged column.
+          return (
+            (b.coachRating ?? -1) - (a.coachRating ?? -1) || b.lastActivityAt - a.lastActivityAt
+          );
         default:
           return b.lastActivityAt - a.lastActivityAt;
       }
@@ -576,6 +584,12 @@ export const listForAdmin = query({
         answered: Object.keys(l.responses ?? {}).length,
         disposition: l.disposition ?? null,
         dispositionReason: l.dispositionReason ?? null,
+        // Coach-entered, 16/08/2026. The rating is a column in the list; the
+        // LinkedIn is here so the list can show whether one has been found
+        // without a second query per row.
+        coachRating: l.coachRating ?? null,
+        linkedinUrl: l.linkedinUrl ?? null,
+        hasNotes: Boolean(l.notes),
         createdAt: l.createdAt,
         lastActivityAt: l.lastActivityAt,
       }));
@@ -614,6 +628,16 @@ export const getForAdmin = query({
       disposition: lead.disposition ?? null,
       dispositionReason: lead.dispositionReason ?? null,
       dispositionAt: lead.dispositionAt ?? null,
+      // Coach-entered, 16/08/2026. `linkedin` in `responses` is the candidate's
+      // own rating of their profile; this is where it lives. Different fields,
+      // and a screen that showed one as the other would be lying.
+      linkedinUrl: lead.linkedinUrl ?? null,
+      notes: lead.notes ?? null,
+      notesAt: lead.notesAt ?? null,
+      notesBy: lead.notesBy ?? null,
+      coachRating: lead.coachRating ?? null,
+      coachRatingAt: lead.coachRatingAt ?? null,
+      coachRatingBy: lead.coachRatingBy ?? null,
       /**
        * Resolved from `consentEvents`, per channel and per purpose. This is the
        * only field that can answer "may we send them a job digest", and today
@@ -739,6 +763,91 @@ export const setDisposition = mutation({
       dispositionBy: adminEmail,
       updatedAt: Date.now(),
     });
+  },
+});
+
+/**
+ * Coach-entered fields on a lead: LinkedIn, the running note, the rating.
+ *
+ * One mutation for all three because they are one form in the UI and a partial
+ * save of a form is a worse bug than a chatty API. Each field is only written
+ * when the caller sends it, so saving a note does not silently clear a rating.
+ *
+ * Added 16/08/2026, after a coach found a candidate's LinkedIn by hand and had
+ * nowhere to put it.
+ */
+export const setCoachFields = mutation({
+  args: {
+    leadId: v.id("leads"),
+    /** Absent leaves it alone. Null clears it. */
+    linkedinUrl: v.optional(v.union(v.string(), v.null())),
+    notes: v.optional(v.union(v.string(), v.null())),
+    /** 1 to 5, or null to clear. */
+    coachRating: v.optional(v.union(v.number(), v.null())),
+  },
+  handler: async (ctx, args) => {
+    const adminEmail = await requireAdmin(ctx);
+    const lead = await ctx.db.get(args.leadId);
+    if (!lead) throw new ConvexError("Lead not found.");
+
+    const now = Date.now();
+    const patch: Record<string, unknown> = { updatedAt: now };
+
+    if (args.linkedinUrl !== undefined) {
+      const raw = args.linkedinUrl?.trim();
+      if (!raw) {
+        patch.linkedinUrl = undefined;
+      } else {
+        // Accept what a coach actually pastes. A bare `linkedin.com/in/x` and a
+        // full URL with a tracking query are the same profile, and rejecting
+        // the first would mean the field is only usable by someone who knows it
+        // wants a scheme.
+        const url = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+        let parsed: URL;
+        try {
+          parsed = new URL(url);
+        } catch {
+          throw new ConvexError("That does not look like a URL.");
+        }
+        if (!/(^|\.)linkedin\.com$/i.test(parsed.hostname)) {
+          throw new ConvexError("That is not a linkedin.com address.");
+        }
+        // Drop the query. LinkedIn appends tracking parameters that identify
+        // the account that did the looking, and storing those puts the coach's
+        // browsing in the candidate's record.
+        parsed.search = "";
+        patch.linkedinUrl = parsed.toString();
+      }
+    }
+
+    if (args.notes !== undefined) {
+      const text = args.notes?.trim();
+      if (!text) {
+        patch.notes = undefined;
+        patch.notesAt = undefined;
+        patch.notesBy = undefined;
+      } else {
+        patch.notes = text;
+        patch.notesAt = now;
+        patch.notesBy = adminEmail;
+      }
+    }
+
+    if (args.coachRating !== undefined) {
+      if (args.coachRating === null) {
+        patch.coachRating = undefined;
+        patch.coachRatingAt = undefined;
+        patch.coachRatingBy = undefined;
+      } else {
+        const n = Math.round(args.coachRating);
+        if (n < 1 || n > 5) throw new ConvexError("A rating is 1 to 5.");
+        patch.coachRating = n;
+        patch.coachRatingAt = now;
+        patch.coachRatingBy = adminEmail;
+      }
+    }
+
+    await ctx.db.patch(args.leadId, patch);
   },
 });
 

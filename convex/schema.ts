@@ -158,6 +158,61 @@ export default defineSchema({
     /** @absent none — only present alongside a disposition */
     dispositionBy: v.optional(v.string()),
 
+    /**
+     * The candidate's LinkedIn, when the coach finds it.
+     *
+     * Added 16/08/2026. The assessment asks how good their LinkedIn is and
+     * never asks where it is, which was fine while nothing left the app and
+     * stopped being fine the moment a coach read one profile and wanted to keep
+     * the link. `linkedin` in `responses` is a self-rated state; this is an
+     * address, and they are not the same field.
+     *
+     * Coach-entered, never candidate-entered, so it carries no consent
+     * question of its own beyond the lead already being in the database.
+     */
+    /** @absent unmeasured — the coach has not looked them up */
+    linkedinUrl: v.optional(v.string()),
+
+    /**
+     * The coach's own running note on this person.
+     *
+     * One editable field rather than an append-only log, which is what was
+     * asked for and is the right shape for a scratchpad. The cost is real and
+     * worth stating: **there is no history**, so an overwrite loses what was
+     * there. If it starts carrying decisions rather than context, it should
+     * become a table, and `consultations.notes` is already the place for
+     * anything tied to a specific call.
+     *
+     * Personal data about the subject, so it is erased with the lead. That is
+     * automatic here and would not be from a separate table; see `erase.ts`.
+     */
+    /** @absent unmeasured — nobody has written a note */
+    notes: v.optional(v.string()),
+    /** @absent none — only present alongside a note */
+    notesAt: v.optional(v.number()),
+    /** @absent none — only present alongside a note */
+    notesBy: v.optional(v.string()),
+
+    /**
+     * The coach's own read of this person, one to five.
+     *
+     * **Not a score and it must never feed one.** `grade` is computed from ICP
+     * inputs and `scores` from the assessment; both are evidence-derived and
+     * both are auditable. This is a judgement after talking to someone, which
+     * is exactly the thing the framework cannot reach, and its value is that it
+     * is subjective rather than despite it.
+     *
+     * Kept separate from `disposition` on purpose. Disposition answers whether
+     * to work with them at all; this answers how promising they feel, and a
+     * lead can be a 5 and still be `not_now`.
+     */
+    /** @absent unmeasured — the coach has not rated them */
+    coachRating: v.optional(v.number()),
+    /** @absent none — only present alongside a rating */
+    coachRatingAt: v.optional(v.number()),
+    /** @absent none — only present alongside a rating */
+    coachRatingBy: v.optional(v.string()),
+
     // Lifecycle. `email_captured` keeps the PRD's vocabulary, but since
     // 08/08/2026 it means the whole contact set cleared the gate: name, email
     // and a LINE ID or phone number.

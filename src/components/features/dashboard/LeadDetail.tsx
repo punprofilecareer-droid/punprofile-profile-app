@@ -38,6 +38,7 @@ import { applyCorrections } from "@/lib/corrections";
 import LeadBriefing from "./LeadBriefing";
 import CallLog from "./CallLog";
 import AnswerSheet from "./AnswerSheet";
+import CoachPanel from "./CoachPanel";
 import ConsentPanel from "./ConsentPanel";
 import EngagementPanel from "./EngagementPanel";
 import OutcomePanel from "./OutcomePanel";
@@ -353,6 +354,20 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
             coachIcp={coachIcp}
             correctedCount={corrected.byKey.size}
           />
+
+          {/* Above the call log on purpose. The rating and the note are what a
+              coach reads first when reopening a lead, and the LinkedIn is the
+              thing they go looking for before a call rather than after it. */}
+          <Section title="Coach">
+            <CoachPanel
+              leadId={leadId}
+              linkedinUrl={lead.linkedinUrl}
+              notes={lead.notes}
+              notesAt={lead.notesAt}
+              notesBy={lead.notesBy}
+              coachRating={lead.coachRating}
+            />
+          </Section>
 
           <CallLog leadId={leadId} />
 
