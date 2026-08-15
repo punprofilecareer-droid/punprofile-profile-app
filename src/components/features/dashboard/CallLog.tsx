@@ -65,8 +65,21 @@ function toLocalInput(ms: number): string {
   return d.toISOString().slice(0, 16);
 }
 
+/**
+ * Local time, DD/MM/YYYY, per the house date rule.
+ *
+ * Not the ISO stamp the rest of this screen uses for system timestamps. A call
+ * time is typed by the coach, and rendering it back in UTC showed 08:03 for a
+ * call entered as 10:03, which reads as the form having lost the answer.
+ */
 const stamp = (ms: number) =>
-  new Date(ms).toISOString().replace("T", " ").slice(0, 16);
+  new Date(ms).toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 interface Draft {
   type: Call["type"];
