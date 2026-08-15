@@ -242,13 +242,14 @@ for (const lead of leads) {
       parts.push(fill(B["a-method-general"], th));
     }
 
-    // Paul's 2b: the general-method email is one idea plus the ask. The study
-    // route was a second idea competing with it, and 10_Methodology.md's own
-    // rule is one action, never a list.
+    // Every segment-A email is one idea plus the ask. Paul, 15/08/2026, after
+    // 2b shortened only the nine general ones and the mean went *up*, because
+    // the thirty-one that gained a country block kept the study route on top of
+    // it. 10_Methodology.md's rule is one action, never a list, and the study
+    // route still reaches everyone through email B.
     //
-    // Germany keeps its exclusion for a different reason: Chancenkarte already
-    // IS the second way in, so the study route would make three.
-    if (special && special !== "a-germany") parts.push(B["a-study-route"]);
+    // `a-study-route` stays in email-send-blocks.md. A block with no caller is
+    // not dead code here; it is the paragraph to reach for when someone asks.
 
     parts.push(B["a-close"]);
     subject = fill(B["subject-a"], th);
