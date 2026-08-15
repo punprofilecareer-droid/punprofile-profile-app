@@ -97,8 +97,9 @@ outside a TH line is lost the next time it is regenerated.
 render, so the app keeps working and Thai can arrive key by key rather than all
 at once.
 
-**No em dashes**, per the house rule for user-facing copy. Commas or shorter
-sentences.
+**Em dashes are allowed here**, since 15/08/2026. The house rule narrowed to what
+PunProfile says to someone, meaning chat, email and social posts. App copy is
+product.
 
 **${totalMissing} strings still need Thai.**
 

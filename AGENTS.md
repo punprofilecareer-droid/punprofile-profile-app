@@ -72,9 +72,10 @@ Inherited from the sibling repo's root `CLAUDE.md`, which this repo does not oth
 read:
 
 - Dates in DD/MM/YYYY.
-- No em dashes in prose, markdown or user-facing copy; use commas or shorter
-  sentences. Code comments are exempt, so this never drives a mechanical sweep of
-  source files.
+- No em dashes in what PunProfile **says** to someone: chat and LINE, email,
+  social posts. Everything else is product and may use them, and that includes
+  this app's own candidate-facing copy. Narrowed 15/08/2026, having been a
+  blanket ban that `verify-copy.ts` enforced over the questionnaire.
 - Never fabricate figures, pricing or third-party terms. Ask rather than infer.
 - Be explicit about what is verified, what is inferred and what is opinion.
 - Minimal, precise output. No padding caveats.

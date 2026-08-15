@@ -53,21 +53,17 @@ for (const [key, entry] of Object.entries(ALL)) {
   if (!entry.screen.trim()) fail(`${key}: no screen note, the worksheet needs it`);
 }
 
-// 2. No em dashes in user-facing copy (house rule). Code comments are exempt,
-// this is not a comment.
-for (const [key, entry] of Object.entries(ALL)) {
-  for (const lang of ["en", "th"] as const) {
-    if (entry[lang].includes("—")) fail(`${key}.${lang}: em dash in user-facing copy`);
-  }
-}
-for (const q of STAGE1) {
-  for (const lang of ["en", "th"] as const) {
-    if (q[lang].includes("—")) fail(`question ${q.key}.${lang}: em dash`);
-    for (const o of q.options) {
-      if (o[lang].includes("—")) fail(`option ${q.key}/${o.value}.${lang}: em dash`);
-    }
-  }
-}
+// 2. Em dashes: no longer checked here, narrowed 15/08/2026.
+//
+// The house rule was a blanket ban and this enforced it over the questionnaire,
+// the copy module and the privacy notice. It now covers only what PunProfile
+// SAYS to someone, chat and LINE, email and social posts, none of which this
+// script sees. The app's own copy is product and may use them.
+//
+// The ban still binds where those messages are written: the `daily-jobs` and
+// `candidate-pitch` skills, and the message templates in
+// `consultation-booking.md`. Nothing automated checks those, which is worth
+// knowing rather than assuming.
 
 // 3. Placeholders must survive translation. A Thai string that drops {step}
 // renders a counter with no numbers in it.
@@ -175,9 +171,6 @@ for (const d of DIMENSIONS) {
   for (const { where, copy } of paras) {
     if (!copy.en.trim()) fail(`privacy ${where}: no English`);
     if (!copy.th.trim()) fail(`privacy ${where}: no Thai`);
-    for (const lang of ["en", "th"] as const) {
-      if (copy[lang].includes("—")) fail(`privacy ${where}.${lang}: em dash`);
-    }
     // A list marker that survives in one language and not the other renders as
     // a bullet in Thai and a sentence in English, or the reverse.
     if (copy.en.startsWith("- ") !== copy.th.startsWith("- ")) {
@@ -326,7 +319,7 @@ if (failures) {
 }
 
 console.log(
-  `copy OK: ${Object.keys(ALL).length} keys, all used, all with English, no em dashes, placeholders intact`,
+  `copy OK: ${Object.keys(ALL).length} keys, all used, all with English, placeholders intact`,
 );
 if (missing.length || questionsMissing.length) {
   console.log(`\n${missing.length + questionsMissing.length} still need Thai:`);
