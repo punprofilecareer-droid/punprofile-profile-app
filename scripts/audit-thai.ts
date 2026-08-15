@@ -76,10 +76,6 @@ for (const rel of files) {
     strings: th.length,
     // Read from the whole header block, not the first few lines: the claim sits
     // deep in `consent-copy.ts` and a shallow read misses it.
-    // One definition, shared with `verify-thai-register.ts`, which uses the
-    // same claim to decide what calibrates the register bands. Two copies of
-    // this regex would let a file count as reviewed for one tool and not the
-    // other, which is the confusing half of a real bug.
     paulsOwn: PROVENANCE.test(src.slice(0, 4000)),
     banned: bannedForms.filter((b) => joined.includes(b)),
     emDash: (joined.match(/—/g) ?? []).length,
