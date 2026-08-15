@@ -18,6 +18,7 @@
 
 import { QUESTION_INDEX } from "./content/questions";
 import { BRAND_FONT_LINK, BRAND_FONT_STACKS, BRAND_TOKENS_CSS } from "./design-tokens";
+import { ynGrid, type ConsentChannel, type ConsentPurpose, type ConsentEvent } from "./consent";
 
 export interface SubjectRecord {
   firstName: string | null;
@@ -239,6 +240,22 @@ export function buildSubjectExport(
        * three timestamps above are the same facts in their older shape.
        */
       history: readableConsent(consentEvents),
+      /**
+       * The same answer in one short value per channel and purpose: "Y", "N",
+       * or empty where the question was never put to them. Included because a
+       * person reading their own record should be able to see the summary as
+       * well as the history.
+       */
+      summary: ynGrid(
+        consentEvents.map((e) => ({
+          channel: e.channel as ConsentChannel,
+          purpose: e.purpose as ConsentPurpose,
+          action: e.action as "opt_in" | "opt_out",
+          at: e.at,
+          basis: e.basis as ConsentEvent["basis"],
+          evidence: e.evidence ?? null,
+        })),
+      ),
     },
     answers,
     conversations: {

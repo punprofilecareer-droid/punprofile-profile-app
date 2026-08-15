@@ -182,6 +182,40 @@ export function maySend(
   return resolveConsent(events, channel, purpose).status === "opted_in";
 }
 
+/**
+ * The three states as a y/n column. Paul's shape, 15/08/2026.
+ *
+ * `"Y"`, `"N"`, and **empty for never asked**, which is what keeps this from
+ * being a lossy view of `ConsentStatus`: a spreadsheet, a CRM column and an
+ * export all want one short value, and empty is the conventional way any of
+ * them says "no answer" rather than "no".
+ *
+ * Derived, never stored. A stored y/n is exactly what was removed on 15/08/2026:
+ * it cannot carry the date, the purpose or the withdrawal, and it drifts from
+ * the events that produced it.
+ */
+export type ConsentYN = "Y" | "N" | "";
+
+export function yn(status: ConsentStatus): ConsentYN {
+  if (status === "opted_in") return "Y";
+  if (status === "opted_out") return "N";
+  return "";
+}
+
+/**
+ * Every channel and purpose as a flat y/n map, keyed `<purpose>.<channel>`.
+ * The shape that goes into an export or a column view.
+ */
+export function ynGrid(events: readonly ConsentEvent[]): Record<string, ConsentYN> {
+  const out: Record<string, ConsentYN> = {};
+  for (const purpose of CONSENT_PURPOSES) {
+    for (const channel of CONSENT_CHANNELS) {
+      out[`${purpose}.${channel}`] = yn(resolveConsent(events, channel, purpose).status);
+    }
+  }
+  return out;
+}
+
 /** Every channel at once, for the admin surface and the subject-access export. */
 export function resolveAll(
   events: readonly ConsentEvent[],

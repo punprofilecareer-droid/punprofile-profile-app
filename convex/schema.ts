@@ -34,11 +34,17 @@ export default defineSchema({
      * from the two, because the 90 imported survey leads only ever had one
      * field and every read path already uses it.
      */
+    /** @absent unmeasured — not captured until the contact gate clears */
     firstName: v.optional(v.string()),
+    /** @absent unmeasured — not captured until the contact gate clears */
     lastName: v.optional(v.string()),
+    /** @absent unmeasured — composed from the two above once both exist */
     fullName: v.optional(v.string()),
+    /** @absent unmeasured — not captured until the contact gate clears */
     email: v.optional(v.string()),
+    /** @absent none — they gave LINE instead; one of the two is required, not both */
     phone: v.optional(v.string()),
+    /** @absent none — they gave a phone number instead; one of the two is required */
     lineId: v.optional(v.string()),
 
     /**
@@ -52,8 +58,11 @@ export default defineSchema({
      *
      * Do not add a fourth. A new channel or a new purpose is an event.
      */
+    /** @absent notyet — legacy. absent means no grant recorded in the old shape */
     emailConsentAt: v.optional(v.number()),
+    /** @absent notyet — legacy. absent means the channel was left blank */
     phoneConsentAt: v.optional(v.number()),
+    /** @absent notyet — legacy. absent means the channel was left blank */
     lineConsentAt: v.optional(v.number()),
 
     /**
@@ -69,9 +78,11 @@ export default defineSchema({
      * someone agreed to, and "they told us how to reach them" and "they ticked
      * a box saying we may" are not the same answer.
      */
+    /** @absent default:"app" — every lead predating the 10/08/2026 backfill came through the gate */
     consentSource: v.optional(v.union(v.literal("app"), v.literal("survey_import"))),
 
     // Relocation pathway: asked early, shapes the self-report commentary.
+    /** @absent unmeasured — they have not reached question 1 yet */
     pathway: v.optional(
       v.union(
         v.literal("job_first"),
@@ -84,6 +95,7 @@ export default defineSchema({
     // Raw answers keyed by question id. Deliberately loose: the question set
     // will evolve, and a rigid per-question schema would need a migration on
     // every content change. Shape is validated in application code.
+    /** @absent default:{} — no question answered yet */
     responses: v.optional(v.record(v.string(), v.any())),
 
     /**
@@ -103,6 +115,7 @@ export default defineSchema({
      * removing it needs a migration to clear them first. The values in those
      * documents are stale by construction and must not be read.
      */
+    /** @absent none — dead field. written by nothing, read by nothing since 15/08/2026 */
     scores: v.optional(
       v.object({
         professionalCapability: v.optional(v.number()),
@@ -120,6 +133,7 @@ export default defineSchema({
       v.literal("email_captured"),
       v.literal("completed"),
     ),
+    /** @absent unmeasured — arrived without a source parameter, origin unknown */
     source: v.optional(v.string()), // e.g. "fb_pinned_post", "fb_consultation_hook"
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -173,8 +187,10 @@ export default defineSchema({
     /** The sentence actually shown at the moment of the tick, or where a
      *  withdrawal arrived. A consent record that cannot say what was agreed to
      *  is a timestamp, not evidence. */
+    /** @absent unmeasured — the wording shown was not captured for this row */
     evidence: v.optional(v.string()),
     /** Which admin recorded it, when a human did. Their data, not the subject's. */
+    /** @absent none — no human recorded it; it came from the gate or a migration */
     by: v.optional(v.string()),
   })
     .index("by_lead", ["leadId", "at"])
@@ -186,6 +202,7 @@ export default defineSchema({
     leadId: v.id("leads"),
     token: v.string(), // long random string, never the document id
     expiresAt: v.number(), // Unix ms; createdAt + 30 days
+    /** @absent notyet — the link has not been followed. absent IS the unused state */
     usedAt: v.optional(v.number()),
     createdAt: v.number(),
   })
@@ -206,6 +223,7 @@ export default defineSchema({
     /** Which admin performed it. Their own data, not the subject's. */
     performedBy: v.string(),
     /** Free-text reference the coach supplies. Never paste the subject's details here. */
+    /** @absent none — the coach supplied no reference */
     note: v.optional(v.string()),
     counts: v.object({
       leads: v.number(),
@@ -307,6 +325,7 @@ export default defineSchema({
      * It records the RULE, not the person's answers, so changing the rule later
      * does not rewrite the history of what the old rule actually produced.
      */
+    /** @absent unmeasured — rows written before the field existed */
     trigger: v.optional(
       v.union(
         v.literal("survey_stage_wave1"), // interviewing or negotiating
@@ -314,16 +333,22 @@ export default defineSchema({
         v.literal("manual"), // coach judgement, no rule fired
       ),
     ),
+    /** @absent notyet — no invitation sent yet */
     sentAt: v.optional(v.number()),
+    /** @absent notyet — no invitation sent yet */
     sentChannel: v.optional(v.union(v.literal("line"), v.literal("email"))),
     /**
      * When they chose a slot. The gap between `sentAt` and this is the only
      * read anyone gets on whether the message worked.
      */
+    /** @absent notyet — they have not chosen a slot. absent IS the not-booked state */
     bookedAt: v.optional(v.number()),
     /** Manual, because the free tier sends no reminders. Absent is the queue. */
+    /** @absent notyet — absent IS the reminder queue; the free tier sends none */
     reminderSentAt: v.optional(v.number()),
+    /** @absent unmeasured — not recorded */
     durationMinutes: v.optional(v.number()),
+    /** @absent unmeasured — not recorded */
     channel: v.optional(
       v.union(v.literal("line"), v.literal("meet"), v.literal("phone"), v.literal("other")),
     ),
@@ -337,14 +362,18 @@ export default defineSchema({
      * test it, so nobody may later promote that competency on the strength of
      * having had a call. This field is what makes that checkable afterwards.
      */
+    /** @absent unmeasured — not recorded. must NOT be read as English */
     language: v.optional(v.union(v.literal("thai"), v.literal("english"), v.literal("mixed"))),
 
     /** Their own question, verbatim. It is what the last five minutes must answer. */
+    /** @absent unmeasured — not written down */
     theirQuestion: v.optional(v.string()),
     /** The two strengths named back to them, from their own document. */
+    /** @absent unmeasured — not written down */
     strengthsNamed: v.optional(v.string()),
 
     /** The one action given. One item, never a list; the method forbids a list. */
+    /** @absent notyet — no action given yet, or the call has not happened */
     nextStep: v.optional(v.string()),
     /**
      * False when the action given differed from the app's `firstAction`.
@@ -353,6 +382,7 @@ export default defineSchema({
      * log rather than a thing to tell the candidate, so the log has to be able
      * to hold the disagreement.
      */
+    /** @absent unmeasured — never compared. absent is NOT agreement */
     nextStepMatchesApp: v.optional(v.boolean()),
 
     /**
@@ -360,9 +390,11 @@ export default defineSchema({
      * Free text because a number alone cannot be classified, and the benchmark
      * is a manual coach lookup rather than a formula.
      */
+    /** @absent unmeasured — salary did not come up */
     salaryQuote: v.optional(v.string()),
 
     /** Which module they would buy. A conclusion for the file, never said in the call. */
+    /** @absent notyet — no conclusion reached yet */
     moduleFit: v.optional(v.string()),
 
     /**
@@ -384,10 +416,13 @@ export default defineSchema({
      * classifies through the Job Title Pool, which is not loaded, so nothing
      * here may classify it.
      */
+    /** @absent unmeasured — not collected on this call */
     icpJobTitle: v.optional(v.string()),
+    /** @absent unmeasured — not collected. never scored as a zero */
     icpExperienceYears: v.optional(
       v.union(v.literal("0-1"), v.literal("2-10"), v.literal("11-15"), v.literal("16+")),
     ),
+    /** @absent unmeasured — not collected. never scored as none */
     icpPriorInvestment: v.optional(
       v.union(v.literal("none"), v.literal("unrelated"), v.literal("relevant")),
     ),
@@ -397,8 +432,10 @@ export default defineSchema({
      * queue: the free Calendly tier sends nothing, the follow-up is manual, and
      * it is the step most likely to be missed.
      */
+    /** @absent notyet — absent on a held call IS the follow-up queue */
     followUpSentAt: v.optional(v.number()),
 
+    /** @absent none — nothing further to record */
     notes: v.optional(v.string()),
 
     /** Which admin wrote the row. Their own data, not the candidate's. */
@@ -444,18 +481,26 @@ export default defineSchema({
     /** THB. A fact about this one transaction, never a copy of the pricing
      *  table, which stays owned by `01_Project_Foundation.md` and is an
      *  explicit pilot hypothesis until real leads validate it. */
+    /** @absent unmeasured — no figure quoted. never zero */
     quotedThb: v.optional(v.number()),
+    /** @absent notyet — nothing agreed yet, or agreed without a recorded figure */
     agreedThb: v.optional(v.number()),
 
+    /** @absent unmeasured — rows written before the field existed */
     proposedAt: v.optional(v.number()),
+    /** @absent notyet — still at proposed. absent IS the not-sold state */
     agreedAt: v.optional(v.number()),
+    /** @absent notyet — agreed but not started */
     startedAt: v.optional(v.number()),
+    /** @absent notyet — still running */
     completedAt: v.optional(v.number()),
 
     /** Which call produced the sale. `consultations.moduleFit` is the coach's
      *  pre-sale conclusion; this is what actually happened. */
+    /** @absent none — no call produced it; coach judgement or inbound */
     fromConsultation: v.optional(v.id("consultations")),
 
+    /** @absent none — nothing further to record */
     notes: v.optional(v.string()),
     createdBy: v.string(),
     createdAt: v.number(),
@@ -509,9 +554,12 @@ export default defineSchema({
       v.literal("in_progress"),
       v.literal("delivered"),
     ),
+    /** @absent notyet — not delivered. absent IS the outstanding state */
     deliveredAt: v.optional(v.number()),
+    /** @absent none — this work produced no coach observation worth recording */
     producedAssessment: v.optional(v.id("assessments")),
 
+    /** @absent none — nothing further to record */
     notes: v.optional(v.string()),
     by: v.string(),
     createdAt: v.number(),
@@ -536,14 +584,17 @@ export default defineSchema({
     leadId: v.id("leads"),
     /** Absent means they did this without a paid engagement, which is the
      *  common case and must stay representable. */
+    /** @absent none — they did this without a paid engagement, the common case */
     engagementId: v.optional(v.id("engagements")),
 
     /** Set when the job came from the personalised feed, so the channel's own
      *  pipeline can be joined back to what candidates did with it. */
+    /** @absent none — the job did not come from our own feed */
     jobLogId: v.optional(v.string()),
     employer: v.string(),
     roleTitle: v.string(),
     country: v.string(),
+    /** @absent unmeasured — no link captured */
     jobUrl: v.optional(v.string()),
 
     status: v.union(
@@ -559,8 +610,10 @@ export default defineSchema({
     recordedBy: v.union(v.literal("candidate"), v.literal("coach")),
 
     savedAt: v.number(),
+    /** @absent notyet — saved but not applied. absent IS the bookmark state */
     appliedAt: v.optional(v.number()),
     statusChangedAt: v.number(),
+    /** @absent none — nothing further to record */
     notes: v.optional(v.string()),
   })
     .index("by_lead_time", ["leadId", "savedAt"])
@@ -576,24 +629,30 @@ export default defineSchema({
    */
   placements: defineTable({
     leadId: v.id("leads"),
+    /** @absent none — not linked to a tracked application */
     applicationId: v.optional(v.id("applications")),
 
     employer: v.string(),
     roleTitle: v.string(),
     country: v.string(),
 
+    /** @absent unmeasured — the offer date was not recorded */
     offerAt: v.optional(v.number()),
+    /** @absent notyet — offer not signed. absent IS the unsigned state, and gates the placed lifecycle state */
     signedAt: v.optional(v.number()),
+    /** @absent notyet — start date not agreed or not known */
     startAt: v.optional(v.number()),
 
     /** Free text carrying its own currency and period, for the same reason
      *  `consultations.salaryQuote` is: a bare number cannot be classified, and
      *  the benchmark is a manual coach lookup rather than a formula. */
+    /** @absent unmeasured — not disclosed. never zero */
     salary: v.optional(v.string()),
 
     /** The route that actually worked. The single most valuable field here for
      *  `07_Reference.md`, because it is the only place a claimed visa route is
      *  ever confirmed against reality. */
+    /** @absent unmeasured — not recorded */
     visaRoute: v.optional(v.string()),
 
     /**
@@ -611,13 +670,16 @@ export default defineSchema({
       v.literal("assisted"),
       v.literal("self"),
     ),
+    /** @absent none — attributedTo is self or assisted, so there is no engagement to name */
     attributedEngagementId: v.optional(v.id("engagements")),
 
     /** Permission to tell their story is its own grant and is implied by
      *  nothing above. The Social Proof pillar in `Content_Strategy.md` is empty
      *  and this is the field that eventually fills it, honestly. */
+    /** @absent notyet — permission to tell the story has not been given. absent means DO NOT publish */
     storyConsentAt: v.optional(v.number()),
 
+    /** @absent none — nothing further to record */
     notes: v.optional(v.string()),
     createdBy: v.string(),
     createdAt: v.number(),
@@ -649,8 +711,10 @@ export default defineSchema({
      * in English on the call" is the fact worth keeping. A corrected value with
      * no reason is just a second opinion with better formatting.
      */
+    /** @absent none — no reason recorded; expected on app and import rows, a gap on coach rows */
     note: v.optional(v.string()),
     /** Which admin made the correction. Their own data, not the candidate's. */
+    /** @absent none — not a human correction; it came from the app or an import */
     by: v.optional(v.string()),
   }).index("by_lead_time", ["leadId", "takenAt"]),
 });

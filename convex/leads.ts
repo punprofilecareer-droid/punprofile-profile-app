@@ -10,7 +10,7 @@ import { EUROPEAN_LANGUAGES } from "../src/lib/country-english";
 import { rateLimiter } from "./rateLimits";
 import { gradeLead, toGradeInput, latestCoachIcp } from "../src/lib/leadGrade";
 import { eventsFor, recordConsent } from "./consentDb";
-import { resolveAll } from "../src/lib/consent";
+import { resolveAll, ynGrid } from "../src/lib/consent";
 import { meetsBookingGate } from "../src/lib/lifecycle";
 import { CONSENT_COPY } from "../src/lib/consent-copy";
 
@@ -491,6 +491,12 @@ export const getForAdmin = query({
        * correct: no screen has ever asked.
        */
       consent: resolveAll(consentEvents),
+      /**
+       * The same answer as a y/n column: "Y", "N", or empty for never asked.
+       * Keyed `<purpose>.<channel>`. Derived on read like everything else here;
+       * it exists because an export and a column view want one short value.
+       */
+      consentYN: ynGrid(consentEvents),
       /** The raw log, oldest first, for the subject-access export. A person
        *  asking what is held about them is entitled to the withdrawals too, not
        *  just the grants that survived. */
