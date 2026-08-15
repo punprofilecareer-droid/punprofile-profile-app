@@ -318,7 +318,7 @@ export const COPY = {
   "dimension.professionalCapability": {
     screen: "Spider chart axis",
     en: "Professional Capability",
-    th: "ความสามารถทางวิชาชีพ",
+    th: "ฝีมือในสายงาน",
   },
   "dimension.employability": {
     screen: "Spider chart axis",
@@ -554,7 +554,7 @@ export const COPY = {
   "item.familyReadiness": {
     screen: "Named when this is the candidate's strongest area",
     en: "Family Readiness",
-    th: "ความพร้อมของครอบครัวในการย้ายประเทศ",
+    th: "ครอบครัวพร้อมย้าย",
   },
   "item.relocationTimeline": {
     screen: "Named when this is the candidate's strongest area",
