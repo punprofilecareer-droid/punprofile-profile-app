@@ -38,6 +38,7 @@
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { PROVENANCE, THIN_CORPUS } from "./lib/provenance";
 
 /**
  * Every text file in a directory, or nothing if it does not exist yet.
@@ -53,9 +54,6 @@ function glob(dir: string): string[] {
     .map((f) => `${dir}/${f}`);
 }
 
-/** Where Paul drops confirmed material. One folder per surface. */
-const GOLDEN = "../punprofile-career-coaching/punprofile-work/work-content/golden-th";
-
 const ROOT = resolve(import.meta.dirname, "..");
 
 /**
@@ -66,34 +64,55 @@ const ROOT = resolve(import.meta.dirname, "..");
  * a feed, competing, and it is allowed to be looser. Judging one against the
  * other's bands would fail honest writing.
  *
- * **Only confirmed Paul-authored Thai goes in here.** The daily drafts are
- * model output, and `capture-published.py` says it plainly: what a model wrote
- * is the draft, what Paul published is what is correct. Baselining on drafts
- * would calibrate this tool against the errors it exists to catch.
+ * **The app surface is derived, not listed.** Any module whose header claims
+ * Paul's provenance joins it automatically, using the same claim
+ * `audit-thai.ts` reads. That is deliberate: a hardcoded list was correct on
+ * 15/08/2026 when four modules were his and wrong an hour later when eleven
+ * were, and nothing would have said so. One fact, read in one way, in two
+ * places.
+ *
+ * **Only confirmed Paul-authored Thai counts.** The daily drafts are model
+ * output, and `capture-published.py` puts it plainly: what a model wrote is the
+ * draft, what Paul published is correct. Baselining on drafts would calibrate
+ * this tool against the errors it exists to catch.
  */
+
+/** Where Paul drops confirmed material by hand. One folder per surface. */
+const GOLDEN = "../punprofile-career-coaching/punprofile-work/work-content/golden-th";
+
+/** Every app module whose own header claims his provenance. */
+function paulsModules(): string[] {
+  const dirs = ["src/lib/content", "src/lib"];
+  const out: string[] = [];
+  for (const d of dirs) {
+    for (const f of readdirSync(resolve(ROOT, d))) {
+      if (!f.endsWith(".ts") || f.includes("termbase.generated")) continue;
+      const rel = `${d}/${f}`;
+      let src: string;
+      try {
+        src = readFileSync(resolve(ROOT, rel), "utf8");
+      } catch {
+        continue;
+      }
+      if (!/(?<!\w)th:\s*"/.test(src)) continue;
+      if (PROVENANCE.test(src.slice(0, 4000))) out.push(rel);
+    }
+  }
+  return out;
+}
+
 const CORPUS: Record<string, string[]> = {
-  // Roughly 123 strings. Each file is headed "rewritten from Paul's own Thai".
-  app: [
-    "src/lib/content/faq.ts",
-    "src/lib/content/coaching.ts",
-    "src/lib/content/services.ts",
-    "src/lib/consent-copy.ts",
-    ...glob(`${GOLDEN}/app`),
-  ],
+  app: [...paulsModules(), ...glob(`${GOLDEN}/app`)],
   /**
-   * **A sample of one, and `03_Content_System.md` already flags it as such.**
-   * The pinned post is the only Facebook-surface Thai confirmed to be Paul's
-   * own edit. `work-pipeline/published/` was empty on 15/08/2026 and capture is
-   * forward-only by his call, so this widens on its own as posts are captured
-   * and not before. Treat post-surface numbers as indicative until it does.
+   * The pinned post is the only Facebook-surface Thai confirmed as his.
+   * `work-pipeline/published/` fills as posts are captured, forward-only by his
+   * own instruction, so this widens on its own and not before.
    */
   post: [
     "../punprofile-career-coaching/punprofile-work/work-funnel/pinned-post-punprofile-intro.md",
     ...glob("../punprofile-career-coaching/punprofile-work/work-pipeline/published"),
     ...glob(`${GOLDEN}/post`),
   ],
-  /** No examples yet. Anything written for these surfaces is currently being
-   *  measured against the app's register, which is a guess. */
   line: glob(`${GOLDEN}/line`),
   email: glob(`${GOLDEN}/email`),
   other: glob(`${GOLDEN}/other`),
@@ -210,7 +229,7 @@ for (const [name, s] of Object.entries(surfaces)) {
   const thin =
     s.stats.thaiChars === 0
       ? "  EMPTY, add material to golden-th/"
-      : s.stats.thaiChars < 3000
+      : s.stats.thaiChars < THIN_CORPUS
         ? "  THIN, treat as indicative"
         : "";
   console.log(
@@ -239,7 +258,7 @@ console.log(`  measuring: ${arg}, ${subject.thaiChars} Thai characters\n`);
 // rewriting good copy to chase noise. Say so rather than letting a HIGH on 500
 // characters read with the same weight as one on 4,000.
 const SMALL = 1500;
-if (subject.thaiChars < SMALL || baseline.thaiChars < 3000) {
+if (subject.thaiChars < SMALL || baseline.thaiChars < THIN_CORPUS) {
   console.log(
     `  NOTE: small sample. Subject ${subject.thaiChars} chars against a ${baseline.thaiChars}-char\n` +
       `  baseline. A single word can move a rate here, so treat any single band miss as a\n` +

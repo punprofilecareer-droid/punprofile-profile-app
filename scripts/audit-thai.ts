@@ -18,6 +18,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { TERMBASE } from "../src/lib/content/termbase.generated";
+import { PROVENANCE } from "./lib/provenance";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const THAI = /[฀-๿]/;
@@ -75,12 +76,11 @@ for (const rel of files) {
     strings: th.length,
     // Read from the whole header block, not the first few lines: the claim sits
     // deep in `consent-copy.ts` and a shallow read misses it.
-    // Recognised claims. Deliberately a short list: a loose pattern would let
-    // any file mentioning Paul count itself as reviewed, which is the one way
-    // this audit could quietly start lying.
-    paulsOwn: /Paul's own Thai|Paul's own wording|rewritten .{0,40}from Paul's own|Thai wording passed by Paul|Founder-signed off|Paul's sign-off/i.test(
-      src.slice(0, 4000),
-    ),
+    // One definition, shared with `verify-thai-register.ts`, which uses the
+    // same claim to decide what calibrates the register bands. Two copies of
+    // this regex would let a file count as reviewed for one tool and not the
+    // other, which is the confusing half of a real bug.
+    paulsOwn: PROVENANCE.test(src.slice(0, 4000)),
     banned: bannedForms.filter((b) => joined.includes(b)),
     emDash: (joined.match(/—/g) ?? []).length,
     thaiChars: (joined.match(/[฀-๿]/g) ?? []).length,
