@@ -105,11 +105,24 @@ type Lead = {
   responses?: Record<string, unknown> | null;
 };
 
+/**
+ * Every `## block-name` in the copy file, mapped to its first fenced block.
+ *
+ * Splits on the heading and takes the first fence inside each section, rather
+ * than matching heading-then-fence in one pattern. The one-pattern version
+ * required the fence to follow the heading immediately and silently dropped
+ * five blocks the moment each grew a line of prose explaining when it is used.
+ * Silently, because a block that fails to parse is indistinguishable from one
+ * that was never written.
+ */
 function blocks(): Record<string, string> {
   const src = readFileSync(BLOCKS, "utf8");
   const out: Record<string, string> = {};
-  for (const m of src.matchAll(/^## ([a-z0-9-]+)\n+```\n([\s\S]*?)^```/gm)) {
-    out[m[1]] = m[2].trimEnd();
+  for (const section of src.split(/^## /m).slice(1)) {
+    const name = section.slice(0, section.indexOf("\n")).trim();
+    if (!/^[a-z0-9-]+$/.test(name)) continue;
+    const fence = section.match(/^```\n([\s\S]*?)^```/m);
+    if (fence) out[name] = fence[1].trimEnd();
   }
   return out;
 }
@@ -154,6 +167,10 @@ const B = blocks();
 const missing = [
   "a-open",
   "a-symptom",
+  "a-close-language",
+  "a-france-strong-language",
+  "a-symptom-not-yet",
+  "a-symptom-applied",
   "a-method-register",
   "a-method-general",
   "a-germany",
@@ -166,6 +183,7 @@ const missing = [
   "a-close",
   "b-body",
   "subject-a",
+  "subject-a-before",
   "subject-b",
 ].filter((k) => !B[k]);
 if (missing.length) {
@@ -181,6 +199,8 @@ type Built = {
   body: string;
   /** Which country block they got, or null for the general method. */
   countryBlock: string | null;
+  /** Which opening they got, keyed on `applicationCount`. */
+  symptom: string;
 };
 const built: Record<"a" | "b", Built[]> = { a: [], b: [] };
 const skipped: string[] = [];
@@ -221,6 +241,7 @@ for (const lead of leads) {
   let body: string;
   let bucket: "a" | "b";
   let countryBlock: string | null = null;
+  let symptom = "n/a";
 
   if (workAuth === "unsure") {
     bucket = "b";
@@ -229,9 +250,46 @@ for (const lead of leads) {
   } else if (workAuth === "sponsor_no_route" && country) {
     bucket = "a";
     const th = COUNTRY_TH[country] ?? country;
-    const special = COUNTRY_BLOCK[country];
-    const parts = [fill(B["a-open"], th), fill(B["a-symptom"], th)];
+    let special = COUNTRY_BLOCK[country];
+    /**
+     * The opening symptom must match what they said they have done.
+     *
+     * Added 15/08/2026 after Paul flagged one lead whose email did not fit her.
+     * Checking that found the bigger fault: `a-symptom` claimed "you apply and
+     * hear nothing", and 19 of these 49 have applied to zero jobs, with 11 more
+     * who left it blank. Thirty of forty-nine were reading about a symptom
+     * nothing in their answers evidenced.
+     *
+     * Blank stays blank. A missing answer is not a zero, and guessing which it
+     * is would be the same mistake one level down.
+     */
+    const applied = r.applicationCount as number | null | undefined;
+    symptom =
+      applied == null ? "a-symptom" : applied > 0 ? "a-symptom-applied" : "a-symptom-not-yet";
 
+    /**
+     * `a-france` tells the reader the gate is French. The imported survey stored
+     * `otherLanguageCefr`, a level with **no language attached**, so for anyone
+     * strong in some second language that sentence is a guess. One lead in this
+     * set is C2 in an unknown language with a Montreal dialling code, targeting
+     * France, and for her the guess looks obviously wrong.
+     *
+     * Newer leads answer `otherLanguages`, a language-to-level map, so this
+     * reads that first and only falls back to the bare level.
+     */
+    const langMap = (r.otherLanguages ?? null) as Record<string, string> | null;
+    const frenchLevel = langMap?.French ?? langMap?.french;
+    const bareLevel = r.otherLanguageCefr as string | null | undefined;
+    const strongUnknownLanguage =
+      !langMap && (bareLevel === "B2" || bareLevel === "C1" || bareLevel === "C2");
+
+    const parts = [fill(B["a-open"], th), fill(B[symptom], th)];
+
+    // Someone who already reads French at B2+ does not need to be told France
+    // runs in French, and the map answers it outright where we have one.
+    if (special === "a-france" && (strongUnknownLanguage || (frenchLevel && frenchLevel >= "B2"))) {
+      special = "a-france-strong-language";
+    }
     countryBlock = special ?? null;
     if (special) {
       parts.push(fill(B[special], th));
@@ -251,8 +309,13 @@ for (const lead of leads) {
     // `a-study-route` stays in email-send-blocks.md. A block with no caller is
     // not dead code here; it is the paragraph to reach for when someone asks.
 
-    parts.push(B["a-close"]);
-    subject = fill(B["subject-a"], th);
+    // One ask per email, so the language question replaces the money one rather
+    // than joining it.
+    parts.push(B[special === "a-france-strong-language" ? "a-close-language" : "a-close"]);
+    // The subject asserts as much as the body does, and it was still telling
+    // nineteen people their applications had gone unanswered after the body had
+    // been fixed. A branch in the body does not follow the subject on its own.
+    subject = fill(B[symptom === "a-symptom-applied" ? "subject-a" : "subject-a-before"], th);
     body = parts.join("\n\n");
   } else {
     // No visa answer, or the answer with no country to hang it on. Paul's call,
@@ -265,7 +328,7 @@ for (const lead of leads) {
   }
 
   const slug = email.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
-  built[bucket].push({ file: `${slug}.md`, email, name, subject, body, countryBlock });
+  built[bucket].push({ file: `${slug}.md`, email, name, subject, body, countryBlock, symptom });
 }
 
 rmSync(OUT, { recursive: true, force: true });
@@ -306,9 +369,17 @@ console.log(
     `    07_Reference.md that changes behaviour; the rest have only a scheme name,\n` +
     `    which by this file's own rule is not enough to send.`,
 );
-const byBlock = new Map<string, number>();
-for (const m of built.a) byBlock.set(m.countryBlock ?? "a-method-general", (byBlock.get(m.countryBlock ?? "a-method-general") ?? 0) + 1);
-for (const [k, n] of [...byBlock].sort((x, y) => y[1] - x[1])) {
+const tally = (pick: (m: Built) => string) => {
+  const m2 = new Map<string, number>();
+  for (const m of built.a) m2.set(pick(m), (m2.get(pick(m)) ?? 0) + 1);
+  return [...m2].sort((x, y) => y[1] - x[1]);
+};
+console.log("\n    country block");
+for (const [k, n] of tally((m) => m.countryBlock ?? "a-method-general")) {
+  console.log(`      ${String(n).padStart(3)}  ${k}`);
+}
+console.log("\n    opening, keyed on what they said they have applied to");
+for (const [k, n] of tally((m) => m.symptom)) {
   console.log(`      ${String(n).padStart(3)}  ${k}`);
 }
 if (skipped.length) {
