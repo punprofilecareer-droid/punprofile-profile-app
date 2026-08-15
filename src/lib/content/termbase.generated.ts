@@ -66,14 +66,16 @@ export const TERMBASE: Termbase = {
       "th": [
         "LINE"
       ],
-      "banned": [],
+      "banned": [
+        "ไลน์"
+      ],
       "surfaces": [
         "all"
       ],
       "fixed": true,
       "rule": "LR-01",
       "decided": "15/08/2026",
-      "why": "A brand name, in Latin script the way the app itself writes it and the way a Thai reader sees it every day. ไลน์ is a transliteration nobody uses in writing. Recorded because the passthrough check asks for every identical string to be either translated or declared, and this one is declared.\n"
+      "why": "A brand name, in Latin script the way the app itself writes it and the way a Thai reader sees it every day. Paul's call, 15/08/2026, after the lint found consent.statement writing the transliteration while every other string in the app wrote LINE. It is the PDPA string naming the channel consented to, which is the last place two spellings of one channel belong.\n"
     },
     {
       "id": "field-line-id",
@@ -226,17 +228,19 @@ export const TERMBASE: Termbase = {
       "id": "cta-start-assessment",
       "en": "Start the assessment",
       "th": [
-        "เช็กความพร้อมของคุณ"
+        "เริ่มทำ EU Fit Check"
       ],
-      "banned": [],
+      "banned": [
+        "เช็กความพร้อมของคุณ",
+        "เช็กว่าคุณพร้อมแค่ไหน"
+      ],
       "surfaces": [
         "app"
       ],
       "fixed": true,
       "rule": "LR-08",
-      "decided": "09/08/2026",
-      "why": "The landing page's one action. Specified in 03_Content_System.md, App CTAs.\n",
-      "conflict": "UNRESOLVED as of 15/08/2026. cta.ts renders เริ่มทำ EU Fit Check for the same button, and a now-deleted copy.ts key held a third form, เช็กว่าคุณพร้อมแค่ไหน. The lint reports this. Paul rules: change the code, or change the document. Recorded rather than silently picked, because which of the two is right is a content decision and not a lint's to make.\n"
+      "decided": "15/08/2026",
+      "why": "The landing page's one action. Three wordings existed until 15/08/2026: this one in cta.ts, เช็กความพร้อมของคุณ in 03_Content_System.md, and เช็กว่าคุณพร้อมแค่ไหน in a dead copy.ts key. Paul kept this one and judged the other two stiff and below standard, so both are banned rather than merely dropped. A retired wording that is only deleted comes back the next time someone writes the button from the English.\n"
     },
     {
       "id": "cta-book-consultation",
@@ -310,7 +314,7 @@ export const TERMBASE: Termbase = {
     "reader": "คุณ",
     "why": "เรา for the brand in broadcast copy, ผม in 1:1 messages where a brand plural reads evasive, คุณ for the reader always and stated rather than implied. The contact button คุยกับผม is first person on an app surface on purpose: it is the one string that opens a 1:1, so it speaks in the register of what it starts. Listed in `terms` above rather than treated as a person violation.\n"
   },
-  "sourceHash": "5821a564c51dc606"
+  "sourceHash": "83f9dd369507ad60"
 } as const;
 
 export const TERMS = TERMBASE.terms;
