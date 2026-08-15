@@ -43,9 +43,21 @@ export const newLead = internalAction({
   handler: async (_ctx, args) => {
     const key = process.env.RESEND_API_KEY;
     const to = process.env.ADMIN_EMAIL;
-    if (!key || !to) return;
+    if (!key || !to) {
+      // Silent to the candidate, never silent to the logs. Failing quietly is
+      // correct here, but "switched off" and "working" looked identical from
+      // outside, and this notification was switched off on both deployments
+      // from the day it was written to 15/08/2026 without anything saying so.
+      // A gap you cannot see is one nobody closes.
+      console.warn(
+        `newLead notification skipped: ${!key ? "RESEND_API_KEY" : "ADMIN_EMAIL"} is not set on this deployment. No alert was sent.`,
+      );
+      return;
+    }
 
-    const site = process.env.SITE_URL ?? "https://punprofile-profile-app.vercel.app";
+    // The primary domain, matching `00_Quick_Facts.md`. The fallback only
+    // applies where SITE_URL is unset, which is dev.
+    const site = process.env.SITE_URL ?? "https://punprofile.vercel.app";
 
     const subject = args.sqlGate
       ? "EU Fit Check: a lead cleared the booking gate"
