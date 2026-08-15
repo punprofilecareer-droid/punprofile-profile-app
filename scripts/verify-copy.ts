@@ -20,6 +20,7 @@ import { NARRATIVE_COPY } from "../src/lib/content/narrative-copy.js";
 import { CONSENT_COPY } from "../src/lib/consent-copy.js";
 import { PRIVACY_INTRO, PRIVACY_SECTIONS } from "../src/lib/content/privacy.js";
 import { STAGE1 } from "../src/lib/content/questions.js";
+import { BLOCKS, BLOCKED_KEYS } from "../src/lib/content/blocks.js";
 import { MOVES } from "../src/lib/levers.js";
 import { DIMENSIONS } from "../src/lib/model.js";
 import { assertCandidateSafe } from "../src/lib/views.js";
@@ -318,8 +319,35 @@ if (failures) {
   process.exit(1);
 }
 
+/**
+ * Every question belongs to exactly one block.
+ *
+ * A question added to `questions.ts` and not to `blocks.ts` would silently lose
+ * its section marker, and the photograph would appear to jump backwards when
+ * the candidate reached it. Cheap to assert, invisible until a candidate sees
+ * it, so it is asserted.
+ */
+{
+  const qKeys = STAGE1.map((q) => q.key);
+  const claimed = new Set(BLOCKED_KEYS);
+  const unblocked = qKeys.filter((k) => !claimed.has(k));
+  const orphan = BLOCKED_KEYS.filter((k) => k !== "languages" && !qKeys.includes(k));
+  const dupes = BLOCKED_KEYS.filter((k, i) => BLOCKED_KEYS.indexOf(k) !== i);
+  if (unblocked.length || orphan.length || dupes.length) {
+    console.error("\nblocks.ts and questions.ts disagree:");
+    for (const k of unblocked) console.error(`  question "${k}" is in no block`);
+    for (const k of orphan) console.error(`  block key "${k}" is not a question`);
+    for (const k of dupes) console.error(`  key "${k}" is in more than one block`);
+    process.exit(1);
+  }
+}
+
 console.log(
   `copy OK: ${Object.keys(ALL).length} keys, all used, all with English, placeholders intact`,
+);
+console.log(
+  `blocks OK: ${STAGE1.length} questions across ${BLOCKS.length} sections, ` +
+    `${BLOCKS.filter((b) => b.image).length} with a photograph sourced`,
 );
 if (missing.length || questionsMissing.length) {
   console.log(`\n${missing.length + questionsMissing.length} still need Thai:`);

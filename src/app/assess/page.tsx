@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
+import { blockFor } from "@/lib/content/blocks";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
@@ -316,6 +317,13 @@ export default function AssessPage() {
         step={step + 1}
         total={TOTAL_STEPS}
         phase={phase}
+        // The section's photograph, held across every question in the block, so
+        // it changes six times across sixteen questions rather than sixteen.
+        // Null until one is sourced, which is the norm today.
+        image={(() => {
+          const b = blockFor(q.key);
+          return b?.image ? { src: `/assess/blocks/${b.image}`, alt: "" } : null;
+        })()}
         onSelect={(value) => {
           setLocal((prev) => ({ ...prev, [q.key]: value }));
           // A "many" question waits for Continue: the scorer should only ever
