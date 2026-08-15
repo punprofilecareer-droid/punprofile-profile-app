@@ -20,6 +20,7 @@ import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { readAnswers } from "@/lib/content/answers";
 import LeadBriefing from "./LeadBriefing";
+import CallLog from "./CallLog";
 
 const stamp = (ms: number | null) =>
   ms === null ? null : new Date(ms).toISOString().replace("T", " ").slice(0, 16);
@@ -225,10 +226,16 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           numbers told you nothing you could open a conversation with. */}
       <LeadBriefing responses={lead.responses} fullName={lead.fullName} />
 
+      {/* Above the answers and well above the delete panel: what happened on a
+          call is the thing most often read and the only thing on this page that
+          can be written to. */}
+      <CallLog leadId={leadId} />
+
       <Section title="Delete on request">
         <p className="text-body text-slate">
-          Erases this person entirely: the lead, their answers, and any saved
-          links. This cannot be undone and there is no backup to restore from.
+          Erases this person entirely: the lead, their answers, every call
+          logged against them, and any saved links. This cannot be undone and
+          there is no backup to restore from.
           A record that <em>a</em> deletion happened is kept, holding nothing
           about who it was.
         </p>

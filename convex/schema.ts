@@ -135,8 +135,141 @@ export default defineSchema({
       leads: v.number(),
       assessments: v.number(),
       magicLinks: v.number(),
+      /**
+       * Optional because rows written before `consultations` existed have no
+       * such count, and backfilling a zero would claim we checked when the
+       * table was not there to check.
+       */
+      consultations: v.optional(v.number()),
     }),
   }).index("by_time", ["deletedAt"]),
+
+  /**
+   * One row per call or session with a candidate, coach-side entirely.
+   *
+   * The funnel had no record of its own last step: `leads` tracked a candidate
+   * from first partial answer to `completed` and stopped, so nothing stored
+   * that a call happened, what it surfaced, or what was agreed. Spec and
+   * reasoning in `booking-tracking.md`; the fields below come from that plus
+   * the `kick-start` skill's run sheet and observation set, which is the
+   * document that says what actually happens in these thirty minutes.
+   *
+   * A table rather than fields on `leads`, following `assessments`,
+   * `magicLinks` and `deletionLog`: a candidate has more than one of these over
+   * an engagement, and flat fields would overwrite the history that makes the
+   * booking cut testable at all.
+   *
+   * Three rules this must not break, from that spec:
+   *
+   * - **It never enters the candidate view.** `views.ts` gains no field and
+   *   `assertCandidateSafe()` should fail on this vocabulary as it does on
+   *   `tier`.
+   * - **An outcome never moves a score.** Services move coverage, never scores
+   *   (`candidate-data-architecture.md`). A `no_show` is not evidence about
+   *   anyone's employability. What the call *observed* is evidence, and its
+   *   home is an `assessments` row with `source: "coach"`, not this table.
+   * - **`nextStep` is the same pick as `firstAction`**, or the reason it
+   *   differs is written down. Two competing answers to "what do I do first" is
+   *   the failure `09_Decision_Log.md` already recorded once.
+   */
+  consultations: defineTable({
+    leadId: v.id("leads"),
+
+    /**
+     * Kick-start is the free 30-minute first call, the only one with a run
+     * sheet, and the only instrument in the funnel that reaches the
+     * competencies a form cannot. The other three exist so the log does not
+     * stop being usable the moment someone buys something.
+     */
+    type: v.union(
+      v.literal("kick_start"),
+      v.literal("engagement"),
+      v.literal("follow_up"),
+      v.literal("other"),
+    ),
+
+    outcome: v.union(
+      v.literal("scheduled"),
+      v.literal("held"),
+      v.literal("no_show"),
+      v.literal("cancelled"),
+    ),
+
+    /** When it happened, or when it is due to. Both live in one field on purpose. */
+    heldAt: v.number(),
+    durationMinutes: v.optional(v.number()),
+    channel: v.optional(
+      v.union(v.literal("line"), v.literal("meet"), v.literal("phone"), v.literal("other")),
+    ),
+
+    /**
+     * Which language the call actually ran in, and it is not bookkeeping.
+     *
+     * The run sheet's default is English for the middle two blocks, because
+     * that is the only test Business English gets: its ECRA lookup is a
+     * self-report "verified where tested". A call held entirely in Thai did not
+     * test it, so nobody may later promote that competency on the strength of
+     * having had a call. This field is what makes that checkable afterwards.
+     */
+    language: v.optional(v.union(v.literal("thai"), v.literal("english"), v.literal("mixed"))),
+
+    /** Their own question, verbatim. It is what the last five minutes must answer. */
+    theirQuestion: v.optional(v.string()),
+    /** The two strengths named back to them, from their own document. */
+    strengthsNamed: v.optional(v.string()),
+
+    /** The one action given. One item, never a list; the method forbids a list. */
+    nextStep: v.optional(v.string()),
+    /**
+     * False when the action given differed from the app's `firstAction`.
+     *
+     * The skill is explicit that a disagreement between the two is a bug to
+     * log rather than a thing to tell the candidate, so the log has to be able
+     * to hold the disagreement.
+     */
+    nextStepMatchesApp: v.optional(v.boolean()),
+
+    /**
+     * The salary figure with the role and the country it was quoted against.
+     * Free text because a number alone cannot be classified, and the benchmark
+     * is a manual coach lookup rather than a formula.
+     */
+    salaryQuote: v.optional(v.string()),
+
+    /** Which module they would buy. A conclusion for the file, never said in the call. */
+    moduleFit: v.optional(v.string()),
+
+    /**
+     * The three ICP inputs, collected conversationally in the first five
+     * minutes: Gate 1, Gate 2 and Investment Readiness in that order.
+     *
+     * Captured here, deliberately not applied. Every app-native lead arrives
+     * ungraded because Stage 1 asks for none of them, and this is where they
+     * first exist. Writing them back into the grade is a separate decision,
+     * because a coach-collected answer belongs in an `assessments` row with
+     * `source: "coach"` rather than being quietly merged into self-report.
+     */
+    icpJobTitle: v.optional(v.string()),
+    icpExperienceYears: v.optional(v.string()),
+    icpPriorInvestment: v.optional(v.string()),
+
+    /**
+     * When the same-day Thai follow-up went out. Absent on a held call is the
+     * queue: the free Calendly tier sends nothing, the follow-up is manual, and
+     * it is the step most likely to be missed.
+     */
+    followUpSentAt: v.optional(v.number()),
+
+    notes: v.optional(v.string()),
+
+    /** Which admin wrote the row. Their own data, not the candidate's. */
+    createdBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_lead_time", ["leadId", "heldAt"])
+    // The follow-up and reminder queues: what is coming up, across all leads.
+    .index("by_time", ["heldAt"]),
 
   // Point-in-time evidence snapshots, the trajectory layer. A delta between
   // two snapshots is what makes "get their score up" measurable, and the

@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as consultations from "../consultations.js";
 import type * as http from "../http.js";
 import type * as importLeads from "../importLeads.js";
 import type * as leads from "../leads.js";
@@ -25,6 +26,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  consultations: typeof consultations;
   http: typeof http;
   importLeads: typeof importLeads;
   leads: typeof leads;

@@ -258,7 +258,7 @@ export const submitLanguages = mutation({
  * nothing to an attacker looks identical to one returning nothing because
  * there is no data, and that difference matters when reading logs.
  */
-async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string> {
+export async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string> {
   // The email comes from the user record, NOT from the token. Convex Auth mints
   // a JWT carrying only sub, iss, aud, iat and exp, so `identity.email` is
   // always undefined and comparing against it rejects everyone, including the
@@ -420,16 +420,35 @@ export const deleteLeadOnRequest = mutation({
       .collect();
     for (const l of links) await ctx.db.delete(l._id);
 
+    // Call records go with them. These hold a coach's written read of a named
+    // person, their salary expectation and their own question in their own
+    // words, so a deletion that left them behind would erase the tidy half of
+    // the file and keep the revealing half.
+    const calls = await ctx.db
+      .query("consultations")
+      .withIndex("by_lead_time", (q) => q.eq("leadId", args.leadId))
+      .collect();
+    for (const c of calls) await ctx.db.delete(c._id);
+
     await ctx.db.delete(args.leadId);
 
     await ctx.db.insert("deletionLog", {
       deletedAt: Date.now(),
       performedBy: adminEmail,
       note: args.note,
-      counts: { leads: 1, assessments: assessments.length, magicLinks: links.length },
+      counts: {
+        leads: 1,
+        assessments: assessments.length,
+        magicLinks: links.length,
+        consultations: calls.length,
+      },
     });
 
-    return { assessments: assessments.length, magicLinks: links.length };
+    return {
+      assessments: assessments.length,
+      magicLinks: links.length,
+      consultations: calls.length,
+    };
   },
 });
 
