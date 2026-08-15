@@ -63,6 +63,10 @@ export default function LeadBriefing({
     profile.dimensions.map((d) => [d.key, d.score ?? undefined]),
   ) as Parameters<typeof SpiderChart>[0]["scores"];
 
+  const chartLabels = Object.fromEntries(
+    profile.dimensions.map((d) => [d.key, d.label]),
+  ) as Parameters<typeof SpiderChart>[0]["axisLabels"];
+
   return (
     <div className="space-y-10">
       <section>
@@ -71,7 +75,11 @@ export default function LeadBriefing({
         <p className="mt-2 text-caption text-neutral-500">{narrative.caveat}</p>
 
         <div className="mt-6 max-w-md">
-          <SpiderChart scores={chartScores} variant="full" />
+          {/* The coach's names for the axes, so the chart agrees with the
+              dimension list directly under it. Without this the chart labels
+              follow the viewer's locale and read Thai on a screen this file's
+              own header calls English and coach-facing. */}
+          <SpiderChart scores={chartScores} variant="full" axisLabels={chartLabels} />
         </div>
       </section>
 

@@ -199,10 +199,24 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
       {(typeof lead.responses._entryPoint === "string" ||
         typeof lead.responses._manualCheck === "string") && (
         <Section title="From the survey sheet">
-          <Row label="Suggested entry point" value={String(lead.responses._entryPoint ?? "")} consentAt={null} />
+          {/* `showConsent={false}`: these are the coach's own triage columns, not
+            channels. Without it `Row` printed "No consent recorded, do not
+            contact" under the suggested entry point, which is not a true
+            statement about anything. */}
+          <Row
+            label="Suggested entry point"
+            value={String(lead.responses._entryPoint ?? "")}
+            consentAt={null}
+            showConsent={false}
+          />
           {typeof lead.responses._manualCheck === "string" &&
             lead.responses._manualCheck.trim() !== "" && (
-              <Row label="Flagged for manual check" value={String(lead.responses._manualCheck)} consentAt={null} />
+              <Row
+                label="Flagged for manual check"
+                value={String(lead.responses._manualCheck)}
+                consentAt={null}
+                showConsent={false}
+              />
             )}
         </Section>
       )}
@@ -361,12 +375,15 @@ function Row({
   consentAt,
   href,
   copyable,
+  showConsent = true,
 }: {
   label: string;
   value: string | null;
   consentAt: number | null;
   href?: string | null;
   copyable?: boolean;
+  /** False for rows that are not contact channels, so no consent line is drawn. */
+  showConsent?: boolean;
 }) {
   // Only actionable once consent exists. A channel with no consent timestamp is
   // one you must not use, so it stays plain text rather than a live link that
@@ -396,13 +413,15 @@ function Row({
           <span className="text-body text-ink">{value}</span>
         )}
       </div>
-      <p className="text-caption text-neutral-500">
-        {consentAt
-          ? `Consent given ${stamp(consentAt)}`
-          : value
-            ? "No consent recorded, do not contact"
-            : ""}
-      </p>
+      {showConsent && (
+        <p className="text-caption text-neutral-500">
+          {consentAt
+            ? `Consent given ${stamp(consentAt)}`
+            : value
+              ? "No consent recorded, do not contact"
+              : ""}
+        </p>
+      )}
     </div>
   );
 }

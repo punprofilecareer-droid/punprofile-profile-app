@@ -24,6 +24,19 @@ export interface SpiderChartProps {
   };
   /** Teaser renders smaller with tighter labels. */
   variant?: "teaser" | "full";
+  /**
+   * Axis labels, overriding the candidate copy below.
+   *
+   * The admin screens declare themselves English and coach-facing, but the
+   * chart read COPY at the viewer's locale, so the founder browsing the site in
+   * Thai got a Thai-labelled chart sitting directly above the same four
+   * dimensions named in English. One page, two names for each axis.
+   *
+   * The coach's names are `model.ts`'s, which that file already keeps for the
+   * report. Passing them in rather than teaching this component about
+   * audiences keeps the candidate path exactly as it was.
+   */
+  axisLabels?: Partial<Record<keyof SpiderChartProps["scores"], string>>;
 }
 
 // Labels come from COPY because the axis text is candidate-facing. `model.ts`
@@ -36,12 +49,12 @@ const DIMS: { key: keyof SpiderChartProps["scores"]; copyKey: CopyKey }[] = [
   { key: "europeanMarketFit", copyKey: "dimension.europeanMarketFit" },
 ];
 
-export default function SpiderChart({ scores, variant = "teaser" }: SpiderChartProps) {
+export default function SpiderChart({ scores, variant = "teaser", axisLabels }: SpiderChartProps) {
   const { t, locale } = useCopy();
 
   const svg = useMemo(() => {
     const axes: RadarAxis[] = DIMS.map((d) => ({
-      label: t(d.copyKey),
+      label: axisLabels?.[d.key] ?? t(d.copyKey),
       value: typeof scores[d.key] === "number" ? (scores[d.key] as number) : null,
     }));
     return radarSvg(axes, {
@@ -50,7 +63,7 @@ export default function SpiderChart({ scores, variant = "teaser" }: SpiderChartP
       maxLabel: variant === "teaser" ? 22 : 26,
     });
     // `locale` is the real dependency; `t` is rebuilt whenever it changes.
-  }, [scores, variant, t, locale]);
+  }, [scores, variant, t, locale, axisLabels]);
 
   return (
     <div
