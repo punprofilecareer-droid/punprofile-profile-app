@@ -2,6 +2,8 @@ import type { Copy } from "./copy";
 import { CONTACT_EMAIL } from "@/lib/consent-copy";
 
 /**
+ * **Thai wording passed by Paul, 15/08/2026**, in the review of all shipped Thai.
+ *
  * The call-to-action framework. TASK-090, 14/08/2026.
  *
  * Written because the site had accumulated CTAs page by page and they had
@@ -126,12 +128,12 @@ export const DESTINATIONS = {
   coaching: {
     href: "/coaching",
     cost: COST.read,
-    label: { en: "How the coaching works", th: "โค้ชชิ่งนี้ทำงานอย่างไร" },
+    label: { en: "How the coaching works", th: "ดูว่าการโค้ชของเราเป็นอย่างไร" },
   },
   services: {
     href: "/services",
     cost: COST.read,
-    label: { en: "See how we work together", th: "ดูว่าเราทำงานร่วมกันอย่างไร" },
+    label: { en: "See how we work together", th: "ดูขั้นตอนการทำงานร่วมกัน" },
   },
   contact: {
     href: "/contact",

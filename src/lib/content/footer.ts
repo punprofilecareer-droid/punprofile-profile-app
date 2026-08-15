@@ -2,6 +2,8 @@ import type { Copy } from "./copy";
 import { DESTINATIONS } from "./cta";
 
 /**
+ * **Thai wording passed by Paul, 15/08/2026**, in the review of all shipped Thai.
+ *
  * The footer. TASK-091, 14/08/2026.
  *
  * Modelled on a competitor's (Careersu AI), whose structure is worth taking:
@@ -91,12 +93,12 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
     heading: { en: "EU Fit Check", th: "EU Fit Check" },
     links: [
-      { href: "/assess", label: { en: "Take the check", th: "ทำแบบประเมิน" } },
-      { href: "/faq", label: { en: "FAQ", th: "คำถามที่พบบ่อย" } },
+      { href: "/assess", label: { en: "Take the check", th: "ทำ EU Fit Check" } },
+      { href: "/faq", label: { en: "FAQ", th: "FAQ" } },
     ],
   },
   {
-    heading: { en: "Coaching", th: "โค้ชชิ่ง" },
+    heading: { en: "Coaching", th: "โค้ชด้านอาชีพ" },
     links: [
       { href: "/coaching", label: { en: "Coaching 1:1", th: "Coaching 1:1" } },
       { href: "/services", label: { en: "Our Services", th: "บริการของเรา" } },
@@ -132,5 +134,5 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
  */
 export const DISCLAIMER: Copy = {
   en: "PunProfile provides career coaching and job-search guidance. We are not a recruitment agency, and we are not immigration lawyers or licensed migration advisers. Nothing here is legal, immigration or financial advice: for visa and work-rights questions, consult a qualified immigration lawyer in the country concerned. We are paid by you rather than by an employer, results vary from person to person, and we do not guarantee employment, an interview or a visa.",
-  th: "PunProfile ให้บริการโค้ชชิ่งด้านอาชีพและคำแนะนำในการหางาน เราไม่ใช่บริษัทจัดหางาน และไม่ใช่ทนายความหรือที่ปรึกษาด้านการย้ายถิ่นฐานที่ได้รับใบอนุญาต ข้อมูลในเว็บไซต์นี้ไม่ใช่คำแนะนำทางกฎหมาย การเข้าเมือง หรือการเงิน สำหรับคำถามเรื่องวีซ่าและสิทธิ์ในการทำงาน กรุณาปรึกษาทนายความด้านการเข้าเมืองในประเทศนั้น ๆ เรารับค่าบริการจากคุณไม่ใช่จากนายจ้าง ผลลัพธ์แตกต่างกันไปในแต่ละบุคคล และเราไม่รับประกันว่าคุณจะได้งาน ได้สัมภาษณ์ หรือได้วีซ่า",
+  th: "ปั้นโปรไฟล์ ให้บริการโค้ชชิ่งด้านอาชีพและคำแนะนำในการหางาน เราไม่ใช่บริษัทจัดหางาน และไม่ใช่ทนายความหรือที่ปรึกษาด้านการย้ายถิ่นฐานที่ได้รับใบอนุญาต ข้อมูลในเว็บไซต์นี้ไม่ใช่คำแนะนำทางกฎหมาย การเข้าเมือง หรือการเงิน สำหรับคำถามเรื่องวีซ่าและสิทธิ์ในการทำงาน กรุณาปรึกษาทนายความด้านการเข้าเมืองในประเทศนั้น ๆ เรารับค่าบริการจากคุณไม่ใช่จากนายจ้าง ผลลัพธ์แตกต่างกันไปในแต่ละบุคคล และเราไม่รับประกันว่าคุณจะได้งาน ได้สัมภาษณ์ หรือได้วีซ่า",
 };

@@ -278,10 +278,10 @@ export const TERMBASE: Termbase = {
       "why": "A Thai transliteration of a legal formula reads as a mistake, not a courtesy."
     },
     {
-      "id": "our-services",
-      "en": "Our Services",
+      "id": "nav-menu",
+      "en": "Menu",
       "th": [
-        "บริการของเรา"
+        "Menu"
       ],
       "banned": [],
       "surfaces": [
@@ -289,8 +289,68 @@ export const TERMBASE: Termbase = {
       ],
       "fixed": true,
       "rule": "LR-01",
-      "decided": "09/08/2026",
-      "why": "The possessive is doing work. บริการ alone reads as a section label on any website; บริการของเรา reads as this business telling you what it offers.\n"
+      "decided": "15/08/2026",
+      "why": "Site navigation is English. See `our-services`.\n"
+    },
+    {
+      "id": "nav-menu-close",
+      "en": "Close menu",
+      "th": [
+        "Close menu"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "15/08/2026",
+      "why": "Site navigation is English. See `our-services`.\n"
+    },
+    {
+      "id": "nav-faq",
+      "en": "FAQ",
+      "th": [
+        "FAQ"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "15/08/2026",
+      "why": "Site navigation is English, and FAQ is already the form a Thai reader meets everywhere. See `our-services`.\n"
+    },
+    {
+      "id": "nav-contact",
+      "en": "Contact",
+      "th": [
+        "Contact"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "15/08/2026",
+      "why": "Site navigation is English. See `our-services`.\n"
+    },
+    {
+      "id": "our-services",
+      "en": "Our Services",
+      "th": [
+        "Our Services"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "15/08/2026",
+      "why": "English, decided 15/08/2026 (Paul), along with the rest of the site navigation: Menu, Close menu, Our Services, FAQ, Contact. ภาษา stays Thai because it labels a control rather than a destination.\nNavigation is chrome rather than voice. This audience reads English product navigation every day, and the Thai equivalents sit heavier in a menu than they do in prose, which is the register argument LR-05 already makes for loanwords. Nothing else moves to English on the strength of this: body copy, questions and the result screen stay Thai.\nWas บริการของเรา until 15/08/2026, on the reasoning that the possessive was doing work บริการ alone did not. That held for a Thai label and stops applying once the label is English.\n"
     },
     {
       "id": "contact-talk-to-me",
@@ -317,7 +377,7 @@ export const TERMBASE: Termbase = {
     "reader": "คุณ",
     "why": "เรา for the brand in broadcast copy, ผม in 1:1 messages where a brand plural reads evasive, คุณ for the reader always and stated rather than implied. The contact button คุยกับผม is first person on an app surface on purpose: it is the one string that opens a 1:1, so it speaks in the register of what it starts. Listed in `terms` above rather than treated as a person violation.\n"
   },
-  "sourceHash": "7e1c77ae858a2e00"
+  "sourceHash": "93dade7f15d062c1"
 } as const;
 
 export const TERMS = TERMBASE.terms;

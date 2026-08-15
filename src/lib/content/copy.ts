@@ -61,12 +61,12 @@ export const COPY = {
   "nav.menu": {
     screen: "Header, the burger button's accessible name",
     en: "Menu",
-    th: "เมนู",
+    th: "Menu",
   },
   "nav.menuClose": {
     screen: "Header, the open menu's close button",
     en: "Close menu",
-    th: "ปิดเมนู",
+    th: "Close menu",
   },
   "nav.assess": {
     screen: "Site menu, the one action in the list",
@@ -79,7 +79,7 @@ export const COPY = {
     // บริการ alone reads as a section label on any website, บริการของเรา reads
     // as this business telling you what it offers.
     en: "Our Services",
-    th: "บริการของเรา",
+    th: "Our Services",
   },
   "nav.coaching": {
     screen: "Site menu",
@@ -95,12 +95,12 @@ export const COPY = {
   "nav.faq": {
     screen: "Site menu",
     en: "FAQ",
-    th: "คำถามที่พบบ่อย",
+    th: "FAQ",
   },
   "nav.contact": {
     screen: "Site menu",
     en: "Contact",
-    th: "ติดต่อเรา",
+    th: "Contact",
   },
   "nav.language": {
     screen: "Header, the TH/EN switch",
