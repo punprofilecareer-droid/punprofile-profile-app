@@ -20,7 +20,7 @@
 
 import { useMemo } from "react";
 import SpiderChart from "@/components/features/chart/SpiderChart";
-import { toScoringInput } from "@/lib/content/mapping";
+import { toScoringInputForLead } from "@/lib/content/mapping";
 import { scoreResponse } from "@/lib/scoring";
 import { buildNarrative } from "@/lib/narrative";
 import { buildCoachView } from "@/lib/views";
@@ -34,10 +34,16 @@ export default function LeadBriefing({
   fullName: string | null;
 }) {
   const { profile, narrative, coach, grade } = useMemo(() => {
-    const input = toScoringInput(responses);
+    // `toScoringInputForLead`, not `toScoringInput`: the 90 imported survey
+    // leads store their answers under ScoringInput field names, and reading
+    // them with the app mapper dropped English, applications, AI fluency,
+    // family and salary. Every one of those leads rendered a chart that
+    // disagreed with its own stored scores while looking finished.
+    const input = toScoringInputForLead(responses);
+    const profile = scoreResponse(input);
     return {
-      profile: scoreResponse(input),
-      narrative: buildNarrative(scoreResponse(input)),
+      profile,
+      narrative: buildNarrative(profile),
       coach: buildCoachView(input, fullName ?? "Lead"),
       // Raw responses, not `input`: the two ICP answers are deliberately kept
       // out of ScoringInput so they cannot reach the candidate's chart.

@@ -175,3 +175,171 @@ export function toScoringInput(responses: Responses): ScoringInput {
 
   return input;
 }
+
+// ------------------------------------------------------- the other vocabulary
+
+/**
+ * Fields only the backfill ever writes.
+ *
+ * Each is a `ScoringInput` field name that no question key shares, so any one
+ * of them present means the record was written by `scripts/backfill-leads.ts`
+ * rather than by the app. Deliberately not `_contactRaw` or `_entryPoint`
+ * alone: those are the coach's sheet columns and one imported row carried them
+ * empty.
+ */
+const IMPORT_ONLY_KEYS = [
+  "englishCefr",
+  "applicationCount",
+  "aiIndicators",
+  "aiIndicatorFlags",
+  "otherLanguageCefr",
+  "hasDependents",
+  "familyIndicators",
+  "familyIndicatorFlags",
+  "salaryText",
+] as const;
+
+/** True when `responses` speaks the survey vocabulary rather than the app's. */
+export function isImportedRecord(responses: Responses): boolean {
+  return IMPORT_ONLY_KEYS.some((k) => k in responses);
+}
+
+const CEFR = new Set(["A1", "A2", "B1", "B2", "C1", "C2"]);
+
+const oneOf = <T extends string>(v: unknown, allowed: readonly T[]): T | undefined =>
+  typeof v === "string" && (allowed as readonly string[]).includes(v) ? (v as T) : undefined;
+
+const boolArray = (v: unknown): boolean[] | undefined =>
+  Array.isArray(v) && v.every((x) => typeof x === "boolean") ? (v as boolean[]) : undefined;
+
+const num = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+
+/**
+ * The survey vocabulary, read back as a `ScoringInput`.
+ *
+ * The backfill stored the normalised input verbatim, so this is close to a cast.
+ * It is written out field by field anyway, for the same reason `normalize.ts`
+ * returns null on anything it does not recognise: a record that has drifted
+ * should lose the drifted field, not smuggle an unchecked value into the scorer.
+ *
+ * `experienceYears` and `priorInvestment` ARE read here, and that is not a
+ * reversal of the decision above. Those two are excluded from the app path
+ * because Stage 1 leaves Professional Capability hollow by design. These leads
+ * answered the full survey, were scored on it at import, and their stored
+ * `leads.scores` already carries that dimension. Dropping the two fields here
+ * would make the admin screen disagree with the number in the database.
+ */
+function fromImportedRecord(responses: Responses): ScoringInput {
+  const input: ScoringInput = {};
+
+  const experience = oneOf(responses.experienceYears, ["0-1", "2-10", "11-15", "16+"] as const);
+  if (experience) input.experienceYears = experience;
+
+  const investment = oneOf(responses.priorInvestment, [
+    "none",
+    "unrelated",
+    "relevant",
+    "unclassified",
+  ] as const);
+  if (investment) input.priorInvestment = investment;
+
+  const countries = strArray(responses.targetCountries);
+  if (countries) input.targetCountries = countries;
+
+  const role = str(responses.targetRole);
+  if (role) input.targetRole = role;
+
+  const timeline = oneOf(responses.timeline, ["within_3m", "3_6m", "6_12m", "exploring"] as const);
+  if (timeline) input.timeline = timeline;
+
+  const stage = oneOf(responses.stage, [
+    "not_started",
+    "researching",
+    "applying",
+    "interviewing",
+    "offer",
+    "negotiating",
+  ] as const);
+  if (stage) input.stage = stage;
+
+  const applications = num(responses.applicationCount);
+  if (applications !== undefined) input.applicationCount = applications;
+
+  const cv = oneOf(responses.cv, ["none", "untailored", "europe_ready"] as const);
+  if (cv) input.cv = cv;
+
+  const linkedin = oneOf(responses.linkedin, ["none", "basic", "active"] as const);
+  if (linkedin) input.linkedin = linkedin;
+
+  const portfolio = oneOf(responses.portfolio, ["none", "partial", "good"] as const);
+  if (portfolio) input.portfolio = portfolio;
+
+  const english = str(responses.englishCefr);
+  if (english && CEFR.has(english)) input.englishCefr = english as ScoringInput["englishCefr"];
+
+  const otherLanguage = str(responses.otherLanguageCefr);
+  if (otherLanguage && CEFR.has(otherLanguage)) {
+    input.otherLanguageCefr = otherLanguage as ScoringInput["otherLanguageCefr"];
+  }
+
+  const workAuth = oneOf(responses.workAuth, [
+    "eu_rights",
+    "sponsor_route_named",
+    "sponsor_no_route",
+    "unsure",
+    "no_awareness",
+  ] as const);
+  if (workAuth) input.workAuth = workAuth;
+
+  // Flags first, count derived: evidence stays granular and the count is the
+  // compression, never the other way round (`candidate-data-architecture.md` L0).
+  const aiFlags = boolArray(responses.aiIndicatorFlags);
+  if (aiFlags) {
+    input.aiIndicatorFlags = aiFlags;
+    input.aiIndicators = aiFlags.filter(Boolean).length;
+  }
+
+  if (typeof responses.hasDependents === "boolean") {
+    input.hasDependents = responses.hasDependents;
+    const familyFlags = boolArray(responses.familyIndicatorFlags);
+    if (familyFlags) {
+      input.familyIndicatorFlags = familyFlags;
+      input.familyIndicators = familyFlags.filter(Boolean).length;
+    }
+  }
+
+  // The parsed shape, not a figure. The survey asked salary as free text and
+  // `normalize.ts` reduced it to whether a usable figure was stated, which is
+  // all `scoreSalaryStated` ever reads.
+  const salary = responses.salary;
+  if (salary && typeof salary === "object" && !Array.isArray(salary)) {
+    const s = salary as Record<string, unknown>;
+    if (
+      typeof s.hasFigure === "boolean" &&
+      typeof s.hasCurrency === "boolean" &&
+      typeof s.hasPeriod === "boolean"
+    ) {
+      input.salary = { hasFigure: s.hasFigure, hasCurrency: s.hasCurrency, hasPeriod: s.hasPeriod };
+    }
+  }
+
+  return input;
+}
+
+/**
+ * A lead's stored answers as a `ScoringInput`, whichever vocabulary they are in.
+ *
+ * Every admin surface must use this rather than `toScoringInput`. Reading an
+ * imported row with the app mapper silently drops English, applications, AI
+ * fluency, family and salary: on a real lead that took European Market Fit from
+ * 3.5 to 2.0, Mobility Readiness from 3.8 to 3.0, and emptied Professional
+ * Capability entirely, while the chart carried on looking finished. A wrong
+ * chart that looks complete is the exact failure this product exists to avoid.
+ *
+ * `leadGrade.ts` already named the two-vocabulary split. It never had to choose
+ * between them, because the two fields the grade reads are spelled the same in
+ * both. The scorer reads nine that are not.
+ */
+export function toScoringInputForLead(responses: Responses): ScoringInput {
+  return isImportedRecord(responses) ? fromImportedRecord(responses) : toScoringInput(responses);
+}

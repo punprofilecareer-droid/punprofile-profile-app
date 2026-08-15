@@ -18,7 +18,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
-import { QUESTION_INDEX } from "@/lib/content/questions";
+import { readAnswers } from "@/lib/content/answers";
 import LeadBriefing from "./LeadBriefing";
 
 const stamp = (ms: number | null) =>
@@ -45,13 +45,16 @@ async function downloadReport(lead: {
   responses: Record<string, unknown>;
   createdAt: number;
 }) {
-  const [{ renderReport }, { scoreResponse }, { toScoringInput }] = await Promise.all([
+  const [{ renderReport }, { scoreResponse }, { toScoringInputForLead }] = await Promise.all([
     import("@/lib/report"),
     import("@/lib/scoring"),
     import("@/lib/content/mapping"),
   ]);
 
-  const input = toScoringInput(lead.responses);
+  // Same vocabulary fix as the briefing. The report is a pure function of the
+  // scored profile, so an input read with the wrong mapper produced a document
+  // that contradicted the database and read as finished while doing it.
+  const input = toScoringInputForLead(lead.responses);
   const html = renderReport(scoreResponse(input), {
     candidate: lead.fullName ?? "Anonymous lead",
     submittedAt: new Date(lead.createdAt).toISOString().slice(0, 10),
@@ -256,25 +259,89 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
         </button>
       </Section>
 
-      <Section title="Answers">
-        {/* Raw responses, resolved to the question text where the content model
-            knows it. A key with no question is a leftover from an older
-            question set, and showing the key is more useful than hiding it. */}
-        {Object.keys(lead.responses).length === 0 ? (
-          <p className="text-body text-neutral-500">No answers yet.</p>
-        ) : (
-          Object.entries(lead.responses).map(([key, value]) => (
-            <div key={key} className="border-b border-neutral-300 py-2">
-              <p className="text-caption text-neutral-500">
-                {QUESTION_INDEX[key]?.en ?? key}
-              </p>
-              <p className="text-body text-ink">
-                {Array.isArray(value) ? value.join(", ") : String(value)}
-              </p>
-            </div>
-          ))
-        )}
+      <AnswerSheetSection responses={lead.responses} />
+    </div>
+  );
+}
+
+/**
+ * Every question this lead was asked, beside the answer they gave.
+ *
+ * Question and answer sit in two columns on the same row, because the coach's
+ * read is "what did they say to this", and a stacked key-then-value list makes
+ * that a scan down two alternating lines instead of across one.
+ *
+ * Unanswered questions are rendered, not omitted, for the reason the contact
+ * rows already are: a blank row and an absent row look identical on screen, and
+ * "they skipped it" is a different fact from "we never asked".
+ *
+ * `readAnswers` resolves both vocabularies, so an imported survey lead shows
+ * the survey's own Q-numbers and wording from `08_Coaching_Business.md`, and an
+ * app lead shows the questionnaire's.
+ */
+function AnswerSheetSection({ responses }: { responses: Record<string, unknown> }) {
+  const sheet = readAnswers(responses);
+
+  if (Object.keys(responses).length === 0) {
+    return (
+      <Section title="Questions and answers">
+        <p className="text-body text-neutral-500">No answers yet.</p>
       </Section>
+    );
+  }
+
+  // `_entryPoint` and `_manualCheck` already have their own section above, with
+  // the framing about what that sheet did and did not ask. Repeating them here
+  // would be two copies of one fact on one screen.
+  const shown = new Set(["_entryPoint", "_manualCheck"]);
+  const columns = sheet.sheetColumns.filter((r) => !shown.has(r.key));
+
+  return (
+    <Section title="Questions and answers">
+      <p className="mb-3 text-caption text-neutral-500">
+        {sheet.answered} of {sheet.rows.length} answered.{" "}
+        {sheet.instrument === "survey"
+          ? "From the Lead Discovery Survey, imported. Question numbers are that form's."
+          : "From the app's questionnaire, in the order it was asked."}
+      </p>
+
+      {sheet.rows.map((r) => (
+        <QaRow key={r.key} question={r.question} answer={r.answer} />
+      ))}
+
+      {columns.length > 0 && (
+        <>
+          <h3 className="mt-6 text-label text-slate">Carried across from the sheet</h3>
+          {columns.map((r) => (
+            <QaRow key={r.key} question={r.question} answer={r.answer} />
+          ))}
+        </>
+      )}
+
+      {sheet.extras.length > 0 && (
+        <>
+          {/* A stored key the instrument does not account for: a leftover from
+              an older question set, or a field added since. Shown as its raw
+              key, because hiding it would lose it silently. */}
+          <h3 className="mt-6 text-label text-slate">Not part of this question set</h3>
+          {sheet.extras.map((r) => (
+            <QaRow key={r.key} question={r.question} answer={r.answer} />
+          ))}
+        </>
+      )}
+    </Section>
+  );
+}
+
+function QaRow({ question, answer }: { question: string; answer: string | null }) {
+  return (
+    <div className="grid gap-x-6 border-b border-neutral-300 py-2 sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <p className="text-body text-slate">{question}</p>
+      {answer === null ? (
+        <p className="text-body text-neutral-500">not answered</p>
+      ) : (
+        <p className="text-body text-ink">{answer}</p>
+      )}
     </div>
   );
 }
