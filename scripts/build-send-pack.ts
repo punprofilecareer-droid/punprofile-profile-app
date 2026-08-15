@@ -27,7 +27,7 @@
  *      lands in `hold/` for Paul to decide, not in a pile that gets sent.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { maySend, type ConsentEvent } from "../src/lib/consent";
 
