@@ -119,6 +119,26 @@ export default function ContactGate({
     // to give us the number at all; the tick is what makes holding it lawful.
     // So "phone entered, box unticked" is not a preference to respect, it is
     // an incomplete form.
+    // Every rule the server enforces, checked here too and in the same order,
+    // so the message is translated and nobody pays a round trip to be told
+    // their name is blank. The server checks stay exactly as they are; these
+    // are the same rules stated earlier, never instead of.
+    if (!firstName.trim()) {
+      setError("gate.error.first_name_required");
+      return;
+    }
+    if (!lastName.trim()) {
+      setError("gate.error.last_name_required");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("gate.error.email_invalid");
+      return;
+    }
+    if (!phone.trim() && !lineId.trim()) {
+      setError("gate.error.channel_required");
+      return;
+    }
     if (!consent) {
       setError("gate.error.consent_email");
       return;
@@ -155,7 +175,13 @@ export default function ContactGate({
   }
 
   return (
-    <form onSubmit={submit} className="mx-auto w-full max-w-md px-6 py-10">
+    // `noValidate` on purpose. The browser's own validation fires before this
+    // form's handler and renders its own bubble, in the browser's language
+    // rather than the candidate's: a Thai reader ticking nothing saw "Please
+    // check this box if you want to proceed." Every rule below has a
+    // translated message in the copy module, so the native layer can only
+    // overwrite a correct message with an untranslatable one.
+    <form onSubmit={submit} noValidate className="mx-auto w-full max-w-md px-6 py-10">
       <div className="material rounded-lg px-5 py-6">
       <p className="mb-1 text-caption text-neutral-500">
         {t("assess.progress", { step: totalSteps, total: totalSteps })}
