@@ -32,6 +32,9 @@ import {
 const stamp = (ms: number | null) =>
   ms === null ? null : new Date(ms).toISOString().replace("T", " ").slice(0, 16);
 
+/** Date only. The row needs the day, not the minute; the minute is in the log. */
+const date = (ms: number | null) => (ms === null ? null : new Date(ms).toISOString().slice(0, 10));
+
 const CHANNEL_LABEL: Record<ConsentChannel, string> = {
   email: "Email",
   line: "LINE",
@@ -110,32 +113,52 @@ export default function ConsentPanel({
               const state = consent[purpose][channel];
               const key = `${purpose}:${channel}`;
               return (
-                <div key={key} className="border-b border-neutral-300 py-2">
-                  <div className="flex items-baseline justify-between gap-4">
+                <div key={key} className="border-b border-neutral-300 py-1.5">
+                  {/* One line per channel: status and date, nothing else.
+                      The basis used to be spelled out here and it cost four
+                      lines a channel on the screen the coach opens most. It
+                      lives in the log below, which is one click and is where
+                      you go when you need to know how a consent was obtained
+                      rather than whether it holds. */}
+                  <div className="flex items-baseline justify-between gap-3">
                     <span className="text-body text-slate">{CHANNEL_LABEL[channel]}</span>
-                    <StatusPill status={state.status} />
+                    <span className="flex items-baseline gap-2">
+                      {state.status !== "never_asked" && (
+                        <span className="text-caption text-neutral-500">
+                          {date(
+                            state.status === "opted_in" ? state.optedInAt : state.optedOutAt,
+                          )}
+                        </span>
+                      )}
+                      <StatusPill status={state.status} />
+                      {state.status === "opted_in" && pending !== key && (
+                        <button
+                          type="button"
+                          onClick={() => setPending(key)}
+                          title="They asked us to stop"
+                          aria-label={`Record a withdrawal for ${CHANNEL_LABEL[channel]}`}
+                          className="text-caption text-neutral-500 underline hover:text-error"
+                        >
+                          stop
+                        </button>
+                      )}
+                    </span>
                   </div>
-
-                  {state.status !== "never_asked" && (
-                    <p className="mt-1 text-caption text-neutral-500">
-                      {state.status === "opted_in"
-                        ? `Given ${stamp(state.optedInAt)}`
-                        : `Withdrawn ${stamp(state.optedOutAt)}`}
-                      {state.basis ? ` · ${BASIS_LABEL[state.basis] ?? state.basis}` : ""}
-                    </p>
-                  )}
 
                   {/* A re-grant after a withdrawal keeps the withdrawal
                       visible. Someone who once asked us to stop is worth
-                      knowing about even after they came back. */}
+                      knowing about even after they came back, and it is the one
+                      thing worth a second line. */}
                   {state.status === "opted_in" && state.optedOutAt !== null && (
-                    <p className="mt-1 text-caption text-warning">
-                      Previously withdrew this on {stamp(state.optedOutAt)}.
+                    <p className="text-caption text-warning">
+                      Withdrew this once, {date(state.optedOutAt)}.
                     </p>
                   )}
 
-                  {state.status === "opted_in" &&
-                    (pending === key ? (
+                  {/* The withdraw form, opened by the "stop" link in the row
+                      above. Only rendered for the channel being withdrawn, so
+                      the panel stays three lines until it is actually needed. */}
+                  {state.status === "opted_in" && pending === key && (
                       <div className="mt-3 rounded-sm border border-neutral-300 bg-cream-wash p-3">
                         <label className="block text-label text-slate">
                           Where did the request arrive?
@@ -196,15 +219,7 @@ export default function ConsentPanel({
                           </button>
                         </div>
                       </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setPending(key)}
-                        className="mt-1 text-caption text-primary underline"
-                      >
-                        They asked us to stop
-                      </button>
-                    ))}
+                  )}
                 </div>
               );
             })
