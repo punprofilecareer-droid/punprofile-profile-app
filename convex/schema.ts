@@ -189,14 +189,54 @@ export default defineSchema({
     ),
 
     outcome: v.union(
+      v.literal("invited"),
       v.literal("scheduled"),
       v.literal("held"),
       v.literal("no_show"),
       v.literal("cancelled"),
+      v.literal("expired"),
     ),
 
-    /** When it happened, or when it is due to. Both live in one field on purpose. */
+    /**
+     * When it happened, or when it is due to. Both live in one field on purpose.
+     *
+     * `booking-tracking.md` specified a separate `scheduledFor`. One field
+     * instead, because two would need keeping in step for no gain: a row is
+     * either a slot in the future or a call in the past, never both, and the
+     * outcome already says which.
+     */
     heldAt: v.number(),
+
+    // ---------------------------------------------------------- the invitation
+    //
+    // From `booking-tracking.md`, built 15/08/2026. Entered by hand: the free
+    // Calendly tier has no webhooks, no API and no Zapier, so nothing can push
+    // this in. Five seconds when the confirmation lands, and no integration to
+    // maintain. It breaks silently the day it is forgotten, which is the
+    // accepted cost of the free tier rather than of this design.
+
+    /**
+     * What fired the send, and the field that makes the wave 1 cut measurable.
+     *
+     * It records the RULE, not the person's answers, so changing the rule later
+     * does not rewrite the history of what the old rule actually produced.
+     */
+    trigger: v.optional(
+      v.union(
+        v.literal("survey_stage_wave1"), // interviewing or negotiating
+        v.literal("survey_urgent_wave2"), // within 3 months and applying or later
+        v.literal("manual"), // coach judgement, no rule fired
+      ),
+    ),
+    sentAt: v.optional(v.number()),
+    sentChannel: v.optional(v.union(v.literal("line"), v.literal("email"))),
+    /**
+     * When they chose a slot. The gap between `sentAt` and this is the only
+     * read anyone gets on whether the message worked.
+     */
+    bookedAt: v.optional(v.number()),
+    /** Manual, because the free tier sends no reminders. Absent is the queue. */
+    reminderSentAt: v.optional(v.number()),
     durationMinutes: v.optional(v.number()),
     channel: v.optional(
       v.union(v.literal("line"), v.literal("meet"), v.literal("phone"), v.literal("other")),
@@ -243,15 +283,28 @@ export default defineSchema({
      * The three ICP inputs, collected conversationally in the first five
      * minutes: Gate 1, Gate 2 and Investment Readiness in that order.
      *
-     * Captured here, deliberately not applied. Every app-native lead arrives
-     * ungraded because Stage 1 asks for none of them, and this is where they
-     * first exist. Writing them back into the grade is a separate decision,
-     * because a coach-collected answer belongs in an `assessments` row with
-     * `source: "coach"` rather than being quietly merged into self-report.
+     * **These now feed the grade**, decided 15/08/2026. Every app-native lead
+     * arrived ungraded because Stage 1 asks for none of them, and a grade that
+     * stays blank after you have spoken to someone for half an hour is not
+     * measuring caution, it is just missing.
+     *
+     * They are not merged into `leads.responses`. The grade reads them from
+     * here, so a coach-collected answer keeps its attribution: who recorded it,
+     * on what date, in which call. Self-report and observation stay
+     * distinguishable, which is the rule the whole scoring model rests on.
+     *
+     * Two are closed-choice for that reason: an answer that has to reach a
+     * lookup cannot be free text. The job title stays free text because Gate 1
+     * classifies through the Job Title Pool, which is not loaded, so nothing
+     * here may classify it.
      */
     icpJobTitle: v.optional(v.string()),
-    icpExperienceYears: v.optional(v.string()),
-    icpPriorInvestment: v.optional(v.string()),
+    icpExperienceYears: v.optional(
+      v.union(v.literal("0-1"), v.literal("2-10"), v.literal("11-15"), v.literal("16+")),
+    ),
+    icpPriorInvestment: v.optional(
+      v.union(v.literal("none"), v.literal("unrelated"), v.literal("relevant")),
+    ),
 
     /**
      * When the same-day Thai follow-up went out. Absent on a held call is the

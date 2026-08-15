@@ -13,12 +13,13 @@
  */
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { readAnswers } from "@/lib/content/answers";
+import { latestCoachIcp } from "@/lib/leadGrade";
 import LeadBriefing from "./LeadBriefing";
 import CallLog from "./CallLog";
 
@@ -86,6 +87,11 @@ function download(contents: string, filename: string, mime: string) {
 export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   const router = useRouter();
   const lead = useQuery(api.leads.getForAdmin, { leadId });
+  // The same query `CallLog` runs. Convex dedupes identical subscriptions, so
+  // this costs nothing extra and keeps the grade and the log reading one
+  // source rather than two that can disagree.
+  const calls = useQuery(api.consultations.listForLead, { leadId });
+  const coachIcp = useMemo(() => latestCoachIcp(calls ?? []), [calls]);
   const deleteLead = useMutation(api.leads.deleteLeadOnRequest);
   const [building, setBuilding] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -136,7 +142,11 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           onClick={async () => {
             const { renderSubjectExportHtml } = await import("@/lib/subjectExport");
             download(
-              renderSubjectExportHtml(lead),
+              // Calls included, decided 15/08/2026. A coach's written record
+              // of an identified person is their data on the ordinary reading,
+              // and the cost is a discipline rather than a feature: notes get
+              // written as though they will be read, because one day they are.
+              renderSubjectExportHtml(lead, calls ?? []),
               `punprofile-data-${slug(lead.fullName ?? "record")}.html`,
               "text/html;charset=utf-8",
             );
@@ -150,7 +160,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           onClick={async () => {
             const { buildSubjectExport } = await import("@/lib/subjectExport");
             download(
-              JSON.stringify(buildSubjectExport(lead), null, 2),
+              JSON.stringify(buildSubjectExport(lead, calls ?? []), null, 2),
               `punprofile-data-${slug(lead.fullName ?? "record")}.json`,
               "application/json",
             );
@@ -224,7 +234,11 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
 
       {/* The briefing replaces the bare score list that used to sit here. Four
           numbers told you nothing you could open a conversation with. */}
-      <LeadBriefing responses={lead.responses} fullName={lead.fullName} />
+      <LeadBriefing
+        responses={lead.responses}
+        fullName={lead.fullName}
+        coachIcp={coachIcp}
+      />
 
       {/* Above the answers and well above the delete panel: what happened on a
           call is the thing most often read and the only thing on this page that

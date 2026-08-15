@@ -34,9 +34,81 @@ export type FitTier = "weak" | "moderate" | "strong";
  */
 export type GateVerdict = "pass" | "assumed_pass" | "fail";
 
+/**
+ * Where a graded answer came from.
+ *
+ * `form` is the candidate's own self-report. `call` is a coach writing down
+ * what they were told in a consultation. The grade treats them identically,
+ * because both are the person's answer to the same question, but it never
+ * stops being able to say which, and the admin surface says so out loud.
+ */
+export type IcpSource = "form" | "call";
+
+/** The three ICP answers a call collects, taken from the most recent one that has them. */
+export interface CoachIcp {
+  jobTitle: string | null;
+  experienceYears: ScoringInput["experienceYears"];
+  priorInvestment: ScoringInput["priorInvestment"];
+  /** When the call happened, for the provenance line. */
+  at: number | null;
+}
+
+export const NO_COACH_ICP: CoachIcp = {
+  jobTitle: null,
+  experienceYears: null,
+  priorInvestment: null,
+  at: null,
+};
+
+/**
+ * The newest coach-collected value for each field, taken field by field.
+ *
+ * Field by field rather than newest-call-wins: a follow-up that only recorded a
+ * job title must not blank an experience band captured in the kick-start. Calls
+ * arrive newest first, so the first non-empty value for each field is the
+ * current one.
+ */
+export function latestCoachIcp(
+  calls: {
+    heldAt: number;
+    icpJobTitle?: string;
+    icpExperienceYears?: string;
+    icpPriorInvestment?: string;
+  }[],
+): CoachIcp {
+  const ordered = [...calls].sort((a, b) => b.heldAt - a.heldAt);
+  const out: CoachIcp = { ...NO_COACH_ICP };
+
+  for (const c of ordered) {
+    if (out.jobTitle === null && c.icpJobTitle) {
+      out.jobTitle = c.icpJobTitle;
+      out.at ??= c.heldAt;
+    }
+    if (out.experienceYears == null && c.icpExperienceYears) {
+      out.experienceYears = c.icpExperienceYears as ScoringInput["experienceYears"];
+      out.at ??= c.heldAt;
+    }
+    if (out.priorInvestment == null && c.icpPriorInvestment) {
+      out.priorInvestment = c.icpPriorInvestment as ScoringInput["priorInvestment"];
+      out.at ??= c.heldAt;
+    }
+  }
+  return out;
+}
+
 export interface LeadGrade {
   /** Gate 1, In Scope. White-collar or IT professional, read off the CV. */
   inScope: GateVerdict;
+  /**
+   * The job title, once a call has collected one. Not classified: Gate 1
+   * classifies through the Job Title Pool and that is not loaded, so this is
+   * shown for a human to read and nothing scores it.
+   */
+  jobTitle: string | null;
+  /** Which source each graded answer came from. Null where the answer is missing. */
+  sources: { offeringMatch: IcpSource | null; investment: IcpSource | null };
+  /** When the call that supplied any coach answer happened. */
+  coachInputAt: number | null;
   /** Gate 2, Offering Match. Standard coaching, or needs a different offering. */
   offeringMatch: GateVerdict;
   /** Why Gate 2 failed, in words a coach can act on. Null when it passed. */
@@ -167,21 +239,48 @@ export function toGradeInput(responses: Record<string, unknown>): ScoringInput {
   };
 }
 
-export function gradeLead(input: ScoringInput): LeadGrade {
-  const gate2 = offeringGate(input.experienceYears);
-  const score = investmentPoints(input.priorInvestment);
+/**
+ * @param input  the candidate's own answers, from the form.
+ * @param coach  what a consultation collected. Fills only what the form left
+ *               empty, so a self-reported answer is never overwritten by a
+ *               coach's note of the same question, and the two never race.
+ */
+export function gradeLead(input: ScoringInput, coach: CoachIcp = NO_COACH_ICP): LeadGrade {
+  const experienceFrom: IcpSource | null = input.experienceYears
+    ? "form"
+    : coach.experienceYears
+      ? "call"
+      : null;
+  const investmentFrom: IcpSource | null = input.priorInvestment
+    ? "form"
+    : coach.priorInvestment
+      ? "call"
+      : null;
+
+  const gate2 = offeringGate(input.experienceYears ?? coach.experienceYears);
+  const score = investmentPoints(input.priorInvestment ?? coach.priorInvestment);
 
   const unmeasured: string[] = [];
   // Gate 1 reads the current job title off the CV (decided 13/08/2026: not a
   // new question, because the app has no free-text input type and the signal it
   // replaces gave 81% of leads the same answer). Until the Phase 5 CV pipeline
-  // lands there is nothing to read, so every lead is in scope by default.
-  unmeasured.push("In Scope gate (no CV pipeline yet)");
+  // lands there is nothing to read, so every lead is in scope by default. A
+  // title collected on a call is carried but still not classified, because the
+  // Job Title Pool that would classify it is not loaded.
+  unmeasured.push(
+    coach.jobTitle
+      ? "In Scope gate (job title known, Job Title Pool not loaded)"
+      : "In Scope gate (no CV pipeline yet)",
+  );
   if (gate2.verdict === "assumed_pass") unmeasured.push("Offering Match gate");
   if (score === null) unmeasured.push("Investment Readiness");
 
   return {
     inScope: "assumed_pass",
+    jobTitle: coach.jobTitle,
+    sources: { offeringMatch: experienceFrom, investment: investmentFrom },
+    coachInputAt:
+      experienceFrom === "call" || investmentFrom === "call" || coach.jobTitle ? coach.at : null,
     offeringMatch: gate2.verdict,
     routingNote: gate2.note,
     score,

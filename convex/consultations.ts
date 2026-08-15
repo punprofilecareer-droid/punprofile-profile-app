@@ -25,11 +25,28 @@ const TYPE = v.union(
 );
 
 const OUTCOME = v.union(
+  v.literal("invited"),
   v.literal("scheduled"),
   v.literal("held"),
   v.literal("no_show"),
   v.literal("cancelled"),
+  v.literal("expired"),
 );
+
+const TRIGGER = v.union(
+  v.literal("survey_stage_wave1"),
+  v.literal("survey_urgent_wave2"),
+  v.literal("manual"),
+);
+
+/** Closed-choice because these reach the ICP lookups. See `leadGrade.ts`. */
+const EXPERIENCE = v.union(
+  v.literal("0-1"),
+  v.literal("2-10"),
+  v.literal("11-15"),
+  v.literal("16+"),
+);
+const INVESTMENT = v.union(v.literal("none"), v.literal("unrelated"), v.literal("relevant"));
 
 const CHANNEL = v.union(
   v.literal("line"),
@@ -60,10 +77,17 @@ const EDITABLE = {
   salaryQuote: v.optional(v.string()),
   moduleFit: v.optional(v.string()),
   icpJobTitle: v.optional(v.string()),
-  icpExperienceYears: v.optional(v.string()),
-  icpPriorInvestment: v.optional(v.string()),
+  icpExperienceYears: v.optional(EXPERIENCE),
+  icpPriorInvestment: v.optional(INVESTMENT),
   followUpSentAt: v.optional(v.number()),
   notes: v.optional(v.string()),
+  // The invitation, typed in by hand because the free Calendly tier pushes
+  // nothing. See the schema for why there is no separate `scheduledFor`.
+  trigger: v.optional(TRIGGER),
+  sentAt: v.optional(v.number()),
+  sentChannel: v.optional(v.union(v.literal("line"), v.literal("email"))),
+  bookedAt: v.optional(v.number()),
+  reminderSentAt: v.optional(v.number()),
 };
 
 /** One candidate's calls, most recent first. */
@@ -141,6 +165,11 @@ export const update = mutation({
       // move the time the follow-up actually went out.
       followUpSentAt: args.followUpSentAt,
       notes: args.notes,
+      trigger: args.trigger,
+      sentAt: args.sentAt,
+      sentChannel: args.sentChannel,
+      bookedAt: args.bookedAt,
+      reminderSentAt: args.reminderSentAt,
       updatedAt: Date.now(),
     });
   },

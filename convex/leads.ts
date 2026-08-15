@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { QueryCtx, MutationCtx } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v, ConvexError } from "convex/values";
 import { computeScores } from "./scoring";
@@ -8,7 +9,7 @@ import { toScoringInput } from "../src/lib/content/mapping";
 import { isValidAnswer } from "../src/lib/content/questions";
 import { EUROPEAN_LANGUAGES } from "../src/lib/country-english";
 import { rateLimiter } from "./rateLimits";
-import { gradeLead, toGradeInput } from "../src/lib/leadGrade";
+import { gradeLead, toGradeInput, latestCoachIcp } from "../src/lib/leadGrade";
 
 /**
  * TASK-012/013/015/016: the candidate session lifecycle, per PRD § 4.
@@ -193,9 +194,15 @@ export const captureContact = mutation({
       stage,
       // The booking gate decided 14/08/2026, and the only rule in the whole
       // framework that decides whether someone gets a link rather than what to
-      // say to them. `offer` is the app's merge of "has an offer" and
-      // "negotiating", both of which the rule names.
-      sqlGate: stage === "interviewing" || stage === "offer",
+      // say to them.
+      //
+      // `offer` dropped out of it on 15/08/2026, when the question stopped
+      // merging "has an offer" with "negotiating". The rule in
+      // `08_Coaching_Business.md` names interviewing and negotiating, and while
+      // the two were one option the merged value had to be included. Now that
+      // they are separate, including `offer` would widen a cut the owning
+      // document has not widened.
+      sqlGate: stage === "interviewing" || stage === "negotiating",
       routingNote: grade.routingNote,
     });
   },
@@ -345,6 +352,21 @@ export const listForAdmin = query({
       )
     ).flat();
 
+    /**
+     * Coach-collected ICP answers, for the leads that have been spoken to.
+     *
+     * One scan of the whole table rather than a lookup per lead: at roughly one
+     * call a fortnight this is a handful of rows, and 100 index reads to render
+     * a badge would be the more expensive mistake. Revisit if the log ever runs
+     * to thousands.
+     */
+    const byLead = new Map<string, Doc<"consultations">[]>();
+    for (const c of await ctx.db.query("consultations").collect()) {
+      const list = byLead.get(c.leadId) ?? [];
+      list.push(c);
+      byLead.set(c.leadId, list);
+    }
+
     // Sorted across statuses here, because the index orders within one status,
     // which is not the same thing as "what happened most recently".
     return rows
@@ -366,7 +388,14 @@ export const listForAdmin = query({
         // `toGradeInput`, not `toScoringInput`: the grade reads the raw record
         // so imported survey leads grade too, and so the two ICP answers never
         // reach the candidate's chart. See `leadGrade.ts`.
-        grade: gradeLead(toGradeInput(l.responses ?? {})),
+        //
+        // The second argument is what a call collected. It fills only what the
+        // form left empty, which is most app-native leads, every one of which
+        // used to sit here ungraded.
+        grade: gradeLead(
+          toGradeInput(l.responses ?? {}),
+          latestCoachIcp(byLead.get(l._id) ?? []),
+        ),
         answered: Object.keys(l.responses ?? {}).length,
         createdAt: l.createdAt,
         lastActivityAt: l.lastActivityAt,

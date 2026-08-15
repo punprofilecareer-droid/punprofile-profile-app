@@ -86,7 +86,81 @@ function readable(key: string, value: unknown): { question: string; answer: stri
   return { question: q?.en ?? IMPORTED_LABELS[key] ?? key, answer };
 }
 
-export function buildSubjectExport(lead: SubjectRecord) {
+/**
+ * A call, as it appears to the person it was about.
+ *
+ * Decided 15/08/2026: consultations are included. They are a coach's written
+ * record of an identified person, which is their personal data on the ordinary
+ * reading, and a request asks what is held rather than what is comfortable to
+ * show. The alternative considered was releasing the factual fields and
+ * withholding the free-text read, which is the weaker position precisely
+ * because the free-text read is the part most clearly about them.
+ *
+ * The rule this creates, and it is the real cost of the decision: **call notes
+ * are written as though the candidate will read them**, because one day one
+ * will. Internal routing vocabulary does not belong in `notes`.
+ *
+ * Two fields are held back, and neither is about the candidate. `moduleFit` is
+ * a commercial judgement about what PunProfile would sell them, and
+ * `nextStepMatchesApp` is a note about whether our own software agreed with
+ * itself. Both are records about the business, not about the person.
+ */
+export interface SubjectCall {
+  type: string;
+  outcome: string;
+  heldAt: number;
+  durationMinutes?: number;
+  language?: string;
+  theirQuestion?: string;
+  strengthsNamed?: string;
+  nextStep?: string;
+  salaryQuote?: string;
+  icpJobTitle?: string;
+  icpExperienceYears?: string;
+  icpPriorInvestment?: string;
+  notes?: string;
+  followUpSentAt?: number;
+}
+
+const CALL_TYPE_LABEL: Record<string, string> = {
+  kick_start: "Free 30-minute consultation",
+  engagement: "Coaching session",
+  follow_up: "Follow-up conversation",
+  other: "Conversation",
+};
+
+const CALL_OUTCOME_LABEL: Record<string, string> = {
+  invited: "You were sent a booking link",
+  scheduled: "Booked",
+  held: "It took place",
+  no_show: "It was booked and did not take place",
+  cancelled: "Cancelled",
+  expired: "The invitation was not taken up",
+};
+
+function readableCalls(calls: SubjectCall[]) {
+  return calls
+    .slice()
+    .sort((a, b) => b.heldAt - a.heldAt)
+    .map((c) => ({
+      what: CALL_TYPE_LABEL[c.type] ?? "Conversation",
+      when: stamp(c.heldAt),
+      whatHappened: CALL_OUTCOME_LABEL[c.outcome] ?? c.outcome,
+      minutes: c.durationMinutes,
+      language: c.language,
+      theQuestionYouAsked: c.theirQuestion,
+      strengthsWeNamed: c.strengthsNamed,
+      theActionAgreed: c.nextStep,
+      salaryYouMentioned: c.salaryQuote,
+      whatYouToldUsAboutYourWork: [c.icpJobTitle, c.icpExperienceYears, c.icpPriorInvestment]
+        .filter(Boolean)
+        .join(", "),
+      ourNotes: c.notes,
+      followUpSent: stamp(c.followUpSentAt),
+    }));
+}
+
+export function buildSubjectExport(lead: SubjectRecord, calls: SubjectCall[] = []) {
   const answers = Object.entries(lead.responses)
     // Underscore keys are reserved for internal bookkeeping. None exist today;
     // the guard is here so adding one later cannot silently leak into an export.
@@ -115,6 +189,10 @@ export function buildSubjectExport(lead: SubjectRecord) {
           : "Given at the contact step of the assessment, per channel.",
     },
     answers,
+    conversations: {
+      note: "Conversations we had with you, and what we wrote down about them.",
+      calls: readableCalls(calls),
+    },
     derived: {
       note: "Computed by PunProfile from your answers. You did not provide these.",
       scores: lead.scores,
@@ -130,8 +208,8 @@ export function buildSubjectExport(lead: SubjectRecord) {
   };
 }
 
-export function renderSubjectExportHtml(lead: SubjectRecord): string {
-  const d = buildSubjectExport(lead);
+export function renderSubjectExportHtml(lead: SubjectRecord, calls: SubjectCall[] = []): string {
+  const d = buildSubjectExport(lead, calls);
   const name = d.identity.fullName ?? "your record";
 
   const row = (label: string, value: string | null) =>
@@ -192,6 +270,31 @@ ${BRAND_TOKENS_CSS.replace(/\n  \}$/, `\n${BRAND_FONT_STACKS}\n  }`)}
   <table>
     ${d.answers.map((a) => `<tr><th scope="row">${esc(a.question)}</th><td>${esc(a.answer)}</td></tr>`).join("\n    ")}
   </table>
+
+  ${
+    d.conversations.calls.length === 0
+      ? ""
+      : `<h2>Conversations we had with you</h2>
+  <p class="note">${esc(d.conversations.note)}</p>
+  ${d.conversations.calls
+    .map(
+      (c) => `<table>
+    ${row("What it was", c.what)}
+    ${row("When", c.when)}
+    ${row("What happened", c.whatHappened)}
+    ${row("How long", c.minutes ? `${c.minutes} minutes` : null)}
+    ${row("Language", c.language ?? null)}
+    ${row("The question you asked", c.theQuestionYouAsked ?? null)}
+    ${row("Strengths we named", c.strengthsWeNamed ?? null)}
+    ${row("The action we agreed", c.theActionAgreed ?? null)}
+    ${row("Salary you mentioned", c.salaryYouMentioned ?? null)}
+    ${row("What you told us about your work", c.whatYouToldUsAboutYourWork || null)}
+    ${row("Our notes", c.ourNotes ?? null)}
+    ${row("Follow-up sent", c.followUpSent)}
+  </table>`,
+    )
+    .join("\n  ")}`
+  }
 
   <h2>What we worked out from it</h2>
   <p class="note">${esc(d.derived.note)}</p>

@@ -24,14 +24,18 @@ import { toScoringInputForLead } from "@/lib/content/mapping";
 import { scoreResponse } from "@/lib/scoring";
 import { buildNarrative } from "@/lib/narrative";
 import { buildCoachView } from "@/lib/views";
-import { gradeLead, toGradeInput } from "@/lib/leadGrade";
+import { gradeLead, toGradeInput, NO_COACH_ICP } from "@/lib/leadGrade";
+import type { CoachIcp } from "@/lib/leadGrade";
 
 export default function LeadBriefing({
   responses,
   fullName,
+  coachIcp = NO_COACH_ICP,
 }: {
   responses: Record<string, unknown>;
   fullName: string | null;
+  /** What a logged call collected. Fills only what the form left empty. */
+  coachIcp?: CoachIcp;
 }) {
   const { profile, narrative, coach, grade } = useMemo(() => {
     // `toScoringInputForLead`, not `toScoringInput`: the 90 imported survey
@@ -47,9 +51,9 @@ export default function LeadBriefing({
       coach: buildCoachView(input, fullName ?? "Lead"),
       // Raw responses, not `input`: the two ICP answers are deliberately kept
       // out of ScoringInput so they cannot reach the candidate's chart.
-      grade: gradeLead(toGradeInput(responses)),
+      grade: gradeLead(toGradeInput(responses), coachIcp),
     };
-  }, [responses, fullName]);
+  }, [responses, fullName, coachIcp]);
 
   if (Object.keys(responses).length === 0) {
     return (
@@ -184,6 +188,28 @@ export default function LeadBriefing({
         </p>
         {grade.routingNote && (
           <p className="mt-1 text-body text-ink">{grade.routingNote}</p>
+        )}
+        {grade.jobTitle && (
+          <p className="mt-1 text-body text-slate">
+            Job title, from a call: {grade.jobTitle}. Not classified, because the Job
+            Title Pool that Gate 1 reads is not loaded.
+          </p>
+        )}
+        {/* Where each graded answer came from. The grade treats a call and the
+            form identically, since both are the person's answer to the same
+            question, but it never stops being able to say which. */}
+        {grade.coachInputAt !== null && (
+          <p className="mt-1 text-caption text-primary-deep">
+            Graded partly on a call from{" "}
+            {new Date(grade.coachInputAt).toLocaleDateString("en-GB")}:{" "}
+            {[
+              grade.sources.offeringMatch === "call" && "years of experience",
+              grade.sources.investment === "call" && "prior paid learning",
+            ]
+              .filter(Boolean)
+              .join(" and ") || "job title"}
+            .
+          </p>
         )}
         <p className="mt-1 text-caption text-neutral-500">
           Unmeasured: {grade.unmeasured.join("; ")}.

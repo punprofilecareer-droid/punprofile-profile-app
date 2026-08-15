@@ -40,10 +40,34 @@ const TYPE_LABEL: Record<Call["type"], string> = {
 };
 
 const OUTCOME_LABEL: Record<Call["outcome"], string> = {
+  invited: "Link sent, nothing back yet",
   scheduled: "Scheduled",
   held: "Held",
   no_show: "No-show",
   cancelled: "Cancelled",
+  expired: "Never booked, invitation aged out",
+};
+
+const TRIGGER_LABEL: Record<string, string> = {
+  survey_stage_wave1: "Wave 1, interviewing or negotiating",
+  survey_urgent_wave2: "Wave 2, within 3 months and applying or later",
+  manual: "Manual, no rule fired",
+};
+
+const SENT_CHANNEL_LABEL: Record<string, string> = { line: "LINE", email: "Email" };
+
+/** The bands the ICP lookups read. Free text cannot reach a lookup. */
+const EXPERIENCE_LABEL: Record<string, string> = {
+  "0-1": "Up to 1 year",
+  "2-10": "2 to 10 years",
+  "11-15": "11 to 15 years",
+  "16+": "16 years or more",
+};
+
+const INVESTMENT_LABEL: Record<string, string> = {
+  none: "Never paid for a course, certification or coaching",
+  unrelated: "Has paid for something, relevance not established",
+  relevant: "Has paid for something relevant to the target field",
 };
 
 const CHANNEL_LABEL: Record<string, string> = {
@@ -103,6 +127,11 @@ interface Draft {
    */
   followUpSentAt: number | null;
   notes: string;
+  trigger: string;
+  sentAt: string;
+  sentChannel: string;
+  bookedAt: string;
+  reminderSent: boolean;
 }
 
 function emptyDraft(): Draft {
@@ -124,6 +153,11 @@ function emptyDraft(): Draft {
     icpPriorInvestment: "",
     followUpSentAt: null,
     notes: "",
+    trigger: "",
+    sentAt: "",
+    sentChannel: "",
+    bookedAt: "",
+    reminderSent: false,
   };
 }
 
@@ -146,6 +180,11 @@ function draftFrom(call: Call): Draft {
     icpPriorInvestment: call.icpPriorInvestment ?? "",
     followUpSentAt: call.followUpSentAt ?? null,
     notes: call.notes ?? "",
+    trigger: call.trigger ?? "",
+    sentAt: call.sentAt ? toLocalInput(call.sentAt) : "",
+    sentChannel: call.sentChannel ?? "",
+    bookedAt: call.bookedAt ? toLocalInput(call.bookedAt) : "",
+    reminderSent: call.reminderSentAt !== undefined,
   };
 }
 
@@ -156,6 +195,13 @@ function draftFrom(call: Call): Draft {
  * the record.
  */
 const text = (s: string): string | undefined => s.trim() || undefined;
+
+/** A `datetime-local` value back to epoch ms, or undefined when left blank. */
+const when = (s: string): number | undefined => {
+  if (!s) return undefined;
+  const ms = new Date(s).getTime();
+  return Number.isFinite(ms) ? ms : undefined;
+};
 
 export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
   const calls = useQuery(api.consultations.listForLead, { leadId });
@@ -177,6 +223,9 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
     setError(null);
     try {
       const duration = Number.parseInt(draft.durationMinutes, 10);
+      const existingReminder = editing
+        ? calls?.find((c) => c._id === editing)?.reminderSentAt
+        : undefined;
       const fields = {
         type: draft.type,
         outcome: draft.outcome,
@@ -191,12 +240,22 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
         salaryQuote: text(draft.salaryQuote),
         moduleFit: text(draft.moduleFit),
         icpJobTitle: text(draft.icpJobTitle),
-        icpExperienceYears: text(draft.icpExperienceYears),
-        icpPriorInvestment: text(draft.icpPriorInvestment),
+        // Cast, not parsed: both are `<select>` values drawn from the same
+        // label maps the schema's unions are built from, so the only strings
+        // reachable here are the legal ones. The server revalidates anyway.
+        icpExperienceYears: (draft.icpExperienceYears || undefined) as Call["icpExperienceYears"],
+        icpPriorInvestment: (draft.icpPriorInvestment || undefined) as Call["icpPriorInvestment"],
         // Carried, not recomputed. Re-saving the row must not move the time
         // the follow-up actually went out.
         followUpSentAt: draft.followUpSentAt ?? undefined,
         notes: text(draft.notes),
+        trigger: (draft.trigger || undefined) as Call["trigger"],
+        sentAt: when(draft.sentAt),
+        sentChannel: (draft.sentChannel || undefined) as Call["sentChannel"],
+        bookedAt: when(draft.bookedAt),
+        // Stamped when ticked. The exact minute a manual reminder went out is
+        // not worth typing; whether it went out at all is the whole point.
+        reminderSentAt: draft.reminderSent ? (existingReminder ?? Date.now()) : undefined,
       };
       if (editing) {
         await updateCall({ consultationId: editing, ...fields });
@@ -257,15 +316,35 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
               <Detail label="Salary, with role and country" value={c.salaryQuote} />
               <Detail label="Would buy" value={c.moduleFit} />
               <Detail label="Job title" value={c.icpJobTitle} />
-              <Detail label="Years of experience" value={c.icpExperienceYears} />
-              <Detail label="Prior paid learning" value={c.icpPriorInvestment} />
+              <Detail
+                label="Years of experience"
+                value={c.icpExperienceYears && EXPERIENCE_LABEL[c.icpExperienceYears]}
+              />
+              <Detail
+                label="Prior paid learning"
+                value={c.icpPriorInvestment && INVESTMENT_LABEL[c.icpPriorInvestment]}
+              />
               <Detail label="Notes" value={c.notes} />
+
+              {(c.trigger || c.sentAt || c.bookedAt) && (
+                <p className="mt-2 text-caption text-neutral-500">
+                  {c.trigger ? TRIGGER_LABEL[c.trigger] : "Trigger not recorded"}
+                  {c.sentAt
+                    ? ` · sent ${stamp(c.sentAt)}${c.sentChannel ? ` on ${SENT_CHANNEL_LABEL[c.sentChannel]}` : ""}`
+                    : ""}
+                  {c.bookedAt ? ` · booked ${stamp(c.bookedAt)}` : ""}
+                  {c.reminderSentAt ? " · reminder sent" : ""}
+                </p>
+              )}
 
               <p className="mt-2 text-caption text-neutral-500">
                 {c.outcome === "held" &&
                   (c.followUpSentAt
                     ? `Follow-up sent ${stamp(c.followUpSentAt)}. `
                     : "Follow-up not sent. It is same-day and manual. ")}
+                {c.outcome === "scheduled" && !c.reminderSentAt
+                  ? "Day-before reminder not sent yet. "
+                  : ""}
                 Logged by {c.createdBy}
               </p>
 
@@ -414,7 +493,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                 ungraded because Stage 1 collects none of them, so this is where they first
                 exist.
               </p>
-              <div className="mt-3 grid gap-4 sm:grid-cols-3">
+              <div className="mt-3 grid gap-4 sm:grid-cols-3 sm:items-start">
                 <Field label="Current job title">
                   <input
                     value={draft.icpJobTitle}
@@ -422,20 +501,20 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                     className={INPUT}
                   />
                 </Field>
-                <Field label="Years of experience">
-                  <input
-                    value={draft.icpExperienceYears}
-                    onChange={(e) => set("icpExperienceYears", e.target.value)}
-                    className={INPUT}
-                  />
-                </Field>
-                <Field label="Paid for learning before">
-                  <input
-                    value={draft.icpPriorInvestment}
-                    onChange={(e) => set("icpPriorInvestment", e.target.value)}
-                    className={INPUT}
-                  />
-                </Field>
+                <Select
+                  label="Years of experience"
+                  value={draft.icpExperienceYears}
+                  onChange={(x) => set("icpExperienceYears", x)}
+                  options={Object.entries(EXPERIENCE_LABEL)}
+                  allowEmpty
+                />
+                <Select
+                  label="Paid for learning before"
+                  value={draft.icpPriorInvestment}
+                  onChange={(x) => set("icpPriorInvestment", x)}
+                  options={Object.entries(INVESTMENT_LABEL)}
+                  allowEmpty
+                />
               </div>
 
               <h4 className="mt-6 text-label text-slate">What was agreed</h4>
@@ -466,6 +545,57 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
               </div>
             </>
           )}
+
+          <h4 className="mt-6 text-label text-slate">The invitation</h4>
+          <p className="mt-1 text-caption text-neutral-500">
+            Typed in by hand, because the free Calendly tier has no webhooks and pushes
+            nothing. What it buys is the only measurement of whether the booking rule is
+            any good: the trigger records which rule fired, so changing the rule later
+            does not rewrite what the old one produced.
+          </p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2 sm:items-start">
+            <Select
+              label="What fired the send"
+              value={draft.trigger}
+              onChange={(x) => set("trigger", x)}
+              options={Object.entries(TRIGGER_LABEL)}
+              allowEmpty
+            />
+            <Select
+              label="Sent on"
+              value={draft.sentChannel}
+              onChange={(x) => set("sentChannel", x)}
+              options={Object.entries(SENT_CHANNEL_LABEL)}
+              allowEmpty
+            />
+            <Field label="Link sent at">
+              <input
+                type="datetime-local"
+                value={draft.sentAt}
+                onChange={(e) => set("sentAt", e.target.value)}
+                className={INPUT}
+              />
+            </Field>
+            <Field
+              label="They booked at"
+              hint="The gap from sent to booked is the only read on whether the message worked."
+            >
+              <input
+                type="datetime-local"
+                value={draft.bookedAt}
+                onChange={(e) => set("bookedAt", e.target.value)}
+                className={INPUT}
+              />
+            </Field>
+          </div>
+          <div className="mt-4">
+            <Check
+              label="Day-before reminder sent"
+              hint="Manual. The free tier sends none, and this is the step that breaks first."
+              checked={draft.reminderSent}
+              onChange={(x) => set("reminderSent", x)}
+            />
+          </div>
 
           <div className="mt-6">
             <Field label="Notes">
