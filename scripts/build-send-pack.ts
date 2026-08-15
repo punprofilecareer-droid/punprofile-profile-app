@@ -61,6 +61,14 @@ const COUNTRY_BLOCK: Record<string, string> = {
   // Quota-based and EU-preference tested, so targeting it alone is a strategy
   // problem worth naming before someone spends a year on it.
   Switzerland: "a-switzerland",
+  // Added 15/08/2026 after re-reading 07_Reference.md properly. These four were
+  // first written off as "a scheme name and nothing else", which was wrong: the
+  // behaviour-changing material sits in each country's Labour Market paragraph,
+  // not in the Immigration line or the route-names table.
+  Ireland: "a-ireland",
+  Denmark: "a-denmark",
+  Sweden: "a-sweden",
+  France: "a-france",
 };
 
 /**
@@ -150,6 +158,10 @@ const missing = [
   "a-method-general",
   "a-germany",
   "a-switzerland",
+  "a-france",
+  "a-sweden",
+  "a-denmark",
+  "a-ireland",
   "a-study-route",
   "a-close",
   "b-body",
@@ -230,9 +242,13 @@ for (const lead of leads) {
       parts.push(fill(B["a-method-general"], th));
     }
 
-    // Germany's block already offers a second way in. A third would break the
-    // method's own one-action rule.
-    if (special !== "a-germany") parts.push(B["a-study-route"]);
+    // Paul's 2b: the general-method email is one idea plus the ask. The study
+    // route was a second idea competing with it, and 10_Methodology.md's own
+    // rule is one action, never a list.
+    //
+    // Germany keeps its exclusion for a different reason: Chancenkarte already
+    // IS the second way in, so the study route would make three.
+    if (special && special !== "a-germany") parts.push(B["a-study-route"]);
 
     parts.push(B["a-close"]);
     subject = fill(B["subject-a"], th);
@@ -285,8 +301,9 @@ console.log(`    b  ${String(built.b.length).padStart(3)}  the four routes, no c
 const specific = built.a.filter((m) => m.countryBlock).length;
 console.log(
   `\n    of the ${built.a.length} in a, ${specific} get advice specific to their country and\n` +
-    `    ${built.a.length - specific} get the general method plus a line saying so. Four countries have\n` +
-    `    something in 07_Reference.md that changes behaviour; the rest have a name.`,
+    `    ${built.a.length - specific} get the general method. Eight countries have something in\n` +
+    `    07_Reference.md that changes behaviour; the rest have only a scheme name,\n` +
+    `    which by this file's own rule is not enough to send.`,
 );
 const byBlock = new Map<string, number>();
 for (const m of built.a) byBlock.set(m.countryBlock ?? "a-method-general", (byBlock.get(m.countryBlock ?? "a-method-general") ?? 0) + 1);
