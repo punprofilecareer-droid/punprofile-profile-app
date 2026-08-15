@@ -258,7 +258,42 @@ export const submitLanguages = mutation({
  * nothing to an attacker looks identical to one returning nothing because
  * there is no data, and that difference matters when reading logs.
  */
+/**
+ * The development bypass, and the reason it is shaped this way.
+ *
+ * Signing in to look at a lead locally is real friction, and friction on the
+ * one screen the coach actually uses is worth removing. But this is the app's
+ * only real access boundary, so a plain `DEV_BYPASS=true` is not good enough:
+ * an environment variable set once tends to get copied, and the failure mode is
+ * every candidate's contact details, salary expectation and call notes served
+ * to anyone who visits `/admin`.
+ *
+ * So the switch is **self-scoping**. Its value must be the name of the
+ * deployment it is allowed on, and it is compared against the deployment the
+ * code is actually running in. Setting `DEV_ADMIN_BYPASS=quiet-mule-251` on
+ * production does nothing at all, because production is not called that. There
+ * is no value that turns it on everywhere.
+ *
+ * It fails closed: unset, malformed, or unable to tell where it is running, and
+ * the answer is no bypass.
+ */
+function devBypassEmail(): string | null {
+  const allowedOn = (process.env.DEV_ADMIN_BYPASS ?? "").trim();
+  if (!allowedOn) return null;
+
+  // `CONVEX_SITE_URL` is a system variable the runtime sets, already relied on
+  // by `auth.config.ts`. The subdomain is the deployment name.
+  const url = process.env.CONVEX_SITE_URL ?? process.env.CONVEX_CLOUD_URL ?? "";
+  const here = url.replace(/^https?:\/\//, "").split(".")[0];
+  if (!here || here !== allowedOn) return null;
+
+  return (process.env.ADMIN_EMAIL ?? "dev-bypass@localhost").trim().toLowerCase();
+}
+
 export async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string> {
+  const bypass = devBypassEmail();
+  if (bypass) return bypass;
+
   // The email comes from the user record, NOT from the token. Convex Auth mints
   // a JWT carrying only sub, iss, aud, iat and exp, so `identity.email` is
   // always undefined and comparing against it rejects everyone, including the

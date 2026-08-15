@@ -21,8 +21,15 @@ import {
  */
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
+/**
+ * Local development only, and it opens the convenience layer rather than the
+ * boundary: with this on and the server switch off, /admin renders and every
+ * query on it fails. See `AdminGate.tsx` for why the two are separate.
+ */
+const devBypass = process.env.NEXT_PUBLIC_DEV_ADMIN_BYPASS === "1";
+
 export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
-  if (isAdminRoute(request) && !(await convexAuth.isAuthenticated())) {
+  if (isAdminRoute(request) && !devBypass && !(await convexAuth.isAuthenticated())) {
     return nextjsMiddlewareRedirect(request, "/login");
   }
 });
