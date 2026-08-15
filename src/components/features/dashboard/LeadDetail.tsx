@@ -120,6 +120,8 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   const engagements = useQuery(api.delivery.forLead, { leadId });
   const outcomes = useQuery(api.outcomes.forLead, { leadId });
   const deleteLead = useMutation(api.leads.deleteLeadOnRequest);
+  const setDisposition = useMutation(api.leads.setDisposition);
+  const [dispReason, setDispReason] = useState("");
   const [building, setBuilding] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [deleteNote, setDeleteNote] = useState("");
@@ -366,6 +368,76 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           </Section>
         </div>
       </div>
+
+      {/* The judgement, kept well away from Delete. One is about whether to
+          work with someone, the other erases them, and putting them side by
+          side would invite the wrong click. */}
+      <Section title="Should we work with this lead">
+        <p className="text-body text-slate">
+          Blank is the normal state and means nobody has judged. It does{" "}
+          <strong>not</strong> mean qualified. Out of scope is Gate 1 from the
+          qualification framework: not a white-collar or IT professional. Not
+          now is the right person at the wrong moment, which is a different
+          thing and should not be recorded as the first.
+        </p>
+        {lead.disposition ? (
+          <div className="mt-3 rounded-sm border border-neutral-300 bg-cream-wash px-4 py-3">
+            <p className="text-body text-ink">
+              {lead.disposition === "disqualified" ? "Out of scope" : "Not now"}
+              {lead.dispositionReason ? `: ${lead.dispositionReason}` : ""}
+            </p>
+            <button
+              type="button"
+              onClick={() => void setDisposition({ leadId, disposition: null })}
+              className="mt-2 text-caption text-primary underline"
+            >
+              Clear this judgement
+            </button>
+          </div>
+        ) : (
+          <div className="mt-3">
+            <label className="block text-label text-slate">
+              Reason, required
+              <input
+                value={dispReason}
+                onChange={(e) => setDispReason(e.target.value)}
+                placeholder="e.g. front-line role, outside the channel's scope"
+                className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink"
+              />
+            </label>
+            <div className="mt-3 flex gap-3">
+              <button
+                type="button"
+                disabled={!dispReason.trim()}
+                onClick={() =>
+                  void setDisposition({
+                    leadId,
+                    disposition: "disqualified",
+                    reason: dispReason.trim(),
+                  }).then(() => setDispReason(""))
+                }
+                className="h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate disabled:opacity-50"
+              >
+                Out of scope
+              </button>
+              <button
+                type="button"
+                disabled={!dispReason.trim()}
+                onClick={() =>
+                  void setDisposition({
+                    leadId,
+                    disposition: "not_now",
+                    reason: dispReason.trim(),
+                  }).then(() => setDispReason(""))
+                }
+                className="h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate disabled:opacity-50"
+              >
+                Not now
+              </button>
+            </div>
+          </div>
+        )}
+      </Section>
 
       <Section title="Delete on request">
         <p className="text-body text-slate">

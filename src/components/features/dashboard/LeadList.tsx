@@ -37,27 +37,38 @@ function ago(ms: number): string {
   return `${Math.floor(s / 86400)}d`;
 }
 
+const SORTS = [
+  ["fit", "Fit, best first"],
+  ["ready", "Readiness, highest first"],
+  ["recent", "Most recent activity"],
+  ["oldest", "Oldest activity"],
+  ["status", "How far they got"],
+] as const;
+type SortKey = (typeof SORTS)[number][0];
+
 export default function LeadList() {
   const [includeAbandoned, setIncludeAbandoned] = useState(false);
-  const leads = useQuery(api.leads.listForAdmin, { includeAbandoned });
+  const [includeDisqualified, setIncludeDisqualified] = useState(false);
+  // Defaults to fit, which is the order this list has always shown. The sort
+  // moved to the server so that changing it changes which leads the limit
+  // keeps, not just the order of the ones it already kept.
+  const [sort, setSort] = useState<SortKey>("fit");
+  const leads = useQuery(api.leads.listForAdmin, {
+    includeAbandoned,
+    includeDisqualified,
+    sort,
+  });
 
   const rows = useMemo(() => {
     if (!leads) return [];
-    return leads
-      .map((l) => ({
-        ...l,
-        // Fit is graded on the server; readiness comes from the denormalised
-        // scores the assessment already wrote, so nothing is recomputed twice.
-        readiness: readinessScore(
-          Object.values(l.scores).map((score) => ({ score: score ?? null })),
-        ),
-      }))
-      .sort(
-        (a, b) =>
-          (b.grade.tier ? TIER_RANK[b.grade.tier] : 0) - (a.grade.tier ? TIER_RANK[a.grade.tier] : 0) ||
-          (b.readiness ?? -1) - (a.readiness ?? -1) ||
-          b.lastActivityAt - a.lastActivityAt,
-      );
+    // Server order is authoritative. Readiness is attached for display only;
+    // re-sorting here would silently override the chosen sort.
+    return leads.map((l) => ({
+      ...l,
+      readiness: readinessScore(
+        Object.values(l.scores).map((score) => ({ score: score ?? null })),
+      ),
+    }));
   }, [leads]);
 
   if (leads === undefined) return <p className="text-body text-neutral-500">Loading leads...</p>;
@@ -70,15 +81,40 @@ export default function LeadList() {
         <p className="text-caption text-slate">
           {rows.length} lead{rows.length === 1 ? "" : "s"}, {contactable} reachable on LINE or phone
         </p>
-        <label className="flex items-center gap-2 text-caption text-slate">
-          <input
-            type="checkbox"
-            checked={includeAbandoned}
-            onChange={(e) => setIncludeAbandoned(e.target.checked)}
-            className="size-4 accent-primary"
-          />
-          Include abandoned sessions
-        </label>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="flex items-center gap-2 text-caption text-slate">
+            Order by
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortKey)}
+              className="rounded-sm border border-neutral-300 bg-surface px-2 py-1 text-caption text-ink"
+            >
+              {SORTS.map(([v, label]) => (
+                <option key={v} value={v}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex items-center gap-2 text-caption text-slate">
+            <input
+              type="checkbox"
+              checked={includeAbandoned}
+              onChange={(e) => setIncludeAbandoned(e.target.checked)}
+              className="size-4 accent-primary"
+            />
+            Include abandoned sessions
+          </label>
+          <label className="flex items-center gap-2 text-caption text-slate">
+            <input
+              type="checkbox"
+              checked={includeDisqualified}
+              onChange={(e) => setIncludeDisqualified(e.target.checked)}
+              className="size-4 accent-primary"
+            />
+            Include judged out
+          </label>
+        </div>
       </div>
 
       {rows.length === 0 ? (
@@ -96,6 +132,7 @@ export default function LeadList() {
                 <Th title="Fit: should we work with them. Investment Readiness, 0 to 3.">Fit</Th>
                 <Th title="Readiness: how close they are to landing a job, out of 5.">Ready</Th>
                 <Th>Status</Th>
+                <Th title="The coach's judgement. Blank means nobody has judged, which is not the same as qualified.">Judged</Th>
                 <Th>Last</Th>
               </tr>
             </thead>
@@ -103,7 +140,9 @@ export default function LeadList() {
               {rows.map((l) => (
                 <tr
                   key={l._id}
-                  className="border-b border-neutral-300 align-top transition-colors hover:bg-mint-wash"
+                  className={`border-b border-neutral-300 align-top transition-colors hover:bg-mint-wash ${
+                    l.disposition === "disqualified" ? "opacity-55" : ""
+                  }`}
                 >
                   <Td>
                     <Link href={`/admin/leads/${l._id}`} className="text-primary underline">
@@ -158,6 +197,22 @@ export default function LeadList() {
                     <span className="text-slate">
                       {l.status === "partial" ? "abandoned" : "contact given"}
                     </span>
+                  </Td>
+                  <Td>
+                    {l.disposition ? (
+                      <span
+                        title={l.dispositionReason ?? undefined}
+                        className={`whitespace-nowrap rounded-full px-2 py-0.5 text-caption ${
+                          l.disposition === "disqualified"
+                            ? "bg-neutral-100 text-neutral-500"
+                            : "bg-cream-wash text-warning"
+                        }`}
+                      >
+                        {l.disposition === "disqualified" ? "out of scope" : "not now"}
+                      </span>
+                    ) : (
+                      <span className="text-neutral-500">&mdash;</span>
+                    )}
                   </Td>
                   <Td>
                     <span className="whitespace-nowrap text-neutral-500">{ago(l.lastActivityAt)}</span>

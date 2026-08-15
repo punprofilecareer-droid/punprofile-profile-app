@@ -431,7 +431,26 @@ export async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string>
  * detail view is for.
  */
 export const listForAdmin = query({
-  args: { limit: v.optional(v.number()), includeAbandoned: v.optional(v.boolean()) },
+  args: {
+    limit: v.optional(v.number()),
+    includeAbandoned: v.optional(v.boolean()),
+    /**
+     * Sort key. `recent` is the default and the one the dashboard was built
+     * around; the others exist because a coach working a queue wants a
+     * different order from a coach scanning what just happened.
+     */
+    sort: v.optional(
+      v.union(
+        v.literal("recent"),
+        v.literal("oldest"),
+        v.literal("status"),
+        v.literal("fit"),
+        v.literal("ready"),
+      ),
+    ),
+    /** Hidden by default: a judged-out lead is noise in a working queue. */
+    includeDisqualified: v.optional(v.boolean()),
+  },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
     const limit = Math.min(args.limit ?? 100, 500);
@@ -446,6 +465,20 @@ export const listForAdmin = query({
       ? (["email_captured", "completed", "partial"] as const)
       : (["email_captured", "completed"] as const);
 
+    /**
+     * The scan window, deliberately independent of the display limit.
+     *
+     * `.take(limit)` truncates by recency **before** the sort below runs, so
+     * fetching only `limit` rows means "fit, best first" can never surface an
+     * older lead with a better fit: it only reorders the most recent handful.
+     * Caught 15/08/2026 by asking five sorts for three rows each and getting
+     * the same three people back.
+     *
+     * So the window is fixed and generous, the sort runs over all of it, and
+     * the display limit is applied last. At a few hundred leads this reads the
+     * table; revisit at tens of thousands, when a real cursor is needed anyway.
+     */
+    const SCAN = 1000;
     const rows = (
       await Promise.all(
         statuses.map((status) =>
@@ -453,7 +486,7 @@ export const listForAdmin = query({
             .query("leads")
             .withIndex("by_status_recency", (q) => q.eq("status", status))
             .order("desc")
-            .take(limit),
+            .take(SCAN),
         ),
       )
     ).flat();
@@ -475,8 +508,46 @@ export const listForAdmin = query({
 
     // Sorted across statuses here, because the index orders within one status,
     // which is not the same thing as "what happened most recently".
-    return rows
-      .sort((a, b) => b.lastActivityAt - a.lastActivityAt)
+    //
+    // Ordering is applied to the whole scan window before the display limit, so
+    // changing the sort changes which leads you see and not merely their order.
+    // That only holds because the window above is not the limit; see its note.
+    const STATUS_RANK = { completed: 0, email_captured: 1, partial: 2 } as const;
+    const sort = args.sort ?? "recent";
+    const visible = args.includeDisqualified
+      ? rows
+      : rows.filter((l) => l.disposition !== "disqualified");
+
+    const ordered = visible.sort((a, b) => {
+      switch (sort) {
+        case "oldest":
+          return a.lastActivityAt - b.lastActivityAt;
+        case "status":
+          return (
+            STATUS_RANK[a.status] - STATUS_RANK[b.status] ||
+            b.lastActivityAt - a.lastActivityAt
+          );
+        case "fit": {
+          // Ungraded sorts last rather than as zero. A blank grade means the
+          // inputs are missing, not that the person scored badly.
+          const av = gradeLead(toGradeInput(a.responses ?? {}), latestCoachIcp(byLead.get(a._id) ?? [])).score;
+          const bv = gradeLead(toGradeInput(b.responses ?? {}), latestCoachIcp(byLead.get(b._id) ?? [])).score;
+          return (bv ?? -1) - (av ?? -1) || b.lastActivityAt - a.lastActivityAt;
+        }
+        case "ready": {
+          const mean = (r: Record<string, unknown> | undefined) => {
+            const s = scoresFor(r);
+            const vals = Object.values(s).filter((n): n is number => typeof n === "number");
+            return vals.length ? vals.reduce((x, y) => x + y, 0) / vals.length : -1;
+          };
+          return mean(b.responses) - mean(a.responses) || b.lastActivityAt - a.lastActivityAt;
+        }
+        default:
+          return b.lastActivityAt - a.lastActivityAt;
+      }
+    });
+
+    return ordered
       .slice(0, limit)
       .map((l) => ({
         _id: l._id,
@@ -503,6 +574,8 @@ export const listForAdmin = query({
           latestCoachIcp(byLead.get(l._id) ?? []),
         ),
         answered: Object.keys(l.responses ?? {}).length,
+        disposition: l.disposition ?? null,
+        dispositionReason: l.dispositionReason ?? null,
         createdAt: l.createdAt,
         lastActivityAt: l.lastActivityAt,
       }));
@@ -538,6 +611,9 @@ export const getForAdmin = query({
       phoneConsentAt: lead.phoneConsentAt ?? null,
       lineConsentAt: lead.lineConsentAt ?? null,
       consentSource: lead.consentSource ?? "app",
+      disposition: lead.disposition ?? null,
+      dispositionReason: lead.dispositionReason ?? null,
+      dispositionAt: lead.dispositionAt ?? null,
       /**
        * Resolved from `consentEvents`, per channel and per purpose. This is the
        * only field that can answer "may we send them a job digest", and today
@@ -619,6 +695,50 @@ export const deleteLeadOnRequest = mutation({
     });
 
     return counts;
+  },
+});
+
+/**
+ * Record, or clear, the coach's judgement about working this lead.
+ *
+ * A reason is required. A disposition with no reason is an opinion nobody can
+ * review later, and this field will outlive whoever set it.
+ *
+ * Clearing is `disposition: null`, which is a real action rather than an
+ * absence: it restores "nobody has judged", not "judged and passed".
+ */
+export const setDisposition = mutation({
+  args: {
+    leadId: v.id("leads"),
+    disposition: v.union(v.literal("disqualified"), v.literal("not_now"), v.null()),
+    reason: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const adminEmail = await requireAdmin(ctx);
+    const lead = await ctx.db.get(args.leadId);
+    if (!lead) throw new ConvexError("Lead not found.");
+
+    if (args.disposition === null) {
+      await ctx.db.patch(args.leadId, {
+        disposition: undefined,
+        dispositionReason: undefined,
+        dispositionAt: undefined,
+        dispositionBy: undefined,
+        updatedAt: Date.now(),
+      });
+      return;
+    }
+
+    const reason = args.reason?.trim();
+    if (!reason) throw new ConvexError("A reason is required.");
+
+    await ctx.db.patch(args.leadId, {
+      disposition: args.disposition,
+      dispositionReason: reason,
+      dispositionAt: Date.now(),
+      dispositionBy: adminEmail,
+      updatedAt: Date.now(),
+    });
   },
 });
 

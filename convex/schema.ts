@@ -125,6 +125,39 @@ export default defineSchema({
       }),
     ),
 
+    /**
+     * The coach's own judgement about whether this lead should be worked at
+     * all. Added 15/08/2026.
+     *
+     * **Separate from `status` on purpose.** `status` is how far through the
+     * assessment they got, which is a fact about them. This is a decision about
+     * us. Conflating the two is how a funnel report starts counting a judgement
+     * as a stage.
+     *
+     * `disqualified` is Gate 1 from `08_Coaching_Business.md`: not a
+     * white-collar or IT professional, so out of scope. That document is
+     * explicit that such a lead "is excluded, not scored 0", and until now
+     * there was nowhere to record the exclusion.
+     *
+     * `not_now` is a real answer that is not a rejection: right person, wrong
+     * moment. It exists so that parking someone does not require calling them
+     * disqualified, which would be false and would follow them.
+     *
+     * **Absent is the normal state and means nobody has judged**, not that the
+     * lead passed. Never read an absent value as qualified.
+     */
+    /** @absent unmeasured — nobody has judged this lead. NOT the same as qualified */
+    disposition: v.optional(v.union(v.literal("disqualified"), v.literal("not_now"))),
+    /** Why. Required by the mutation, because a disposition with no reason is
+     *  an opinion that cannot be reviewed later. */
+    /** @absent none — only present alongside a disposition */
+    dispositionReason: v.optional(v.string()),
+    /** @absent none — only present alongside a disposition */
+    dispositionAt: v.optional(v.number()),
+    /** Which admin decided. Their own data, not the subject's. */
+    /** @absent none — only present alongside a disposition */
+    dispositionBy: v.optional(v.string()),
+
     // Lifecycle. `email_captured` keeps the PRD's vocabulary, but since
     // 08/08/2026 it means the whole contact set cleared the gate: name, email
     // and a LINE ID or phone number.
