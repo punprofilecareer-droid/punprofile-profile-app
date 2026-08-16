@@ -13,6 +13,17 @@
  *
  * Provenance is read from each module's own header. A file claims Paul's Thai
  * or it does not; nothing is inferred from how good the Thai looks.
+ *
+ * **Per-string override, added 16/08/2026.** A header claim is made once and
+ * the file keeps growing under it, so a string added today rode a sign-off
+ * given in August and the audit printed "0 unreviewed" while twelve strings had
+ * never been read. That is the exact failure this script exists to catch,
+ * committed by the script itself.
+ *
+ * So: a `TH-UNREVIEWED` marker in the comment directly above an entry marks
+ * that one string unread, whatever the header says. Remove the marker when he
+ * has read it. The marker can only ever move a string from read to unread,
+ * never the other way, so the worst a stale one does is ask for a second look.
  */
 
 import { readFileSync, readdirSync } from "node:fs";
@@ -42,15 +53,32 @@ type Row = {
   file: string;
   strings: number;
   paulsOwn: boolean;
+  /** Strings marked `TH-UNREVIEWED` in a file that otherwise claims his Thai. */
+  pending: number;
   banned: string[];
   emDash: number;
   thaiChars: number;
 };
 
-function strings(src: string): string[] {
-  return [...src.matchAll(/th:\s*"([^"]+)"/g)]
-    .map((m) => m[1])
-    .filter((t) => THAI.test(t));
+/** The marker that overrides a file's header claim for one entry. */
+const MARKER = "TH-UNREVIEWED";
+
+/**
+ * Every Thai string, each with the source text between it and the previous one.
+ *
+ * The window is bounded by the previous match rather than a fixed lookback so a
+ * marker can never leak onto the entry below it, which would understate what
+ * has been read and is the one direction of error worth engineering against.
+ */
+function strings(src: string): { th: string; before: string }[] {
+  const out: { th: string; before: string }[] = [];
+  let cursor = 0;
+  for (const m of src.matchAll(/th:\s*"([^"]+)"/g)) {
+    const at = m.index ?? 0;
+    if (THAI.test(m[1])) out.push({ th: m[1], before: src.slice(cursor, at) });
+    cursor = at + m[0].length;
+  }
+  return out;
 }
 
 const files = readdirSync(resolve(ROOT, "src/lib/content"))
@@ -68,15 +96,18 @@ for (const rel of files) {
   } catch {
     continue;
   }
-  const th = strings(src);
-  if (!th.length) continue;
-  const joined = th.join("\n");
+  const entries = strings(src);
+  if (!entries.length) continue;
+  const joined = entries.map((e) => e.th).join("\n");
+  // Read from the whole header block, not the first few lines: the claim sits
+  // deep in `consent-copy.ts` and a shallow read misses it.
+  const paulsOwn = PROVENANCE.test(src.slice(0, 4000));
+  const pending = entries.filter((e) => e.before.includes(MARKER)).length;
   rows.push({
     file: rel.split("/").pop()!,
-    strings: th.length,
-    // Read from the whole header block, not the first few lines: the claim sits
-    // deep in `consent-copy.ts` and a shallow read misses it.
-    paulsOwn: PROVENANCE.test(src.slice(0, 4000)),
+    strings: entries.length,
+    paulsOwn,
+    pending: paulsOwn ? pending : 0,
     banned: bannedForms.filter((b) => joined.includes(b)),
     emDash: (joined.match(/—/g) ?? []).length,
     thaiChars: (joined.match(/[฀-๿]/g) ?? []).length,
@@ -86,8 +117,11 @@ for (const rel of files) {
 rows.sort((a, b) => Number(a.paulsOwn) - Number(b.paulsOwn) || b.strings - a.strings);
 
 const unread = rows.filter((r) => !r.paulsOwn);
-const readTotal = rows.filter((r) => r.paulsOwn).reduce((n, r) => n + r.strings, 0);
-const unreadTotal = unread.reduce((n, r) => n + r.strings, 0);
+const pendingRows = rows.filter((r) => r.pending > 0);
+const pendingTotal = rows.reduce((n, r) => n + r.pending, 0);
+const readTotal =
+  rows.filter((r) => r.paulsOwn).reduce((n, r) => n + r.strings, 0) - pendingTotal;
+const unreadTotal = unread.reduce((n, r) => n + r.strings, 0) + pendingTotal;
 
 console.log("\nShipped Thai, by whether Paul has read it\n");
 console.log(
@@ -101,11 +135,19 @@ for (const r of unread) {
     `    ${String(r.strings).padStart(3)} strings, ${String(r.thaiChars).padStart(5)} chars  ${r.file.padEnd(19)} ${SURFACE[r.file] ?? ""}`,
   );
 }
+// Added since the file's own sign-off, so they sit here rather than under a
+// claim that covers everything around them.
+for (const r of pendingRows) {
+  console.log(
+    `    ${String(r.pending).padStart(3)} strings, added since sign-off   ${r.file.padEnd(19)} ${SURFACE[r.file] ?? ""}`,
+  );
+}
+if (!unread.length && !pendingRows.length) console.log("    nothing.");
 
 console.log("\n  ALREADY HIS");
 for (const r of rows.filter((x) => x.paulsOwn)) {
   console.log(
-    `    ${String(r.strings).padStart(3)} strings, ${String(r.thaiChars).padStart(5)} chars  ${r.file.padEnd(19)} ${SURFACE[r.file] ?? ""}`,
+    `    ${String(r.strings - r.pending).padStart(3)} strings, ${String(r.thaiChars).padStart(5)} chars  ${r.file.padEnd(19)} ${SURFACE[r.file] ?? ""}`,
   );
 }
 
