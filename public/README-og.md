@@ -96,6 +96,10 @@ placement.
    patch is off by more than a unit, something about the capture has changed and
    the old matrix fit is in this file's git history.
 
+   `scripts/lib/og-correct.py`, which fitted and applied that matrix, was
+   deleted in the same change. It is in git history if the capture method ever
+   goes back to screenshotting a visible window.
+
    Capturing at `--force-device-scale-factor=1` also matters: the browser
    extension's screenshot runs at DPR 2 and is returned downscaled as JPEG,
    which would mean building a 1200x630 deliverable out of a resampled lossy
