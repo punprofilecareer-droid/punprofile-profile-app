@@ -29,7 +29,7 @@ export const CONTACT_INTRO: Copy = {
  */
 export const CONTACT_CHANNELS: Copy = {
   en: "LINE is usually the faster reply. Email is better for anything detailed, or if you want to attach a CV.",
-  th: "LINE มักได้คำตอบเร็วกว่า ส่วนอีเมลเหมาะกับคำถามที่มีรายละเอียดเยอะ หรือถ้าคุณอยากแนบ CV มาด้วย",
+  th: "Line มักได้คำตอบเร็วกว่า ส่วนอีเมลเหมาะกับคำถามที่มีรายละเอียดเยอะ หรือถ้าคุณอยากแนบ CV มาด้วย",
 };
 
 /** For the person who already left their details and is about to do it twice. */

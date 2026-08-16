@@ -25,6 +25,7 @@ import type * as rateLimits from "../rateLimits.js";
 import type * as retention from "../retention.js";
 import type * as scoring from "../scoring.js";
 import type * as stats from "../stats.js";
+import type * as subscribe from "../subscribe.js";
 
 import type {
   ApiFromModules,
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   retention: typeof retention;
   scoring: typeof scoring;
   stats: typeof stats;
+  subscribe: typeof subscribe;
 }>;
 
 /**

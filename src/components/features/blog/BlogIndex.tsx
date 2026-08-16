@@ -23,6 +23,7 @@ import { useSearchParams } from "next/navigation";
 import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
 import PostCard from "@/components/features/blog/PostCard";
+import SignupForm from "@/components/features/blog/SignupForm";
 import {
   BLOG_ALL,
   BLOG_CLOSE,
@@ -31,7 +32,10 @@ import {
   BLOG_INTRO,
   BLOG_NONE_YET,
   BLOG_TOPICS_LABEL,
+  PLAYBOOKS_HEADING,
+  PLAYBOOKS_INTRO,
   POSTS,
+  playbooks,
   usedTopics,
 } from "@/lib/content/blog";
 import type { TopicId } from "@/lib/content/blog";
@@ -80,8 +84,32 @@ function BlogBody() {
         <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:py-20">
           <h1 className="max-w-3xl text-h1">{pick(BLOG_HEADING)}</h1>
           <p className="mt-5 max-w-2xl text-body-lg text-slate">{pick(BLOG_INTRO)}</p>
+          {/* Renders nothing until Paul has read the Thai. `SignupForm` owns
+              that gate and says why. */}
+          <SignupForm />
         </div>
       </section>
+
+      {/* Start here. Hidden below two, because pointing at one article out of
+          one is the list again with a heading on top, which is the same
+          judgement the empty blog makes about its own menu entry.
+
+          On white, so the wash rotation reads hero -> white -> white rather
+          than three colours down the page. `design.md` asks for one wash per
+          section and lets spacing do the sub-grouping. */}
+      {playbooks().length > 1 && (
+        <section className="mx-auto w-full max-w-6xl px-6 pt-16">
+          <h2 className="max-w-2xl text-h2">{pick(PLAYBOOKS_HEADING)}</h2>
+          <p className="mt-4 max-w-2xl text-body-lg text-slate">
+            {pick(PLAYBOOKS_INTRO)}
+          </p>
+          <div className="mt-10 grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {playbooks().map((p) => (
+              <PostCard key={p.slug} post={p} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto w-full max-w-6xl px-6 py-16">
         {/* No topic row when there is nothing to filter. A row of one chip

@@ -161,6 +161,17 @@ export interface Section {
 export interface Post {
   slug: string;
   topic: TopicId;
+  /**
+   * A cornerstone piece, shown in the "start here" block above the grid.
+   *
+   * A property of the article rather than a sixth topic, because a playbook has
+   * a topic like anything else: `Content_Strategy.md` lists Playbooks as a
+   * pillar in its own right since 16/08/2026, and the pillar describes the
+   * article's ROLE while `topic` describes its subject. The reference blog this
+   * was taken from shows the same thing, since every card in its playbooks block
+   * still carries a category above the title.
+   */
+  playbook?: boolean;
   /** ISO, for `<time dateTime>` and metadata. Rendered DD/MM/YYYY. */
   published: string;
   title: Copy;
@@ -191,6 +202,16 @@ export const POSTS: readonly Post[] = [
 
 export const postBySlug = (slug: string): Post | undefined =>
   POSTS.find((p) => p.slug === slug);
+
+/**
+ * The cornerstone pieces, in running order.
+ *
+ * The block that renders these is hidden when there are fewer than two, which
+ * is the same judgement the empty blog makes about its own menu entry: pointing
+ * at one article out of one is not a recommendation, it is the list again with
+ * a heading on top.
+ */
+export const playbooks = (): Post[] => POSTS.filter((p) => p.playbook);
 
 /** Topics that actually have an article, in `TOPICS` order. */
 export const usedTopics = (): Topic[] =>
@@ -259,6 +280,94 @@ export const BLOG_QUESTION_LABEL: Copy = {
 };
 
 export const BLOG_READ: Copy = { en: "Read", th: "อ่านบทความ" };
+
+// ---------------------------------------------------------------------------
+// The "start here" block, and the email capture above it.
+//
+// Both were asked for on 16/08/2026 after a look at the reference blog, and
+// both were among the things the first build deliberately left out. The
+// reasoning that ruled them out has changed for one and not the other, so it is
+// worth being exact about which:
+//
+// - **The capture is now buildable.** `footer.ts` refused the same field on
+//   PDPA grounds, "no sending infrastructure and no consent copy covering a
+//   marketing list". Since 15/08/2026 the consent log records a `marketing`
+//   purpose per channel, withdrawal is a real mechanism, and the privacy notice
+//   covers it. What is left is Paul's read of the Thai, so this is gated on
+//   `MARKETING_CONSENT_COPY_REVIEWED` exactly as the contact step's tick is.
+// - **The playbooks block was only ever a question of having enough articles.**
+//   It renders at two or more.
+//
+// **No weekly cadence is promised anywhere below**, and that is deliberate
+// rather than an omission. The reference says "One insight a week"; there is no
+// send schedule, no `RESEND_API_KEY` on either deployment, and `nurture-flow.md`
+// § 5 lists both as open. A promise of a rhythm nobody can keep is the one thing
+// on this page that would be a lie rather than a plan.
+//
+// The Thai was composed 16/08/2026 through the `thai-composer` skill, measured
+// against Paul's own app copy, and **he has not read it back.**
+// ---------------------------------------------------------------------------
+
+export const PLAYBOOKS_HEADING: Copy = {
+  en: "New here? Start with the playbooks.",
+  th: "เพิ่งมาครั้งแรก? เริ่มจากคู่มือเหล่านี้",
+};
+
+export const PLAYBOOKS_INTRO: Copy = {
+  en: "The ones worth reading first. Each one takes a thing from the start until you can act on it yourself.",
+  th: "บทความที่ควรอ่านก่อน แต่ละเรื่องอธิบายตั้งแต่ต้นจนคุณลงมือทำต่อได้เอง",
+};
+
+/** The field's accessible name. Never rendered as a visible label. */
+export const SIGNUP_LABEL: Copy = { en: "Your email", th: "อีเมลของคุณ" };
+
+/** An example address, which is neither language. */
+export const SIGNUP_PLACEHOLDER = "name@email.com";
+
+export const SIGNUP_BUTTON: Copy = {
+  en: "Get job openings by email",
+  th: "รับอีเมลแจ้งตำแหน่งงาน",
+};
+
+/**
+ * Under the button. Names the payload and the limit in one line, which is the
+ * pinned post's move 5: say what this is not, in the same breath as the offer.
+ */
+export const SIGNUP_NOTE: Copy = {
+  en: "Only roles that match you. No spam, and you can stop at any time.",
+  th: "ส่งเฉพาะตำแหน่งที่ตรงกับคุณ ไม่มีสแปม ยกเลิกได้ทุกเมื่อ",
+};
+
+/**
+ * The sentence the reader agrees to by submitting, and it is not decoration:
+ * `convex/subscribe.ts` writes it verbatim into the consent event's `evidence`
+ * field. `schema.ts` says why in as many words, a consent record that cannot say
+ * what was agreed to is a timestamp rather than evidence.
+ *
+ * So editing this string changes what future records claim was shown, and older
+ * records keep the wording that was actually on screen when they were made.
+ *
+ * `จะไม่ส่งต่อข้อมูลให้บุคคลอื่น` is Paul's own, from `consent.purpose`.
+ */
+export const SIGNUP_CONSENT: Copy = {
+  en: "By pressing this you agree that PunProfile may keep your email address in order to send you matching roles. We do not pass it to anyone else.",
+  th: "เมื่อกดปุ่มนี้ คุณยินยอมให้ PunProfile เก็บอีเมลของคุณไว้เพื่อส่งตำแหน่งที่ตรงกับคุณ และเราจะไม่ส่งต่อข้อมูลให้บุคคลอื่น",
+};
+
+export const SIGNUP_DONE: Copy = {
+  en: "Done. We will send matching roles to this address.",
+  th: "เรียบร้อย เราจะส่งตำแหน่งที่ตรงกับคุณไปที่อีเมลนี้",
+};
+
+export const SIGNUP_BAD_EMAIL: Copy = {
+  en: "That email does not look right. Please check it.",
+  th: "อีเมลนี้ดูไม่ถูกต้อง ลองตรวจดูอีกครั้ง",
+};
+
+export const SIGNUP_BUSY: Copy = {
+  en: "We could not save that just now. Please try again in a moment.",
+  th: "ยังบันทึกไม่ได้ในตอนนี้ โปรดลองอีกครั้งในอีกสักครู่",
+};
 
 /**
  * The line above the action, on the index and at the foot of every article.

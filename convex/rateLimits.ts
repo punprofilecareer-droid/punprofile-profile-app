@@ -40,4 +40,17 @@ export const rateLimiter = new RateLimiter(components.rateLimiter, {
    * hammer the endpoint.
    */
   captureContact: { kind: "token bucket", rate: 10, period: MINUTE, capacity: 5 },
+
+  /**
+   * The blog's email capture, added 16/08/2026. Global rather than per lead,
+   * because there is no session on that page and nothing to key on before the
+   * address is trusted.
+   *
+   * Tighter than `startSession` because the shapes differ: a post landing a
+   * hundred readers in an hour is a good day, and a hundred of them subscribing
+   * in the same hour is not a day this business has had. The bucket absorbs a
+   * genuine burst and bounds a script; it is a backstop, not a defence, and the
+   * note at the top of this file applies here too.
+   */
+  subscribe: { kind: "token bucket", rate: 60, period: HOUR, capacity: 20 },
 });

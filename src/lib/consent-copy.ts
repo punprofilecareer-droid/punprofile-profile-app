@@ -175,8 +175,23 @@ export const CONSENT_COPY = {
    */
   "consent.marketing": {
     screen: "Contact gate, a separate optional tick under the consent statement",
-    en: "PLACEHOLDER, not for release. Optional: send me new job matches by email. You can stop at any time.",
-    th: "PLACEHOLDER, not for release. รับอีเมลแจ้งงานใหม่ที่ตรงกับคุณ ยกเลิกได้ทุกเมื่อ",
+    // Composed 16/08/2026 through the `thai-composer` skill, not translated.
+    // **Paul has not read it back.** The placeholder that stood here was
+    // machine-written and said so; this is composed against his own
+    // `consent.purpose` above and still carries the same status until he passes
+    // it, which is why `MARKETING_CONSENT_COPY_REVIEWED` is still false.
+    //
+    // Three shapes lifted from his own copy rather than invented:
+    // `แจ้งเราได้ทุกเมื่อ` is his, verbatim, from `consent.purpose`. `ตำแหน่ง`
+    // is the termbase's word for a specific opening, never `โอกาส`. `Line` is
+    // absent because these go by email only, which is the point of the tick.
+    //
+    // No `ฟรี` anywhere near it: LR-04 attaches it to ปรึกษา and to nothing
+    // else, and a free thing that is free is not the reason to say yes here.
+    // The reason is the named payload, which is the second of the three
+    // constraints recorded above.
+    en: "Send me job openings that match my profile by email. Tell us any time if you want it to stop.",
+    th: "รับอีเมลแจ้งตำแหน่งงานที่ตรงกับโปรไฟล์ของคุณ หากไม่อยากรับต่อ แจ้งเราได้ทุกเมื่อ",
   },
 } as const satisfies Record<string, CopyEntry>;
 
