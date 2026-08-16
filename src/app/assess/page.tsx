@@ -7,6 +7,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
 import { BLOCKS, blockFor } from "@/lib/content/blocks";
+import BlockPanel, { type BlockImage } from "@/components/features/assessment/BlockPanel";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
@@ -260,8 +261,32 @@ export default function AssessPage() {
   if (step < FLOW.length) {
     const item = FLOW[step];
 
+    /**
+     * The photograph for whatever the flow is showing.
+     *
+     * Computed here rather than inside the card, and `BlockPanel` is mounted
+     * outside the keyed `QuestionCard`, so it survives every answer. The first
+     * version put the panel inside the card, which the page keys on the
+     * question, so it remounted on every tap and its crossfade could never run.
+     */
+    const panel: BlockImage | null = (() => {
+      const b = blockFor("custom" in item ? "languages" : item.key);
+      if (!b?.image) return null;
+      return {
+        src: `/assess/blocks/${b.image}`,
+        // Decorative. The section it marks is already named by the question the
+        // candidate is reading, so describing the photograph would put a
+        // sentence between them and the question for no gain.
+        alt: "",
+        // Only the first block preloads. The rest are minutes away.
+        priority: b.id === BLOCKS[0].id,
+        blurDataURL: b.blurDataURL,
+      };
+    })();
+
     if ("custom" in item) {
       return (
+        <BlockPanel image={panel}>
         <LanguageGrid
           // Skip writes an empty grid rather than nothing. "I speak no other
           // European language" is an answer, and it is a different fact from
@@ -279,6 +304,7 @@ export default function AssessPage() {
           total={TOTAL_STEPS}
           onBack={() => setStep(step - 1)}
         />
+        </BlockPanel>
       );
     }
 
@@ -323,6 +349,7 @@ export default function AssessPage() {
       );
     };
     return (
+      <BlockPanel image={panel}>
       <QuestionCard
         key={q.key}
         prompt={pick(q)}
@@ -335,23 +362,7 @@ export default function AssessPage() {
         // The section's photograph, held across every question in the block, so
         // it changes six times across sixteen questions rather than sixteen.
         // Null until one is sourced, which is the norm today.
-        image={(() => {
-          const b = blockFor(q.key);
-          if (!b?.image) return null;
-          return {
-            src: `/assess/blocks/${b.image}`,
-            // Decorative. The section it marks is already named by the question
-            // the candidate is reading, so describing the photograph would put
-            // a sentence between them and the question for no gain.
-            alt: "",
-            // Only the first block preloads. It is the one on screen before
-            // anyone has answered anything; the other five are reached minutes
-            // later and preloading them would fetch photographs nobody has got
-            // to yet, on the mobile data this audience is mostly using.
-            priority: b.id === BLOCKS[0].id,
-            blurDataURL: b.blurDataURL,
-          };
-        })()}
+        hasPanel={Boolean(blockFor(q.key)?.image)}
         onSelect={(value) => {
           setLocal((prev) => ({ ...prev, [q.key]: value }));
           // A "many" question waits for Continue: the scorer should only ever
@@ -368,6 +379,7 @@ export default function AssessPage() {
         // until they actually replace it.
         onBack={step > 0 ? () => setStep(step - 1) : undefined}
       />
+      </BlockPanel>
     );
   }
 

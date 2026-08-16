@@ -10,7 +10,6 @@
  * button and commits once, with the full list, when that is pressed.
  */
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import ActionBar, { ActionBarSpacer } from "./ActionBar";
 import { EXCLUSIVE_VALUES } from "@/lib/content/questions";
@@ -73,79 +72,6 @@ function useScrollToTop() {
  * The question never waits for it either way: no `priority`, no blocking
  * placeholder, and the panel has its own width so nothing reflows on arrival.
  */
-function BlockImage({
-  src,
-  alt,
-  priority,
-  blurDataURL,
-}: {
-  src: string;
-  alt: string;
-  priority: boolean;
-  blurDataURL: string | null;
-}) {
-  /**
-   * Two layers, so a block change crossfades instead of cutting.
-   *
-   * The previous photograph stays underneath at full opacity while the new one
-   * fades in over it, then it is dropped. Without the bottom layer the panel
-   * would blink to its background between the two, which is worse than the cut
-   * it replaced.
-   *
-   * Adjusted during render rather than in an effect: an effect would paint one
-   * frame of the new picture at full opacity before the fade could start, which
-   * is the cut all over again for a sixtieth of a second.
-   */
-  const [shown, setShown] = useState({ src, blurDataURL });
-  const [leaving, setLeaving] = useState<typeof shown | null>(null);
-  if (src !== shown.src) {
-    setLeaving(shown);
-    setShown({ src, blurDataURL });
-  }
-
-  return (
-    // Lavender rather than grey underneath. It is the field the assessment
-    // already sits on, so a panel with nothing in it yet reads as part of the
-    // page instead of a hole in it.
-    <div className="relative hidden shrink-0 self-start overflow-hidden bg-lavender-wash md:sticky md:top-[72px] md:block md:h-[calc(100dvh-72px)] md:w-1/2">
-      {leaving && (
-        <Image
-          key={leaving.src}
-          src={leaving.src}
-          alt=""
-          fill
-          sizes="(max-width: 767px) 1px, 50vw"
-          className="object-cover object-center"
-        />
-      )}
-      <Image
-        key={shown.src}
-        src={shown.src}
-        alt={alt}
-        fill
-        // Only the first block preloads. The rest are minutes away and
-        // preloading them would fetch photographs nobody has reached, over the
-        // mobile data this audience is mostly on.
-        priority={priority}
-        // Paints a 20px version of the same photograph instantly, so the panel
-        // is never an empty box while the real file is being resized.
-        //
-        // **Do not add an opacity transition to this element.** An earlier
-        // attempt did, and `opacity-0` hides the placeholder too, because Next
-        // paints it as a background on this same element. The crossfade lives on
-        // the wrapper class instead, which is why `q-photo-in` is here and not a
-        // Tailwind opacity utility.
-        {...(shown.blurDataURL
-          ? { placeholder: "blur" as const, blurDataURL: shown.blurDataURL }
-          : {})}
-        sizes="(max-width: 767px) 1px, 50vw"
-        onAnimationEnd={() => setLeaving(null)}
-        className={`object-cover object-center ${leaving ? "q-photo-in" : ""}`}
-      />
-    </div>
-  );
-}
-
 export default function QuestionCard({
   prompt,
   options,
@@ -157,7 +83,7 @@ export default function QuestionCard({
   step,
   total,
   phase = "entering",
-  image,
+  hasPanel = false,
 }: {
   prompt: string;
   options: CardOption[];
@@ -171,8 +97,10 @@ export default function QuestionCard({
    * gives the candidate time to see their own answer register.
    */
   phase?: "entering" | "leaving";
-  /** The block's photograph. Absent until one is sourced, which is the norm. */
-  image?: { src: string; alt: string; priority: boolean; blurDataURL: string | null } | null;
+  /** Whether a block photograph occupies the left half, which is the only thing
+   *  this component still needs to know about it: the bar must not run under
+   *  the picture. The panel itself is `BlockPanel`, mounted above this. */
+  hasPanel?: boolean;
   /** Required in "many" mode: the only way forward. */
   onContinue?: () => void;
   /** Omitted on the first question, where there is nothing to go back to. */
@@ -222,104 +150,95 @@ export default function QuestionCard({
   const showBar = select === "many" || arrivedAnswered;
 
   return (
-    <div className="flex flex-1 flex-col md:flex-row">
-      {image && <BlockImage
-          key={image.src}
-          src={image.src}
-          alt={image.alt}
-          priority={image.priority}
-          blurDataURL={image.blurDataURL}
-        />}
-      <div className="flex flex-1 items-center justify-center">
+    <>
+    <div
+        className={`w-full max-w-md px-6 py-8 ${
+          phase === "leaving" ? "q-leaving" : "q-entering"
+        }`}
+      >
+      {/* A panel, not a bare column. From the 14/08/2026 design pass: on the
+          lavender field, content with no surface under it floated with nothing
+          holding it together, and the option rows in particular read as four
+          unrelated boxes rather than one set to choose from. */}
+      <div className="material rounded-lg px-5 py-6">
+        <div className="mb-1 flex min-h-6 items-center justify-between">
+          <p className="text-caption text-neutral-500">
+            {t("assess.progress", { step, total })}
+          </p>
+          {/* Quiet on purpose: revising an answer is allowed (PRD § 11) but it
+              is not the action the screen is asking for. The arrow earns its
+              place by making a small underlined string read as a direction
+              rather than as a link to somewhere new. */}
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="-mr-2 flex items-center gap-1 rounded-sm px-2 py-1 text-caption text-slate transition-colors hover:text-eufit-deep"
+            >
+              <span aria-hidden>&larr;</span>
+              {t("assess.back")}
+            </button>
+          )}
+        </div>
         <div
-          className={`w-full max-w-md px-6 py-8 ${
-            phase === "leaving" ? "q-leaving" : "q-entering"
-          }`}
+          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={step}
         >
-        {/* A panel, not a bare column. From the 14/08/2026 design pass: on the
-            lavender field, content with no surface under it floated with nothing
-            holding it together, and the option rows in particular read as four
-            unrelated boxes rather than one set to choose from. */}
-        <div className="material rounded-lg px-5 py-6">
-          <div className="mb-1 flex min-h-6 items-center justify-between">
-            <p className="text-caption text-neutral-500">
-              {t("assess.progress", { step, total })}
-            </p>
-            {/* Quiet on purpose: revising an answer is allowed (PRD § 11) but it
-                is not the action the screen is asking for. The arrow earns its
-                place by making a small underlined string read as a direction
-                rather than as a link to somewhere new. */}
-            {onBack && (
+          {/* Lavender, not Terracotta: progress is feedback, not the action. */}
+          <div
+            className="h-full rounded-full bg-eufit transition-all"
+            style={{ width: `${(step / total) * 100}%` }}
+          />
+        </div>
+        <h2 id={`q-${step}`} className="mb-4 text-h4">
+          {prompt}
+        </h2>
+        <div
+          className="q-stagger flex flex-col gap-2"
+          role="group"
+          aria-labelledby={`q-${step}`}
+        >
+          {options.map((o) => {
+            const on = isChosen(o.value);
+            return (
               <button
-                type="button"
-                onClick={onBack}
-                className="-mr-2 flex items-center gap-1 rounded-sm px-2 py-1 text-caption text-slate transition-colors hover:text-eufit-deep"
+                key={o.value}
+                onClick={() => handleTap(o.value)}
+                aria-pressed={on}
+                className={`flex min-h-12 items-center justify-between gap-3 rounded-md border px-4 py-3 text-left text-body transition-colors ${
+                  on
+                    ? "border-eufit-deep bg-eufit-deep text-on-eufit"
+                    : "border-neutral-300 bg-surface hover:border-eufit hover:bg-lavender-wash"
+                }`}
               >
-                <span aria-hidden>&larr;</span>
-                {t("assess.back")}
-              </button>
-            )}
-          </div>
-          <div
-            className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300"
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={total}
-            aria-valuenow={step}
-          >
-            {/* Lavender, not Terracotta: progress is feedback, not the action. */}
-            <div
-              className="h-full rounded-full bg-eufit transition-all"
-              style={{ width: `${(step / total) * 100}%` }}
-            />
-          </div>
-          <h2 id={`q-${step}`} className="mb-4 text-h4">
-            {prompt}
-          </h2>
-          <div
-            className="q-stagger flex flex-col gap-2"
-            role="group"
-            aria-labelledby={`q-${step}`}
-          >
-            {options.map((o) => {
-              const on = isChosen(o.value);
-              return (
-                <button
-                  key={o.value}
-                  onClick={() => handleTap(o.value)}
-                  aria-pressed={on}
-                  className={`flex min-h-12 items-center justify-between gap-3 rounded-md border px-4 py-3 text-left text-body transition-colors ${
-                    on
-                      ? "border-eufit-deep bg-eufit-deep text-on-eufit"
-                      : "border-neutral-300 bg-surface hover:border-eufit hover:bg-lavender-wash"
+                <span>{o.label}</span>
+                {/* The ring is the affordance. Without it a row is a box with
+                    text in it, and nothing on the screen says these are
+                    choices rather than headings until one is already tapped,
+                    which is one tap too late. */}
+                <span
+                  aria-hidden
+                  className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                    on ? "border-on-eufit" : "border-neutral-300"
                   }`}
                 >
-                  <span>{o.label}</span>
-                  {/* The ring is the affordance. Without it a row is a box with
-                      text in it, and nothing on the screen says these are
-                      choices rather than headings until one is already tapped,
-                      which is one tap too late. */}
-                  <span
-                    aria-hidden
-                    className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                      on ? "border-on-eufit" : "border-neutral-300"
-                    }`}
-                  >
-                    {on && <span className="block size-2.5 rounded-full bg-on-eufit" />}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        {/* A "many" question always needs this, since tapping toggles rather than
-            commits. A "one" question grows it only when an answer is already
-            there, which means the candidate came back to look: without it their
-            only way forward would be to re-tap an option they had not come to
-            change. */}
-        {showBar && <ActionBarSpacer />}
+                  {on && <span className="block size-2.5 rounded-full bg-on-eufit" />}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
+      {/* A "many" question always needs this, since tapping toggles rather than
+          commits. A "one" question grows it only when an answer is already
+          there, which means the candidate came back to look: without it their
+          only way forward would be to re-tap an option they had not come to
+          change. */}
+      {showBar && <ActionBarSpacer />}
+    </div>
 
       {/* Outside the animated card, deliberately.
           `position: fixed` resolves against the nearest ancestor with a
@@ -329,7 +248,7 @@ export default function QuestionCard({
           white strip Paul photographed. The spacer stays in the column, because
           that is layout and belongs with the content it is making room for. */}
       {showBar && (
-        <ActionBar half={Boolean(image)}>
+        <ActionBar half={hasPanel}>
           <button
             onClick={onContinue}
             disabled={chosen.length === 0}
@@ -342,6 +261,6 @@ export default function QuestionCard({
           </button>
         </ActionBar>
       )}
-    </div>
+    </>
   );
 }
