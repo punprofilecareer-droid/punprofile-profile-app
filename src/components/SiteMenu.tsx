@@ -26,7 +26,7 @@
  * Because the header it lives in has `backdrop-filter`, and an element with a
  * `backdrop-filter` other than `none` becomes the containing block for every
  * `position: fixed` descendant. Same rule as `transform` and `filter`, and it
- * is the reason a fixed overlay nested inside a glass bar silently stops being
+ * is the reason a fixed overlay nested inside the app bar silently stops being
  * fixed to the viewport.
  *
  * The symptom is not a missing background, which is what it looks like. The
@@ -40,7 +40,7 @@
  * this confusing: its menu is `absolute`, and absolute positioning wants a
  * positioned ancestor anyway, so the containing-block change costs it nothing.
  *
- * A portal to `document.body` puts the overlay outside every glass ancestor,
+ * A portal to `document.body` puts the overlay outside every such ancestor,
  * which is the fix rather than a workaround: a modal layer belongs at the top
  * of the document, not nested inside a bar that happens to contain its button.
  */
@@ -51,13 +51,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCopy } from "@/components/LocaleProvider";
 import { NAV } from "@/lib/content/nav";
+import { DESTINATIONS } from "@/lib/content/cta";
+
+/** The card advertises the assessment, so it takes the assessment's own label. */
+const ASSESS = DESTINATIONS.assess;
 import { getNavLocked, getNavLockedServer, subscribeNavLock } from "@/lib/navLock";
 
 /** A store that never emits. Module scope so the reference is stable. */
 const NEVER_CHANGES = () => () => {};
 
 export default function SiteMenu() {
-  const { t, path } = useCopy();
+  const { t, path, pick } = useCopy();
   const pathname = usePathname();
 
   /**
@@ -190,7 +194,7 @@ export default function SiteMenu() {
         aria-label={t("nav.menu")}
         aria-expanded={open}
         aria-controls="site-menu"
-        className="-ml-2 flex size-11 items-center justify-center rounded-md text-ink transition-colors hover:bg-lavender-wash"
+        className="-ml-2 flex size-12 items-center justify-center rounded-full text-on-surface transition-colors hover:bg-tertiary-container"
       >
         {/* Three rules, drawn rather than typed: the glyph characters that look
             like a burger render at different weights across Thai and Latin
@@ -213,13 +217,13 @@ export default function SiteMenu() {
               tabIndex={-1}
               aria-label={t("nav.menuClose")}
               onClick={close}
-              className={`fixed inset-0 z-40 cursor-default bg-ink/20 ${
+              className={`fixed inset-0 z-40 cursor-default bg-on-surface/20 ${
                 closing ? "menu-scrim-out" : "menu-scrim-in"
               }`}
             />
-            {/* Same material as the language menu, which is the other glass
-                surface a reader meets in this header: `.glass`, rounded, with
-                its contents clipped to the radius. Only the right corners are
+            {/* Same surface as the language menu, which is the other floating
+                control a reader meets in this header, one tier up in elevation
+                because a drawer covers more. Only the right corners are
                 rounded, because the left edge is against the screen and a
                 rounded corner there would float the panel off an edge it is
                 supposed to be attached to. */}
@@ -230,7 +234,7 @@ export default function SiteMenu() {
               role="dialog"
               aria-modal="true"
               aria-label={t("nav.menu")}
-              className={`glass fixed inset-y-0 left-0 z-50 flex w-[min(20rem,80vw)] flex-col overflow-hidden rounded-r-lg px-5 pt-5 outline-none ${
+              className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,80vw)] flex-col overflow-hidden rounded-r-large bg-surface-container-low px-5 pt-5 shadow-level-3 outline-none ${
                 closing ? "menu-panel-out" : "menu-panel-in"
               }`}
               style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
@@ -239,14 +243,28 @@ export default function SiteMenu() {
                 type="button"
                 onClick={close}
                 aria-label={t("nav.menuClose")}
-                className="-ml-1 mb-5 flex size-11 items-center justify-center self-start rounded-full text-ink transition-colors hover:bg-black/5"
+                className="-ml-1 mb-5 flex size-12 items-center justify-center self-start rounded-full text-on-surface transition-colors hover:bg-black/5"
               >
-                <span aria-hidden className="text-h4 leading-none">
+                <span aria-hidden className="text-title-large leading-none">
                   &times;
                 </span>
               </button>
 
-              <nav className="flex flex-col gap-1">
+              {/* Plain text, no chips. Reworked 16/08/2026 from a reference
+                  the founder supplied: the old list put every item in a 12px
+                  box and filled the current one, which made a six-item menu
+                  read as six buttons. A drawer is a list of destinations, and
+                  the thing it should be is quiet and easy to scan.
+
+                  `headline-small` and a 28px gap rather than `body-large` and
+                  4px. The generosity is the design; a cramped list is what
+                  chips were compensating for.
+
+                  The current page is marked by weight and colour rather than by
+                  a filled background, which is the same information without a
+                  second shape competing with the card below. `aria-current`
+                  carries it for a screen reader either way. */}
+              <nav className="flex flex-col gap-7">
                 {NAV.map((item) => {
                   // `path()` first, then compare. `pathname` is the real URL, so
                   // on the English tree it is `/en/faq` and the table's `/faq`
@@ -258,18 +276,49 @@ export default function SiteMenu() {
                     <Link
                       key={item.href}
                       href={href}
-                      // Marks the page you are on for a screen reader, the only
-                      // cue the visual highlight below has an equivalent for.
                       aria-current={here ? "page" : undefined}
-                      className={`flex min-h-12 items-center rounded-md px-3 text-body-lg transition-colors hover:bg-black/5 ${
-                        item.primary ? "font-semibold text-eufit-deep" : "text-ink"
-                      } ${here ? "bg-lavender-wash" : ""}`}
+                      className={`text-headline-small transition-colors hover:text-primary ${
+                        here ? "font-semibold text-primary" : "text-on-surface"
+                      }`}
                     >
                       {t(item.label)}
                     </Link>
                   );
                 })}
               </nav>
+
+              {/* The card at the foot of the drawer, from the same reference.
+                  `mt-auto` so it sits against the bottom however short the list
+                  is.
+
+                  `tertiary-container`, not brand lime. The reference's ground is
+                  a loud yellow and lime is the equivalent here, but this card
+                  advertises EU Fit Check, and EU Fit Check's identity colour is
+                  the blue family. A lime card would say PunProfile in a place
+                  that is trying to say EU Fit Check. Ink on it holds 13.26.
+
+                  The headline is the only new string; the action reuses the
+                  assessment's own label from `cta.ts`, so the menu and every
+                  other surface cannot drift into two wordings of one button. */}
+              <Link
+                href={path(ASSESS.href)}
+                className="group mt-auto flex flex-col gap-6 rounded-extra-large bg-tertiary-container p-6 transition-colors hover:bg-tertiary-fixed-dim"
+              >
+                <span className="text-headline-medium font-bold text-balance text-on-tertiary-container">
+                  {t("menu.promo")}
+                </span>
+                <span className="flex items-center justify-between gap-3">
+                  <span className="text-body-large font-semibold text-on-tertiary-container">
+                    {pick(ASSESS.label)}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-tertiary text-on-tertiary transition-transform group-hover:translate-x-0.5"
+                  >
+                    &rarr;
+                  </span>
+                </span>
+              </Link>
             </div>
           </>,
           document.body,

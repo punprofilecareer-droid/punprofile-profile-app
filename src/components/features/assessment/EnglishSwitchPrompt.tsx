@@ -20,8 +20,9 @@
  * second time does not fire it again, because a prompt that returns after being
  * dismissed is an argument rather than an offer.
  *
- * **Not glass.** `design.md` budgets exactly three glass surfaces and all three
- * are spent. This is a flat card with a soft shadow, on a scrim.
+ * **A dialog, not a card.** `design.md` gives dialogs `surface-container-high`
+ * at elevation level 3 with an extra-large radius, which is the one place M3
+ * spends that much lift. On a scrim.
  */
 
 import { useEffect, useRef } from "react";
@@ -52,21 +53,21 @@ export default function EnglishSwitchPrompt({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 px-4 pb-6 sm:items-center sm:pb-0"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-on-surface/40 px-4 pb-6 sm:items-center sm:pb-0"
       role="dialog"
       aria-modal="true"
       aria-labelledby="english-switch-title"
     >
-      <div className="w-full max-w-sm rounded-lg bg-surface px-6 py-7 shadow-lg">
-        <h2 id="english-switch-title" className="text-h4 text-eufit-deep">
+      <div className="w-full max-w-sm rounded-extra-large bg-surface-container-high px-6 py-7 shadow-level-3">
+        <h2 id="english-switch-title" className="text-title-large text-on-tertiary-container">
           {t("english.switch.title")}
         </h2>
-        <p className="mt-3 text-body text-slate">{t("english.switch.body")}</p>
+        <p className="mt-3 text-body-large text-on-surface-variant">{t("english.switch.body")}</p>
         <button
           ref={primary}
           type="button"
           onClick={onStay}
-          className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-md bg-accent px-6 text-label text-on-accent transition-colors hover:bg-accent-bright"
+          className="mt-6 inline-flex min-h-12 w-full items-center justify-center btn-filled px-6 text-label-large"
         >
           {t("english.switch.stay")}
         </button>
@@ -75,7 +76,7 @@ export default function EnglishSwitchPrompt({
         <button
           type="button"
           onClick={onRevert}
-          className="mt-3 w-full rounded-sm px-2 py-2 text-body text-slate underline underline-offset-2 transition-colors hover:text-eufit-deep"
+          className="mt-3 w-full rounded-small px-2 py-2 text-body-large text-on-surface-variant underline underline-offset-2 transition-colors hover:text-on-tertiary-container"
         >
           {t("english.switch.revert")}
         </button>

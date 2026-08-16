@@ -175,7 +175,7 @@ export default function LocaleToggle() {
         aria-label={`${t("nav.language")}: ${NAMES[locale]}`}
         // 44px tap target around a 24px flag. The switch lives in a 72px
         // header on a phone, where a 24px hit area is a miss.
-        className="flex size-11 items-center justify-center rounded-full transition-colors hover:bg-cream-wash"
+        className="flex size-12 items-center justify-center rounded-full transition-colors hover:bg-primary-container"
       >
         <Flag locale={locale} className="size-6" />
       </button>
@@ -183,11 +183,12 @@ export default function LocaleToggle() {
       {open && (
         <ul
           role="menu"
-          // Glass, and one of only three surfaces in the app that gets it: a
-          // menu is a control floating above content, which is exactly what
-          // Apple's material is for. `overflow-hidden` has to stay, or the
-          // rounded corners clip the blur into a square.
-          className="glass absolute right-0 z-50 mt-1 min-w-[9rem] overflow-hidden rounded-md py-1"
+          // `card-elevated` at level 2, from `design.md`. This was glass until
+          // 16/08/2026; M3 says a floating control is a raised surface rather
+          // than a translucent one, and a menu that reads clearly over whatever
+          // it covers is the point. `overflow-hidden` has to stay, or the item
+          // highlights square off the rounded corners.
+          className="absolute right-0 z-50 mt-1 min-w-[9rem] overflow-hidden rounded-medium bg-surface-container-low py-1 shadow-level-2"
         >
           {LOCALES.map((l) => (
             <li key={l} role="none">
@@ -196,8 +197,8 @@ export default function LocaleToggle() {
                 role="menuitemradio"
                 aria-checked={locale === l}
                 onClick={() => choose(l)}
-                className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-body transition-colors hover:bg-black/5 ${
-                  locale === l ? "text-ink" : "text-slate"
+                className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-body-large transition-colors hover:bg-black/5 ${
+                  locale === l ? "text-on-surface" : "text-on-surface-variant"
                 }`}
               >
                 <Flag locale={l} className="size-5 shrink-0" />

@@ -1,16 +1,17 @@
 "use client";
 
 /**
- * The floating action bar. Added 14/08/2026 with the Liquid Glass pass.
+ * The floating action bar. Added 14/08/2026 with the Liquid Glass pass, and it
+ * outlived the glass: the material was retired 16/08/2026 and the bar was not,
+ * because pinning it was a navigation decision rather than a property of what
+ * it was made of.
  *
- * This is the surface that makes the material mean something here. Apple's
- * guidance is that Liquid Glass belongs to the functional layer that floats
- * above content, and until now this app had almost no such layer: a header, a
- * footer and inline buttons that scrolled away with everything else. A bar
- * pinned to the bottom of the viewport, with the questions passing underneath
- * it, is the canonical case the material was designed for.
+ * It is now `navigation-bar` from `design.md`: `surface-container` with a
+ * hairline above it. A distinct container tier rather than a shadow, because
+ * M3 builds depth from surface tiers and keeps elevation for things that
+ * genuinely float free of an edge.
  *
- * It also fixes something that predates glass. The Continue button sat below
+ * The reason it exists is unchanged. The Continue button sat below
  * the last option, so on a long question, target countries especially, the way
  * forward was off screen and the candidate had to scroll to find it. Pinned, it
  * is always the same distance from the thumb.
@@ -44,7 +45,7 @@ export default function ActionBar({
 }) {
   return (
     <div
-      className={`glass-bar-bottom fixed inset-x-0 bottom-0 z-40 px-6 pt-3 ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-container px-6 pt-3 ${
         half ? "md:left-1/2" : ""
       }`}
       style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
@@ -57,7 +58,7 @@ export default function ActionBar({
 /**
  * The spacer that stops the bar covering the end of the content. A fixed
  * element is out of flow, so nothing below it knows it exists; without this the
- * last option on a question sits under the glass, half legible and untappable.
+ * last option on a question sits under the bar, half legible and untappable.
  *
  * Rendered as a sibling by every screen that shows a bar, rather than as
  * padding on a shared wrapper, because the screens that have no bar must not
