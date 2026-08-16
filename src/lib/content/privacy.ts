@@ -34,12 +34,39 @@
  */
 
 import type { Copy } from "./copy";
+import { MARKETING_CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
 
 /** TASK-047 cleared on Paul's sign-off, 14/08/2026. */
 export const PRIVACY_REVIEWED = true;
 
 /** Last substantive change to the text, DD/MM/YYYY. Shown to the reader. */
-export const PRIVACY_LAST_UPDATED = "14/08/2026";
+export const PRIVACY_LAST_UPDATED = "16/08/2026";
+
+/**
+ * The marketing opt-in, 16/08/2026.
+ *
+ * A notice has to describe what the product does, and the marketing tick in
+ * `ContactGate` is built and waiting on one thing: Paul's own Thai. It renders
+ * only when `MARKETING_CONSENT_COPY_REVIEWED` is true, and **every paragraph
+ * here that describes it is gated on the same constant.**
+ *
+ * One flag, because there is one fact underneath: whether this business asks
+ * for marketing consent. Two flags would allow the state that matters, a tick
+ * collecting consent for a purpose the published notice does not mention, and
+ * PDPA requires the notice to exist before the collection rather than after it.
+ * Flipping the constant turns on the tick and the text that covers it together.
+ *
+ * **One sentence outside the gate changed, and it is a narrowing.** "Why we hold
+ * it" said "We do not use it for anything else", which is true today and becomes
+ * false the moment the tick ships. It now says we do not use the data for
+ * anything the reader has not agreed to, which is true in both states. That
+ * sentence is inside Paul's 14/08/2026 sign-off and its replacement is not; it
+ * is flagged for his read rather than treated as covered.
+ *
+ * The Thai below is composed rather than translated, per LR-09, and it is still
+ * mine rather than his. It is behind the gate for that reason as much as any
+ * other.
+ */
 
 export interface PrivacySection {
   heading: Copy;
@@ -124,15 +151,51 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     },
     body: [
       {
-        en: "To produce your assessment result and send it to you, and, if you gave consent for that channel, to contact you about career coaching. We do not use it for anything else, and we do not sell it.",
-        th: "เพื่อจัดทำผลการประเมินและส่งให้คุณ และหากคุณให้ความยินยอมสำหรับช่องทางนั้น เพื่อติดต่อคุณเกี่ยวกับบริการแนะแนวอาชีพ เราไม่นำไปใช้เพื่อการอื่นและไม่ขายข้อมูลของคุณ",
+        // "We do not use it for anything else" was the wording Paul signed off
+        // on 14/08/2026 and it stops being true the moment the marketing tick
+        // ships. Narrowed rather than gated, so one sentence is correct in both
+        // states instead of two sentences being maintained.
+        en: "To produce your assessment result and send it to you, and, if you gave consent for that channel, to contact you about career coaching. We do not sell your data, and we do not use it for anything you have not agreed to.",
+        th: "เพื่อจัดทำผลการประเมินและส่งให้คุณ และหากคุณให้ความยินยอมสำหรับช่องทางนั้น เพื่อติดต่อคุณเกี่ยวกับบริการแนะแนวอาชีพ เราไม่ขายข้อมูลของคุณ และไม่นำไปใช้เพื่อการที่คุณไม่ได้ให้ความยินยอม",
       },
+      ...(MARKETING_CONSENT_COPY_REVIEWED
+        ? [
+            {
+              en: "If you ticked the optional box asking for job emails, we also use your email address to send you matching roles and short guidance. That is a separate consent from the one above.",
+              th: "หากคุณติ๊กช่องเลือกรับอีเมลแจ้งตำแหน่งงาน เราจะใช้อีเมลของคุณส่งตำแหน่งที่ตรงกับคุณและคำแนะนำสั้น ๆ ด้วย ความยินยอมนี้แยกจากข้อด้านบน",
+            },
+          ]
+        : []),
       {
         en: "Each contact channel is consented to separately, and each consent is recorded with the date and time you gave it. A phone number with no consent beside it is one we will not call.",
         th: "แต่ละช่องทางติดต่อต้องให้ความยินยอมแยกกัน และความยินยอมแต่ละรายการจะถูกบันทึกพร้อมวันและเวลาที่คุณให้ไว้ หมายเลขโทรศัพท์ที่ไม่มีการให้ความยินยอมกำกับไว้ คือหมายเลขที่เราจะไม่โทรหา",
       },
     ],
   },
+  ...(MARKETING_CONSENT_COPY_REVIEWED
+    ? [
+        {
+          heading: {
+            en: "Job emails, if you asked for them",
+            th: "อีเมลแจ้งตำแหน่งงาน หากคุณเลือกรับ",
+          },
+          body: [
+            {
+              en: "The box is optional and is never ticked for you. Leaving it unticked does not affect your result, and it does not affect anything else we do for you.",
+              th: "ช่องนี้เป็นตัวเลือก และไม่ได้ถูกติ๊กไว้ล่วงหน้า การไม่ติ๊กไม่มีผลต่อผลการประเมินของคุณ และไม่มีผลต่อสิ่งอื่นที่เราทำให้คุณ",
+            },
+            {
+              en: "If you tick it, we send matching roles and short guidance by email. We do not send them on Line or by phone, whatever you consented to for those channels: they are for talking to you about your own result and your coaching.",
+              th: "หากคุณติ๊ก เราจะส่งตำแหน่งที่ตรงกับคุณและคำแนะนำสั้น ๆ ทางอีเมล เราจะไม่ส่งทาง Line หรือโทรศัพท์ ไม่ว่าคุณจะให้ความยินยอมช่องทางเหล่านั้นไว้หรือไม่ เพราะช่องทางเหล่านั้นมีไว้พูดคุยเรื่องผลการประเมินและการโค้ชของคุณ",
+            },
+            {
+              en: "You can stop at any time by writing to the address at the end of this notice. We record the date you asked. Stopping does not delete your record and does not stop us answering you about your own result.",
+              th: "คุณขอหยุดรับได้ทุกเมื่อโดยเขียนมาที่อีเมลท้ายประกาศนี้ เราจะบันทึกวันที่คุณแจ้ง การหยุดรับไม่ได้ลบระเบียนข้อมูลของคุณ และไม่ได้หยุดการตอบกลับเรื่องผลการประเมินของคุณ",
+            },
+          ],
+        },
+      ]
+    : []),
   {
     heading: {
       en: "Where it is stored, and where it goes",
@@ -207,6 +270,14 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
         en: "- Withdraw your consent for any contact channel at any time. Withdrawing it stops future contact on that channel; it does not undo contact already made.",
         th: "- ถอนความยินยอมสำหรับช่องทางติดต่อใดก็ได้ทุกเมื่อ การถอนความยินยอมจะหยุดการติดต่อในช่องทางนั้นในอนาคต แต่ไม่ได้ย้อนกลับการติดต่อที่เกิดขึ้นไปแล้ว",
       },
+      ...(MARKETING_CONSENT_COPY_REVIEWED
+        ? [
+            {
+              en: "- Stop the job emails without withdrawing anything else. The two consents are recorded separately, so stopping one leaves the other exactly as it was.",
+              th: "- หยุดรับอีเมลแจ้งตำแหน่งงานโดยไม่ต้องถอนความยินยอมอื่น ความยินยอมทั้งสองถูกบันทึกแยกกัน การหยุดอย่างหนึ่งจึงไม่กระทบอีกอย่าง",
+            },
+          ]
+        : []),
       {
         en: "- Object to how we assess you, or complain to Thailand's Personal Data Protection Committee.",
         th: "- คัดค้านวิธีที่เราประเมินคุณ หรือร้องเรียนต่อคณะกรรมการคุ้มครองข้อมูลส่วนบุคคลของประเทศไทย",
