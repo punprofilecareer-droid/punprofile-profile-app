@@ -1,8 +1,13 @@
 # og.png, the social share card
 
-1200x630. Referenced from `metadata.openGraph` in `src/app/layout.tsx` and
+1200x630. Referenced from `metadata.openGraph` in `src/app/(th)/layout.tsx` and
 served straight out of `public/`. Added 16/08/2026, after a link posted into the
 Facebook group rendered as a bare URL.
+
+**The path changed later the same day**, when the `/en` tree split the root
+layout into three. The Thai tree's layout is the one that owns this card;
+`src/app/(en)/layout.tsx` points at the same file and says why an English card
+does not exist yet. See `AGENTS.md` § Routing.
 
 ## What is on it, and why
 

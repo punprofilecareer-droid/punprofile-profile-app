@@ -110,6 +110,42 @@ Some things worth knowing before you touch styling:
 Still placeholder: the wordmark, the mascot, section wash rotation and the editorial
 spacing pass. Those need assets from the sibling repo's `ctxt-brand/assets/`.
 
+## Routing, and the three root layouts
+
+Added 16/08/2026 with the `/en` tree. Read this before adding a page, because
+the shape is not the one Next's own i18n guide describes and a page added in the
+wrong place is invisible in one language.
+
+```
+src/app/
+  (th)/      Thai, at the root:  /  /assess  /blog  /coaching  …
+  (en)/en/   English, prefixed:  /en  /en/assess  /en/blog  …
+  (private)/ /admin and /login, in neither tree
+  sitemap.ts  robots.ts  llms.txt/
+```
+
+**Thai is unprefixed and English is prefixed**, not `/th` and `/en`. Every link
+ever posted to the group carries the app URL with its `?src=fb&job=` parameters
+from `00_Quick_Facts.md`, and a `/th` prefix would have turned all of them into
+redirects. It also keeps `/admin` out of both trees, so `src/proxy.ts` and its
+`/admin(.*)` matcher know nothing about locales, and it avoids the collision a
+top-level `[lang]` segment would have had with `/admin`.
+
+Three root layouts because Next renders one `<html>` per request from a root
+layout and `<html lang>` has to be true. All three render `SiteShell` and differ
+only in the locale they pass.
+
+**Adding a page means two files**: the real one under `(th)/`, and a
+`(en)/en/…/page.tsx` that re-exports its default and declares its own metadata
+through `pageMetadata({ …, locale: "en" })`. Add it to `PUBLIC_ROUTES` in
+`src/lib/seo.ts` and the sitemap, `hreflang` and `llms.txt` follow.
+
+**Every internal link is written as its Thai path** and passed through
+`path()` from `useCopy()`, or `localePath(href, locale)` in a server component.
+The link tables in `nav.ts`, `footer.ts`, `cta.ts` and `faq.ts` hold Thai paths
+and no locale at all: a link is a destination, and which language it is read in
+is a property of the reader.
+
 ## Deploying
 
 Written 15/08/2026, after a session asked how work gets deployed as one package
