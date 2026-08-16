@@ -364,6 +364,44 @@ export const SIGNUP_BAD_EMAIL: Copy = {
   th: "อีเมลนี้ดูไม่ถูกต้อง ลองตรวจดูอีกครั้ง",
 };
 
+// ---------------------------------------------------------------------------
+// Stopping the emails. 16/08/2026.
+//
+// The link at the foot of every marketing email, and the page it lands on. It
+// exists because marketing email is not lawful without a one-click way out, and
+// because `data-inventory.md` records the rule this page has to hold to:
+// **withdrawing is not deleting.** They are separate requests with separate
+// consequences, and conflating them would erase someone who only asked to stop
+// being messaged. The page says so in as many words rather than leaving a reader
+// to wonder whether they just deleted themselves.
+//
+// It acts on arrival with no confirm step. A confirmation button on an
+// unsubscribe page is a second thing to click for somebody who has already told
+// you what they want, and the action is harmless and reversible: the worst case
+// is that a prefetch stops email nobody had asked to keep, and the page says how
+// to start again.
+// ---------------------------------------------------------------------------
+
+export const UNSUBSCRIBE_HEADING: Copy = {
+  en: "You will not get these emails any more",
+  th: "คุณจะไม่ได้รับอีเมลเหล่านี้อีก",
+};
+
+export const UNSUBSCRIBE_BODY: Copy = {
+  en: "We have recorded that you asked us to stop, with the date. Your record and your assessment result are untouched, and we can still answer you about your own result.",
+  th: "เราบันทึกไว้แล้วว่าคุณขอให้หยุดส่ง พร้อมวันที่ ข้อมูลและผลการประเมินของคุณยังอยู่เหมือนเดิม และเรายังตอบคำถามเรื่องผลของคุณได้",
+};
+
+export const UNSUBSCRIBE_RESTART: Copy = {
+  en: "Changed your mind? Sign up again on the articles page, or write to us.",
+  th: "เปลี่ยนใจ? สมัครรับใหม่ได้ที่หน้าบทความ หรือเขียนมาหาเรา",
+};
+
+export const UNSUBSCRIBE_WORKING: Copy = {
+  en: "One moment.",
+  th: "รอสักครู่",
+};
+
 export const SIGNUP_BUSY: Copy = {
   en: "We could not save that just now. Please try again in a moment.",
   th: "ยังบันทึกไม่ได้ในตอนนี้ โปรดลองอีกครั้งในอีกสักครู่",

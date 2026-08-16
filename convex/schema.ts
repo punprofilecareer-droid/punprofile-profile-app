@@ -265,12 +265,28 @@ export default defineSchema({
         raw: v.optional(v.string()),
       }),
     ),
+    /**
+     * The one-click opt-out in a marketing email. Added 16/08/2026.
+     *
+     * A long random string, generated the first time this person is sent to and
+     * never regenerated, so a link in an email from March still works in
+     * December. It is not a login: following it can only ever stop email, which
+     * is why it needs no expiry and why a leaked one is a nuisance rather than a
+     * breach. `magicLinks` is the opposite case and rightly has both.
+     *
+     * Absent means nobody has ever been sent a marketing email, which is true of
+     * every lead today because there is no send path yet.
+     */
+    /** @absent notyet — no marketing email has ever been addressed to them */
+    unsubscribeToken: v.optional(v.string()),
+
     createdAt: v.number(),
     updatedAt: v.number(),
     lastActivityAt: v.number(),
   })
     .index("by_email", ["email"])
     .index("by_status_recency", ["status", "lastActivityAt"])
+    .index("by_unsubscribe_token", ["unsubscribeToken"])
     .index("by_pathway", ["pathway"]),
 
   /**

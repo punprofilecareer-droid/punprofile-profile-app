@@ -19,6 +19,8 @@ import type * as erase from "../erase.js";
 import type * as http from "../http.js";
 import type * as importLeads from "../importLeads.js";
 import type * as leads from "../leads.js";
+import type * as marketing from "../marketing.js";
+import type * as marketingSend from "../marketingSend.js";
 import type * as notify from "../notify.js";
 import type * as outcomes from "../outcomes.js";
 import type * as rateLimits from "../rateLimits.js";
@@ -45,6 +47,8 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   importLeads: typeof importLeads;
   leads: typeof leads;
+  marketing: typeof marketing;
+  marketingSend: typeof marketingSend;
   notify: typeof notify;
   outcomes: typeof outcomes;
   rateLimits: typeof rateLimits;

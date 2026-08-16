@@ -236,6 +236,66 @@ export const captureContact = mutation({
     if (lineId && !args.lineConsent) throw new ConvexError("consent_line");
 
     const now = Date.now();
+
+    /**
+     * Fold in a blog subscriber who turns out to be this person. 16/08/2026.
+     *
+     * `subscribe` writes a lead row keyed only by email. `startSession` writes
+     * one before any email is known. So somebody who subscribed on the blog in
+     * March and takes the check in August arrives here with two rows, and
+     * nothing before this joined them: a subject-access request would have
+     * answered from one and missed the other, and a digest send would have
+     * emailed one person twice.
+     *
+     * **The session row survives**, because the client is holding its id and is
+     * about to keep using it, and because it carries the answers. What moves is
+     * everything the subscriber row knows that this one does not.
+     *
+     * **The consent events are copied, then the duplicate is erased.** They are
+     * not re-pointed: `schema.ts` says nothing in that table is ever patched,
+     * and the reason is that an amended consent record is not evidence. A copy
+     * carrying the original `at`, `basis` and `evidence` is not an amendment, it
+     * is the same fact recorded against the record that is actually this person.
+     * The duplicate then goes through `eraseLead`, which is the same cascade a
+     * deletion request uses, so nothing is orphaned.
+     *
+     * **First touch wins on attribution**, which is the rule the schema states
+     * for itself. If the blog signup came first, its landing is the one kept,
+     * and the `raw` marker goes with it, which is also what takes them out of
+     * `isBlogOnlySubscriber` from here on: they have answers now.
+     */
+    const duplicate = await ctx.db
+      .query("leads")
+      .withIndex("by_email", (q) => q.eq("email", email))
+      .filter((q) => q.neq(q.field("_id"), args.leadId))
+      .first();
+
+    if (duplicate && isBlogOnlySubscriber(duplicate)) {
+      const carried = await ctx.db
+        .query("consentEvents")
+        .withIndex("by_lead", (q) => q.eq("leadId", duplicate._id))
+        .collect();
+      for (const e of carried) {
+        await ctx.db.insert("consentEvents", {
+          leadId: args.leadId,
+          channel: e.channel,
+          purpose: e.purpose,
+          action: e.action,
+          at: e.at,
+          basis: e.basis,
+          ...(e.evidence ? { evidence: e.evidence } : {}),
+          ...(e.by ? { by: e.by } : {}),
+        });
+      }
+      // Keep the earlier landing. `lead` is this session's row, read above.
+      const theirs = duplicate.attribution;
+      const ours = lead.attribution;
+      if (theirs && (!ours || theirs.landedAt < ours.landedAt)) {
+        await ctx.db.patch(args.leadId, { attribution: theirs });
+      }
+      await eraseLead(ctx, duplicate._id);
+    }
+
     await ctx.db.patch(args.leadId, {
       firstName,
       lastName,
