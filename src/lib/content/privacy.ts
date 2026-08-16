@@ -47,6 +47,18 @@ export interface PrivacySection {
   body: Copy[];
 }
 
+/**
+ * The page's own heading. Added 16/08/2026, when the title and the meta
+ * description needed it and the page was still writing it inline as a ternary.
+ * It sits with `PRIVACY_SECTIONS` because it is part of the same reviewed
+ * document, even though it is the one line in it a lawyer would not read
+ * differently in a browser tab.
+ */
+export const PRIVACY_HEADING: Copy = {
+  en: "Privacy Policy",
+  th: "นโยบายความเป็นส่วนตัว",
+};
+
 export const PRIVACY_INTRO: Copy = {
   en: "This notice explains what PunProfile collects when you use the EU Fit Check, why we hold it, and what you can ask us to do with it.",
   th: "ประกาศนี้อธิบายว่า PunProfile เก็บข้อมูลอะไรบ้างเมื่อคุณใช้ EU Fit Check เก็บไว้เพื่ออะไร และคุณขอให้เราทำอะไรกับข้อมูลนั้นได้บ้าง",
