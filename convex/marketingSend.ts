@@ -28,6 +28,13 @@ type SendResult = { attempted: number; sent: number; failed: number };
  * app deciding what the business says, which is the thing the two-repo split
  * exists to prevent.
  *
+ * **It is meant to be refusing right now.** Paul's call, 16/08/2026, asked
+ * which of three: get a domain and wire it, borrow a sender from a domain he
+ * already owns, or leave it refusing until there is something to send. He chose
+ * the third. So this is a deliberate hold rather than an unfinished job, and a
+ * future session should not read the warning below as a bug to close. What
+ * unblocks it is content and a domain, in that order, and neither is here.
+ *
  * **It refuses rather than half-sends.** Two things have to be true before a
  * single email leaves: a `RESEND_API_KEY` on the deployment, and a `MAIL_FROM`
  * naming a sender on a domain Resend has verified. Without the second, Resend's
