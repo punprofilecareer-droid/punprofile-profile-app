@@ -16,31 +16,26 @@ a first version that led on the assessment. A shared link is the business
 introducing itself, and the assessment is one feature of an app that is still
 growing, so a card built around it goes stale as the app does.
 
-- **Teal**, and specifically `primary` (#068376), the colour `design.md` says
-  PunProfile is known by and the one it names for full-bleed section
-  backgrounds. Lavender is EU Fit Check's identity and would say the wrong
-  thing on a card for the business.
+- **Olive**, `primary` (#566423), the colour `design.md` now says PunProfile is
+  known by. It replaced teal on 16/08/2026 with the Material Design 3 rebrand.
+  Blue is EU Fit Check's identity and would say the wrong thing on a card for
+  the business.
 
-  It was `primary-deep` for about an hour, borrowed from the site footer, and
-  Paul's read was that it was very dark green. He is right and the document
-  agrees with him: `primary-deep` is described as a ramp extension for
-  text-on-teal, pressed states and data-viz accents, never as a background.
-  The footer is the exception, and it earns it by needing two readable text
-  tiers on a dark surface. A share card does not.
+  **The rebrand gave this card contrast headroom it never had.** White on the
+  old teal held 4.65:1, AA for body and nothing left over, which is why the
+  eyebrow used to be white at 92% rather than a second colour. White on olive
+  holds **6.48:1**, and `primary-container` (#D9EB9A) holds **5.03:1**, so the
+  eyebrow is now a real second tier in its own colour instead of a faded white.
+  Hierarchy comes from colour *and* size rather than size alone.
 
-  The cost of the brighter teal, since it is real: white on `primary` holds
-  4.71:1, which is AA for body and above but leaves no headroom for a second
-  text tier, so the eyebrow is white at 92% rather than `accent-tint`, which
-  fails on this background at 2.9:1. Hierarchy comes from size and weight
-  instead of colour.
+  **The lift is still on the right, not on the base.** `primary-fixed-dim`
+  (#BDCE80) is pooled at 40% behind the mascot, where nothing has to stay
+  readable, and the text keeps the unlifted base under it. Measured on the
+  shipped pixels, every text block sits on a clean #566423.
 
-  **The lift is on the right, not on the base.** Paul asked for slightly
-  brighter on 16/08/2026 and the base cannot move: mixing even 12% of
-  `primary-bright` into it drops white to 4.18:1 and fails the 19px chips. So
-  `primary-bright` is pooled behind the mascot, where nothing has to stay
-  readable, and the text keeps the unlifted base under it.
-- **The reversed wordmark**, so the brand is legible at thumbnail size before
-  anything else is read.
+- **The reversed lockup**, `punprofile-logo-reversed.svg`, so the brand is
+  legible at thumbnail size before anything else is read. It was a PNG wordmark
+  until 16/08/2026.
 - **The coaching hook**, `HOOK_EYEBROW`, `HOOK_LINE_1` and `HOOK_LINE_2` from
   `coaching.ts`, which are Paul's own Thai. The first sentence is set large and
   the second smaller: same size for both orphaned a word and gave the card four
@@ -48,7 +43,9 @@ growing, so a card built around it goes stale as the app does.
   measure so it breaks over two lines; on one line it ran out to within a hair
   of the mascot and left the card no air.
 - **The three service names** from `services.ts`, as chips.
-- **The coach mascot**, cut out of its white square. The counter of the P, the
+- **The coach mascot**, cut out of its white square, bled off the right edge.
+  Positioned so the loose prop at its feet falls outside the canvas rather than
+  being half-cropped at the corner, which is what it looked like at first. The counter of the P, the
   hole the letterform is defined by, has to be transparent so the background
   shows through it. Getting that wrong is not subtle: a white plug in the middle
   of the letter reads as a rendering fault, and it shipped that way for an hour.
@@ -63,35 +60,55 @@ invites the reading that they are somebody's.
 ## Rebuilding it
 
 There is no build step, on purpose: it changes when someone decides it should.
-The source is a throwaway HTML file rendered in a browser at 1200x630 and
-screenshotted, because that is the only way to get real Noto Serif Thai shaping
-with correct tone-mark placement.
+The source is a throwaway HTML file rendered in a browser at 1200x630, because
+that is the only way to get real Anuphan shaping with correct Thai tone-mark
+placement.
 
-1. Write the card as a standalone HTML file into `public/` (tokens copied from
-   `globals.css`, fonts from Google Fonts, images by absolute path so
-   `/punprofile-wordmark-reversed.png` and the mascot resolve). Add a strip of
-   calibration patches below the card, in colours whose true values are known:
-   black, `primary`, `primary-bright`, `accent`, `ink`, white.
-2. Serve `public/` and screenshot the page.
-3. **Colour-correct against the strip before cropping it off.** This is not
-   optional and it is invisible if skipped, which is what makes it dangerous.
-   The screenshot comes back in the display's colour space and is re-encoded as
-   sRGB without conversion, so a flat `primary` (#068376) arrives as about
-   #3A8276: same green and blue, red lifted by fifty, and the brand's teal
-   quietly duller on every card built this way. Greys and black and white land
-   untouched while saturated colours desaturate, which is a gamut rotation
-   rather than a per-channel curve, so the fix is a 3x3 matrix in linear light
-   fitted from the six patches. Fitted on 16/08/2026 it reproduced all six to
-   within two units, and the card's background came back to (3,131,118).
-4. Crop to the card, resize to exactly 1200x630.
-5. Delete the HTML file. It must not stay in `public/`: a fourth copy of the
-   palette is exactly what `AGENTS.md` forbids, and this one would be served
-   publicly as well.
+1. Write the card as a standalone HTML file into `public/` as `_og-build.html`
+   (tokens copied from `tokens.generated.css`, fonts from Google Fonts, images by
+   absolute path so `/punprofile-logo-reversed.svg` and the mascot resolve). Add
+   a strip of calibration patches below the card, 200px each, in colours whose
+   true values are known: black, `primary`, `primary-fixed-dim`, `action`,
+   `on-surface`, white.
+2. Capture it with **headless Chrome**, not with a screenshot of a visible
+   window:
 
-**Check the contrast after correcting, not before.** White on the corrected
-background measures 4.6:1 to 4.65:1 under every text block, which clears AA at
-19px and up. On the uncorrected capture it reads 4.53:1, close enough to the
-line that a colour error could hide inside it.
+   ```
+   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+     --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
+     --window-size=1200,690 --virtual-time-budget=6000 \
+     --screenshot=raw.png http://localhost:3100/_og-build.html
+   ```
+
+3. **Check the patches, then crop.** This is where the process changed on
+   16/08/2026, and the change is worth understanding rather than just following.
+
+   The previous method screenshotted a visible browser window, and that capture
+   came back in the display's colour space and was re-encoded as sRGB without
+   conversion: a flat `primary` arrived with its red channel lifted by about
+   fifty, greys untouched, saturated colours quietly duller. The fix was a 3x3
+   matrix in linear light fitted from the six patches, and it was mandatory and
+   invisible if skipped.
+
+   **Headless Chrome does not do this.** Measured on 16/08/2026, all six patches
+   came back byte-exact, every channel, zero error. So the correction step is
+   gone. The patches stay, as the check that proves it is still true. If any
+   patch is off by more than a unit, something about the capture has changed and
+   the old matrix fit is in this file's git history.
+
+   Capturing at `--force-device-scale-factor=1` also matters: the browser
+   extension's screenshot runs at DPR 2 and is returned downscaled as JPEG,
+   which would mean building a 1200x630 deliverable out of a resampled lossy
+   image.
+4. Crop to `(0, 0, 1200, 630)`. No resize is needed; the capture is already at
+   the right scale.
+5. **Measure the contrast on the cropped pixels, not on the CSS.** Sample the
+   ground under each text block and compute against the text colour actually
+   used. On 16/08/2026 that gave eyebrow 5.03, headline 6.48, lead 6.48, chips
+   6.48, all clearing AA.
+6. Delete `_og-build.html`. It must not stay in `public/`: a copy of the palette
+   that nothing generates is exactly what `AGENTS.md` forbids, and this one
+   would be served publicly as well.
 
 ## After changing it
 

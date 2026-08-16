@@ -51,9 +51,15 @@ import { SITE_URL, VERIFICATION } from "@/lib/seo";
  *
  * The image is `public/og.png`, a static 1200x630 file. Static rather than
  * generated per request: it never changes per visitor, Facebook caches it for
- * days anyway, and its Thai headline needs the real Noto Serif Thai rather than
+ * days anyway, and its Thai headline needs the real brand face rather than
  * whatever a runtime image renderer can be persuaded to load.
  * `public/README-og.md` says how it was built and how to rebuild it.
+ *
+ * Rebuilt 16/08/2026 onto the M3 palette: olive rather than teal, the vector
+ * lockup rather than the old PNG wordmark, and Anuphan rather than Noto Serif
+ * Thai. Facebook caches this aggressively, so re-scrape the production URL at
+ * `developers.facebook.com/tools/debug/` or the group will keep serving the
+ * teal one.
  */
 const OG_TITLE = pick(HOOK_EYEBROW, DEFAULT_LOCALE);
 const OG_DESCRIPTION = `${pick(HOOK_LINE_1, DEFAULT_LOCALE)} ${pick(HOOK_LINE_2, DEFAULT_LOCALE)}`;
