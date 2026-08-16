@@ -1,4 +1,5 @@
 import type { Copy } from "./copy";
+import { POSTS } from "./blog";
 import { DESTINATIONS } from "./cta";
 
 /**
@@ -102,6 +103,23 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     links: [
       { href: "/coaching", label: { en: "Coaching 1:1", th: "Coaching 1:1" } },
       { href: "/services", label: { en: "Our Services", th: "บริการของเรา" } },
+      // The blog, added 16/08/2026, and this column rather than a fourth one.
+      //
+      // The grid beside this is three columns wide and a fourth would rebuild
+      // the footer for one link. Of the three, this is the one it belongs to:
+      // `Content_Strategy.md` files written content as demand generation for the
+      // coaching business, and the articles are that business's point of view in
+      // public. It reads oddly under a heading that says Coaching, which is the
+      // cost of not having a "Read" column, and is worth revisiting when there
+      // is enough here to justify one.
+      //
+      // Absent until the blog has an article, same gate and same reason as the
+      // menu entry in `nav.ts`. This file's own note above says a footer is the
+      // worst place to discover a link to a page nobody built, and a page built
+      // with nothing on it is the same discovery.
+      ...(POSTS.length > 0
+        ? [{ href: "/blog", label: { en: "Blog", th: "Blog" } }]
+        : []),
     ],
   },
   {

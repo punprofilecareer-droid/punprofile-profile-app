@@ -235,6 +235,7 @@ for (const used of sources.matchAll(/\bt\(\s*"([a-z][a-zA-Z.]+)"/g)) {
   const BINDINGS: Record<string, string> = {
     "nav.brand": "brand-name",
     "nav.assess": "product-eu-fit-check",
+    "nav.blog": "nav-blog",
     "nav.coaching": "coaching-1-1",
     "nav.services": "our-services",
     "footer.brand": "footer-legal",

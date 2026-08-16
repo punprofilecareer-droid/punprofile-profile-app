@@ -92,6 +92,22 @@ export const COPY = {
     en: "Coaching 1:1",
     th: "Coaching 1:1",
   },
+  "nav.blog": {
+    screen: "Site menu",
+    // English in both columns, on Paul's call 16/08/2026, joining the five nav
+    // items decided the same way on 15/08/2026. It was drafted as บทความ, which
+    // is correct Thai and was the wrong answer: it would have made this the one
+    // item in the menu that translates, and a menu that is English except for
+    // one word reads as an oversight rather than as a choice.
+    //
+    // `nav-blog` in `termbase.yml` is what records that, and it is not optional
+    // bookkeeping. Without the entry, `lint-thai.ts` fails this string under
+    // LR-01, and it is right to: an English word in the Thai column is a decided
+    // passthrough or an untranslated key, and the termbase is the only thing
+    // that can tell those apart.
+    en: "Blog",
+    th: "Blog",
+  },
   "nav.faq": {
     screen: "Site menu",
     en: "FAQ",
