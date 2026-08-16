@@ -584,3 +584,24 @@
     --q-stagger: 0ms;
   }
 }
+
+/* The block photograph crossfading to the next block's, 16/08/2026.
+
+   Paul: "check the animation of the images, they're strange." They were. The
+   card faded and rose on a curve while the photograph beside it swapped in a
+   single frame, so two things that happen at the same moment moved in two
+   completely different ways.
+
+   Longer than the question's own 240ms entrance because it is a much larger
+   surface: the same duration on half a screen reads as a flicker rather than a
+   change. It starts as the outgoing card leaves, so the two finish together. */
+@keyframes q-photo-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@layer components {
+  .q-photo-in {
+    animation: q-photo-in 450ms var(--ease-settle) both;
+  }
+}

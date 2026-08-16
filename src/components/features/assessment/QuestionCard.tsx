@@ -84,32 +84,63 @@ function BlockImage({
   priority: boolean;
   blurDataURL: string | null;
 }) {
+  /**
+   * Two layers, so a block change crossfades instead of cutting.
+   *
+   * The previous photograph stays underneath at full opacity while the new one
+   * fades in over it, then it is dropped. Without the bottom layer the panel
+   * would blink to its background between the two, which is worse than the cut
+   * it replaced.
+   *
+   * Adjusted during render rather than in an effect: an effect would paint one
+   * frame of the new picture at full opacity before the fade could start, which
+   * is the cut all over again for a sixtieth of a second.
+   */
+  const [shown, setShown] = useState({ src, blurDataURL });
+  const [leaving, setLeaving] = useState<typeof shown | null>(null);
+  if (src !== shown.src) {
+    setLeaving(shown);
+    setShown({ src, blurDataURL });
+  }
+
   return (
-    // Lavender rather than grey while it loads. It is the field the assessment
-    // already sits on, so an unloaded panel reads as part of the page instead of
-    // a hole in it.
+    // Lavender rather than grey underneath. It is the field the assessment
+    // already sits on, so a panel with nothing in it yet reads as part of the
+    // page instead of a hole in it.
     <div className="relative hidden shrink-0 self-start overflow-hidden bg-lavender-wash md:sticky md:top-[72px] md:block md:h-[calc(100dvh-72px)] md:w-1/2">
+      {leaving && (
+        <Image
+          key={leaving.src}
+          src={leaving.src}
+          alt=""
+          fill
+          sizes="(max-width: 767px) 1px, 50vw"
+          className="object-cover object-center"
+        />
+      )}
       <Image
-        src={src}
+        key={shown.src}
+        src={shown.src}
         alt={alt}
         fill
-        // The first block is above the fold on desktop, so it is the one worth
-        // preloading. Preloading all six would fetch five photographs nobody has
-        // reached yet.
+        // Only the first block preloads. The rest are minutes away and
+        // preloading them would fetch photographs nobody has reached, over the
+        // mobile data this audience is mostly on.
         priority={priority}
-        // Paints a 20px version of the same photograph instantly, so the panel is
-        // never an empty box while the real file is being resized, and the
-        // arrival is a blur sharpening rather than a fade from nothing. That is
-        // also the morph between blocks: the panel is keyed on the source, so a
-        // new section remounts it and it sharpens again.
+        // Paints a 20px version of the same photograph instantly, so the panel
+        // is never an empty box while the real file is being resized.
         //
-        // **Do not add an opacity transition on top of this.** The first attempt
-        // did, and `opacity-0` hides the placeholder too, because Next paints it
-        // as a background on this same element. The panel sat empty for a second
-        // and the fix looked like it had not worked.
-        {...(blurDataURL ? { placeholder: "blur" as const, blurDataURL } : {})}
+        // **Do not add an opacity transition to this element.** An earlier
+        // attempt did, and `opacity-0` hides the placeholder too, because Next
+        // paints it as a background on this same element. The crossfade lives on
+        // the wrapper class instead, which is why `q-photo-in` is here and not a
+        // Tailwind opacity utility.
+        {...(shown.blurDataURL
+          ? { placeholder: "blur" as const, blurDataURL: shown.blurDataURL }
+          : {})}
         sizes="(max-width: 767px) 1px, 50vw"
-        className="object-cover object-center"
+        onAnimationEnd={() => setLeaving(null)}
+        className={`object-cover object-center ${leaving ? "q-photo-in" : ""}`}
       />
     </div>
   );
@@ -298,7 +329,7 @@ export default function QuestionCard({
           white strip Paul photographed. The spacer stays in the column, because
           that is layout and belongs with the content it is making room for. */}
       {showBar && (
-        <ActionBar>
+        <ActionBar half={Boolean(image)}>
           <button
             onClick={onContinue}
             disabled={chosen.length === 0}

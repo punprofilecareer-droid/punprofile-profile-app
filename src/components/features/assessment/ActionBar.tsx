@@ -24,10 +24,29 @@
  * tempting to break it.
  */
 
-export default function ActionBar({ children }: { children: React.ReactNode }) {
+export default function ActionBar({
+  children,
+  /**
+   * Constrain the bar to the right half on desktop.
+   *
+   * Only true where a block photograph occupies the left half. Paul,
+   * 16/08/2026: the button should span until the middle of the screen and sit
+   * centred under the question. Full width was putting the primary action
+   * half over a photograph and half under the thing it acts on, so it read as
+   * belonging to the page rather than to the question.
+   *
+   * Below `md` there is no photograph, so the bar is full width either way.
+   */
+  half = false,
+}: {
+  children: React.ReactNode;
+  half?: boolean;
+}) {
   return (
     <div
-      className="glass-bar-bottom fixed inset-x-0 bottom-0 z-40 px-6 pt-3"
+      className={`glass-bar-bottom fixed inset-x-0 bottom-0 z-40 px-6 pt-3 ${
+        half ? "md:left-1/2" : ""
+      }`}
       style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
     >
       <div className="mx-auto w-full max-w-md">{children}</div>
