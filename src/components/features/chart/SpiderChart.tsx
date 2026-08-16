@@ -60,7 +60,17 @@ export default function SpiderChart({ scores, variant = "teaser", axisLabels }: 
     return radarSvg(axes, {
       idPrefix: variant,
       size: variant === "teaser" ? 300 : 420,
-      maxLabel: variant === "teaser" ? 22 : 26,
+      // No truncation on the teaser: the widened box below holds the longest
+      // Thai name whole, and a name cut to "ความพร้อมในการ…" is indistinguishable
+      // from the axis next to it.
+      maxLabel: variant === "teaser" ? 40 : 26,
+      // The teaser is the only variant with a `ScoreLegend` under it, and the
+      // legend carries all four numbers in full. Leaving them on the axes too
+      // printed each one twice and pushed the longest Thai label off the card.
+      values: variant !== "teaser",
+      // Thai axis names run to twice the length of the English ones and sit
+      // outside the plot, so the teaser's box is widened to hold them.
+      widthRatio: variant === "teaser" ? 1.95 : undefined,
     });
     // `locale` is the real dependency; `t` is rebuilt whenever it changes.
   }, [scores, variant, t, locale, axisLabels]);

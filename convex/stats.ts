@@ -4,12 +4,18 @@ import { scoresFor } from "./scoring";
 /**
  * Community aggregates for the result screen. TASK-083, 14/08/2026.
  *
- * Three numbers a candidate cannot get anywhere else: which countries this pool
- * is actually aiming at, the most languages any one of them speaks, and where
- * their own scores sit against everyone else's. They exist because the first
- * read used to end on a single sentence about being contacted, which gives
- * someone who just spent two minutes answering nothing to do and nothing to
- * talk about.
+ * Numbers a candidate cannot get anywhere else: which countries this pool is
+ * actually aiming at, how ready it is on the three things a recruiter looks at,
+ * and where their own scores sit against everyone else's. They exist because
+ * the first read used to end on a single sentence about being contacted, which
+ * gives someone who just spent two minutes answering nothing to do and nothing
+ * to talk about.
+ *
+ * **Revised 16/08/2026.** The most-languages figure came off the first read in
+ * the redesign, and the readiness shares moved onto it. It is still computed
+ * and still returned, because the coaching page may want it and because
+ * deleting a statistic to change a layout is how a screen ends up being the
+ * source of truth for a query.
  *
  * **Public on purpose, and aggregate by construction.** This is the only
  * unauthenticated query in the app that reads across leads, so the rule it
@@ -51,7 +57,8 @@ const SPEAKS_FROM: readonly string[] = ["B1", "B2", "C1", "C2"];
  * the denominator, so a share never silently means "of everybody, including
  * those we never asked".
  *
- * They exist for the coaching page, which follows a sales-page shape whose
+ * They exist for the coaching page and, since 16/08/2026, for the first read.
+ * The coaching page follows a sales-page shape whose
  * proof slot is normally filled with client logos and placement rates. There
  * are none of those on record, so the slot is filled with the only numbers this
  * business can actually stand behind: what the people who took the check said
@@ -106,6 +113,26 @@ const SHARES: Record<
   noPortfolio: { keys: ["portfolio"], hit: ["none"] },
   /** A CV that exists but was never rewritten for this market. */
   cvNotForEurope: { keys: ["cv"], hit: ["none", "untailored"] },
+  /**
+   * A profile a European recruiter searches and does not find, or finds empty.
+   *
+   * Added 16/08/2026 with the readiness stack on the first read. It is the
+   * third leg of the same claim `cvNotForEurope` and `noPortfolio` make: the
+   * pool's gap is presentation rather than ability. Three shares pointing the
+   * same way is an argument; one is an anecdote.
+   */
+  linkedinThin: { keys: ["linkedin"], hit: ["none", "basic"] },
+  /**
+   * Aiming at Europe, not yet applying to anything.
+   *
+   * Paired on the screen with `soonWithin3m` and only useful next to it. On
+   * their own each is a demographic fact; together they are the tension the
+   * whole product exists inside, which is people in a hurry who have not
+   * started.
+   */
+  notApplyingYet: { keys: ["stage"], hit: ["not_started", "researching"] },
+  /** Wants to be in Europe inside three months. */
+  soonWithin3m: { keys: ["timeline"], hit: ["within_3m"] },
   /** At or above the level European job adverts actually name. */
   englishB2: { keys: ["english", "englishCefr"], hit: ["B2", "C1", "C2"] },
   /** Does not yet know which visa route applies to them. */

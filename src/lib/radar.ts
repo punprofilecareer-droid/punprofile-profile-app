@@ -33,6 +33,28 @@ export interface RadarOptions {
   idPrefix: string;
   /** Axis labels longer than this are truncated. */
   maxLabel?: number;
+  /**
+   * Print each axis's number beside its label. Default true.
+   *
+   * Off where something else on the screen already carries the four numbers.
+   * The first read's legend does, from 16/08/2026, and printing them twice cost
+   * more than the repetition: label plus value is wide enough that the longest
+   * Thai axis name ran off the edge of the card it sits in.
+   *
+   * The `<desc>` is unaffected either way, so a screen reader still gets every
+   * value from the chart itself whatever this is set to.
+   */
+  values?: boolean;
+  /**
+   * How much wider than tall the viewBox is. Default `WIDTH_RATIO`.
+   *
+   * The side labels sit outside the plot, so this is the only control over
+   * whether they fit. Raised for the teaser on 16/08/2026, where the Thai axis
+   * names are twice the length of the English ones and the longest ran off the
+   * card. A wider box shrinks the drawn radar, which is the trade: the shape
+   * loses a little size, the labels stop being cut off.
+   */
+  widthRatio?: number;
 }
 
 /**
@@ -57,11 +79,12 @@ const esc = (s: string) =>
 export function radarSvg(axes: RadarAxis[], opts: RadarOptions): string {
   const size = opts.size ?? 460;
   const max = opts.max ?? 5;
-  const W = Math.round(size * WIDTH_RATIO);
+  const W = Math.round(size * (opts.widthRatio ?? WIDTH_RATIO));
   const cx = W / 2;
   const cy = size / 2 - 4;
   const R = size * RADIUS_RATIO;
   const maxLabel = opts.maxLabel ?? 24;
+  const showValues = opts.values ?? true;
   const n = axes.length;
   if (n < 3) return `<p class="viz-empty">Needs at least three axes to draw.</p>`;
 
@@ -136,14 +159,14 @@ export function radarSvg(axes: RadarAxis[], opts: RadarOptions): string {
       // 2px surface ring keeps the dot legible where it sits on the stroke.
       parts.push(`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${MARK.dot / 2}" fill="var(--viz-series-1)" stroke="var(--viz-surface)" stroke-width="2" />`);
       parts.push(
-        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label"><tspan>${esc(labelText)}</tspan><tspan class="viz-axis-value" dx="4">${(a.value as number).toFixed(1)}</tspan></text>`,
+        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label"><tspan>${esc(labelText)}</tspan>${showValues ? `<tspan class="viz-axis-value" dx="4">${(a.value as number).toFixed(1)}</tspan>` : ""}</text>`,
       );
     } else {
       // Hollow marker at the rim: "we didn't measure this", not "you scored zero".
       const rim = polar(cx, cy, R, i, n);
       parts.push(`<circle cx="${rim.x.toFixed(1)}" cy="${rim.y.toFixed(1)}" r="${MARK.dot / 2}" fill="var(--viz-surface)" stroke="var(--viz-muted)" stroke-width="1.5" stroke-dasharray="2 2" />`);
       parts.push(
-        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label viz-axis-unscored"><tspan>${esc(labelText)}</tspan><tspan class="viz-axis-value" dx="4">—</tspan></text>`,
+        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label viz-axis-unscored"><tspan>${esc(labelText)}</tspan>${showValues ? `<tspan class="viz-axis-value" dx="4">—</tspan>` : ""}</text>`,
       );
     }
   }

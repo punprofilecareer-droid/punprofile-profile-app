@@ -10,10 +10,13 @@ import { BLOCKS, blockFor } from "@/lib/content/blocks";
 import Image from "next/image";
 import BlockPanel, { type BlockImage } from "@/components/features/assessment/BlockPanel";
 import SpiderChart from "@/components/features/chart/SpiderChart";
+import ScoreLegend from "@/components/features/chart/ScoreLegend";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
 import LanguageGrid from "@/components/features/assessment/LanguageGrid";
+import EnglishSwitchPrompt from "@/components/features/assessment/EnglishSwitchPrompt";
 import CommunityStats from "@/components/features/assessment/CommunityStats";
+import MarketProof from "@/components/features/assessment/MarketProof";
 import Link from "next/link";
 import { setNavLocked } from "@/lib/navLock";
 import { buildTeaserSummary } from "@/lib/views";
@@ -76,13 +79,35 @@ const isAnswer = (v: unknown): v is Answer =>
 /** Set once TASK-046 picks a booking mechanism. The CTA hides until then. */
 const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL;
 
+/**
+ * The English levels that switch the flow into English. 16/08/2026, Paul's call.
+ *
+ * B1 and up, which is `stats.ts`'s own bar for "speaks a language" rather than a
+ * second definition of the same idea. B2 would be the more cautious line, since
+ * B2 is the level European job adverts actually name, and a B1 reader may find
+ * the English questions harder than the Thai ones. The revert is what makes B1
+ * safe: the cost of being wrong is one tap.
+ */
+const ENGLISH_SWITCH_AT: readonly string[] = ["B1", "B2", "C1", "C2"];
+
 export default function AssessPage() {
-  const { t, pick, locale } = useCopy();
+  const { t, pick, locale, setLocale } = useCopy();
   const [leadId, setLeadId] = useState<Id<"leads"> | null>(null);
   const [local, setLocal] = useState<Record<string, Answer>>({});
   const [step, setStep] = useState(0); // 0..STAGE1.length-1 = questions, then the contact gate, then the teaser
   /** Which half of the question transition is on screen. See `commit` below. */
   const [phase, setPhase] = useState<"entering" | "leaving">("entering");
+  /**
+   * The English switch, at most once per session.
+   *
+   * `offered` latches on the first fire and is never cleared, so going back and
+   * changing the English answer cannot bring the panel back. A prompt that
+   * returns after being dismissed stops being an offer.
+   */
+  const [englishPrompt, setEnglishPrompt] = useState<{ open: boolean; offered: boolean }>({
+    open: false,
+    offered: false,
+  });
 
   /**
    * A deliberate floor on how fast the first question can appear, 14/08/2026.
@@ -271,6 +296,25 @@ export default function AssessPage() {
     const item = FLOW[step];
 
     /**
+     * The English switch panel, rendered by both branches below.
+     *
+     * It has to be in both, and that is not tidiness: `commit` advances the step
+     * roughly half a second after the answer, and the step straight after the
+     * English question is the language grid, which is the other branch. Mounting
+     * it only where it fires meant it unmounted before anyone saw it. It is
+     * `fixed inset-0`, so where in the tree it sits changes nothing else.
+     */
+    const dialog = englishPrompt.open ? (
+      <EnglishSwitchPrompt
+        onStay={() => setEnglishPrompt((p) => ({ ...p, open: false }))}
+        onRevert={() => {
+          setLocale("th");
+          setEnglishPrompt((p) => ({ ...p, open: false }));
+        }}
+      />
+    ) : null;
+
+    /**
      * The photograph for whatever the flow is showing.
      *
      * Computed here rather than inside the card, and `BlockPanel` is mounted
@@ -295,6 +339,8 @@ export default function AssessPage() {
 
     if ("custom" in item) {
       return (
+        <>
+        {dialog}
         <BlockPanel image={panel}>
         <LanguageGrid
           // Skip writes an empty grid rather than nothing. "I speak no other
@@ -315,6 +361,7 @@ export default function AssessPage() {
           hasPanel={Boolean(panel)}
         />
         </BlockPanel>
+        </>
       );
     }
 
@@ -332,6 +379,21 @@ export default function AssessPage() {
      */
     const commit = (value: Answer) => {
       void submitAnswer({ leadId, questionKey: q.key, value });
+
+      // "Let's finish this in English." The switch happens here, on the same tap
+      // as the answer, so the questions behind the panel have already changed by
+      // the time it is read. Thai only: a candidate already reading in English
+      // has nothing to be told.
+      if (
+        q.key === "english" &&
+        locale === "th" &&
+        !englishPrompt.offered &&
+        typeof value === "string" &&
+        ENGLISH_SWITCH_AT.includes(value)
+      ) {
+        setLocale("en");
+        setEnglishPrompt({ open: true, offered: true });
+      }
       const css = getComputedStyle(document.documentElement);
       /**
        * Read a CSS time as milliseconds, honouring the unit.
@@ -359,6 +421,8 @@ export default function AssessPage() {
       );
     };
     return (
+      <>
+      {dialog}
       <BlockPanel image={panel}>
       <QuestionCard
         key={q.key}
@@ -390,6 +454,7 @@ export default function AssessPage() {
         onBack={step > 0 ? () => setStep(step - 1) : undefined}
       />
       </BlockPanel>
+      </>
     );
   }
 
@@ -411,30 +476,35 @@ export default function AssessPage() {
   }
 
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
+  //
+  // Redesigned 16/08/2026 against Paul's mockup. Four things changed and each
+  // one is a decision rather than a layout preference:
+  //
+  // - **The chart is a card with a title and a legend.** A radar is a shape,
+  //   not a reading, and it was previously the only thing on the screen
+  //   carrying the four numbers.
+  // - **The mascot moved into the middle**, between the read and the strength
+  //   line, and is the coach pose rather than the star. It now sits where the
+  //   page needs a breath rather than at the top competing with the headline.
+  // - **The next-action line lost its card.** Same words, no panel, because the
+  //   screen had three coloured boxes stacked and the queue message is the one
+  //   that has to be unmissable.
+  // - **The pipeline figure arrived** directly above the services card, since it
+  //   is the only proof on this screen about work PunProfile has actually done.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
-      {/* The result scene: the character reaching for the shortest point of a
-          four-pointed star rather than the longest. Four because the radar has
-          four axes, and the short one because `10_Methodology.md` says the
-          lowest uncleared gate is the only one that matters this month. It says
-          the opposite of what a congratulatory illustration would, which is why
-          it is here and above the chart rather than after it. */}
-      <Image
-        src="/assess/mascot/result.jpg"
-        alt=""
-        width={1000}
-        height={750}
-        priority
-        sizes="(max-width: 640px) 90vw, 420px"
-        className="mascot-in mx-auto mb-5 w-full max-w-[420px] rounded-lg"
-      />
-      <h1 className="text-h3">{t("teaser.headline")}</h1>
-      <p className="mt-1 text-body text-slate">{t("teaser.selfReported")}</p>
+      <h1 className="text-h2 text-eufit-deep">{t("teaser.headline")}</h1>
+      <p className="mt-2 text-body text-slate">{t("teaser.selfReported")}</p>
+
       {/* The chart gets its own surface. The radar's grid is 1px neutral-300
           and the field's gradient moves through the same value range, so on
           the field alone the grid reads as noise rather than as structure. */}
-      <div className="material mt-4 rounded-lg px-2 py-4">
+      <div className="material mt-6 rounded-lg px-4 py-6 text-left">
+        <h2 className="text-h4 text-eufit-deep">{t("teaser.chart.heading")}</h2>
         <SpiderChart scores={scores} variant="teaser" />
+        <div className="mt-2 border-t border-neutral-300 pt-5">
+          <ScoreLegend scores={scores} />
+        </div>
       </div>
 
       {/* The personalized read. Every sentence is selected from the bank in
@@ -444,14 +514,36 @@ export default function AssessPage() {
         <div className="mt-8 space-y-4 text-left">
           <p className="text-body-lg text-ink">{summary.opener}</p>
           <p className="text-body text-slate">{summary.standing}</p>
+        </div>
+      )}
+
+      {/* The coach pose, cut out of its backdrop so it stands on the lavender
+          field rather than in a white box. It sits here rather than at the top
+          because the page has just made its two densest claims and the reader
+          needs a beat before the next one. */}
+      <Image
+        src="/assess/mascot/coach.png"
+        alt=""
+        width={640}
+        height={578}
+        priority
+        sizes="(max-width: 640px) 70vw, 320px"
+        className="mascot-in mx-auto my-6 w-full max-w-[300px]"
+      />
+
+      {summary && (
+        <div className="space-y-3 text-left">
           {summary.strengthLead && (
-            <p className="text-body text-slate">{summary.strengthLead}</p>
+            <p className="text-body-lg text-ink">{summary.strengthLead}</p>
           )}
+          {/* The most actionable sentence on the screen, and no longer in a
+              panel of its own. Three stacked coloured boxes meant none of them
+              read as important; the label carries the emphasis instead. */}
           {summary.next && (
-            <div className="material-mint rounded-lg px-6 py-6">
-              <p className="text-label text-eufit-deep">{summary.nextLead}</p>
-              <p className="mt-2 text-body text-ink">{summary.next}</p>
-            </div>
+            <p className="text-body text-slate">
+              <span className="font-semibold text-eufit-deep">{summary.nextLead} </span>
+              {summary.next}
+            </p>
           )}
           {summary.unmeasured && (
             <p className="text-caption text-neutral-500">{summary.unmeasured}</p>
@@ -461,15 +553,21 @@ export default function AssessPage() {
 
       {/* Contact is already in by the time this renders, so this says what
           happens next rather than asking for anything. */}
-      <p className="material-mint mt-6 rounded-lg px-6 py-6 text-body text-ink">
-        {t("teaser.nextStep")}
-      </p>
+      <div className="material-mint mt-6 flex items-start gap-3 rounded-lg px-5 py-4 text-left">
+        <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-primary">
+          <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM13.25 17h-2.5v-6.5h2.5V17Z" />
+        </svg>
+        <p className="text-body text-ink">{t("teaser.nextStep")}</p>
+      </div>
 
-      {/* TASK-083. Two facts about everyone who has taken this and one about
-          the candidate, so the screen after the queue message has something on
-          it other than waiting. Renders nothing at all until each statistic
+      {/* TASK-083. Facts about everyone who has taken this and one about the
+          candidate, so the screen after the queue message has something on it
+          other than waiting. Renders nothing at all until each statistic
           clears its own sample floor. */}
       <CommunityStats scores={scores} />
+
+      {/* The pipeline figure, then the services card it earns. */}
+      <MarketProof />
 
       {/* TASK-084. The second action on this screen, and deliberately not a
           second booking button: the candidate has just been told there is a
@@ -477,7 +575,7 @@ export default function AssessPage() {
           Secondary treatment throughout, because when TASK-046 turns the
           booking CTA on below, that one is the revenue step and only one
           Terracotta action belongs on a view. */}
-      <div className="material mt-8 rounded-lg px-6 py-7 text-left">
+      <div className="material mt-4 rounded-lg px-5 py-6 text-left">
         <h2 className="text-h4">{t("services.cta.heading")}</h2>
         <p className="mt-2 text-body text-slate">{t("services.cta.body")}</p>
         {/* Still hand-rolled, and the one deliberate exception to the table:

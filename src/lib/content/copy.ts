@@ -232,6 +232,137 @@ export const COPY = {
     th: "กลับไปแก้ไขคำตอบ",
   },
 
+  // -------------------------------------- the English switch prompt, 16/08/2026
+  // Fires once, mid-flow, when a candidate reading in Thai says their English is
+  // B1 or better. The flow is already in English by the time this renders, so
+  // the Thai column here is only reached if the switch is ever changed back to
+  // an offer. Keep it correct anyway; a string that is wrong in the branch
+  // nobody takes is wrong on the day somebody takes it.
+  "english.switch.title": {
+    screen: "Assessment, the panel after the English question is answered B1 or above",
+    en: "Let's finish this in English!",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ทำแบบประเมินต่อเป็นภาษาอังกฤษกันเลย",
+  },
+  "english.switch.body": {
+    screen: "Assessment, the English switch panel",
+    en: "You said your English is B1 or better, so we switched the questions over. You can go back to Thai whenever you like.",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "คุณระบุว่าใช้ภาษาอังกฤษได้ระดับ B1 ขึ้นไป เราเลยเปลี่ยนคำถามเป็นภาษาอังกฤษให้ และเปลี่ยนกลับเป็นภาษาไทยได้ทุกเมื่อ",
+  },
+  "english.switch.stay": {
+    screen: "Assessment, the English switch panel, the primary button",
+    en: "Continue in English",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ทำต่อเป็นภาษาอังกฤษ",
+  },
+  "english.switch.revert": {
+    screen: "Assessment, the English switch panel, the way back",
+    // The English column carries the Thai too, because this is the one button
+    // whose reader is by definition the person not reading the English around
+    // it. An identical-in-both-columns passthrough would have said the same
+    // thing more cleanly and needs a termbase entry to be allowed, which is
+    // Paul's to decide rather than mine to add.
+    en: "Back to Thai (ภาษาไทย)",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "กลับไปใช้ภาษาไทย",
+  },
+
+  // ------------------------------------------------- the chart card, 16/08/2026
+  // The radar used to sit on a bare surface with nothing naming it and nothing
+  // stating the four numbers. A radar is a shape, not a reading: two axes an
+  // eyeball apart can be 0.4 apart, and a screen reader gets nothing at all
+  // from the polygon. The legend under it is the accessible form PRD § 7 asks
+  // for and the thing a candidate can actually quote to someone.
+  "teaser.chart.heading": {
+    screen: "First read, the title of the card the chart sits in",
+    en: "Skills and readiness",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ทักษะและความพร้อม",
+  },
+  "teaser.score.value": {
+    screen: "First read, one dimension's score in the legend. {score} is one decimal, the scale is not",
+    en: "{score}/5",
+    th: "{score}/5",
+  },
+  "teaser.score.none": {
+    screen: "First read, the legend entry for a dimension the answers could not reach",
+    // Never a zero and never a dash. A dash reads as a broken field; a zero is
+    // a claim. This says the honest thing, which is that we did not measure it.
+    en: "Not measured yet",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ยังไม่สามารถประเมินได้",
+  },
+
+  // --------------------------------------------- the readiness stack, 16/08/2026
+  // Three shares that all point the same way, shown together because that is
+  // the whole argument: what separates this group from a European shortlist is
+  // presentation, not ability. One of them alone is an anecdote.
+  "stats.readiness.label": {
+    screen: "First read, the title of the readiness card",
+    en: "Where this group stands on the three things a recruiter checks first",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ความพร้อม 3 อย่างแรกที่ผู้จ้างงานดู",
+  },
+  "stats.readiness.cv": {
+    screen: "First read, readiness bar 1",
+    en: "CV not yet written for the European market",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "เรซูเม่ยังไม่ได้ปรับให้ตรงกับตลาดยุโรป",
+  },
+  "stats.readiness.portfolio": {
+    screen: "First read, readiness bar 2",
+    en: "No portfolio or work anyone can look at",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ยังไม่มีผลงานให้ผู้จ้างงานดู",
+  },
+  "stats.readiness.linkedin": {
+    screen: "First read, readiness bar 3",
+    en: "LinkedIn empty or barely filled in",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "โปรไฟล์ LinkedIn ยังไม่สมบูรณ์",
+  },
+  "stats.readiness.foot": {
+    screen: "First read, under the readiness bars",
+    // Same rule as every other share in `stats.ts`: the denominator is the
+    // people who answered that question, not everyone.
+    en: "From the people who answered each question.",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "อ้างอิงจากผู้ที่ตอบคำถามแต่ละข้อ",
+  },
+  "stats.timing": {
+    screen: "First read, the timing sentence. {waiting} and {soon} are percentages",
+    // The two halves are only worth saying together. Separately they are
+    // demographics; together they name the tension the product sits inside.
+    en: "{waiting}% have not started applying yet, and {soon}% want to be in Europe within three months.",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "{waiting}% ยังไม่ได้เริ่มสมัครงาน และ {soon}% ตั้งใจไปยุโรปภายใน 3 เดือน",
+  },
+
+  // ------------------------------------------- the job pipeline proof, 16/08/2026
+  // The only figure on this screen that is about PunProfile doing work rather
+  // than about the candidate or the crowd. Numbers come from a dated snapshot
+  // of `job-log.json`, and the date is printed because a screening figure with
+  // no window is a boast.
+  "stats.market.label": {
+    screen: "First read, the title of the job-pipeline card",
+    en: "Jobs we screened for this group",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "งานที่เราคัดกรองให้กลุ่มนี้",
+  },
+  "stats.market.value": {
+    screen: "First read, the job-pipeline figure. {screened} and {published} are counts",
+    en: "{screened} roles read, {published} cleared the visa-sponsorship bar.",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "อ่านประกาศงาน {screened} ตำแหน่ง ผ่านเกณฑ์สปอนเซอร์วีซ่า {published} ตำแหน่ง",
+  },
+  "stats.market.foot": {
+    screen: "First read, under the job-pipeline figure. {from} {to} {employers}",
+    en: "Between {from} and {to}, from {employers} employers. We post these in the Thai Jobs in Europe group.",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ระหว่าง {from} ถึง {to} จาก {employers} บริษัท และประกาศในกลุ่ม Thai Jobs in Europe",
+  },
+
   // ------------------------------------------------------- community stats
   // The three lines under the first read, TASK-083. Their job is to give a
   // candidate something to hold and something to repeat: the countries line is
@@ -262,30 +393,25 @@ export const COPY = {
     en: "From people who took the EU Fit Check and named a target country.",
     th: "อ้างอิงจากผู้ที่ทำ EU Fit Check และระบุประเทศเป้าหมาย",
   },
-  "stats.languages.label": {
-    screen: "First read, the most-languages stat",
-    en: "The most languages any one person here speaks",
-    th: "จำนวนภาษาสูงสุดที่ผู้ทำแบบประเมินหนึ่งคนสื่อสารได้",
-  },
-  "stats.languages.value": {
-    screen: "First read, the most-languages figure. {max} is the number",
-    en: "{max} languages",
-    th: "{max} ภาษา",
-  },
-  "stats.languages.foot": {
-    screen: "First read, under the most-languages stat",
-    // Says which bar was used, because "speaks" is the whole disagreement. A
-    // count that included A1 would be a bigger, less true number.
-    en: "Counting English and European languages at conversational level or above.",
-    th: "นับรวมภาษาอังกฤษและภาษายุโรปที่สื่อสารได้ระดับ B1 ขึ้นไป",
-  },
+  // The three `stats.languages.*` strings were removed on 16/08/2026 with the
+  // card they belonged to. `verify-copy.ts` fails on a defined-but-unused key,
+  // which is what forced the choice rather than letting them rot here. The
+  // query still computes `mostLanguages`; if the figure ever earns a place back,
+  // the wording is in this file's git history.
   "stats.percentile": {
-    screen: "First read, the personal comparison. {dimension} and {n}",
+    screen: "First read, the personal comparison. Completes the big percentage above it",
     // The one sentence on this screen that is about the candidate rather than
     // the pool, which is why it sits with the stats rather than in the
     // narrative: the narrative is selected from a bank and cannot say this.
-    en: "Your {dimension} is higher than {n}% of them.",
-    th: "คะแนนด้าน {dimension} ของคุณสูงกว่าผู้ทำแบบประเมินกลุ่มนี้ {n}%",
+    //
+    // **Rewritten 16/08/2026 for the redesign, and it needs Paul's read.** The
+    // figure is now set large on its own line, so the sentence completes it
+    // instead of containing it. Printing the old string under a big "55%" would
+    // have shown the same number twice in three words of each other. `{n}` is
+    // gone from the text for that reason; `{dimension}` stays.
+    en: "of the people here score lower than you on {dimension}.",
+    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
+    th: "ของผู้ทำแบบประเมินกลุ่มนี้ มีคะแนนด้าน {dimension} ต่ำกว่าคุณ",
   },
   "stats.percentile.foot": {
     screen: "First read, under the percentile line",

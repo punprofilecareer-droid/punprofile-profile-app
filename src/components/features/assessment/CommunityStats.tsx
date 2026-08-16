@@ -1,12 +1,23 @@
 "use client";
 
 /**
- * The three community lines under the first read. TASK-083, 14/08/2026.
+ * What everyone else who took this said, under the first read. TASK-083,
+ * 14/08/2026, restructured 16/08/2026.
  *
- * Two facts about the pool and one about the candidate, in that order. The
- * order is the point: a stranger reads the countries line, recognises their own
- * shortlist in it, and only then meets a sentence about themselves, which lands
- * differently than it would as the opening claim.
+ * Facts about the pool first, then one about the candidate. The order is the
+ * point: a stranger reads the countries, recognises their own shortlist, meets
+ * the group's readiness gaps as company rather than as an accusation, and only
+ * then meets a sentence about themselves, which lands differently than it would
+ * as the opening claim.
+ *
+ * **What changed on 16/08/2026 and why.** The most-languages figure came off.
+ * It was the weakest of the three: a maximum rather than a share, describing one
+ * person nobody can identify, and it said nothing a candidate could act on or
+ * repeat. In its place go the three readiness shares, which all point the same
+ * way and together make the argument the coaching page makes: the gap between
+ * this group and a European shortlist is presentation, not ability. The query
+ * still computes languages, because deleting a statistic to change a layout
+ * would make this screen the source of truth for `stats.ts`.
  *
  * Every number comes from `convex/stats.ts`, which returns aggregates and
  * quantile boundaries only. Nothing in this component can name another
@@ -24,6 +35,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useCopy } from "@/components/LocaleProvider";
 import type { AnyCopyKey } from "@/lib/locale";
+import type { CopyKey } from "@/lib/content/copy";
 
 type Scores = Record<string, number | undefined>;
 
@@ -56,6 +68,16 @@ const DIMENSIONS = [
 /** Suppressed below this rather than printed. See `best` below. */
 const MIN_INTERESTING = 10;
 
+/**
+ * The readiness bars, in the order a recruiter meets them: the document, the
+ * evidence behind it, the profile they search for afterwards.
+ */
+const READINESS: { share: string; copyKey: CopyKey }[] = [
+  { share: "cvNotForEurope", copyKey: "stats.readiness.cv" },
+  { share: "noPortfolio", copyKey: "stats.readiness.portfolio" },
+  { share: "linkedinThin", copyKey: "stats.readiness.linkedin" },
+];
+
 export default function CommunityStats({ scores }: { scores: Scores }) {
   const stats = useQuery(api.stats.community);
   const { t } = useCopy();
@@ -82,8 +104,18 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
     return !top || pct > top.pct ? { key, pct } : top;
   }, null);
 
+  // A bar group of one is not a group, and the sentence under it claims three
+  // things point the same way. Below three, the card does not render.
+  const readiness = READINESS.map((r) => ({ ...r, pct: stats.shares[r.share]?.pct ?? null })).filter(
+    (r): r is typeof r & { pct: number } => r.pct !== null,
+  );
+  const showReadiness = readiness.length === READINESS.length;
+
+  const waiting = stats.shares.notApplyingYet?.pct ?? null;
+  const soon = stats.shares.soonWithin3m?.pct ?? null;
+
   const hasAny =
-    stats.topCountries !== null || stats.mostLanguages !== null || (best && best.pct >= MIN_INTERESTING);
+    stats.topCountries !== null || showReadiness || (best && best.pct >= MIN_INTERESTING);
   if (!hasAny) return null;
 
   return (
@@ -92,7 +124,7 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
 
       <div className="mt-3 flex flex-col gap-4">
         {stats.topCountries && (
-          <div className="material rounded-lg px-6 py-6">
+          <div className="material rounded-lg px-5 py-5">
             <p className="text-label text-eufit-deep">{t("stats.countries.label")}</p>
             <ol className="mt-4 flex flex-col gap-3">
               {stats.topCountries.map((c, i) => (
@@ -104,7 +136,7 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
                       the question's own options carry the English name in both
                       locales, and a Thai transliteration here would print a
                       different word than the one the candidate tapped. */}
-                  <span className="w-32 shrink-0 text-body text-ink">{c.country}</span>
+                  <span className="w-28 shrink-0 text-body text-ink">{c.country}</span>
                   {/* The bar is scaled to the leader, not to 100. At a share of
                       around a third the whole set would otherwise sit in the
                       left third of the card and read as an error. */}
@@ -129,25 +161,54 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
           </div>
         )}
 
-        {stats.mostLanguages !== null && (
-          <div className="material rounded-lg px-6 py-6">
-            <p className="text-label text-eufit-deep">{t("stats.languages.label")}</p>
-            <p className="mt-2 text-h3 text-ink">
-              {t("stats.languages.value", { max: stats.mostLanguages })}
-            </p>
-            <p className="mt-2 text-caption text-neutral-500">{t("stats.languages.foot")}</p>
+        {/* The readiness stack. Three shares of the same pool, so the bars are
+            scaled to 100 rather than to the leader: here the absolute height IS
+            the claim, unlike the countries above where the ranking is. */}
+        {showReadiness && (
+          <div className="material rounded-lg px-5 py-5">
+            <p className="text-label text-eufit-deep">{t("stats.readiness.label")}</p>
+            <ul className="mt-4 flex flex-col gap-4">
+              {readiness.map((r) => (
+                <li key={r.share}>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-body text-ink">{t(r.copyKey)}</span>
+                    <span className="shrink-0 text-body-lg font-semibold tabular-nums text-eufit-deep">
+                      {r.pct}%
+                    </span>
+                  </div>
+                  <div aria-hidden className="mt-2 h-2 w-full rounded-full bg-neutral-100">
+                    <span
+                      className="block h-2 rounded-full bg-eufit"
+                      style={{ width: `${r.pct}%` }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {waiting !== null && soon !== null && (
+              <p className="mt-5 text-body text-slate">
+                {t("stats.timing", { waiting, soon })}
+              </p>
+            )}
+            <p className="mt-3 text-caption text-neutral-500">{t("stats.readiness.foot")}</p>
           </div>
         )}
 
+        {/* The one sentence here about the candidate rather than the pool, so it
+            goes last and it gets the only coloured panel in the section.
+            `eufit-deep` and not Terracotta: `design.md` reserves Terracotta for
+            the single action on a view, which on this screen is the button
+            below. A stat block in the same colour would give the screen two
+            things asking to be pressed. */}
         {best && best.pct >= MIN_INTERESTING && (
-          <div className="material-mint rounded-lg px-6 py-6">
-            <p className="text-body-lg text-ink">
+          <div className="rounded-lg bg-eufit-deep px-6 py-7 text-on-eufit">
+            <p className="text-display leading-none tabular-nums">{best.pct}%</p>
+            <p className="mt-3 text-body-lg">
               {t("stats.percentile", {
                 dimension: t(`dimension.${best.key}` as AnyCopyKey),
-                n: best.pct,
               })}
             </p>
-            <p className="mt-2 text-caption text-neutral-500">{t("stats.percentile.foot")}</p>
+            <p className="mt-2 text-caption text-on-eufit/75">{t("stats.percentile.foot")}</p>
           </div>
         )}
       </div>
