@@ -148,8 +148,8 @@ export const CONSENT_COPY = {
   },
 
   /**
-   * **PLACEHOLDER. The Thai is machine-written and Paul has not read it.**
-   * Added 15/08/2026 with the `consentEvents` work. Do not ship this string.
+   * **Passed by Paul, 16/08/2026.** Added 15/08/2026 as a machine-written
+   * placeholder that said so; recomposed and read back on that date.
    *
    * This is a second, separate tick, and separate is the point. The statement
    * above is `service`: we may contact you about your own result and your
@@ -169,9 +169,11 @@ export const CONSENT_COPY = {
    *    is a concrete thing and it is the reason someone would say yes.
    * 3. **Say they can stop**, and mean it: the withdrawal mechanism now exists.
    *
-   * The `th` below must be replaced by Paul's own wording before this renders,
-   * the same way the statement above was. `Language_System.md` LR-01 to LR-08
-   * and `termbase.yml` apply.
+   * All three conditions above are met by the wording below, and it is worth
+   * saying which line carries which: the tick is unticked in `ContactGate`'s
+   * own state and refusing it blocks nothing; `ตำแหน่งงานที่ตรงกับโปรไฟล์ของคุณ`
+   * is the named payload rather than "updates"; and `แจ้งเราได้ทุกเมื่อ` is the
+   * stop, in Paul's own words from `consent.purpose` above.
    */
   "consent.marketing": {
     screen: "Contact gate, a separate optional tick under the consent statement",
@@ -196,13 +198,29 @@ export const CONSENT_COPY = {
 } as const satisfies Record<string, CopyEntry>;
 
 /**
- * False until Paul writes the Thai and reads it back on the live screen.
+ * **True since 16/08/2026: Paul read the Thai and passed it.**
  *
- * The gate that keeps the placeholder above off a candidate's screen: the
- * contact step renders the marketing tick only when this is true, so shipping
- * the machine-written string requires deliberately flipping a flag rather than
- * forgetting to remove one.
+ * The gate existed because the string above was machine-written and said so.
+ * It was recomposed through the `thai-composer` skill against his own
+ * `consent.purpose`, measured against his app copy, put in front of him and
+ * passed.
+ *
+ * It is no longer one flag over one tick. Three surfaces read it, and they go
+ * on and off together on purpose:
+ *
+ * - The marketing tick at the contact step, in `ContactGate`.
+ * - The marketing section of the privacy notice, in `privacy.ts`.
+ * - The blog's email capture, in `SignupForm`.
+ *
+ * One fact underneath: whether this business asks for marketing consent. Two
+ * flags would allow the state that matters, a form collecting consent for a
+ * purpose the published notice does not mention, and PDPA wants the notice
+ * before the collection rather than after it.
+ *
+ * **Turning this off again is a real rollback and not a tidy-up.** Consent
+ * already granted stays granted, because a live opt-in is a permission somebody
+ * gave and hiding the form does not withdraw it. What stops is the asking.
  */
-export const MARKETING_CONSENT_COPY_REVIEWED = false;
+export const MARKETING_CONSENT_COPY_REVIEWED = true;
 
 export type ConsentCopyKey = keyof typeof CONSENT_COPY;

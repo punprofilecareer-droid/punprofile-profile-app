@@ -63,6 +63,31 @@ import { SIGNUP_CONSENT } from "../src/lib/content/blog";
  * records only that a button was pressed twice.
  */
 
+/**
+ * The `attribution.raw` marker a blog subscriber carries.
+ *
+ * Named here and imported by `leads.ts` rather than written twice, because it
+ * is what the admin list filters on and a typo in either copy would silently
+ * put subscribers back in the coach's queue.
+ */
+export const BLOG_SIGNUP = "blog_signup";
+
+/**
+ * Someone who gave an email on the blog and has not taken the assessment.
+ *
+ * Both halves matter. The marker alone would keep hiding them forever, and
+ * Paul's rule on 16/08/2026 is that they appear once they complete the check.
+ * `responses` is the test for that rather than `status`, because a lead row is
+ * created the moment someone lands on `/assess` and a status can move before
+ * a single question is answered.
+ */
+export const isBlogOnlySubscriber = (lead: {
+  attribution?: { raw?: string };
+  responses?: Record<string, unknown>;
+}): boolean =>
+  lead.attribution?.raw === BLOG_SIGNUP &&
+  Object.keys(lead.responses ?? {}).length === 0;
+
 const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
 
 export const subscribe = mutation({
@@ -118,7 +143,7 @@ export const subscribe = mutation({
     const leadId = await ctx.db.insert("leads", {
       email,
       status: "partial",
-      attribution: { channel: "other", landedAt: now, raw: "blog_signup" },
+      attribution: { channel: "other", landedAt: now, raw: BLOG_SIGNUP },
       createdAt: now,
       updatedAt: now,
       lastActivityAt: now,

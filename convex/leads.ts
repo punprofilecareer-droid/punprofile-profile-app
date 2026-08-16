@@ -10,6 +10,7 @@ import { EUROPEAN_LANGUAGES } from "../src/lib/country-english";
 import { rateLimiter } from "./rateLimits";
 import { gradeLead, toGradeInput, latestCoachIcp } from "../src/lib/leadGrade";
 import { eventsFor, recordConsent } from "./consentDb";
+import { isBlogOnlySubscriber } from "./subscribe";
 import { resolveAll, ynGrid } from "../src/lib/consent";
 import { meetsBookingGate } from "../src/lib/lifecycle";
 import { parseAttribution, attributionFromLegacySource } from "../src/lib/attribution";
@@ -515,9 +516,31 @@ export const listForAdmin = query({
     // That only holds because the window above is not the limit; see its note.
     const STATUS_RANK = { completed: 0, email_captured: 1, partial: 2 } as const;
     const sort = args.sort ?? "recent";
+
+    /**
+     * Blog subscribers are out of this view until they take the check.
+     *
+     * Paul's rule, 16/08/2026: they share the lead record and the consent log,
+     * which is what makes one person one row and one consent history, and they
+     * are not leads yet. Someone who handed over an email to read job openings
+     * has not asked to be coached and should not sit in a queue of people who
+     * have.
+     *
+     * **Not covered by the status filter above**, which is why this is here.
+     * `partial` is already hidden by default, so this changes nothing in the
+     * everyday view; it matters under `includeAbandoned`, where the question
+     * being asked is "how many start the check and never finish" and a
+     * subscriber is not an answer to it, having never started.
+     *
+     * It reverses on its own. The moment they answer a question the predicate
+     * stops matching and they appear, which is the rule as stated rather than
+     * a job somebody has to remember to run.
+     */
+    const leadsOnly = rows.filter((l) => !isBlogOnlySubscriber(l));
+
     const visible = args.includeDisqualified
-      ? rows
-      : rows.filter((l) => l.disposition !== "disqualified");
+      ? leadsOnly
+      : leadsOnly.filter((l) => l.disposition !== "disqualified");
 
     const ordered = visible.sort((a, b) => {
       switch (sort) {

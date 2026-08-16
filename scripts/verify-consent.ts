@@ -151,9 +151,13 @@ check(
 // --- the state of the real database ---------------------------------------
 
 console.log(
-  "\nNote: with no screen asking for marketing consent, `marketing` is\n" +
-    "`never_asked` for every lead in the database. That is the correct answer\n" +
-    "and an empty marketing audience is not a bug.\n",
+  "\nNote: two screens ask for marketing consent since 16/08/2026, the contact\n" +
+    "step's optional tick and the blog's email capture. Every lead who predates\n" +
+    "them is still `never_asked`, including all 90 imported ones, and that is the\n" +
+    "correct answer rather than a gap: a `service` opt-in has never licensed a\n" +
+    "digest, and the assertion above pins it.\n\n" +
+    "There is still no send path. `RESEND_API_KEY` is unset on both deployments,\n" +
+    "so a granted permission is a permission and not a queued email.\n",
 );
 
 if (failures > 0) {
