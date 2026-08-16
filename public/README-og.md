@@ -11,11 +11,23 @@ a first version that led on the assessment. A shared link is the business
 introducing itself, and the assessment is one feature of an app that is still
 growing, so a card built around it goes stale as the app does.
 
-- **Teal**, the colour PunProfile is known by. Specifically `primary-deep`, the
-  same surface as the site footer and for the reason recorded there: on
-  `primary` white holds 4.71:1 and leaves nothing for a second tier, while on
-  `primary-deep` white holds 8.97:1 and `accent-tint` 5.37:1. Lavender is EU Fit
-  Check's identity and would say the wrong thing here.
+- **Teal**, and specifically `primary` (#068376), the colour `design.md` says
+  PunProfile is known by and the one it names for full-bleed section
+  backgrounds. Lavender is EU Fit Check's identity and would say the wrong
+  thing on a card for the business.
+
+  It was `primary-deep` for about an hour, borrowed from the site footer, and
+  Paul's read was that it was very dark green. He is right and the document
+  agrees with him: `primary-deep` is described as a ramp extension for
+  text-on-teal, pressed states and data-viz accents, never as a background.
+  The footer is the exception, and it earns it by needing two readable text
+  tiers on a dark surface. A share card does not.
+
+  The cost of the brighter teal, since it is real: white on `primary` holds
+  4.71:1, which is AA for body and above but leaves no headroom for a second
+  text tier, so the eyebrow is white at 92% rather than `accent-tint`, which
+  fails on this background at 2.9:1. Hierarchy comes from size and weight
+  instead of colour.
 - **The reversed wordmark**, so the brand is legible at thumbnail size before
   anything else is read.
 - **The coaching hook**, `HOOK_EYEBROW`, `HOOK_LINE_1` and `HOOK_LINE_2` from
@@ -23,7 +35,10 @@ growing, so a card built around it goes stale as the app does.
   the second smaller: same size for both orphaned a word and gave the card four
   heading lines to read at thumbnail size.
 - **The three service names** from `services.ts`, as chips.
-- **The coach mascot.**
+- **The coach mascot**, cut out of its white square. The counter of the P, the
+  hole the letterform is defined by, has to be transparent so the background
+  shows through it. Getting that wrong is not subtle: a white plug in the middle
+  of the letter reads as a rendering fault, and it shipped that way for an hour.
 
 If any of those strings change, this image is stale. It is not generated from
 them, only copied.

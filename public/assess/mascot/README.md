@@ -26,10 +26,17 @@ the lavender field with no card behind it, and a white rectangle in the middle
 of that field reads as a broken image.
 
 Source: `pp_coach_square.jpeg` in the coaching repo's `ctxt-brand/assets/inbox/`.
-The cutout was a flood fill from the corners with a tolerance, not a global
-white removal, so the clipboard and the shoe soles keep their own near-white
-tones. If the asset is re-rendered, redo the cutout the same way rather than
-keying out every white pixel.
+The cutout is a flood fill from the corners with a tolerance, not a global white
+removal, so the clipboard and the shoe soles keep their own near-white tones.
+
+**Two passes, and the second one is the part that was missed first time.** A
+corner fill clears everything outside the character and cannot reach the counter
+of the P, the hole the letterform is defined by, so the first version shipped a
+character with a white plug in the middle of it. The fix labels every enclosed
+near-white region and clears the ones above 200px, which is the counter, split
+in two by the glasses arm crossing it, and not the handful of 1-20px JPEG
+speckles. If the asset is re-rendered, redo it the same way: keying out every
+white pixel instead would eat the clipboard and the shoe soles.
 
 **To swap one: overwrite the file.** No code change. Unlike the block
 photographs these carry no blur placeholder, because they are small, sit on a
