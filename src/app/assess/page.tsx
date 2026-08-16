@@ -7,6 +7,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
 import { BLOCKS, blockFor } from "@/lib/content/blocks";
+import Image from "next/image";
 import BlockPanel, { type BlockImage } from "@/components/features/assessment/BlockPanel";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
@@ -242,11 +243,19 @@ export default function AssessPage() {
           </>
         ) : (
           <>
-            {/* Something moving, or the pause reads as a stall rather than as
-                work. Ring on the brand primary, one revolution a second. */}
-            <span
-              aria-hidden
-              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-neutral-300 border-t-eufit"
+            {/* The mascot, not a spinner. The requirement the spinner met still
+                holds, that something has to move or the pause reads as a stall
+                rather than as work, and the character arriving is that motion.
+                It also does something a ring cannot: the clock it is sitting on
+                says the wait is deliberate. */}
+            <Image
+              src="/assess/mascot/welcome.jpg"
+              alt=""
+              width={1000}
+              height={746}
+              priority
+              sizes="(max-width: 640px) 90vw, 420px"
+              className="mascot-in mx-auto mb-4 w-full max-w-[420px] rounded-lg"
             />
             <p className="text-body text-neutral-500" role="status">
               {t("assess.starting")}
@@ -303,6 +312,7 @@ export default function AssessPage() {
           step={step + 1}
           total={TOTAL_STEPS}
           onBack={() => setStep(step - 1)}
+          hasPanel={Boolean(panel)}
         />
         </BlockPanel>
       );
@@ -403,6 +413,21 @@ export default function AssessPage() {
   // Teaser (TASK-021/022): chart only, no contact ask on this screen.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
+      {/* The result scene: the character reaching for the shortest point of a
+          four-pointed star rather than the longest. Four because the radar has
+          four axes, and the short one because `10_Methodology.md` says the
+          lowest uncleared gate is the only one that matters this month. It says
+          the opposite of what a congratulatory illustration would, which is why
+          it is here and above the chart rather than after it. */}
+      <Image
+        src="/assess/mascot/result.jpg"
+        alt=""
+        width={1000}
+        height={750}
+        priority
+        sizes="(max-width: 640px) 90vw, 420px"
+        className="mascot-in mx-auto mb-5 w-full max-w-[420px] rounded-lg"
+      />
       <h1 className="text-h3">{t("teaser.headline")}</h1>
       <p className="mt-1 text-body text-slate">{t("teaser.selfReported")}</p>
       {/* The chart gets its own surface. The radar's grid is 1px neutral-300

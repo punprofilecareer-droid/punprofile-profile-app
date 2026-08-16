@@ -58,12 +58,17 @@ export default function LanguageGrid({
   step,
   total,
   onBack,
+  hasPanel = false,
 }: {
   onSubmit: (levels: Record<string, Level>) => Promise<void>;
   onSkip: () => Promise<void> | void;
   step: number;
   total: number;
   onBack?: () => void;
+  /** Whether a block photograph occupies the left half, so the bar stops at the
+   *  middle rather than running under the picture. The language grid sits in the
+   *  same block as the English question, so it has one. */
+  hasPanel?: boolean;
 }) {
   const { t, locale } = useCopy();
   const [levels, setLevels] = useState<Record<string, Level>>({});
@@ -76,10 +81,21 @@ export default function LanguageGrid({
     setLevels((prev) => {
       const next = { ...prev };
       if (lang in next) delete next[lang];
-      // B1 as the opening guess, not A1: it is the middle of the ladder, so a
-      // candidate is equally likely to move it either way. Defaulting to A1
-      // would make understating effortless and overstating deliberate.
-      else next[lang] = "B1";
+      // A1, the floor. Paul, 16/08/2026, reversing the B1 default set on
+      // 14/08/2026.
+      //
+      // The old reasoning was that B1 sits in the middle of the ladder, so a
+      // candidate is equally likely to move it either way, where A1 would make
+      // understating effortless. That reads well and it ignores what the field
+      // is for. This grid feeds Country Reach, so a default nobody touches is
+      // scored, and B1 credited someone with a working level they never
+      // claimed. A1 is the only default that is true of everyone who has ticked
+      // the language and said nothing else about it.
+      //
+      // Overstating should be deliberate. Understating costs the candidate a
+      // point they can correct in one tap; overstating costs them a
+      // recommendation built on a language they cannot work in.
+      else next[lang] = "A1";
       return next;
     });
   }
@@ -194,7 +210,7 @@ export default function LanguageGrid({
       </div>
 
       <ActionBarSpacer />
-      <ActionBar>
+      <ActionBar half={hasPanel}>
         <div className="flex gap-3">
           <button
             type="button"

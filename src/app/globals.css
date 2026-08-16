@@ -594,7 +594,12 @@
 
    Longer than the question's own 240ms entrance because it is a much larger
    surface: the same duration on half a screen reads as a flicker rather than a
-   change. It starts as the outgoing card leaves, so the two finish together. */
+   change. It starts as the outgoing card leaves.
+
+   450ms first, doubled to 900ms on Paul's read once the crossfade was actually
+   running. It now outlasts the card by a good margin, which is the right way
+   round: the question is the thing being answered and should settle first, and
+   the photograph is a section marker that can take its time. */
 @keyframes q-photo-in {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -602,6 +607,39 @@
 
 @layer components {
   .q-photo-in {
-    animation: q-photo-in 450ms var(--ease-settle) both;
+    animation: q-photo-in 900ms var(--ease-settle) both;
+  }
+}
+
+/* The mascot arriving on the two screens that bookend the assessment.
+
+   Added 16/08/2026. `mascot.md` in the coaching repo gives the mascot whole
+   moments at the ends of the flow and gives the photographs the sections in
+   between, so these are the only two places a candidate meets the character
+   inside the assessment.
+
+   It rises further and slower than a question card does, 24px over 520ms, and
+   that is the point: a question is one of seventeen and should not draw
+   attention to its own arrival, while these two screens are each the only thing
+   on screen and are allowed to be an event.
+
+   On the welcome screen this also replaces a spinner. The original comment
+   there asked for something moving, or the pause reads as a stall rather than
+   as work, and that requirement survives: the character arriving is the motion
+   now. */
+@keyframes mascot-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer components {
+  .mascot-in {
+    animation: mascot-in 520ms var(--ease-settle) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-in {
+    animation-name: q-photo-in;
   }
 }
