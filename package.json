@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "termbase": "tsx scripts/sync-termbase.ts",
+    "market": "tsx scripts/sync-market-snapshot.ts",
     "verify:copy": "tsx scripts/verify-copy.ts",
     "lint:thai": "tsx scripts/lint-thai.ts",
     "verify:consent": "tsx scripts/verify-consent.ts",
