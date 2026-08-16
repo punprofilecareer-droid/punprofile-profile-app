@@ -68,9 +68,18 @@ export default function SpiderChart({ scores, variant = "teaser", axisLabels }: 
       // legend carries all four numbers in full. Leaving them on the axes too
       // printed each one twice and pushed the longest Thai label off the card.
       values: variant !== "teaser",
-      // Thai axis names run to twice the length of the English ones and sit
-      // outside the plot, so the teaser's box is widened to hold them.
-      widthRatio: variant === "teaser" ? 1.95 : undefined,
+      // Widened only when the labels actually need it. Thai axis names run to
+      // twice the length of the English ones and sit outside the plot, so Thai
+      // needs the room; applying the same ratio to English shrank the radar for
+      // no reason, which was visible as soon as the desktop layout gave the
+      // chart a card of its own. Measured off the longest label rather than off
+      // the locale, so a future language gets the right box without a rule.
+      widthRatio:
+        variant === "teaser"
+          ? Math.max(...axes.map((a) => a.label.length)) > 16
+            ? 1.95
+            : 1.6
+          : undefined,
     });
     // `locale` is the real dependency; `t` is rebuilt whenever it changes.
   }, [scores, variant, t, locale, axisLabels]);

@@ -491,73 +491,96 @@ export default function AssessPage() {
   //   that has to be unmissable.
   // - **The pipeline figure arrived** directly above the services card, since it
   //   is the only proof on this screen about work PunProfile has actually done.
+  //
+  // **The desktop layout, added the same day.** Everything above describes a
+  // phone, which is where this audience actually is, and the page was one 448px
+  // column no matter how wide the window got. That is not neutral on a laptop:
+  // it reads as a phone screenshot pasted into a browser, and this screen is
+  // asking to be taken seriously. From `lg` it becomes two columns, chart beside
+  // the read, and the three community facts sit in a row rather than a stack.
+  //
+  // The order still degrades to exactly the phone order, because the sequence
+  // is an argument: chart, what it says about you, what to do, what happens
+  // next, who else is here, what we have read. Nothing is moved on desktop that
+  // would break that; only the shape changes.
   return (
-    <div className="mx-auto w-full max-w-md px-6 py-10 text-center">
-      <h1 className="text-h2 text-eufit-deep">{t("teaser.headline")}</h1>
-      <p className="mt-2 text-body text-slate">{t("teaser.selfReported")}</p>
+    <div className="mx-auto w-full max-w-md px-6 py-10 text-center lg:max-w-5xl lg:px-8 lg:py-16">
+      <h1 className="text-h2 text-eufit-deep lg:text-h1">{t("teaser.headline")}</h1>
+      <p className="mt-2 text-body text-slate lg:text-body-lg">{t("teaser.selfReported")}</p>
 
-      {/* The chart gets its own surface. The radar's grid is 1px neutral-300
-          and the field's gradient moves through the same value range, so on
-          the field alone the grid reads as noise rather than as structure. */}
-      <div className="material mt-6 rounded-lg px-4 py-6 text-left">
-        <h2 className="text-h4 text-eufit-deep">{t("teaser.chart.heading")}</h2>
-        <SpiderChart scores={scores} variant="teaser" />
-        <div className="mt-2 border-t border-neutral-300 pt-5">
-          <ScoreLegend scores={scores} />
+      {/* Chart and read, side by side from `lg`. `items-start` rather than
+          stretch: the read is shorter than the chart card for most profiles and
+          a white card grown to match it would be mostly empty. */}
+      <div className="lg:mt-12 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
+        {/* The chart gets its own surface. The radar's grid is 1px neutral-300
+            and the field's gradient moves through the same value range, so on
+            the field alone the grid reads as noise rather than as structure. */}
+        <div className="material mt-6 rounded-lg px-4 py-6 text-left lg:mt-0 lg:px-6 lg:py-7">
+          <h2 className="text-h4 text-eufit-deep">{t("teaser.chart.heading")}</h2>
+          <SpiderChart scores={scores} variant="teaser" />
+          <div className="mt-2 border-t border-neutral-300 pt-5">
+            <ScoreLegend scores={scores} />
+          </div>
         </div>
-      </div>
 
-      {/* The personalized read. Every sentence is selected from the bank in
-          `narrative-copy.ts` by the candidate's own scores, so nothing here can
-          claim more than the answers support. */}
-      {summary && (
-        <div className="mt-8 space-y-4 text-left">
-          <p className="text-body-lg text-ink">{summary.opener}</p>
-          <p className="text-body text-slate">{summary.standing}</p>
+        <div className="lg:pt-2">
+          {/* The personalized read. Every sentence is selected from the bank in
+              `narrative-copy.ts` by the candidate's own scores, so nothing here
+              can claim more than the answers support. */}
+          {summary && (
+            <div className="mt-8 space-y-4 text-left lg:mt-0">
+              <p className="text-body-lg text-ink">{summary.opener}</p>
+              <p className="text-body text-slate">{summary.standing}</p>
+            </div>
+          )}
+
+          {/* The coach pose, cut out of its backdrop so it stands on the
+              lavender field rather than in a white box. It sits here rather
+              than at the top because the page has just made its two densest
+              claims and the reader needs a beat before the next one.
+              Smaller on desktop, where it shares a column with the text rather
+              than getting the full width to itself. */}
+          <Image
+            src="/assess/mascot/coach.png"
+            alt=""
+            width={640}
+            height={578}
+            priority
+            sizes="(max-width: 640px) 70vw, (max-width: 1024px) 320px, 260px"
+            className="mascot-in mx-auto my-6 w-full max-w-[300px] lg:my-7 lg:max-w-[260px]"
+          />
+
+          {summary && (
+            <div className="space-y-3 text-left">
+              {summary.strengthLead && (
+                <p className="text-body-lg text-ink">{summary.strengthLead}</p>
+              )}
+              {/* The most actionable sentence on the screen, and no longer in a
+                  panel of its own. Three stacked coloured boxes meant none of
+                  them read as important; the label carries the emphasis. */}
+              {summary.next && (
+                <p className="text-body text-slate">
+                  <span className="font-semibold text-eufit-deep">{summary.nextLead} </span>
+                  {summary.next}
+                </p>
+              )}
+              {summary.unmeasured && (
+                <p className="text-caption text-neutral-500">{summary.unmeasured}</p>
+              )}
+            </div>
+          )}
+
+          {/* Contact is already in by the time this renders, so this says what
+              happens next rather than asking for anything. It stays inside the
+              read's column on desktop: it is the end of that thought, and full
+              width would make a queue notice the widest thing on the page. */}
+          <div className="material-mint mt-6 flex items-start gap-3 rounded-lg px-5 py-4 text-left">
+            <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-primary">
+              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM13.25 17h-2.5v-6.5h2.5V17Z" />
+            </svg>
+            <p className="text-body text-ink">{t("teaser.nextStep")}</p>
+          </div>
         </div>
-      )}
-
-      {/* The coach pose, cut out of its backdrop so it stands on the lavender
-          field rather than in a white box. It sits here rather than at the top
-          because the page has just made its two densest claims and the reader
-          needs a beat before the next one. */}
-      <Image
-        src="/assess/mascot/coach.png"
-        alt=""
-        width={640}
-        height={578}
-        priority
-        sizes="(max-width: 640px) 70vw, 320px"
-        className="mascot-in mx-auto my-6 w-full max-w-[300px]"
-      />
-
-      {summary && (
-        <div className="space-y-3 text-left">
-          {summary.strengthLead && (
-            <p className="text-body-lg text-ink">{summary.strengthLead}</p>
-          )}
-          {/* The most actionable sentence on the screen, and no longer in a
-              panel of its own. Three stacked coloured boxes meant none of them
-              read as important; the label carries the emphasis instead. */}
-          {summary.next && (
-            <p className="text-body text-slate">
-              <span className="font-semibold text-eufit-deep">{summary.nextLead} </span>
-              {summary.next}
-            </p>
-          )}
-          {summary.unmeasured && (
-            <p className="text-caption text-neutral-500">{summary.unmeasured}</p>
-          )}
-        </div>
-      )}
-
-      {/* Contact is already in by the time this renders, so this says what
-          happens next rather than asking for anything. */}
-      <div className="material-mint mt-6 flex items-start gap-3 rounded-lg px-5 py-4 text-left">
-        <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-primary">
-          <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM13.25 17h-2.5v-6.5h2.5V17Z" />
-        </svg>
-        <p className="text-body text-ink">{t("teaser.nextStep")}</p>
       </div>
 
       {/* TASK-083. Facts about everyone who has taken this and one about the
@@ -566,30 +589,39 @@ export default function AssessPage() {
           clears its own sample floor. */}
       <CommunityStats scores={scores} />
 
-      {/* The pipeline figure, then the services card it earns. */}
-      <MarketProof />
+      {/* The pipeline figure and the services card it earns, side by side from
+          `lg`: the proof and the action it is there to justify, which is the
+          one pairing on this page that gains from being read at once. */}
+      <div className="lg:mt-6 lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-6">
+        <MarketProof />
 
-      {/* TASK-084. The second action on this screen, and deliberately not a
-          second booking button: the candidate has just been told there is a
-          queue, so what they can usefully do now is read what the work is.
-          Secondary treatment throughout, because when TASK-046 turns the
-          booking CTA on below, that one is the revenue step and only one
-          Terracotta action belongs on a view. */}
-      <div className="material mt-4 rounded-lg px-5 py-6 text-left">
-        <h2 className="text-h4">{t("services.cta.heading")}</h2>
-        <p className="mt-2 text-body text-slate">{t("services.cta.body")}</p>
-        {/* Still hand-rolled, and the one deliberate exception to the table:
-            this link carries `?focus=` so the services page opens on the axis
-            the candidate scored lowest, which no shared component can know.
-            It is the table's `/assess-result` primary in every other respect,
-            including its destination. */}
-        <Link
-          href={weakest ? `/services?focus=${weakest}` : "/services"}
-          className="mt-5 inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright"
-        >
-          {t("services.cta.button")}
-          <span aria-hidden>&rarr;</span>
-        </Link>
+        {/* TASK-084. The second action on this screen, and deliberately not a
+            second booking button: the candidate has just been told there is a
+            queue, so what they can usefully do now is read what the work is.
+            Secondary treatment throughout, because when TASK-046 turns the
+            booking CTA on below, that one is the revenue step. */}
+        <div className="material mt-4 flex flex-col rounded-lg px-5 py-6 text-left lg:mt-4">
+          <h2 className="text-h4">{t("services.cta.heading")}</h2>
+          <p className="mt-2 text-body text-slate">{t("services.cta.body")}</p>
+          {/* Still hand-rolled, and the one deliberate exception to the table:
+              this link carries `?focus=` so the services page opens on the axis
+              the candidate scored lowest, which no shared component can know.
+              It is the table's `/assess-result` primary in every other respect,
+              including its destination.
+
+              **Teal, from 16/08/2026.** It was Terracotta until the percentile
+              block took that colour on Paul's call. Two Terracotta elements on
+              one view is the thing `design.md` warns about, and of the two the
+              stat block is the one he wants loud. `mt-auto` keeps the button on
+              the card's floor so it lines up with the card beside it. */}
+          <Link
+            href={weakest ? `/services?focus=${weakest}` : "/services"}
+            className="mt-5 inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-primary px-7 py-4 text-body-lg font-semibold text-on-primary transition-colors hover:bg-primary-deep lg:mt-auto lg:self-start"
+          >
+            {t("services.cta.button")}
+            <span aria-hidden>&rarr;</span>
+          </Link>
+        </div>
       </div>
 
       {/* TASK-046. Hidden until a booking mechanism exists, rather than

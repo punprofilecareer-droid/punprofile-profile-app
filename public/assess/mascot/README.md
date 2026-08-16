@@ -11,11 +11,12 @@ flow.
 | `coach.png` | Mid-page on the first read | Standing with a clipboard, one hand open |
 
 `result.jpg`, the character reaching for the shortest point of a four-pointed
-star, is **no longer rendered**. Paul supplied the coach pose on 16/08/2026 with
-the first read's redesign and it took that slot. The file stays for now because
-the star scene says something the coach pose does not, which is that the lowest
-gate is the one that matters; if it is not brought back it should be deleted
-rather than left here.
+star, was **deleted on 16/08/2026** on Paul's call, when the coach pose took its
+slot in the first read's redesign. Worth knowing what went with it: that scene
+said the lowest uncleared gate is the one that matters, which is
+`10_Methodology.md`'s core claim drawn rather than written, and the coach pose
+does not say it. `scene-prompts.md` in the coaching repo still carries the
+prompt if it is ever wanted back.
 
 ## `coach.png` is a PNG, and that is deliberate
 

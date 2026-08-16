@@ -28,7 +28,7 @@ export default function MarketProof() {
   const { t } = useCopy();
 
   return (
-    <div className="material mt-4 rounded-lg px-5 py-5 text-left">
+    <div className="material mt-4 h-full rounded-lg px-5 py-5 text-left">
       <p className="text-label text-eufit-deep">{t("stats.market.label")}</p>
       <p className="mt-2 text-body-lg text-ink">
         {t("stats.market.value", { screened: MARKET.screened, published: MARKET.published })}

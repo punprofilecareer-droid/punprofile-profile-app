@@ -122,9 +122,14 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
     <section className="mt-10 text-left">
       <h2 className="text-label text-slate">{t("stats.heading")}</h2>
 
-      <div className="mt-3 flex flex-col gap-4">
+      {/* One column on a phone, three across on a desktop. The three are
+          independent facts of similar weight, so a row is honest here in a way
+          it would not be for the narrative above, where the order is an
+          argument. Each is `h-full` so a short card does not leave the row
+          ragged. */}
+      <div className="mt-3 flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:items-stretch lg:gap-6">
         {stats.topCountries && (
-          <div className="material rounded-lg px-5 py-5">
+          <div className="material h-full rounded-lg px-5 py-5">
             <p className="text-label text-eufit-deep">{t("stats.countries.label")}</p>
             <ol className="mt-4 flex flex-col gap-3">
               {stats.topCountries.map((c, i) => (
@@ -165,7 +170,7 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
             scaled to 100 rather than to the leader: here the absolute height IS
             the claim, unlike the countries above where the ranking is. */}
         {showReadiness && (
-          <div className="material rounded-lg px-5 py-5">
+          <div className="material h-full rounded-lg px-5 py-5">
             <p className="text-label text-eufit-deep">{t("stats.readiness.label")}</p>
             <ul className="mt-4 flex flex-col gap-4">
               {readiness.map((r) => (
@@ -196,19 +201,28 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
 
         {/* The one sentence here about the candidate rather than the pool, so it
             goes last and it gets the only coloured panel in the section.
-            `eufit-deep` and not Terracotta: `design.md` reserves Terracotta for
-            the single action on a view, which on this screen is the button
-            below. A stat block in the same colour would give the screen two
-            things asking to be pressed. */}
+
+            **Terracotta, on Paul's call 16/08/2026**, which reverses what this
+            component shipped with a few hours earlier. `design.md` reserves
+            Terracotta for the single action on a view and warns against two
+            things competing to be pressed, so this block was built in
+            `eufit-deep`. He looked at both and took the mockup: the block is
+            the loudest thing on the page and he wants the number to be it. The
+            services button below drops to Teal in the same change, so the rule
+            behind the guidance still holds even though the colour moved.
+
+            White on `accent` measures 4.89:1, which is AA at body size and
+            above. That is why the caption here is full white rather than the
+            faded variant a caption would normally take. */}
         {best && best.pct >= MIN_INTERESTING && (
-          <div className="rounded-lg bg-eufit-deep px-6 py-7 text-on-eufit">
+          <div className="h-full rounded-lg bg-accent px-6 py-7 text-on-accent">
             <p className="text-display leading-none tabular-nums">{best.pct}%</p>
             <p className="mt-3 text-body-lg">
               {t("stats.percentile", {
                 dimension: t(`dimension.${best.key}` as AnyCopyKey),
               })}
             </p>
-            <p className="mt-2 text-caption text-on-eufit/75">{t("stats.percentile.foot")}</p>
+            <p className="mt-2 text-caption text-on-accent">{t("stats.percentile.foot")}</p>
           </div>
         )}
       </div>
