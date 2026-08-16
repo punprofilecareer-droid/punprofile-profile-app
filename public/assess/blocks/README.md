@@ -13,3 +13,16 @@ its crop upward because a centred crop of a standing figure lands on the torso.
 
 The sourcing brief, including search terms per block and the one real risk, is
 `two-registers.md` in the coaching repo's `work-projects/mascot/`.
+
+## Regenerating the blur placeholders
+
+`blocks.ts` carries a 20px inline JPEG per photograph so the panel is never
+empty while the real file is resized. **Swap a photograph and the blur is of the
+old one**, so regenerate it:
+
+```
+sips -Z 20 aim.jpg --out /tmp/b.jpg && sips -s format jpeg -s formatOptions 40 /tmp/b.jpg --out /tmp/b.jpg
+printf 'data:image/jpeg;base64,%s\n' "$(base64 -i /tmp/b.jpg | tr -d '\n')"
+```
+
+Paste the result into that block's `blurDataURL`. About 1.5kB each.

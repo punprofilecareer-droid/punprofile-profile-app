@@ -6,7 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
-import { blockFor } from "@/lib/content/blocks";
+import { BLOCKS, blockFor } from "@/lib/content/blocks";
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import { useCopy } from "@/components/LocaleProvider";
 import ContactGate from "@/components/features/assessment/ContactGate";
@@ -337,7 +337,20 @@ export default function AssessPage() {
         // Null until one is sourced, which is the norm today.
         image={(() => {
           const b = blockFor(q.key);
-          return b?.image ? { src: `/assess/blocks/${b.image}`, alt: "" } : null;
+          if (!b?.image) return null;
+          return {
+            src: `/assess/blocks/${b.image}`,
+            // Decorative. The section it marks is already named by the question
+            // the candidate is reading, so describing the photograph would put
+            // a sentence between them and the question for no gain.
+            alt: "",
+            // Only the first block preloads. It is the one on screen before
+            // anyone has answered anything; the other five are reached minutes
+            // later and preloading them would fetch photographs nobody has got
+            // to yet, on the mobile data this audience is mostly using.
+            priority: b.id === BLOCKS[0].id,
+            blurDataURL: b.blurDataURL,
+          };
         })()}
         onSelect={(value) => {
           setLocal((prev) => ({ ...prev, [q.key]: value }));

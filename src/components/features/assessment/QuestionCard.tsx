@@ -73,10 +73,44 @@ function useScrollToTop() {
  * The question never waits for it either way: no `priority`, no blocking
  * placeholder, and the panel has its own width so nothing reflows on arrival.
  */
-function BlockImage({ src, alt }: { src: string; alt: string }) {
+function BlockImage({
+  src,
+  alt,
+  priority,
+  blurDataURL,
+}: {
+  src: string;
+  alt: string;
+  priority: boolean;
+  blurDataURL: string | null;
+}) {
   return (
-    <div className="relative hidden shrink-0 self-start bg-neutral-100 md:sticky md:top-[72px] md:block md:h-[calc(100dvh-72px)] md:w-1/2">
-      <Image src={src} alt={alt} fill sizes="(max-width: 767px) 1px, 50vw" className="object-cover object-center" />
+    // Lavender rather than grey while it loads. It is the field the assessment
+    // already sits on, so an unloaded panel reads as part of the page instead of
+    // a hole in it.
+    <div className="relative hidden shrink-0 self-start overflow-hidden bg-lavender-wash md:sticky md:top-[72px] md:block md:h-[calc(100dvh-72px)] md:w-1/2">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        // The first block is above the fold on desktop, so it is the one worth
+        // preloading. Preloading all six would fetch five photographs nobody has
+        // reached yet.
+        priority={priority}
+        // Paints a 20px version of the same photograph instantly, so the panel is
+        // never an empty box while the real file is being resized, and the
+        // arrival is a blur sharpening rather than a fade from nothing. That is
+        // also the morph between blocks: the panel is keyed on the source, so a
+        // new section remounts it and it sharpens again.
+        //
+        // **Do not add an opacity transition on top of this.** The first attempt
+        // did, and `opacity-0` hides the placeholder too, because Next paints it
+        // as a background on this same element. The panel sat empty for a second
+        // and the fix looked like it had not worked.
+        {...(blurDataURL ? { placeholder: "blur" as const, blurDataURL } : {})}
+        sizes="(max-width: 767px) 1px, 50vw"
+        className="object-cover object-center"
+      />
     </div>
   );
 }
@@ -107,7 +141,7 @@ export default function QuestionCard({
    */
   phase?: "entering" | "leaving";
   /** The block's photograph. Absent until one is sourced, which is the norm. */
-  image?: { src: string; alt: string } | null;
+  image?: { src: string; alt: string; priority: boolean; blurDataURL: string | null } | null;
   /** Required in "many" mode: the only way forward. */
   onContinue?: () => void;
   /** Omitted on the first question, where there is nothing to go back to. */
@@ -150,10 +184,21 @@ export default function QuestionCard({
    * This makes the code say that too.
    */
   const [arrivedAnswered] = useState(() => select === "many" || chosen.length > 0);
+  /** A "many" question always needs the bar. A "one" question grows it only when
+   *  the candidate came back to an answer they had already given: without it
+   *  their only way forward would be to re-tap an option they did not come to
+   *  change. */
+  const showBar = select === "many" || arrivedAnswered;
 
   return (
     <div className="flex flex-1 flex-col md:flex-row">
-      {image && <BlockImage src={image.src} alt={image.alt} />}
+      {image && <BlockImage
+          key={image.src}
+          src={image.src}
+          alt={image.alt}
+          priority={image.priority}
+          blurDataURL={image.blurDataURL}
+        />}
       <div className="flex flex-1 items-center justify-center">
         <div
           className={`w-full max-w-md px-6 py-8 ${
@@ -241,25 +286,31 @@ export default function QuestionCard({
             there, which means the candidate came back to look: without it their
             only way forward would be to re-tap an option they had not come to
             change. */}
-        {(select === "many" || arrivedAnswered) && (
-          <>
-            <ActionBarSpacer />
-            <ActionBar>
-              <button
-                onClick={onContinue}
-                disabled={chosen.length === 0}
-                className="min-h-14 w-full rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  {t("assess.continue")}
-                  <span aria-hidden>&rarr;</span>
-                </span>
-              </button>
-            </ActionBar>
-          </>
-        )}
+        {showBar && <ActionBarSpacer />}
         </div>
       </div>
+
+      {/* Outside the animated card, deliberately.
+          `position: fixed` resolves against the nearest ancestor with a
+          transform, not against the viewport, and the card carries one for the
+          whole time its animation is filled. Inside, the bar stopped being
+          full-width and became as wide as the `max-w-md` card, which is the
+          white strip Paul photographed. The spacer stays in the column, because
+          that is layout and belongs with the content it is making room for. */}
+      {showBar && (
+        <ActionBar>
+          <button
+            onClick={onContinue}
+            disabled={chosen.length === 0}
+            className="min-h-14 w-full rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+          >
+            <span className="flex items-center justify-center gap-2">
+              {t("assess.continue")}
+              <span aria-hidden>&rarr;</span>
+            </span>
+          </button>
+        </ActionBar>
+      )}
     </div>
   );
 }
