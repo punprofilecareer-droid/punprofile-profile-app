@@ -118,6 +118,24 @@ export const COPY = {
     en: "Contact",
     th: "Contact",
   },
+  /*
+   * The menu's promotional card, at the foot of the drawer. Added 16/08/2026.
+   *
+   * Only the headline lives here. The card's action reuses the assessment's own
+   * label from the table in `cta.ts`, for the same reason `landing.cta` does not
+   * exist: a second definition of the same button is a second wording of it.
+   *
+   * The Thai is built from phrasing already in the approved corpus rather than
+   * translated from the English. "ไม่รู้จะเริ่มตรงไหน" is the daily-jobs drafts'
+   * own construction, so the card sounds like the group's posts rather than like
+   * a website.
+   */
+  "menu.promo": {
+    screen: "Site menu, the card at the foot of the drawer",
+    en: "Not sure where to start?",
+    th: "ยังไม่รู้ว่าจะเริ่มตรงไหน",
+  },
+
   "nav.language": {
     screen: "Header, the TH/EN switch",
     en: "Language",

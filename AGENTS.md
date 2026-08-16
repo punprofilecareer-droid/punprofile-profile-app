@@ -91,24 +91,62 @@ Roadmap is `product-roadmap.md` in the sibling repo's
 repo's old `docs/design.md` stub, which said no tokens existed, was wrong and has
 been removed.
 
-Applied 08/08/2026. The token layer is `src/app/globals.css` for the app and
-`src/lib/design-tokens.ts` for everything generated outside Next. Those two are the
-only definitions of the palette; keep them from drifting and never add a third.
-Some things worth knowing before you touch styling:
+Rebranded to **Material Design 3**, 16/08/2026. The token layer is now
+GENERATED, and that is the thing to know before touching styling:
 
-- **There is no dark mode and there must not be one.** The system's base is white
-  with full-bleed colour washes and it defines no dark ramp, so a `dark:` variant or
-  a `prefers-color-scheme` block would be invented tokens.
-- **Terracotta is one action per view**, teal is everything else that needs emphasis,
-  and `error` is neither.
+- **`src/app/tokens.generated.css` and `src/lib/design-tokens.generated.ts` are
+  written by `scripts/build-tokens.ts` from `design.md` in the sibling repo.**
+  Never hand-edit either. Change the token there, run `npm run tokens`, commit
+  both. `globals.css` imports the CSS one and holds only what is not a token:
+  the base layer, the chart styles, the animations. `design-tokens.ts` is a
+  re-export, kept so no consumer's import path had to change.
+- `npm run design:html` regenerates the rendered style guide beside `design.md`.
+- **Colour roles, not colour names.** Ask what job an element does, then pick the
+  role. `primary` is olive and is the brand. `secondary` is the teal the brand
+  used to be. `tertiary` is EU Fit Check's blue. `action` is rust and is the
+  single primary action per view, and it is deliberately NOT an M3 role, so a
+  page can be saturated in brand colour with only one thing looking pressable.
+  `error` is none of those.
+- **There is a dark scheme since 16/08/2026, and no component may name it.**
+  `tokens.generated.css` redefines the same `--color-*` names inside a
+  `prefers-color-scheme: dark` block, so every utility switches on its own.
+  **Do not use Tailwind's `dark:` prefix.** A component that has to name both
+  schemes is a component that can get one of them wrong, and there are roughly
+  nine hundred colour utilities in this app. If a surface looks wrong in dark,
+  the fix is almost always that it is using a literal colour or the wrong role,
+  not that it needs a `dark:` override.
+  The footer is on `inverse-surface` in both schemes, which is what that role is
+  for: it inverts against whatever surrounds it.
+- **Hover is a state layer, not a colour.** 8% of the element's own content
+  colour over its own background. There is no second, brighter token per
+  interactive colour any more. `.btn-filled` in `globals.css` is the worked
+  example and implements `button-filled` from `design.md`.
+- **Buttons are pills.** The old rule forbidding fully-rounded shapes, on the
+  grounds that they were Thai Jobs in Europe's register, was retired 16/08/2026.
+  Colour and type now carry the whole separation between the two brands, which
+  makes Fraunces and the reserved `action` colour load-bearing rather than
+  decorative. Do not drop the serif on small titles to tidy something up.
+- **Shape names are M3's**: `rounded-extra-small|small|medium|large|extra-large|full`.
+  Tailwind still ships its own `rounded-sm|md|lg` and they will silently resolve
+  to Tailwind's values rather than the system's, so do not use them.
+- **Liquid Glass is retired**, along with `.material`, `.material-mint`, the
+  `.eufit-field` background and the `data-perf` capability probe. M3 answers the
+  same question with tonal surfaces and elevation. Content cards are
+  `.card-outlined` and `.card-tonal`. Do not reintroduce a backdrop filter.
+- **`--ease-settle` is retired**; motion is M3's four curves. Mixing a fifth in
+  from outside breaks the relationship between them.
 - **No spacing tokens.** The system's scale already maps onto Tailwind's 4px base.
 - **`src/lib/radar.ts` holds no colours** and should stay that way.
 - **The `--viz-*`, `--ink-*` and `--border` names are load-bearing.**
-  `scripts/build-report-book.ts` reads them out of a rendered report's stylesheet;
-  renaming one strips the book's sidebar with no error.
+  `scripts/build-report-book.ts` reads them out of a rendered report's
+  stylesheet; renaming one strips the book's sidebar with no error. They are
+  emitted outside `@theme` with bare names for exactly that reason, and mapped
+  onto roles in the `ALIASES` table in `scripts/build-tokens.ts`.
 
-Still placeholder: the wordmark, the mascot, section wash rotation and the editorial
-spacing pass. Those need assets from the sibling repo's `ctxt-brand/assets/`.
+The logo and mark now exist as vector SVGs in the sibling repo's
+`ctxt-brand/assets/inbox/`, with a generated favicon set in
+`punprofile-work/work-projects/rebrand-m3/favicon/`. Wiring them into the app is
+not done.
 
 ## Routing, and the three root layouts
 
