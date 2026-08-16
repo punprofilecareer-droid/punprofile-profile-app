@@ -10,7 +10,8 @@ import LocaleToggle from "@/components/LocaleToggle";
 import SiteMenu from "@/components/SiteMenu";
 import SiteFooter from "@/components/SiteFooter";
 import NavLockGate from "@/components/NavLockGate";
-import { DEFAULT_LOCALE, LOCALE_COOKIE, isLocale, t } from "@/lib/locale";
+import { DEFAULT_LOCALE, LOCALE_COOKIE, isLocale, pick, t } from "@/lib/locale";
+import { HOOK_EYEBROW, HOOK_LINE_1, HOOK_LINE_2 } from "@/lib/content/coaching";
 
 /**
  * The four faces the design system names: Fraunces and Inter for Latin, Noto
@@ -55,15 +56,26 @@ const SITE_URL = process.env.SITE_URL ?? "https://punprofile.vercel.app";
  * **Thai, not English.** A crawler arrives with no locale cookie, so it would
  * otherwise get the English fallback while every real reader of that post is
  * Thai. `DEFAULT_LOCALE` is Thai and the strings come from the copy bank rather
- * than being retyped here, which is what stops the card and the landing page
- * from drifting apart.
+ * than being retyped here, which is what stops the card and the pages from
+ * drifting apart.
+ *
+ * **The card is PunProfile, not EU Fit Check.** Paul's call, 16/08/2026, and it
+ * corrects a first version that led on the assessment. A shared link is the
+ * business introducing itself, and the assessment is one feature of an app that
+ * is still growing: `AGENTS.md` already names a job board, saved jobs and match
+ * notifications alongside it. So the words are the coaching hook from
+ * `coaching.ts` and the three service names from `services.ts`, and the artwork
+ * is Teal rather than the Lavender that `design.md` reserves for the assessment.
  *
  * The image is `public/og.png`, a static 1200x630 file. Static rather than
  * generated per request: it never changes per visitor, Facebook caches it for
- * days anyway, and `og.png`'s Thai headline needs the real Noto Serif Thai
- * rather than whatever a runtime image renderer can be persuaded to load.
+ * days anyway, and its Thai headline needs the real Noto Serif Thai rather than
+ * whatever a runtime image renderer can be persuaded to load.
  * `public/README-og.md` says how it was built and how to rebuild it.
  */
+const OG_TITLE = pick(HOOK_EYEBROW, DEFAULT_LOCALE);
+const OG_DESCRIPTION = `${pick(HOOK_LINE_1, DEFAULT_LOCALE)} ${pick(HOOK_LINE_2, DEFAULT_LOCALE)}`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "PunProfile",
@@ -74,21 +86,21 @@ export const metadata: Metadata = {
     siteName: "PunProfile",
     locale: "th_TH",
     url: "/",
-    title: t("landing.headline", DEFAULT_LOCALE),
-    description: t("landing.subhead", DEFAULT_LOCALE),
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
     images: [
       {
         url: "/og.png",
         width: 1200,
         height: 630,
-        alt: t("landing.headline", DEFAULT_LOCALE),
+        alt: OG_TITLE,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: t("landing.headline", DEFAULT_LOCALE),
-    description: t("landing.subhead", DEFAULT_LOCALE),
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
     images: ["/og.png"],
   },
 };

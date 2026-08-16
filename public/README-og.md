@@ -6,16 +6,27 @@ Facebook group rendered as a bare URL.
 
 ## What is on it, and why
 
-- **The lavender field**, EU Fit Check's own colour, not the Teal chrome. The
-  card advertises the assessment.
-- **The wordmark**, so the brand is legible at thumbnail size before anything
-  else is read.
-- **The Thai headline**, which is `landing.headline` from `copy.ts` and not a
-  second wording of it. If that string changes, this image is stale.
+**The card is PunProfile, not EU Fit Check.** Paul's call, 16/08/2026, replacing
+a first version that led on the assessment. A shared link is the business
+introducing itself, and the assessment is one feature of an app that is still
+growing, so a card built around it goes stale as the app does.
+
+- **Teal**, the colour PunProfile is known by. Specifically `primary-deep`, the
+  same surface as the site footer and for the reason recorded there: on
+  `primary` white holds 4.71:1 and leaves nothing for a second tier, while on
+  `primary-deep` white holds 8.97:1 and `accent-tint` 5.37:1. Lavender is EU Fit
+  Check's identity and would say the wrong thing here.
+- **The reversed wordmark**, so the brand is legible at thumbnail size before
+  anything else is read.
+- **The coaching hook**, `HOOK_EYEBROW`, `HOOK_LINE_1` and `HOOK_LINE_2` from
+  `coaching.ts`, which are Paul's own Thai. The first sentence is set large and
+  the second smaller: same size for both orphaned a word and gave the card four
+  heading lines to read at thumbnail size.
+- **The three service names** from `services.ts`, as chips.
 - **The coach mascot.**
-- **No subhead.** Facebook and LINE print `og:description` directly beneath the
-  card, so a second sentence inside the image is the same words twice at a third
-  of the size.
+
+If any of those strings change, this image is stale. It is not generated from
+them, only copied.
 
 Deliberately not a screenshot of the result screen: at thumbnail size a radar
 chart is an unreadable smudge, and a real-looking set of scores on a share card
