@@ -181,14 +181,30 @@ export default function ContactGate({
     // check this box if you want to proceed." Every rule below has a
     // translated message in the copy module, so the native layer can only
     // overwrite a correct message with an untranslatable one.
-    <form onSubmit={submit} noValidate className="mx-auto w-full max-w-md px-6 py-10">
-      <div className="material rounded-lg px-5 py-6">
+    <form
+      onSubmit={submit}
+      noValidate
+      className="mx-auto w-full max-w-md px-6 py-10 lg:max-w-4xl lg:px-8 lg:py-14"
+    >
+      <div className="material rounded-lg px-5 py-6 lg:px-8 lg:py-9">
       <p className="mb-1 text-caption text-neutral-500">
         {t("assess.progress", { step: totalSteps, total: totalSteps })}
       </p>
       <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300">
         <div className="h-full w-full rounded-full bg-eufit" />
       </div>
+
+      {/* Two columns from `lg`: what we are asking for and why on the left, the
+          fields on the right. 16/08/2026, and it is the same argument as the
+          first read's desktop layout. This is the highest-stakes screen in the
+          flow, the one place a stranger hands over a phone number, and a 448px
+          column of inputs floating in a 1440px window undercuts exactly the
+          credibility the consent paragraph is trying to earn.
+
+          It collapses to the phone order precisely: heading, why, then fields.
+          Nothing is reordered, only placed. */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-10">
+      <div>
       <h1 className="text-h3">{t("gate.heading")}</h1>
       <p className="mt-2 text-body text-slate">{t("gate.body")}</p>
 
@@ -205,8 +221,10 @@ export default function ContactGate({
           {pick(CONSENT_COPY["consent.privacyLink"])}
         </Link>
       </p>
+      </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:mt-0">
         <label className={labelText}>
           {t("gate.firstName")}
           <input
@@ -288,6 +306,8 @@ export default function ContactGate({
           {t(error)}
         </p>
       )}
+      </div>
+      </div>
 
       </div>
 
