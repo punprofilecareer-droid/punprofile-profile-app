@@ -64,18 +64,18 @@ export default function LoginPage() {
           void submit("signIn", e.currentTarget);
         }}
       >
-        <h1 className="text-h3">Coach sign-in</h1>
-        <label className="block text-label text-slate">
+        <h1 className="text-headline-small">Coach sign-in</h1>
+        <label className="field-label">
           Email
           <input
             name="email"
             type="email"
             required
             autoComplete="username"
-            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink"
+            className="field mt-1"
           />
         </label>
-        <label className="block text-label text-slate">
+        <label className="field-label">
           Password
           <input
             name="password"
@@ -83,18 +83,18 @@ export default function LoginPage() {
             required
             minLength={8}
             autoComplete="current-password"
-            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink"
+            className="field mt-1"
           />
-          <span className="mt-1 block text-caption font-normal text-neutral-500">
+          <span className="mt-1 block text-body-medium font-normal text-on-surface-variant">
             At least 8 characters.
           </span>
         </label>
         {/* `error`, never Terracotta: a problem must not look like an action. */}
-        {error && <p className="text-body text-error">{error}</p>}
+        {error && <p role="alert" className="field-support-error">{error}</p>}
         <button
           type="submit"
           disabled={busy}
-          className="h-12 w-full rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+          className="h-12 w-full btn-filled px-7 text-label-large"
         >
           {busy ? "Working..." : "Sign in"}
         </button>
@@ -106,7 +106,7 @@ export default function LoginPage() {
             const form = e.currentTarget.closest("form");
             if (form?.reportValidity()) void submit("signUp", form);
           }}
-          className="h-12 w-full rounded-md bg-primary px-7 text-label text-on-primary transition-colors hover:bg-primary-deep disabled:bg-neutral-300 disabled:text-neutral-500"
+          className="btn-tonal h-12 w-full px-7 text-label-large"
         >
           First time: create the admin account
         </button>

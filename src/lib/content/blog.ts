@@ -103,27 +103,27 @@ export const TOPICS: readonly Topic[] = [
     // compound built for it reads as an invention. The rule's own worked example
     // is แบบเช็ก, a compound assembled to avoid saying "survey".
     label: { en: "How-to", th: "How to" },
-    wash: "var(--color-mint-wash)",
+    wash: "var(--color-secondary-container)",
   },
   {
     id: "market",
     label: { en: "The European job market", th: "ตลาดงานยุโรป" },
-    wash: "var(--color-cream-wash)",
+    wash: "var(--color-primary-container)",
   },
   {
     id: "perspective",
     label: { en: "Perspective", th: "มุมมอง" },
-    wash: "var(--color-lavender-wash)",
+    wash: "var(--color-tertiary-container)",
   },
   {
     id: "questions",
     label: { en: "Questions and doubts", th: "คำถามที่คนมักกังวล" },
-    wash: "var(--color-mint-wash)",
+    wash: "var(--color-secondary-container)",
   },
   {
     id: "stories",
     label: { en: "Client stories", th: "เรื่องจากคนที่เดินเส้นทางนี้" },
-    wash: "var(--color-cream-wash)",
+    wash: "var(--color-primary-container)",
   },
 ];
 

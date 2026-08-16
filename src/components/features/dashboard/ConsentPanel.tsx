@@ -103,10 +103,10 @@ export default function ConsentPanel({
     <div>
       {CONSENT_PURPOSES.map((purpose) => (
         <div key={purpose} className="mb-5">
-          <h3 className="text-label text-slate">{PURPOSE_LABEL[purpose]}</h3>
+          <h3 className="text-label-large text-on-surface-variant">{PURPOSE_LABEL[purpose]}</h3>
 
           {purpose === "marketing" && noMarketingAnywhere ? (
-            <p className="mt-2 rounded-sm border border-neutral-300 bg-cream-wash px-4 py-3 text-caption text-ink">
+            <p className="mt-2 rounded-small border border-outline-variant bg-primary-container px-4 py-3 text-body-medium text-on-surface">
               Never asked, on any channel. No screen has ever requested this, so
               nobody in the database holds it. That is the correct state, not a
               gap: do not send a digest or a nurture message to this person.
@@ -116,7 +116,7 @@ export default function ConsentPanel({
               const state = consent[purpose][channel];
               const key = `${purpose}:${channel}`;
               return (
-                <div key={key} className="border-b border-neutral-300 py-1.5">
+                <div key={key} className="border-b border-outline-variant py-1.5">
                   {/* One line per channel: status and date, nothing else.
                       The basis used to be spelled out here and it cost four
                       lines a channel on the screen the coach opens most. It
@@ -124,10 +124,10 @@ export default function ConsentPanel({
                       you go when you need to know how a consent was obtained
                       rather than whether it holds. */}
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-body text-slate">{CHANNEL_LABEL[channel]}</span>
+                    <span className="text-body-large text-on-surface-variant">{CHANNEL_LABEL[channel]}</span>
                     <span className="flex items-baseline gap-2">
                       {state.status !== "never_asked" && (
-                        <span className="text-caption text-neutral-500">
+                        <span className="text-body-medium text-on-surface-variant">
                           {date(
                             state.status === "opted_in" ? state.optedInAt : state.optedOutAt,
                           )}
@@ -140,7 +140,7 @@ export default function ConsentPanel({
                           onClick={() => setPending(key)}
                           title="They asked us to stop"
                           aria-label={`Record a withdrawal for ${CHANNEL_LABEL[channel]}`}
-                          className="text-caption text-neutral-500 underline hover:text-error"
+                          className="text-body-medium text-on-surface-variant underline hover:text-error"
                         >
                           stop
                         </button>
@@ -153,7 +153,7 @@ export default function ConsentPanel({
                       knowing about even after they came back, and it is the one
                       thing worth a second line. */}
                   {state.status === "opted_in" && state.optedOutAt !== null && (
-                    <p className="text-caption text-warning">
+                    <p className="text-body-medium text-warning">
                       Withdrew this once, {date(state.optedOutAt)}.
                     </p>
                   )}
@@ -162,26 +162,26 @@ export default function ConsentPanel({
                       above. Only rendered for the channel being withdrawn, so
                       the panel stays three lines until it is actually needed. */}
                   {state.status === "opted_in" && pending === key && (
-                      <div className="mt-3 rounded-sm border border-neutral-300 bg-cream-wash p-3">
-                        <label className="block text-label text-slate">
+                      <div className="mt-3 rounded-small border border-outline-variant bg-primary-container p-3">
+                        <label className="field-label">
                           Where did the request arrive?
                           <input
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
                             placeholder="e.g. asked on LINE, 15/08/2026"
-                            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink"
+                            className="field mt-1"
                           />
-                          <span className="mt-1 block text-caption font-normal text-neutral-500">
+                          <span className="mt-1 block text-body-medium font-normal text-on-surface-variant">
                             Do not paste their own message. This is your reference, not a
                             copy of what they wrote.
                           </span>
                         </label>
-                        <p className="mt-3 text-caption text-slate">
+                        <p className="mt-3 text-body-medium text-on-surface-variant">
                           This stops future contact on this channel for this purpose. It
                           does <strong>not</strong> delete anything: deletion is a
                           different request, at the bottom of this page.
                         </p>
-                        {error && <p className="mt-2 text-body text-error">{error}</p>}
+                        {error && <p role="alert" className="field-support-error mt-2">{error}</p>}
                         <div className="mt-3 flex gap-3">
                           <button
                             type="button"
@@ -206,7 +206,7 @@ export default function ConsentPanel({
                                 setBusy(false);
                               }
                             }}
-                            className="h-12 rounded-md bg-error px-5 text-label text-on-error transition-opacity hover:opacity-90 disabled:bg-neutral-300 disabled:text-neutral-500"
+                            className="h-12 rounded-medium bg-error px-5 text-label-large text-on-error transition-opacity hover:opacity-90 disabled:bg-surface-container-highest disabled:text-on-surface-variant"
                           >
                             {busy ? "Recording..." : "Record the withdrawal"}
                           </button>
@@ -216,7 +216,7 @@ export default function ConsentPanel({
                               setPending(null);
                               setError(null);
                             }}
-                            className="h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate"
+                            className="btn-outlined h-12 px-5 text-label-large"
                           >
                             Cancel
                           </button>
@@ -235,7 +235,7 @@ export default function ConsentPanel({
           <button
             type="button"
             onClick={() => setShowLog((s) => !s)}
-            className="text-caption text-primary underline"
+            className="text-body-medium text-primary underline"
           >
             {showLog ? "Hide" : "Show"} the full log ({events.length}{" "}
             {events.length === 1 ? "event" : "events"})
@@ -243,18 +243,18 @@ export default function ConsentPanel({
           {showLog && (
             <ul className="mt-3 space-y-2">
               {events.map((e, i) => (
-                <li key={i} className="border-b border-neutral-300 pb-2 text-caption">
-                  <span className="text-ink">
+                <li key={i} className="border-b border-outline-variant pb-2 text-body-medium">
+                  <span className="text-on-surface">
                     {stamp(e.at)} · {CHANNEL_LABEL[e.channel as ConsentChannel] ?? e.channel} ·{" "}
                     {e.purpose} ·{" "}
                     <strong>{e.action === "opt_in" ? "given" : "withdrawn"}</strong>
                   </span>
-                  <span className="block text-neutral-500">
+                  <span className="block text-on-surface-variant">
                     {BASIS_LABEL[e.basis] ?? e.basis}
                     {e.by ? ` · recorded by ${e.by}` : ""}
                   </span>
                   {e.evidence && (
-                    <span className="block text-neutral-500">&ldquo;{e.evidence}&rdquo;</span>
+                    <span className="block text-on-surface-variant">&ldquo;{e.evidence}&rdquo;</span>
                   )}
                 </li>
               ))}
@@ -274,10 +274,10 @@ function StatusPill({ status }: { status: ResolvedConsent["status"] }) {
       ? "border-primary text-primary"
       : status === "opted_out"
         ? "border-error text-error"
-        : "border-neutral-300 text-neutral-500";
+        : "border-outline-variant text-on-surface-variant";
   const label =
     status === "opted_in" ? "May contact" : status === "opted_out" ? "Withdrawn" : "Never asked";
   return (
-    <span className={`rounded-sm border px-2 py-0.5 text-caption ${style}`}>{label}</span>
+    <span className={`rounded-small border px-2 py-0.5 text-body-medium ${style}`}>{label}</span>
   );
 }

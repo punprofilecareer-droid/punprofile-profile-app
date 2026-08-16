@@ -23,37 +23,37 @@ export default function FaqPage() {
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
-      <h1 className="text-h2">{pick(FAQ_HEADING)}</h1>
-      <p className="mt-3 text-body-lg text-slate">{pick(FAQ_INTRO)}</p>
+      <h1 className="text-headline-large">{pick(FAQ_HEADING)}</h1>
+      <p className="mt-3 text-body-large text-on-surface-variant">{pick(FAQ_INTRO)}</p>
 
       <div className="mt-10 flex flex-col gap-3">
         {FAQ.map((item) => (
           <details
             key={item.q.en}
-            className="material group rounded-lg px-6 py-5 [&_summary::-webkit-details-marker]:hidden"
+            className="card-outlined group rounded-large px-6 py-5 [&_summary::-webkit-details-marker]:hidden"
           >
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-body-lg text-ink">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-body-large text-on-surface">
               {pick(item.q)}
               {/* Rotates rather than swapping glyphs, so the open and closed
                   states are the same shape moving and cannot land at different
                   optical weights between the Thai and Latin stacks. */}
               <span
                 aria-hidden
-                className="shrink-0 text-eufit-deep transition-transform group-open:rotate-45"
+                className="shrink-0 text-on-tertiary-container transition-transform group-open:rotate-45"
               >
                 +
               </span>
             </summary>
             <div className="mt-4 flex flex-col gap-3">
               {item.a.map((p, i) => (
-                <p key={i} className="text-body text-slate">
+                <p key={i} className="text-body-large text-on-surface-variant">
                   {pick(p)}
                 </p>
               ))}
               {item.link && (
                 <Link
                   href={path(item.link.href)}
-                  className="text-body text-primary underline underline-offset-2"
+                  className="text-body-large text-primary underline underline-offset-2"
                 >
                   {pick(item.link.label)}
                 </Link>
@@ -63,8 +63,8 @@ export default function FaqPage() {
         ))}
       </div>
 
-      <div className="material-mint mt-12 rounded-lg px-6 py-7">
-        <p className="text-body text-ink">{pick(FAQ_CLOSE)}</p>
+      <div className="card-tonal mt-12 rounded-large px-6 py-7">
+        <p className="text-body-large text-on-surface">{pick(FAQ_CLOSE)}</p>
         <CallToAction page="/faq" className="mt-5" />
       </div>
     </div>

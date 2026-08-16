@@ -41,7 +41,7 @@ import {
 import type { TopicId } from "@/lib/content/blog";
 
 const CHIP =
-  "inline-flex items-center rounded-full px-4 py-2 text-label transition-colors";
+  "inline-flex items-center rounded-full px-4 py-2 text-label-large transition-colors";
 
 function Chip({
   href,
@@ -55,13 +55,19 @@ function Chip({
   return (
     <Link
       href={href}
-      // Teal and not Terracotta. A filter is emphasis, not the action, and
-      // `design.md` reserves Terracotta for the single primary action on a view,
-      // which on this page is the button at the bottom.
+      // `chip-filter-selected` from `design.md`: `secondary-container`, which is
+      // what M3 uses for a selected state everywhere. Not the `action` colour,
+      // which is reserved for the single primary action on a view and on this
+      // page is the button at the bottom. It was a solid `primary` fill until
+      // 16/08/2026, which broke the rule against `primary` as a filled control.
+      //
+      // The unselected border is `outline`, not `outline-variant`. At 1.61 the
+      // chip had no perceivable edge, so an unselected filter row read as loose
+      // words rather than as controls.
       className={`${CHIP} ${
         on
-          ? "bg-primary text-on-primary"
-          : "border border-neutral-300 text-ink hover:border-primary"
+          ? "bg-secondary-container text-on-secondary-container"
+          : "border border-outline text-on-surface hover:border-secondary"
       }`}
       aria-current={on ? "true" : undefined}
     >
@@ -80,10 +86,13 @@ function BlogBody() {
 
   return (
     <>
-      <section className="bg-mint-wash">
-        <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:py-20">
-          <h1 className="max-w-3xl text-h1">{pick(BLOG_HEADING)}</h1>
-          <p className="mt-5 max-w-2xl text-body-lg text-slate">{pick(BLOG_INTRO)}</p>
+      {/* Brand lime, the one unmissable ground on this page. It is allowed here
+          because the blog index carries no brand orange; `design.md` permits one
+          fixed high-energy ground per page and no more. Ink text, never white. */}
+      <section className="ground-fixed bg-brand-lime">
+        <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-20">
+          <h1 className="max-w-3xl text-display-small">{pick(BLOG_HEADING)}</h1>
+          <p className="mt-5 max-w-2xl text-body-large text-on-surface-variant">{pick(BLOG_INTRO)}</p>
           {/* Renders nothing until Paul has read the Thai. `SignupForm` owns
               that gate and says why. */}
           <SignupForm />
@@ -98,9 +107,9 @@ function BlogBody() {
           than three colours down the page. `design.md` asks for one wash per
           section and lets spacing do the sub-grouping. */}
       {playbooks().length > 1 && (
-        <section className="mx-auto w-full max-w-6xl px-6 pt-16">
-          <h2 className="max-w-2xl text-h2">{pick(PLAYBOOKS_HEADING)}</h2>
-          <p className="mt-4 max-w-2xl text-body-lg text-slate">
+        <section className="mx-auto w-full max-w-5xl px-6 pt-16">
+          <h2 className="max-w-2xl text-headline-large">{pick(PLAYBOOKS_HEADING)}</h2>
+          <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
             {pick(PLAYBOOKS_INTRO)}
           </p>
           <div className="mt-10 grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -111,13 +120,13 @@ function BlogBody() {
         </section>
       )}
 
-      <section className="mx-auto w-full max-w-6xl px-6 py-16">
+      <section className="mx-auto w-full max-w-5xl px-6 py-16">
         {/* No topic row when there is nothing to filter. A row of one chip
             reading "All" is a control that cannot do anything, and it makes an
             empty page look broken rather than new. */}
         {topics.length > 0 && (
           <>
-            <p className="text-caption font-semibold text-slate">
+            <p className="text-body-medium font-semibold text-on-surface-variant">
               {pick(BLOG_TOPICS_LABEL)}
             </p>
             <nav className="mt-4 flex flex-wrap gap-3">
@@ -135,7 +144,7 @@ function BlogBody() {
         )}
 
         {posts.length === 0 ? (
-          <p className={`text-body-lg text-slate ${topics.length > 0 ? "mt-12" : ""}`}>
+          <p className={`text-body-large text-on-surface-variant ${topics.length > 0 ? "mt-12" : ""}`}>
             {pick(POSTS.length === 0 ? BLOG_NONE_YET : BLOG_EMPTY)}
           </p>
         ) : (
@@ -153,8 +162,8 @@ function BlogBody() {
             dead end. The line above it does not: it says "read this far", which
             is untrue of a page with nothing on it, and a closing line that
             contradicts the page it closes is worse than no line. */}
-        <div className="material-mint mt-16 rounded-lg px-6 py-7">
-          {POSTS.length > 0 && <p className="text-body text-ink">{pick(BLOG_CLOSE)}</p>}
+        <div className="card-tonal mt-16 rounded-large px-6 py-7">
+          {POSTS.length > 0 && <p className="text-body-large text-on-surface">{pick(BLOG_CLOSE)}</p>}
           <CallToAction page="/blog" className={POSTS.length > 0 ? "mt-5" : ""} />
         </div>
       </section>
@@ -164,7 +173,7 @@ function BlogBody() {
 
 export default function BlogIndex() {
   return (
-    <Suspense fallback={<div className="mx-auto w-full max-w-6xl px-6 py-16" />}>
+    <Suspense fallback={<div className="mx-auto w-full max-w-5xl px-6 py-16" />}>
       <BlogBody />
     </Suspense>
   );

@@ -23,9 +23,9 @@ import { readinessScore } from "@/lib/leadGrade";
 import type { FitTier } from "@/lib/leadGrade";
 
 const TIER_STYLE: Record<FitTier, string> = {
-  strong: "bg-mint-tint text-primary-deep",
-  moderate: "bg-cream-wash text-ink",
-  weak: "bg-neutral-100 text-neutral-500",
+  strong: "bg-secondary-container text-on-primary-container",
+  moderate: "bg-primary-container text-on-surface",
+  weak: "bg-surface-container text-on-surface-variant",
 };
 
 
@@ -76,32 +76,32 @@ export default function LeadList() {
     }));
   }, [leads]);
 
-  if (leads === undefined) return <p className="text-body text-neutral-500">Loading leads...</p>;
+  if (leads === undefined) return <p className="text-body-large text-on-surface-variant">Loading leads...</p>;
 
   const contactable = rows.filter((l) => l.lineId || l.phone).length;
 
   return (
     <div className="w-full">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-caption text-slate">
+        <p className="text-body-medium text-on-surface-variant">
           {rows.length} lead{rows.length === 1 ? "" : "s"}, {contactable} reachable on LINE or phone
         </p>
         <div className="flex flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-caption text-slate">
+          <label className="flex items-center gap-2 text-body-medium text-on-surface-variant">
             <input
               type="checkbox"
               checked={includeAbandoned}
               onChange={(e) => setIncludeAbandoned(e.target.checked)}
-              className="size-4 accent-primary"
+              className="checkbox"
             />
             Include abandoned sessions
           </label>
-          <label className="flex items-center gap-2 text-caption text-slate">
+          <label className="flex items-center gap-2 text-body-medium text-on-surface-variant">
             <input
               type="checkbox"
               checked={includeDisqualified}
               onChange={(e) => setIncludeDisqualified(e.target.checked)}
-              className="size-4 accent-primary"
+              className="checkbox"
             />
             Include judged out
           </label>
@@ -109,14 +109,14 @@ export default function LeadList() {
       </div>
 
       {rows.length === 0 ? (
-        <p className="rounded-lg border border-neutral-300 bg-surface px-6 py-6 text-body text-slate">
+        <p className="rounded-large border border-outline-variant bg-surface px-6 py-6 text-body-large text-on-surface-variant">
           No leads yet.
         </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[52rem] border-collapse text-left">
             <thead>
-              <tr className="border-b border-neutral-300 text-caption text-slate">
+              <tr className="border-b border-outline-variant text-body-medium text-on-surface-variant">
                 <Th>Name</Th>
                 <Th>Email</Th>
                 <Th>LINE / phone</Th>
@@ -157,7 +157,7 @@ export default function LeadList() {
               {rows.map((l) => (
                 <tr
                   key={l._id}
-                  className={`border-b border-neutral-300 align-top transition-colors hover:bg-mint-wash ${
+                  className={`border-b border-outline-variant align-top transition-colors hover:bg-secondary-container ${
                     l.disposition === "disqualified" ? "opacity-55" : ""
                   }`}
                 >
@@ -168,27 +168,27 @@ export default function LeadList() {
                   </Td>
                   <Td>
                     {l.email ? (
-                      <a href={`mailto:${l.email}`} className="break-all text-slate underline">
+                      <a href={`mailto:${l.email}`} className="break-all text-on-surface-variant underline">
                         {l.email}
                       </a>
                     ) : (
-                      <span className="text-neutral-500">none</span>
+                      <span className="text-on-surface-variant">none</span>
                     )}
                   </Td>
                   <Td>
-                    <span className="break-all text-slate">
+                    <span className="break-all text-on-surface-variant">
                       {l.lineId ?? ""}
                       {l.lineId && l.phone ? " · " : ""}
                       {l.phone ?? ""}
                       {!l.lineId && !l.phone && (
-                        <span className="text-neutral-500">not reachable</span>
+                        <span className="text-on-surface-variant">not reachable</span>
                       )}
                     </span>
                   </Td>
                   <Td>
                     {l.grade.tier ? (
                       <span
-                        className={`whitespace-nowrap rounded-full px-2 py-0.5 text-caption ${TIER_STYLE[l.grade.tier]}`}
+                        className={`whitespace-nowrap rounded-full px-2 py-0.5 text-body-medium ${TIER_STYLE[l.grade.tier]}`}
                         title={
                           l.grade.routingNote ??
                           (l.grade.unmeasured.length
@@ -200,14 +200,14 @@ export default function LeadList() {
                         {l.grade.offeringMatch === "fail" ? " *" : ""}
                       </span>
                     ) : (
-                      <span className="text-neutral-500">not scored</span>
+                      <span className="text-on-surface-variant">not scored</span>
                     )}
                   </Td>
                   <Td>
                     {l.readiness === null ? (
-                      <span className="text-neutral-500">not scored</span>
+                      <span className="text-on-surface-variant">not scored</span>
                     ) : (
-                      <span className="tabular-nums text-ink">{l.readiness.toFixed(1)}</span>
+                      <span className="tabular-nums text-on-surface">{l.readiness.toFixed(1)}</span>
                     )}
                   </Td>
                   <Td>
@@ -218,18 +218,18 @@ export default function LeadList() {
                         aria-label={`${l.coachRating} of 5`}
                       >
                         {"\u2605".repeat(l.coachRating)}
-                        <span className="text-neutral-300">
+                        <span className="text-outline">
                           {"\u2605".repeat(5 - l.coachRating)}
                         </span>
                       </span>
                     ) : (
-                      <span className="whitespace-nowrap text-neutral-300" title="Not rated">
+                      <span className="whitespace-nowrap text-outline" title="Not rated">
                         {"\u2605".repeat(5)}
                       </span>
                     )}
                   </Td>
                   <Td>
-                    <span className="text-slate">
+                    <span className="text-on-surface-variant">
                       {l.status === "partial" ? "abandoned" : "contact given"}
                     </span>
                   </Td>
@@ -237,20 +237,20 @@ export default function LeadList() {
                     {l.disposition ? (
                       <span
                         title={l.dispositionReason ?? undefined}
-                        className={`whitespace-nowrap rounded-full px-2 py-0.5 text-caption ${
+                        className={`whitespace-nowrap rounded-full px-2 py-0.5 text-body-medium ${
                           l.disposition === "disqualified"
-                            ? "bg-neutral-100 text-neutral-500"
-                            : "bg-cream-wash text-warning"
+                            ? "bg-surface-container text-on-surface-variant"
+                            : "bg-primary-container text-warning"
                         }`}
                       >
                         {l.disposition === "disqualified" ? "out of scope" : "not now"}
                       </span>
                     ) : (
-                      <span className="text-neutral-500">&mdash;</span>
+                      <span className="text-on-surface-variant">&mdash;</span>
                     )}
                   </Td>
                   <Td>
-                    <span className="whitespace-nowrap text-neutral-500">{ago(l.lastActivityAt)}</span>
+                    <span className="whitespace-nowrap text-on-surface-variant">{ago(l.lastActivityAt)}</span>
                   </Td>
                 </tr>
               ))}
@@ -261,7 +261,7 @@ export default function LeadList() {
 
       {/* Named rather than hidden: a score that quietly stands in for a missing
           input is the failure mode this product exists to avoid. */}
-      <p className="mt-4 text-caption text-neutral-500">
+      <p className="mt-4 text-body-medium text-on-surface-variant">
         Fit uses the ICP framework in <code>08_Coaching_Business.md</code>, as
         restructured 13/08/2026: two gates and one score. The badge is Investment
         Readiness, the only criterion measured to separate this pool. A{" "}
@@ -312,8 +312,8 @@ function Th({
         <button
           type="button"
           onClick={() => setSort(sortKey)}
-          className={`group inline-flex items-center gap-1 rounded-sm transition-colors hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-eufit-deep ${
-            active ? "text-ink" : ""
+          className={`group inline-flex items-center gap-1 rounded-small transition-colors hover:text-on-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-on-tertiary-container ${
+            active ? "text-on-surface" : ""
           }`}
         >
           {children}
@@ -334,5 +334,5 @@ function Th({
 }
 
 function Td({ children }: { children: React.ReactNode }) {
-  return <td className="py-3 pr-4 text-body">{children}</td>;
+  return <td className="py-3 pr-4 text-body-large">{children}</td>;
 }

@@ -120,7 +120,7 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
 
   return (
     <section className="mt-10 text-left">
-      <h2 className="text-label text-slate">{t("stats.heading")}</h2>
+      <h2 className="text-label-large text-on-surface-variant">{t("stats.heading")}</h2>
 
       {/* One column on a phone, three across on a desktop. The three are
           independent facts of similar weight, so a row is honest here in a way
@@ -129,25 +129,25 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
           ragged. */}
       <div className="mt-3 flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:items-stretch lg:gap-6">
         {stats.topCountries && (
-          <div className="material h-full rounded-lg px-5 py-5">
-            <p className="text-label text-eufit-deep">{t("stats.countries.label")}</p>
+          <div className="card-outlined h-full rounded-large px-5 py-5">
+            <p className="text-label-large text-on-tertiary-container">{t("stats.countries.label")}</p>
             <ol className="mt-4 flex flex-col gap-3">
               {stats.topCountries.map((c, i) => (
                 <li key={c.country} className="flex items-center gap-3">
-                  <span aria-hidden className="w-4 shrink-0 text-caption text-neutral-500">
+                  <span aria-hidden className="w-4 shrink-0 text-body-medium text-on-surface-variant">
                     {i + 1}
                   </span>
                   {/* Country names are not translated anywhere in this app:
                       the question's own options carry the English name in both
                       locales, and a Thai transliteration here would print a
                       different word than the one the candidate tapped. */}
-                  <span className="w-28 shrink-0 text-body text-ink">{c.country}</span>
+                  <span className="w-28 shrink-0 text-body-large text-on-surface">{c.country}</span>
                   {/* The bar is scaled to the leader, not to 100. At a share of
                       around a third the whole set would otherwise sit in the
                       left third of the card and read as an error. */}
                   <span
                     aria-hidden
-                    className="h-2 rounded-full bg-eufit"
+                    className="h-2 rounded-full bg-tertiary"
                     style={{
                       width: `${Math.max(
                         6,
@@ -156,11 +156,11 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
                       maxWidth: "100%",
                     }}
                   />
-                  <span className="ml-auto shrink-0 text-caption text-slate">{c.share}%</span>
+                  <span className="ml-auto shrink-0 text-body-medium text-on-surface-variant">{c.share}%</span>
                 </li>
               ))}
             </ol>
-            <p className="mt-4 text-caption text-neutral-500">
+            <p className="mt-4 text-body-medium text-on-surface-variant">
               {t("stats.countries.foot")}
             </p>
           </div>
@@ -170,20 +170,20 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
             scaled to 100 rather than to the leader: here the absolute height IS
             the claim, unlike the countries above where the ranking is. */}
         {showReadiness && (
-          <div className="material h-full rounded-lg px-5 py-5">
-            <p className="text-label text-eufit-deep">{t("stats.readiness.label")}</p>
+          <div className="card-outlined h-full rounded-large px-5 py-5">
+            <p className="text-label-large text-on-tertiary-container">{t("stats.readiness.label")}</p>
             <ul className="mt-4 flex flex-col gap-4">
               {readiness.map((r) => (
                 <li key={r.share}>
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="text-body text-ink">{t(r.copyKey)}</span>
-                    <span className="shrink-0 text-body-lg font-semibold tabular-nums text-eufit-deep">
+                    <span className="text-body-large text-on-surface">{t(r.copyKey)}</span>
+                    <span className="shrink-0 text-body-large font-semibold tabular-nums text-on-tertiary-container">
                       {r.pct}%
                     </span>
                   </div>
-                  <div aria-hidden className="mt-2 h-2 w-full rounded-full bg-neutral-100">
+                  <div aria-hidden className="mt-2 h-2 w-full rounded-full bg-surface-container">
                     <span
-                      className="block h-2 rounded-full bg-eufit"
+                      className="block h-2 rounded-full bg-tertiary"
                       style={{ width: `${r.pct}%` }}
                     />
                   </div>
@@ -191,11 +191,11 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
               ))}
             </ul>
             {waiting !== null && soon !== null && (
-              <p className="mt-5 text-body text-slate">
+              <p className="mt-5 text-body-large text-on-surface-variant">
                 {t("stats.timing", { waiting, soon })}
               </p>
             )}
-            <p className="mt-3 text-caption text-neutral-500">{t("stats.readiness.foot")}</p>
+            <p className="mt-3 text-body-medium text-on-surface-variant">{t("stats.readiness.foot")}</p>
           </div>
         )}
 
@@ -215,14 +215,14 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
             above. That is why the caption here is full white rather than the
             faded variant a caption would normally take. */}
         {best && best.pct >= MIN_INTERESTING && (
-          <div className="h-full rounded-lg bg-accent px-6 py-7 text-on-accent">
-            <p className="text-display leading-none tabular-nums">{best.pct}%</p>
-            <p className="mt-3 text-body-lg">
+          <div className="h-full rounded-large bg-action px-6 py-7 text-on-action">
+            <p className="text-display-large leading-none tabular-nums">{best.pct}%</p>
+            <p className="mt-3 text-body-large">
               {t("stats.percentile", {
                 dimension: t(`dimension.${best.key}` as AnyCopyKey),
               })}
             </p>
-            <p className="mt-2 text-caption text-on-accent">{t("stats.percentile.foot")}</p>
+            <p className="mt-2 text-body-medium text-on-action">{t("stats.percentile.foot")}</p>
           </div>
         )}
       </div>

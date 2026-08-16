@@ -62,12 +62,12 @@ export default function Unsubscribe({ token }: { token: string }) {
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
       {!done ? (
-        <p className="text-body-lg text-slate">{pick(UNSUBSCRIBE_WORKING)}</p>
+        <p className="text-body-large text-on-surface-variant">{pick(UNSUBSCRIBE_WORKING)}</p>
       ) : (
         <>
-          <h1 className="text-h2">{pick(UNSUBSCRIBE_HEADING)}</h1>
-          <p className="mt-5 text-body-lg text-slate">{pick(UNSUBSCRIBE_BODY)}</p>
-          <p className="mt-8 text-body text-slate">
+          <h1 className="text-headline-large">{pick(UNSUBSCRIBE_HEADING)}</h1>
+          <p className="mt-5 text-body-large text-on-surface-variant">{pick(UNSUBSCRIBE_BODY)}</p>
+          <p className="mt-8 text-body-large text-on-surface-variant">
             {pick(UNSUBSCRIBE_RESTART)}{" "}
             <Link
               href={path("/blog")}

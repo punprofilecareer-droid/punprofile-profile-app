@@ -28,12 +28,12 @@ export default function MarketProof() {
   const { t } = useCopy();
 
   return (
-    <div className="material mt-4 h-full rounded-lg px-5 py-5 text-left">
-      <p className="text-label text-eufit-deep">{t("stats.market.label")}</p>
-      <p className="mt-2 text-body-lg text-ink">
+    <div className="card-outlined mt-4 h-full rounded-large px-5 py-5 text-left">
+      <p className="text-label-large text-on-tertiary-container">{t("stats.market.label")}</p>
+      <p className="mt-2 text-title-medium text-on-surface">
         {t("stats.market.value", { screened: MARKET.screened, published: MARKET.published })}
       </p>
-      <p className="mt-2 text-caption text-neutral-500">
+      <p className="mt-2 text-body-medium text-on-surface-variant">
         {t("stats.market.foot", {
           from: MARKET.from,
           to: MARKET.to,

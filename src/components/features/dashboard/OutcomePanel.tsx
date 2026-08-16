@@ -30,14 +30,14 @@ export default function OutcomePanel({ leadId }: { leadId: Id<"leads"> }) {
   const data = useQuery(api.outcomes.forLead, { leadId });
 
   if (data === undefined) {
-    return <p className="text-caption text-neutral-500">Loading...</p>;
+    return <p className="text-body-medium text-on-surface-variant">Loading...</p>;
   }
 
   const { applications, placements } = data;
 
   if (applications.length === 0 && placements.length === 0) {
     return (
-      <p className="text-body text-neutral-500">
+      <p className="text-body-large text-on-surface-variant">
         No applications and no placement recorded. The candidate-facing job list
         needs an account first, so today this fills up only when a coach enters
         something.
@@ -49,30 +49,30 @@ export default function OutcomePanel({ leadId }: { leadId: Id<"leads"> }) {
     <div className="space-y-6">
       {placements.length > 0 && (
         <div>
-          <h3 className="text-label text-slate">Placement</h3>
+          <h3 className="text-label-large text-on-surface-variant">Placement</h3>
           <ul className="mt-2 space-y-3">
             {placements.map((p) => (
-              <li key={p._id} className="border-b border-neutral-300 pb-3">
-                <p className="text-body text-ink">
+              <li key={p._id} className="border-b border-outline-variant pb-3">
+                <p className="text-body-large text-on-surface">
                   {p.roleTitle} at {p.employer}, {p.country}
                 </p>
-                <p className="mt-1 text-caption text-neutral-500">
+                <p className="mt-1 text-body-medium text-on-surface-variant">
                   {p.signedAt ? `Signed ${day(p.signedAt)}` : "Offer, not yet signed"}
                   {p.startAt ? ` · starts ${day(p.startAt)}` : ""}
                   {p.salary ? ` · ${p.salary}` : ""}
                 </p>
                 {p.visaRoute && (
-                  <p className="mt-1 text-caption text-slate">
+                  <p className="mt-1 text-body-medium text-on-surface-variant">
                     {/* The only place a claimed visa route is ever confirmed
                         against what actually worked. Worth reading back into
                         `07_Reference.md`. */}
                     Visa route that worked: {p.visaRoute}
                   </p>
                 )}
-                <p className="mt-1 text-caption text-neutral-500">
+                <p className="mt-1 text-body-medium text-on-surface-variant">
                   {ATTRIBUTION_LABEL[p.attributedTo] ?? p.attributedTo}
                 </p>
-                <p className="mt-1 text-caption text-neutral-500">
+                <p className="mt-1 text-body-medium text-on-surface-variant">
                   {p.storyConsentAt
                     ? `Agreed we may tell this story, ${day(p.storyConsentAt)}`
                     : "No permission to use this as a success story."}
@@ -85,20 +85,20 @@ export default function OutcomePanel({ leadId }: { leadId: Id<"leads"> }) {
 
       {applications.length > 0 && (
         <div>
-          <h3 className="text-label text-slate">
+          <h3 className="text-label-large text-on-surface-variant">
             Applications ({applications.filter((a) => a.status !== "interested").length} applied,{" "}
             {applications.filter((a) => a.status === "interested").length} saved)
           </h3>
           <ul className="mt-2 space-y-2">
             {applications.map((a) => (
-              <li key={a._id} className="border-b border-neutral-300 pb-2">
+              <li key={a._id} className="border-b border-outline-variant pb-2">
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="text-caption text-ink">
+                  <span className="text-body-medium text-on-surface">
                     {a.roleTitle} · {a.employer} · {a.country}
                   </span>
-                  <span className="text-caption text-slate">{a.status}</span>
+                  <span className="text-body-medium text-on-surface-variant">{a.status}</span>
                 </div>
-                <p className="text-caption text-neutral-500">
+                <p className="text-body-medium text-on-surface-variant">
                   {a.appliedAt ? `Applied ${day(a.appliedAt)}` : `Saved ${day(a.savedAt)}`}
                   {" · "}
                   {a.recordedBy === "candidate"

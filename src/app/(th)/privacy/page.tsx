@@ -29,22 +29,22 @@ export default function PrivacyPage() {
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
       {!PRIVACY_REVIEWED && (
-        <p className="mb-10 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
+        <p className="mb-10 rounded-small border border-warning bg-warning-container px-4 py-3 text-body-medium text-on-warning-container">
           {th
             ? "ฉบับร่าง ยังไม่ผ่านการตรวจสอบทางกฎหมาย ยังไม่ควรใช้อ้างอิง"
             : "Draft. Not yet reviewed by a qualified person and not yet something to rely on."}
         </p>
       )}
 
-      <h1 className="text-h2">{pick(PRIVACY_HEADING)}</h1>
-      <p className="mt-2 text-caption text-neutral-500">
+      <h1 className="text-headline-large">{pick(PRIVACY_HEADING)}</h1>
+      <p className="mt-2 text-body-medium text-on-surface-variant">
         {th ? "ปรับปรุงล่าสุด" : "Last updated"} {PRIVACY_LAST_UPDATED}
       </p>
-      <p className="mt-6 text-body-lg text-slate">{pick(PRIVACY_INTRO)}</p>
+      <p className="mt-6 text-body-large text-on-surface-variant">{pick(PRIVACY_INTRO)}</p>
 
       {PRIVACY_SECTIONS.map((section) => (
         <section key={section.heading.en} className="mt-10">
-          <h2 className="text-h4">{pick(section.heading)}</h2>
+          <h2 className="text-title-large">{pick(section.heading)}</h2>
           {section.body.map((para) => {
             const text = pick(para);
             // A leading "- " is the list marker the content module documents.
@@ -56,8 +56,8 @@ export default function PrivacyPage() {
                 key={para.en}
                 className={
                   item
-                    ? "mt-3 pl-5 -indent-5 text-body text-slate"
-                    : "mt-3 text-body text-slate"
+                    ? "mt-3 pl-5 -indent-5 text-body-large text-on-surface-variant"
+                    : "mt-3 text-body-large text-on-surface-variant"
                 }
               >
                 {item ? `• ${text.slice(2)}` : text}
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
       ))}
 
       <p className="mt-12">
-        <Link href={path("/")} className="text-caption text-primary underline">
+        <Link href={path("/")} className="text-body-medium text-primary underline">
           {th ? "กลับหน้าแรก" : "Back to the start"}
         </Link>
       </p>

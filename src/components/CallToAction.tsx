@@ -21,9 +21,9 @@ import { DESTINATIONS, PAGE_ACTIONS, primaryChannels } from "@/lib/content/cta";
 import type { Action } from "@/lib/content/cta";
 
 const BASE =
-  "inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full px-8 py-4 text-body-lg font-semibold transition-colors";
+  "inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full px-8 py-4 text-body-large font-semibold transition-colors";
 
-const PRIMARY_CLASS = `${BASE} bg-accent text-on-accent hover:bg-accent-bright`;
+const PRIMARY_CLASS = `${BASE} btn-filled`;
 
 /**
  * LINE Green, from LINE's own button guidelines. Hard-coded rather than added
@@ -143,7 +143,7 @@ export default function CallToAction({
       {secondary && (
         <Link
           href={path(secondary.href)}
-          className="text-body text-primary underline underline-offset-2"
+          className="text-body-large text-primary underline underline-offset-2"
         >
           {pick(secondary.label)}
         </Link>

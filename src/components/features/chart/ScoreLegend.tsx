@@ -39,19 +39,19 @@ export default function ScoreLegend({ scores }: { scores: Record<string, number 
             <span
               aria-hidden
               className={`mt-1.5 size-2.5 shrink-0 rounded-full ${
-                measured ? "bg-eufit" : "border border-neutral-500"
+                measured ? "bg-tertiary" : "border border-outline"
               }`}
             />
             <div className="min-w-0">
-              <p className={`text-caption ${measured ? "text-slate" : "text-neutral-500"}`}>
+              <p className={`text-body-medium ${measured ? "text-on-surface-variant" : "text-on-surface-variant"}`}>
                 {t(d.copyKey)}
               </p>
               {measured ? (
-                <p className="mt-0.5 text-body-lg font-semibold tabular-nums text-ink">
+                <p className="mt-0.5 text-body-large font-semibold tabular-nums text-on-surface">
                   {t("teaser.score.value", { score: score.toFixed(1) })}
                 </p>
               ) : (
-                <p className="mt-0.5 text-caption italic text-neutral-500">
+                <p className="mt-0.5 text-body-medium italic text-on-surface-variant">
                   {t("teaser.score.none")}
                 </p>
               )}

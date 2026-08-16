@@ -19,12 +19,12 @@ export default function AdminPage() {
       <div className="w-full max-w-3xl text-left">
         <AdminGate>
           <div className="flex items-baseline justify-between gap-4">
-            <h1 className="text-h2">Coach dashboard</h1>
+            <h1 className="text-headline-large">Coach dashboard</h1>
             {/* Nothing to sign out of when the session was never required. */}
             {!DEV_ADMIN_BYPASS && (
               <button
                 onClick={() => void signOut()}
-                className="shrink-0 rounded-md border border-neutral-300 bg-surface px-5 py-2.5 text-label text-slate transition-colors hover:bg-neutral-100"
+                className="btn-outlined shrink-0 px-5 py-2.5 text-label-large hover:bg-surface-container"
               >
                 Sign out
               </button>

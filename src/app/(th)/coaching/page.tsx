@@ -70,17 +70,17 @@ function ProofPanel() {
 
   return (
     <section className="mt-20">
-      <h2 className="text-h3">{pick(PROOF_HEADING)}</h2>
+      <h2 className="text-headline-small">{pick(PROOF_HEADING)}</h2>
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {lines.map(({ line, value }) => (
-          <div key={line.share} className="material rounded-lg px-6 py-7">
-            <p className="text-h2 text-primary">{value.pct}%</p>
-            <p className="mt-2 text-body text-ink">{pick(line.label)}</p>
+          <div key={line.share} className="card-outlined rounded-large px-6 py-7">
+            <p className="text-headline-large text-primary">{value.pct}%</p>
+            <p className="mt-2 text-body-large text-on-surface">{pick(line.label)}</p>
           </div>
         ))}
       </div>
-      <p className="mt-4 text-caption text-neutral-500">{pick(PROOF_FOOT)}</p>
-      <p className="mt-6 text-body-lg text-ink">{pick(PROOF_CONCLUSION)}</p>
+      <p className="mt-4 text-body-medium text-on-surface-variant">{pick(PROOF_FOOT)}</p>
+      <p className="mt-6 text-title-medium text-on-surface">{pick(PROOF_CONCLUSION)}</p>
     </section>
   );
 }
@@ -90,32 +90,37 @@ export default function CoachingPage() {
 
   return (
     <div className="w-full">
-      {/* Full-bleed hero on cream-wash, which is the section wash the mascot
-          illustration was drawn on. `design.md` rotates one wash per major
-          section and says each mascot gets its own, so this is that section. */}
-      <section className="bg-cream-wash px-6 py-16 sm:py-20">
+      {/* Full-bleed hero on `primary-container`, the successor to the cream
+          wash the mascot illustration was drawn on. `design.md` rotates one
+          container tone per major section and says each mascot gets its own.
+
+          Deliberately NOT brand lime, even though this is the page's opening
+          section: the founder section below is already on brand orange, and the
+          system allows one fixed high-energy ground per page. Two of them is two
+          things claiming to be the loudest. 16/08/2026. */}
+      <section className="bg-primary-container px-6 py-16 sm:py-20">
         <div className="mx-auto grid max-w-5xl items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
           <div>
             {/* Same rule as the footer: tracked and uppercased in English,
                 neither in Thai. See `EYEBROW` in `content/footer.ts`. */}
-            <p className={`text-slate ${EYEBROW(locale)}`}>{pick(HOOK_EYEBROW)}</p>
+            <p className={`text-on-surface-variant ${EYEBROW(locale)}`}>{pick(HOOK_EYEBROW)}</p>
             {/* Two lines, second in Teal. `text-balance` because the break
                 between them is meaningful and a ragged first line reads as a
                 mistake rather than as a beat. */}
-            <h1 className="mt-5 text-h1 text-balance">
+            <h1 className="mt-5 text-display-small text-balance">
               {pick(HOOK_LINE_1)}
               <br />
               <span className="text-primary">{pick(HOOK_LINE_2)}</span>
             </h1>
             <div className="mt-6 flex max-w-xl flex-col gap-4">
               {HOOK_BODY.map((p, i) => (
-                <p key={i} className="text-body-lg text-slate">
+                <p key={i} className="text-body-large text-on-surface-variant">
                   {pick(p)}
                 </p>
               ))}
             </div>
             <CallToAction page="/coaching" className="mt-8" />
-            <p className="mt-3 text-caption text-neutral-500">{pick(HOOK_CTA_SUB)}</p>
+            <p className="mt-3 text-body-medium text-on-surface-variant">{pick(HOOK_CTA_SUB)}</p>
           </div>
 
           {/* The asset carries its own cream, a shade off `cream-wash`, so the
@@ -124,7 +129,7 @@ export default function CoachingPage() {
               as a mistake. Hidden below `lg` rather than shrunk: on a phone it
               would push the headline and the button below the fold, and the
               button is the entire job of this section. */}
-          <div className="hidden overflow-hidden rounded-lg bg-[#fcf5e2] lg:block">
+          <div className="hidden overflow-hidden rounded-large bg-surface-container lg:block">
             <Image
               src="/mascot-stepping.png"
               alt={pick(MASCOT_ALT)}
@@ -141,10 +146,10 @@ export default function CoachingPage() {
         {/* Recognition before argument. A reader who has ticked three of these
             off in their head reads the rest of the page differently. */}
         <section className="mt-20">
-          <h2 className="text-h3">{pick(PAIN_HEADING)}</h2>
+          <h2 className="text-headline-small">{pick(PAIN_HEADING)}</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             {PAINS.map((p, i) => (
-              <p key={i} className="material rounded-lg px-6 py-5 text-body text-ink">
+              <p key={i} className="card-outlined rounded-large px-6 py-5 text-body-large text-on-surface">
                 {pick(p)}
               </p>
             ))}
@@ -156,16 +161,16 @@ export default function CoachingPage() {
         {/* The machine. The section this business is best placed to write,
             because the framework genuinely does say what it cannot do. */}
         <section className="mt-20">
-          <h2 className="text-h3">{pick(METHOD_HEADING)}</h2>
-          <p className="mt-3 text-body-lg text-slate">{pick(METHOD_INTRO)}</p>
+          <h2 className="text-headline-small">{pick(METHOD_HEADING)}</h2>
+          <p className="mt-3 text-body-large text-on-surface-variant">{pick(METHOD_INTRO)}</p>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {METHOD.map((step) => (
-              <div key={step.n} className="material rounded-lg px-6 py-7">
-                <p className="text-h3 text-primary">{step.n}</p>
-                <h3 className="mt-2 text-h4">{pick(step.heading)}</h3>
+              <div key={step.n} className="card-outlined rounded-large px-6 py-7">
+                <p className="text-headline-small text-primary">{step.n}</p>
+                <h3 className="mt-2 text-title-large">{pick(step.heading)}</h3>
                 <div className="mt-3 flex flex-col gap-3">
                   {step.body.map((b, i) => (
-                    <p key={i} className="text-body text-slate">
+                    <p key={i} className="text-body-large text-on-surface-variant">
                       {pick(b)}
                     </p>
                   ))}
@@ -176,10 +181,10 @@ export default function CoachingPage() {
         </section>
 
         <section className="mt-20">
-          <h2 className="text-h3">{pick(PERSONA_HEADING)}</h2>
+          <h2 className="text-headline-small">{pick(PERSONA_HEADING)}</h2>
           <ul className="mt-6 flex flex-col gap-3">
             {PERSONAS.map((p, i) => (
-              <li key={i} className="flex gap-3 text-body-lg text-ink">
+              <li key={i} className="flex gap-3 text-body-large text-on-surface">
                 <span aria-hidden className="mt-2.5 block size-2 shrink-0 rounded-full bg-primary" />
                 <span>{pick(p)}</span>
               </li>
@@ -187,13 +192,13 @@ export default function CoachingPage() {
           </ul>
 
           {/* Saying who you turn away is the cheapest credibility on the page. */}
-          <h3 className="mt-10 text-h4">{pick(NOT_FOR_HEADING)}</h3>
+          <h3 className="mt-10 text-title-large">{pick(NOT_FOR_HEADING)}</h3>
           <ul className="mt-4 flex flex-col gap-3">
             {NOT_FOR.map((p, i) => (
-              <li key={i} className="flex gap-3 text-body text-slate">
+              <li key={i} className="flex gap-3 text-body-large text-on-surface-variant">
                 <span
                   aria-hidden
-                  className="mt-2.5 block size-2 shrink-0 rounded-full bg-neutral-300"
+                  className="mt-2.5 block size-2 shrink-0 rounded-full bg-surface-container-highest"
                 />
                 <span>{pick(p)}</span>
               </li>
@@ -215,7 +220,7 @@ export default function CoachingPage() {
           The portrait keeps its own mint disc rather than being recoloured to
           match. Teal against terracotta is the brand's own pairing, so the
           contrast reads as the system rather than as an unedited asset. */}
-      <section className="bg-mascot px-6 py-20 text-ink">
+      <section className="ground-fixed bg-brand-orange px-6 py-20">
         <div className="mx-auto w-full max-w-3xl">
           <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
             <Image
@@ -223,13 +228,13 @@ export default function CoachingPage() {
               alt={pick(PORTRAIT_ALT)}
               width={421}
               height={421}
-              className="size-32 shrink-0 rounded-full bg-[#c9faee] object-cover sm:size-40"
+              className="size-32 shrink-0 rounded-full bg-secondary-container object-cover sm:size-40"
             />
             <div>
-              <h2 className="text-h2">{pick(FOUNDER_HEADING)}</h2>
+              <h2 className="text-headline-large">{pick(FOUNDER_HEADING)}</h2>
               <div className="mt-5 flex flex-col gap-4">
                 {FOUNDER_BEFORE.map((p, i) => (
-                  <p key={i} className="text-body">
+                  <p key={i} className="text-body-large">
                     {pick(p)}
                   </p>
                 ))}
@@ -240,11 +245,11 @@ export default function CoachingPage() {
           {/* The hinge of the section, given its own line and its own weight.
               In Paul's draft it sits alone between two blocks of paragraphs,
               and running it in as another paragraph would lose the beat. */}
-          <p className="mt-10 text-h3">{pick(FOUNDER_TURN)}</p>
+          <p className="mt-10 text-headline-small">{pick(FOUNDER_TURN)}</p>
 
           <div className="mt-6 flex max-w-2xl flex-col gap-4">
             {FOUNDER_AFTER.map((p, i) => (
-              <p key={i} className="text-body">
+              <p key={i} className="text-body-large">
                 {pick(p)}
               </p>
             ))}
@@ -253,7 +258,7 @@ export default function CoachingPage() {
       </section>
 
       <section className="mx-auto w-full max-w-3xl px-6 py-16 text-center">
-        <p className="text-body-lg text-ink">{pick(CLOSE_LEAD)}</p>
+        <p className="text-title-medium text-on-surface">{pick(CLOSE_LEAD)}</p>
         <CallToAction page="/coaching" className="mt-6" align="center" />
       </section>
     </div>

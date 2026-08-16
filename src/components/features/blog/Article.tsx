@@ -14,9 +14,9 @@
  *
  * Measure is `max-w-2xl`, the same reading column as the FAQ and the privacy
  * notice. `design.md` asks for generous spacing over density, and a wider column
- * would cost more than the space buys: Noto Sans Thai has fine features and tone
- * marks, and Thai is written without word spaces, so a long line has fewer
- * places for the eye to reacquire itself than the same line in Latin.
+ * would cost more than the space buys: Thai carries tone marks above and below
+ * the line and is written without word spaces, so a long line has fewer places
+ * for the eye to reacquire itself than the same line in Latin.
  */
 
 import Link from "next/link";
@@ -40,7 +40,7 @@ function Body({ blocks }: { blocks: readonly Block[] }) {
       {blocks.map((block, i) => {
         if (block.kind === "list") {
           const items = block.items.map((item, j) => (
-            <li key={j} className="flex gap-3 text-body-lg text-ink">
+            <li key={j} className="flex gap-3 text-body-large text-on-surface">
               {block.ordered ? (
                 <span aria-hidden className="shrink-0 font-semibold text-primary">
                   {j + 1}.
@@ -66,7 +66,7 @@ function Body({ blocks }: { blocks: readonly Block[] }) {
         }
 
         return (
-          <p key={i} className="mt-5 text-body-lg text-ink">
+          <p key={i} className="mt-5 text-body-large text-on-surface">
             {pick(block.text)}
             {/* The citation sits on the paragraph whose claim it supports, not
                 in a pile at the foot. `blog.ts` says why: a footnote list lets a
@@ -80,7 +80,7 @@ function Body({ blocks }: { blocks: readonly Block[] }) {
                   href={block.cite.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-caption text-primary underline underline-offset-2"
+                  className="text-body-medium text-primary underline underline-offset-2"
                 >
                   {block.cite.label} &#8599;
                 </a>
@@ -105,17 +105,17 @@ export default function Article({ slug }: { slug: string }) {
         <div className="mx-auto w-full max-w-2xl px-6 py-14">
           <Link
             href={path("/blog")}
-            className="text-caption text-slate underline underline-offset-2"
+            className="text-body-medium text-on-surface-variant underline underline-offset-2"
           >
             &larr; {pick(BLOG_BACK)}
           </Link>
 
-          <h1 className="mt-8 text-h1">{pick(post.title)}</h1>
+          <h1 className="mt-8 text-display-small">{pick(post.title)}</h1>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-caption text-slate">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-body-medium text-on-surface-variant">
             <Link
               href={path(`/blog?topic=${topic.id}`)}
-              className="rounded-full border border-ink/15 px-3 py-1 font-semibold transition-colors hover:border-ink/40"
+              className="rounded-full border border-on-surface/15 px-3 py-1 font-semibold transition-colors hover:border-on-surface/40"
             >
               {pick(topic.label)}
             </Link>
@@ -125,26 +125,26 @@ export default function Article({ slug }: { slug: string }) {
       </header>
 
       <div className="mx-auto w-full max-w-2xl px-6 py-14">
-        <p className="text-body-lg text-slate">{pick(post.summary)}</p>
+        <p className="text-body-large text-on-surface-variant">{pick(post.summary)}</p>
 
         {post.sections.map((section, i) => (
           <section key={i} className={i === 0 ? "mt-8" : "mt-12"}>
-            {section.heading && <h2 className="text-h3">{pick(section.heading)}</h2>}
+            {section.heading && <h2 className="text-headline-small">{pick(section.heading)}</h2>}
             <Body blocks={section.body} />
           </section>
         ))}
 
         {post.question && (
-          <div className="material-mint mt-12 rounded-lg px-6 py-7">
-            <p className="text-caption font-semibold text-primary-deep">
+          <div className="card-tonal mt-12 rounded-large px-6 py-7">
+            <p className="text-body-medium font-semibold text-on-primary-container">
               {pick(BLOG_QUESTION_LABEL)}
             </p>
-            <p className="mt-2 text-body-lg text-ink">{pick(post.question)}</p>
+            <p className="mt-2 text-title-medium text-on-surface">{pick(post.question)}</p>
           </div>
         )}
 
-        <div className="mt-16 border-t border-neutral-300 pt-10">
-          <p className="text-body text-slate">{pick(BLOG_CLOSE)}</p>
+        <div className="mt-16 border-t border-outline-variant pt-10">
+          <p className="text-body-large text-on-surface-variant">{pick(BLOG_CLOSE)}</p>
           <CallToAction page="/blog/post" className="mt-5" />
         </div>
       </div>

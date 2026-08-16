@@ -130,10 +130,10 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   if (lead === undefined) {
-    return <p className="text-body text-neutral-500">Loading...</p>;
+    return <p className="text-body-large text-on-surface-variant">Loading...</p>;
   }
   if (lead === null) {
-    return <p className="text-body text-error">No lead with that id.</p>;
+    return <p className="text-body-large text-error">No lead with that id.</p>;
   }
 
   const corrected = applyCorrections(lead.responses, corrections ?? []);
@@ -166,27 +166,27 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   return (
     <div className="w-full space-y-8">
       <div>
-        <Link href="/admin" className="text-caption text-primary underline">
+        <Link href="/admin" className="text-body-medium text-primary underline">
           Back to all leads
         </Link>
-        <h1 className="mt-2 text-h3">{lead.fullName ?? "Anonymous lead"}</h1>
+        <h1 className="mt-2 text-headline-small">{lead.fullName ?? "Anonymous lead"}</h1>
         {/* The derived lifecycle state leads, because it is the question the
             coach opens this page with. `status` stays beside it rather than
             being replaced: it is a different fact, how far through the
             assessment they got, and the two were being read as one. */}
         <p className="mt-2 flex flex-wrap items-center gap-2">
           <span
-            className={`rounded-sm border px-2 py-0.5 text-caption ${
+            className={`rounded-small border px-2 py-0.5 text-body-medium ${
               lifecycle === "withdrawn"
                 ? "border-error text-error"
                 : lifecycle === "placed" || lifecycle === "client"
                   ? "border-primary text-primary"
-                  : "border-neutral-300 text-slate"
+                  : "border-outline-variant text-on-surface-variant"
             }`}
           >
             {LIFECYCLE_LABELS[lifecycle]}
           </span>
-          <span className="text-caption text-slate">
+          <span className="text-body-medium text-on-surface-variant">
             assessment {lead.status} · started {stamp(lead.createdAt)} · last active{" "}
             {stamp(lead.lastActivityAt)}
           </span>
@@ -194,7 +194,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
               existing rows have no attribution because the client hardcoded
               "direct" and never read the URL, and showing a confident origin
               for those would be inventing one. */}
-          <span className="text-caption text-neutral-500">
+          <span className="text-body-medium text-on-surface-variant">
             {lead.attribution
               ? `via ${lead.attribution.channel.replace(/_/g, " ")}${
                   lead.attribution.campaign ? ` · post ${lead.attribution.campaign}` : ""
@@ -214,7 +214,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
               setBuilding(false);
             }
           }}
-          className="mt-4 h-12 rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+          className="mt-4 h-12 btn-filled px-7 text-label-large"
         >
           {building ? "Building..." : "Download report"}
         </button>
@@ -237,7 +237,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
               "text/html;charset=utf-8",
             );
           }}
-          className="ml-3 mt-4 h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate transition-colors hover:bg-neutral-100"
+          className="ml-3 mt-4 btn-outlined h-12 px-5 text-label-large hover:bg-surface-container"
         >
           Export their data (readable)
         </button>
@@ -255,12 +255,12 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
               "application/json",
             );
           }}
-          className="ml-3 mt-4 h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate transition-colors hover:bg-neutral-100"
+          className="ml-3 mt-4 btn-outlined h-12 px-5 text-label-large hover:bg-surface-container"
         >
           Export (JSON)
         </button>
         {Object.keys(lead.responses).length === 0 && (
-          <p className="mt-2 text-caption text-neutral-500">
+          <p className="mt-2 text-body-medium text-on-surface-variant">
             No answers yet, so there is nothing to report on.
           </p>
         )}
@@ -275,7 +275,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
         <div className="space-y-8">
           <Section title="Contact">
             {lead.consentSource === "survey_import" && (
-              <p className="mb-3 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
+              <p className="mb-3 rounded-small border border-warning bg-warning-container px-4 py-3 text-body-medium text-on-warning-container">
                 Imported from the Lead Discovery Survey. That form asked how best to
                 reach them but carried no consent clause, so the dates below are their
                 submission date, not a per-channel grant. Judge outreach against what
@@ -388,7 +388,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           work with someone, the other erases them, and putting them side by
           side would invite the wrong click. */}
       <Section title="Should we work with this lead">
-        <p className="text-body text-slate">
+        <p className="text-body-large text-on-surface-variant">
           Blank is the normal state and means nobody has judged. It does{" "}
           <strong>not</strong> mean qualified. Out of scope is Gate 1 from the
           qualification framework: not a white-collar or IT professional. Not
@@ -396,28 +396,28 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           thing and should not be recorded as the first.
         </p>
         {lead.disposition ? (
-          <div className="mt-3 rounded-sm border border-neutral-300 bg-cream-wash px-4 py-3">
-            <p className="text-body text-ink">
+          <div className="mt-3 rounded-small border border-outline-variant bg-primary-container px-4 py-3">
+            <p className="text-body-large text-on-surface">
               {lead.disposition === "disqualified" ? "Out of scope" : "Not now"}
               {lead.dispositionReason ? `: ${lead.dispositionReason}` : ""}
             </p>
             <button
               type="button"
               onClick={() => void setDisposition({ leadId, disposition: null })}
-              className="mt-2 text-caption text-primary underline"
+              className="mt-2 text-body-medium text-primary underline"
             >
               Clear this judgement
             </button>
           </div>
         ) : (
           <div className="mt-3">
-            <label className="block text-label text-slate">
+            <label className="field-label">
               Reason, required
               <input
                 value={dispReason}
                 onChange={(e) => setDispReason(e.target.value)}
                 placeholder="e.g. front-line role, outside the channel's scope"
-                className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink"
+                className="field mt-1"
               />
             </label>
             <div className="mt-3 flex gap-3">
@@ -431,7 +431,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
                     reason: dispReason.trim(),
                   }).then(() => setDispReason(""))
                 }
-                className="h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate disabled:opacity-50"
+                className="btn-outlined h-12 px-5 text-label-large"
               >
                 Out of scope
               </button>
@@ -445,7 +445,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
                     reason: dispReason.trim(),
                   }).then(() => setDispReason(""))
                 }
-                className="h-12 rounded-md border border-neutral-300 bg-surface px-5 text-label text-slate disabled:opacity-50"
+                className="btn-outlined h-12 px-5 text-label-large"
               >
                 Not now
               </button>
@@ -455,34 +455,34 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
       </Section>
 
       <Section title="Delete on request">
-        <p className="text-body text-slate">
+        <p className="text-body-large text-on-surface-variant">
           Erases this person entirely: the lead, their answers, every call
           logged against them, every correction, and any saved links. This
           cannot be undone and there is no backup to restore from. A record
           that <em>a</em> deletion happened is kept, holding nothing about who
           it was.
         </p>
-        <label className="mt-4 block text-label text-slate">
+        <label className="mt-4 block text-label-large text-on-surface-variant">
           Your reference for this request
           <input
             value={deleteNote}
             onChange={(e) => setDeleteNote(e.target.value)}
             placeholder="e.g. requested on LINE, 10/08/2026"
-            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink"
+            className="field mt-1"
           />
-          <span className="mt-1 block text-caption font-normal text-neutral-500">
+          <span className="mt-1 block text-body-medium font-normal text-on-surface-variant">
             Do not paste their name or contact details here. This row outlives them.
           </span>
         </label>
-        <label className="mt-4 block text-label text-slate">
+        <label className="mt-4 block text-label-large text-on-surface-variant">
           Type DELETE to confirm
           <input
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
-            className="mt-1 h-12 w-full rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink"
+            className="field mt-1"
           />
         </label>
-        {deleteError && <p className="mt-3 text-body text-error">{deleteError}</p>}
+        {deleteError && <p className="mt-3 text-body-large text-error">{deleteError}</p>}
         <button
           type="button"
           disabled={confirmText !== "DELETE" || deleting}
@@ -497,7 +497,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
               setDeleting(false);
             }
           }}
-          className="mt-4 h-12 rounded-md bg-error px-7 text-label text-on-error transition-opacity hover:opacity-90 disabled:bg-neutral-300 disabled:text-neutral-500"
+          className="mt-4 h-12 rounded-medium bg-error px-7 text-label-large text-on-error transition-opacity hover:opacity-90 disabled:bg-surface-container-highest disabled:text-on-surface-variant"
         >
           {deleting ? "Deleting..." : "Delete this person permanently"}
         </button>
@@ -509,7 +509,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-h4">{title}</h2>
+      <h2 className="text-title-large">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
   );
@@ -543,13 +543,13 @@ function Row({
   const actionable = !!value && contactable;
 
   return (
-    <div className="border-b border-neutral-300 py-2">
+    <div className="border-b border-outline-variant py-2">
       <div className="flex justify-between gap-4">
-        <span className="text-body text-slate">{label}</span>
+        <span className="text-body-large text-on-surface-variant">{label}</span>
         {value === null ? (
-          <span className="text-body text-neutral-500">not provided</span>
+          <span className="text-body-large text-on-surface-variant">not provided</span>
         ) : actionable && href ? (
-          <a className="text-body text-primary underline" href={href}>
+          <a className="text-body-large text-primary underline" href={href}>
             {value}
           </a>
         ) : actionable && copyable ? (
@@ -557,16 +557,16 @@ function Row({
             type="button"
             onClick={() => void navigator.clipboard?.writeText(value)}
             title="Copy"
-            className="text-body text-primary underline"
+            className="text-body-large text-primary underline"
           >
             {value}
           </button>
         ) : (
-          <span className="text-body text-ink">{value}</span>
+          <span className="text-body-large text-on-surface">{value}</span>
         )}
       </div>
       {showConsent && (
-        <p className="text-caption text-neutral-500">
+        <p className="text-body-medium text-on-surface-variant">
           {/* Dates and bases live in the Consent section below, which can show
               per purpose and can show a withdrawal. This line says only whether
               the channel may be used right now. */}

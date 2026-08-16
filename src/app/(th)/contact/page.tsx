@@ -49,14 +49,14 @@ export default function ContactPage() {
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
-      <h1 className="text-h2">{pick(CONTACT_HEADING)}</h1>
-      <p className="mt-4 text-body-lg text-slate">{pick(CONTACT_INTRO)}</p>
+      <h1 className="text-headline-large">{pick(CONTACT_HEADING)}</h1>
+      <p className="mt-4 text-body-large text-on-surface-variant">{pick(CONTACT_INTRO)}</p>
 
       <CallToAction page="/contact" className="mt-8" />
 
-      <p className="mt-5 text-caption text-neutral-500">{pick(CONTACT_CHANNELS)}</p>
+      <p className="mt-5 text-body-medium text-on-surface-variant">{pick(CONTACT_CHANNELS)}</p>
 
-      <p className="mt-10 text-caption text-neutral-500">
+      <p className="mt-10 text-body-medium text-on-surface-variant">
         {pick(CONTACT_ALREADY_IN_QUEUE)}
       </p>
     </div>

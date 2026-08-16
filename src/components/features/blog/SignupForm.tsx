@@ -90,13 +90,13 @@ export default function SignupForm() {
 
   if (state === "done") {
     return (
-      <p className="mt-8 max-w-xl text-body-lg text-primary-deep">{pick(SIGNUP_DONE)}</p>
+      <p className="mt-8 max-w-xl text-body-large text-on-primary-container">{pick(SIGNUP_DONE)}</p>
     );
   }
 
   return (
     <div className="mt-8 max-w-xl">
-      <p className="text-caption text-slate">
+      <p className="text-body-medium text-on-surface-variant">
         {pick(SIGNUP_CONSENT)}{" "}
         <Link
           href={path("/privacy")}
@@ -126,23 +126,26 @@ export default function SignupForm() {
           aria-describedby="blog-signup-note"
           // `input` from `design.md`: 48px, `rounded.sm`, and the focus ring is
           // the accent one the base layer already puts on every focusable.
-          className="h-12 min-w-0 flex-1 rounded-sm border border-neutral-300 bg-surface px-4 text-body text-ink placeholder:text-neutral-500"
+          className="field min-w-0 flex-1"
         />
         <button
           type="submit"
           disabled={state === "sending"}
-          className="inline-flex h-12 shrink-0 items-center justify-center rounded-md bg-primary px-7 text-label text-on-primary transition-colors hover:bg-primary-deep disabled:bg-neutral-300 disabled:text-neutral-500"
+          // `btn-contrast` because this form sits on the brand lime hero, a fixed
+          // ground outside the role system. A tonal button measures 1.08 there
+          // and its shape disappears; `inverse-surface` measures 11.06.
+          className="btn-contrast inline-flex h-12 shrink-0 items-center justify-center px-7 text-label-large"
         >
           {pick(SIGNUP_BUTTON)}
         </button>
       </form>
 
-      <p id="blog-signup-note" className="mt-3 text-caption text-neutral-500">
+      <p id="blog-signup-note" className="mt-3 text-body-medium text-on-surface-variant">
         {pick(SIGNUP_NOTE)}
       </p>
 
       {(state === "bad_email" || state === "busy") && (
-        <p role="alert" className="mt-3 text-caption text-error">
+        <p role="alert" className="field-support-error mt-3">
           {pick(state === "bad_email" ? SIGNUP_BAD_EMAIL : SIGNUP_BUSY)}
         </p>
       )}

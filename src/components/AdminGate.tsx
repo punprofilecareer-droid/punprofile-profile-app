@@ -27,7 +27,7 @@ export default function AdminGate({ children }: { children: React.ReactNode }) {
       <>
         {/* Loud on purpose. A bypass you cannot see is one you forget is on,
             and this screen looks identical either way. */}
-        <p className="mb-6 rounded-sm border border-warning bg-cream-wash px-4 py-3 text-caption text-ink">
+        <p className="mb-6 rounded-small border border-warning bg-warning-container px-4 py-3 text-body-medium text-on-warning-container">
           Sign-in bypassed for local development. This is not a production
           configuration, and the server still refuses every query unless
           <code className="mx-1">DEV_ADMIN_BYPASS</code> names this exact
@@ -41,10 +41,10 @@ export default function AdminGate({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AuthLoading>
-        <p className="text-body text-neutral-500">Checking session...</p>
+        <p className="text-body-large text-on-surface-variant">Checking session...</p>
       </AuthLoading>
       <Unauthenticated>
-        <p className="text-body text-slate">
+        <p className="text-body-large text-on-surface-variant">
           Not signed in.{" "}
           <Link className="text-primary underline" href="/login">
             Go to sign-in

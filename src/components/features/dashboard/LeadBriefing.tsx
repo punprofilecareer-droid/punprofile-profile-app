@@ -65,7 +65,7 @@ export default function LeadBriefing({
 
   if (Object.keys(responses).length === 0) {
     return (
-      <p className="text-body text-neutral-500">
+      <p className="text-body-large text-on-surface-variant">
         No answers on this lead, so there is nothing to brief on.
       </p>
     );
@@ -82,19 +82,19 @@ export default function LeadBriefing({
   return (
     <div className="space-y-10">
       <section>
-        <h2 className="text-h4">Executive summary</h2>
+        <h2 className="text-title-large">Executive summary</h2>
         {/* Said out loud, because this chart now differs from the one the
             candidate was shown and from the scores stored on their record.
             Diverging is correct, a coach-verified answer being better evidence
             than a self-reported one. Diverging silently would not be. */}
         {correctedCount > 0 && (
-          <p className="mt-2 rounded-sm border border-neutral-300 bg-mint-wash px-4 py-2 text-caption text-ink">
+          <p className="mt-2 rounded-small border border-outline-variant bg-secondary-container px-4 py-2 text-body-medium text-on-surface">
             Scored on {correctedCount} corrected {correctedCount === 1 ? "answer" : "answers"}.
             The candidate&apos;s own copy still shows what they told us.
           </p>
         )}
-        <p className="mt-3 text-body-lg text-ink">{narrative.headline}</p>
-        <p className="mt-2 text-caption text-neutral-500">{narrative.caveat}</p>
+        <p className="mt-3 text-title-medium text-on-surface">{narrative.headline}</p>
+        <p className="mt-2 text-body-medium text-on-surface-variant">{narrative.caveat}</p>
 
         <div className="mt-6 max-w-md">
           {/* The coach's names for the axes, so the chart agrees with the
@@ -106,20 +106,20 @@ export default function LeadBriefing({
       </section>
 
       <section>
-        <h2 className="text-h4">Dimension by dimension</h2>
+        <h2 className="text-title-large">Dimension by dimension</h2>
         <div className="mt-3 space-y-4">
           {profile.dimensions.map((d, i) => (
-            <div key={d.key} className="border-b border-neutral-300 pb-3">
+            <div key={d.key} className="border-b border-outline-variant pb-3">
               <div className="flex items-baseline justify-between gap-4">
-                <span className="text-label text-ink">{d.label}</span>
-                <span className="tabular-nums text-body text-primary-deep">
+                <span className="text-label-large text-on-surface">{d.label}</span>
+                <span className="tabular-nums text-body-large text-on-primary-container">
                   {d.score === null ? "not scored" : d.score.toFixed(1)}
-                  <span className="ml-2 text-caption text-neutral-500">
+                  <span className="ml-2 text-body-medium text-on-surface-variant">
                     {d.scoredCount}/{d.totalCount} measured
                   </span>
                 </span>
               </div>
-              <p className="mt-1 text-body text-slate">{narrative.perDimension[i]?.text}</p>
+              <p className="mt-1 text-body-large text-on-surface-variant">{narrative.perDimension[i]?.text}</p>
             </div>
           ))}
         </div>
@@ -127,39 +127,39 @@ export default function LeadBriefing({
 
       <div className="grid gap-8 sm:grid-cols-2">
         <section>
-          <h2 className="text-h4">Lead with these</h2>
+          <h2 className="text-title-large">Lead with these</h2>
           <Highlights items={narrative.strengths} empty="Nothing scored high enough to lead with." />
         </section>
         <section>
-          <h2 className="text-h4">Development priorities</h2>
+          <h2 className="text-title-large">Development priorities</h2>
           <Highlights items={narrative.priorities} empty="Nothing scored low enough to prioritise." />
         </section>
       </div>
 
       <section>
-        <h2 className="text-h4">Start here</h2>
-        <p className="mt-3 rounded-lg border border-neutral-300 bg-mint-wash px-6 py-4 text-body text-ink">
+        <h2 className="text-title-large">Start here</h2>
+        <p className="mt-3 rounded-large border border-outline-variant bg-secondary-container px-6 py-4 text-body-large text-on-surface">
           {narrative.nextStep}
         </p>
       </section>
 
       {coach.topLevers.length > 0 && (
         <section>
-          <h2 className="text-h4">What moves, and by how much</h2>
-          <p className="mt-1 text-caption text-neutral-500">
+          <h2 className="text-title-large">What moves, and by how much</h2>
+          <p className="mt-1 text-body-medium text-on-surface-variant">
             Each is their own answers re-scored through the real lookups, so these are
             arithmetic rather than estimates. Safe to quote in a call.
           </p>
           <ul className="mt-3 space-y-3">
             {coach.topLevers.slice(0, 5).map((x) => (
-              <li key={x.move.key} className="rounded-md border border-neutral-300 px-4 py-3">
-                <p className="text-body text-ink">{x.move.coach}</p>
-                <p className="mt-1 text-caption text-slate">
+              <li key={x.move.key} className="rounded-medium border border-outline-variant px-4 py-3">
+                <p className="text-body-large text-on-surface">{x.move.coach}</p>
+                <p className="mt-1 text-body-medium text-on-surface-variant">
                   {x.move.module} · {x.move.horizon}
                   {x.changes[0] && (
                     <>
                       {" · "}
-                      <span className="text-primary-deep">
+                      <span className="text-on-primary-container">
                         {x.changes[0].label} {x.changes[0].from?.toFixed(1) ?? "—"} to{" "}
                         {x.changes[0].to?.toFixed(1) ?? "—"}
                       </span>
@@ -173,15 +173,15 @@ export default function LeadBriefing({
       )}
 
       <section>
-        <h2 className="text-h4">What a conversation would add</h2>
-        <p className="mt-3 text-body text-slate">
-          Their answers measure <strong className="text-ink">{coach.unlock.measuredNow}</strong> of{" "}
+        <h2 className="text-title-large">What a conversation would add</h2>
+        <p className="mt-3 text-body-large text-on-surface-variant">
+          Their answers measure <strong className="text-on-surface">{coach.unlock.measuredNow}</strong> of{" "}
           {coach.unlock.totalItems} competencies. An engagement reaches{" "}
-          <strong className="text-ink">{coach.unlock.measuredAfter}</strong>, taking coverage from{" "}
+          <strong className="text-on-surface">{coach.unlock.measuredAfter}</strong>, taking coverage from{" "}
           {Math.round(coach.unlock.coverageNow * 100)}% to{" "}
           {Math.round(coach.unlock.coverageAfter * 100)}%.
         </p>
-        <p className="mt-2 text-caption text-neutral-500">
+        <p className="mt-2 text-body-medium text-on-surface-variant">
           The gap is not a gap in them. It is what a form cannot see and a conversation can,
           which is the honest thing to sell.
         </p>
@@ -189,8 +189,8 @@ export default function LeadBriefing({
 
       {coach.aiPlan.state !== "unknown" && (
         <section>
-          <h2 className="text-h4">AI and digital habits</h2>
-          <p className="mt-2 text-body text-slate">
+          <h2 className="text-title-large">AI and digital habits</h2>
+          <p className="mt-2 text-body-large text-on-surface-variant">
             {coach.aiPlan.metCount} of 4 in place.
             {coach.aiPlan.missing.length > 0 && " Missing: " + coach.aiPlan.missing.join("; ")}
           </p>
@@ -198,17 +198,17 @@ export default function LeadBriefing({
       )}
 
       <section>
-        <h2 className="text-h4">Fit</h2>
-        <p className="mt-2 text-body text-slate">
+        <h2 className="text-title-large">Fit</h2>
+        <p className="mt-2 text-body-large text-on-surface-variant">
           {grade.score === null
             ? "Not enough answered to grade."
             : `${grade.tier} fit. Investment Readiness ${grade.score} of 3.`}
         </p>
         {grade.routingNote && (
-          <p className="mt-1 text-body text-ink">{grade.routingNote}</p>
+          <p className="mt-1 text-body-large text-on-surface">{grade.routingNote}</p>
         )}
         {grade.jobTitle && (
-          <p className="mt-1 text-body text-slate">
+          <p className="mt-1 text-body-large text-on-surface-variant">
             Job title, from a call: {grade.jobTitle}. Not classified, because the Job
             Title Pool that Gate 1 reads is not loaded.
           </p>
@@ -217,7 +217,7 @@ export default function LeadBriefing({
             form identically, since both are the person's answer to the same
             question, but it never stops being able to say which. */}
         {grade.coachInputAt !== null && (
-          <p className="mt-1 text-caption text-primary-deep">
+          <p className="mt-1 text-body-medium text-on-primary-container">
             Graded partly on a call from{" "}
             {new Date(grade.coachInputAt).toLocaleDateString("en-GB")}:{" "}
             {[
@@ -229,7 +229,7 @@ export default function LeadBriefing({
             .
           </p>
         )}
-        <p className="mt-1 text-caption text-neutral-500">
+        <p className="mt-1 text-body-medium text-on-surface-variant">
           Unmeasured: {grade.unmeasured.join("; ")}.
         </p>
       </section>
@@ -244,16 +244,16 @@ function Highlights({
   items: { key: string; label: string; score: number; tier: string }[];
   empty: string;
 }) {
-  if (!items.length) return <p className="mt-3 text-body text-neutral-500">{empty}</p>;
+  if (!items.length) return <p className="mt-3 text-body-large text-on-surface-variant">{empty}</p>;
   return (
     <ul className="mt-3 space-y-2">
       {items.map((h) => (
         <li
           key={h.key}
-          className="flex items-baseline justify-between gap-3 border-b border-neutral-300 pb-2"
+          className="flex items-baseline justify-between gap-3 border-b border-outline-variant pb-2"
         >
-          <span className="text-body text-ink">{h.label}</span>
-          <span className="shrink-0 tabular-nums text-body text-primary-deep">
+          <span className="text-body-large text-on-surface">{h.label}</span>
+          <span className="shrink-0 tabular-nums text-body-large text-on-primary-container">
             {h.score.toFixed(1)}
           </span>
         </li>

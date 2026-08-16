@@ -43,9 +43,9 @@ function ServicesBody() {
   const focused = focus ? serviceForDimension(focus) : null;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 py-16">
-      <h1 className="text-h2">{pick(SERVICES_HEADING)}</h1>
-      <p className="mt-4 max-w-2xl text-body-lg text-slate">{pick(SERVICES_INTRO)}</p>
+    <div className="mx-auto w-full max-w-5xl px-6 py-16">
+      <h1 className="text-headline-large">{pick(SERVICES_HEADING)}</h1>
+      <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">{pick(SERVICES_INTRO)}</p>
 
       {/* `items-start` so a shorter card keeps its own height instead of
           stretching to match the tallest, and `auto-rows-fr` is deliberately
@@ -58,8 +58,8 @@ function ServicesBody() {
             <section
               key={s.id}
               id={s.id}
-              className={`flex flex-col overflow-hidden rounded-lg border transition-colors ${
-                on ? "border-eufit bg-lavender-wash" : "border-neutral-300 bg-surface"
+              className={`flex flex-col overflow-hidden rounded-large border transition-colors ${
+                on ? "border-tertiary bg-tertiary-container" : "border-outline-variant bg-surface"
               }`}
             >
               {/* The mascot sits on the exact wash it was drawn on, so the
@@ -78,16 +78,16 @@ function ServicesBody() {
 
               <div className="flex flex-1 flex-col px-6 py-7">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-h4">{pick(s.name)}</h2>
+                  <h2 className="text-title-large">{pick(s.name)}</h2>
                   {s.core && (
-                    <span className="rounded-full bg-accent-tint px-2.5 py-0.5 text-caption text-accent">
+                    <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-action">
                       {pick(CORE_BADGE)}
                     </span>
                   )}
                 </div>
 
                 {on && (
-                  <p className="mt-2 text-caption text-eufit-deep">
+                  <p className="mt-2 text-body-medium text-on-tertiary-container">
                     {pick({
                       en: "Your result points here",
                       th: "ผลประเมินของคุณชี้มาที่บริการนี้",
@@ -98,12 +98,12 @@ function ServicesBody() {
                 {/* The client's question, not a tagline. A service described by
                     the problem it answers is checkable; one described by its
                     benefits is not. */}
-                <p className="mt-3 text-body-lg text-ink">&ldquo;{pick(s.question)}&rdquo;</p>
-                <p className="mt-3 text-body text-slate">{pick(s.summary)}</p>
+                <p className="mt-3 text-title-medium text-on-surface">&ldquo;{pick(s.question)}&rdquo;</p>
+                <p className="mt-3 text-body-large text-on-surface-variant">{pick(s.summary)}</p>
 
                 <ul className="mt-5 flex flex-col gap-2.5">
                   {s.includes.map((item, i) => (
-                    <li key={i} className="flex gap-3 text-body text-ink">
+                    <li key={i} className="flex gap-3 text-body-large text-on-surface">
                       <span
                         aria-hidden
                         className="mt-2 block size-1.5 shrink-0 rounded-full bg-primary"
@@ -123,7 +123,7 @@ function ServicesBody() {
         })}
       </div>
 
-      <p className="mt-10 max-w-3xl text-body text-slate">{pick(AI_NOTE)}</p>
+      <p className="mt-10 max-w-3xl text-body-large text-on-surface-variant">{pick(AI_NOTE)}</p>
 
       {/* The page's secondary, exactly once, where a secondary belongs. Not a
           fourth button: the cards already carry the primary. */}
@@ -136,7 +136,7 @@ export default function ServicesPage() {
   // `useSearchParams` needs a Suspense boundary or the route opts out of static
   // rendering at build time.
   return (
-    <Suspense fallback={<div className="mx-auto w-full max-w-6xl px-6 py-16" />}>
+    <Suspense fallback={<div className="mx-auto w-full max-w-5xl px-6 py-16" />}>
       <ServicesBody />
     </Suspense>
   );

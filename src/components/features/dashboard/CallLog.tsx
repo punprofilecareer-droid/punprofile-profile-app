@@ -273,23 +273,23 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
 
   return (
     <section>
-      <h2 className="text-h4">Calls and sessions</h2>
+      <h2 className="text-title-large">Calls and sessions</h2>
 
       {calls === undefined ? (
-        <p className="mt-3 text-body text-neutral-500">Loading...</p>
+        <p className="mt-3 text-body-large text-on-surface-variant">Loading...</p>
       ) : calls.length === 0 ? (
-        <p className="mt-3 text-body text-neutral-500">
+        <p className="mt-3 text-body-large text-on-surface-variant">
           Nothing logged yet. The funnel has no record of its own last step until there is.
         </p>
       ) : (
         <ul className="mt-3 space-y-3">
           {calls.map((c) => (
-            <li key={c._id} className="rounded-md border border-neutral-300 px-4 py-3">
+            <li key={c._id} className="rounded-medium border border-outline-variant px-4 py-3">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="text-label text-ink">
+                <span className="text-label-large text-on-surface">
                   {TYPE_LABEL[c.type]} · {OUTCOME_LABEL[c.outcome]}
                 </span>
-                <span className="text-caption text-neutral-500">
+                <span className="text-body-medium text-on-surface-variant">
                   {stamp(c.heldAt)}
                   {c.durationMinutes ? ` · ${c.durationMinutes} min` : ""}
                   {c.channel ? ` · ${CHANNEL_LABEL[c.channel]}` : ""}
@@ -297,7 +297,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
               </div>
 
               {c.language && (
-                <p className="mt-1 text-caption text-neutral-500">
+                <p className="mt-1 text-body-medium text-on-surface-variant">
                   {LANGUAGE_LABEL[c.language]}
                   {c.language === "thai" &&
                     ". Business English was not tested, so it stays unscored."}
@@ -307,7 +307,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
               <Detail label="Their question" value={c.theirQuestion} />
               <Detail label="One action given" value={c.nextStep} />
               {c.nextStep && c.nextStepMatchesApp === false && (
-                <p className="mt-1 text-caption text-error">
+                <p className="mt-1 text-body-medium text-error">
                   Differs from the app&apos;s own pick. That disagreement is a bug to chase,
                   not a second opinion to give out.
                 </p>
@@ -327,7 +327,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
               <Detail label="Notes" value={c.notes} />
 
               {(c.trigger || c.sentAt || c.bookedAt) && (
-                <p className="mt-2 text-caption text-neutral-500">
+                <p className="mt-2 text-body-medium text-on-surface-variant">
                   {c.trigger ? TRIGGER_LABEL[c.trigger] : "Trigger not recorded"}
                   {c.sentAt
                     ? ` · sent ${stamp(c.sentAt)}${c.sentChannel ? ` on ${SENT_CHANNEL_LABEL[c.sentChannel]}` : ""}`
@@ -337,7 +337,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                 </p>
               )}
 
-              <p className="mt-2 text-caption text-neutral-500">
+              <p className="mt-2 text-body-medium text-on-surface-variant">
                 {c.outcome === "held" &&
                   (c.followUpSentAt
                     ? `Follow-up sent ${stamp(c.followUpSentAt)}. `
@@ -356,14 +356,14 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                     setEditing(c._id);
                     setError(null);
                   }}
-                  className="text-caption text-primary underline"
+                  className="text-body-medium text-primary underline"
                 >
                   Edit
                 </button>
                 <button
                   type="button"
                   onClick={() => void removeCall({ consultationId: c._id })}
-                  className="text-caption text-neutral-500 underline"
+                  className="text-body-medium text-on-surface-variant underline"
                 >
                   Remove
                 </button>
@@ -381,14 +381,14 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
             setEditing(null);
             setError(null);
           }}
-          className="mt-4 h-12 rounded-md bg-primary px-7 text-label text-on-primary transition-colors hover:bg-primary-deep"
+          className="btn-tonal mt-4 h-12 px-7 text-label-large"
         >
           Log a call
         </button>
       ) : (
-        <div className="mt-4 rounded-lg border border-neutral-300 bg-surface p-5">
-          <h3 className="text-label text-ink">{editing ? "Edit this call" : "Log a call"}</h3>
-          <p className="mt-1 text-caption text-neutral-500">
+        <div className="mt-4 rounded-large border border-outline-variant bg-surface p-5">
+          <h3 className="text-label-large text-on-surface">{editing ? "Edit this call" : "Log a call"}</h3>
+          <p className="mt-1 text-body-medium text-on-surface-variant">
             Only the first three are needed to save. The rest is the write-up and can wait.
           </p>
 
@@ -441,7 +441,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
 
           {draft.outcome === "held" && (
             <>
-              <h4 className="mt-6 text-label text-slate">What the call surfaced</h4>
+              <h4 className="mt-6 text-label-large text-on-surface-variant">What the call surfaced</h4>
               <div className="mt-3 space-y-4">
                 <Field
                   label="Their question, in their words"
@@ -485,10 +485,10 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                 </Field>
               </div>
 
-              <h4 className="mt-6 text-label text-slate">
+              <h4 className="mt-6 text-label-large text-on-surface-variant">
                 The three the app never asks for
               </h4>
-              <p className="mt-1 text-caption text-neutral-500">
+              <p className="mt-1 text-body-medium text-on-surface-variant">
                 In Scope, Offering Match and Investment Readiness. An app-native lead arrives
                 ungraded because Stage 1 collects none of them, so this is where they first
                 exist.
@@ -517,7 +517,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                 />
               </div>
 
-              <h4 className="mt-6 text-label text-slate">What was agreed</h4>
+              <h4 className="mt-6 text-label-large text-on-surface-variant">What was agreed</h4>
               <div className="mt-3 space-y-4">
                 <Field
                   label="The one action for this week"
@@ -546,8 +546,8 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
             </>
           )}
 
-          <h4 className="mt-6 text-label text-slate">The invitation</h4>
-          <p className="mt-1 text-caption text-neutral-500">
+          <h4 className="mt-6 text-label-large text-on-surface-variant">The invitation</h4>
+          <p className="mt-1 text-body-medium text-on-surface-variant">
             Typed in by hand, because the free Calendly tier has no webhooks and pushes
             nothing. What it buys is the only measurement of whether the booking rule is
             any good: the trigger records which rule fired, so changing the rule later
@@ -608,14 +608,14 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
             </Field>
           </div>
 
-          {error && <p className="mt-3 text-body text-error">{error}</p>}
+          {error && <p role="alert" className="field-support-error mt-3">{error}</p>}
 
           <div className="mt-5 flex items-center gap-4">
             <button
               type="button"
               disabled={saving}
               onClick={() => void save()}
-              className="h-12 rounded-md bg-primary px-7 text-label text-on-primary transition-colors hover:bg-primary-deep disabled:bg-neutral-300 disabled:text-neutral-500"
+              className="btn-tonal h-12 px-7 text-label-large"
             >
               {saving ? "Saving..." : editing ? "Save changes" : "Save this call"}
             </button>
@@ -625,7 +625,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                 setDraft(null);
                 setEditing(null);
               }}
-              className="text-label text-slate underline"
+              className="text-label-large text-on-surface-variant underline"
             >
               Cancel
             </button>
@@ -637,7 +637,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
 }
 
 const INPUT =
-  "mt-1 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink";
+  "field mt-1";
 
 function Field({
   label,
@@ -649,10 +649,10 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block text-label text-slate">
+    <label className="field-label">
       {label}
       {children}
-      {hint && <span className="mt-1 block text-caption font-normal text-neutral-500">{hint}</span>}
+      {hint && <span className="field-support font-normal">{hint}</span>}
     </label>
   );
 }
@@ -698,16 +698,16 @@ function Check({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex gap-3 text-label text-slate">
+    <label className="flex gap-3 text-label-large text-on-surface-variant">
       <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-1 size-4 shrink-0 accent-primary"
+        className="checkbox mt-1"
       />
       <span>
         {label}
-        {hint && <span className="mt-1 block text-caption font-normal text-neutral-500">{hint}</span>}
+        {hint && <span className="field-support font-normal">{hint}</span>}
       </span>
     </label>
   );
@@ -717,8 +717,8 @@ function Check({
 function Detail({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
   return (
-    <p className="mt-2 text-body text-ink">
-      <span className="text-caption text-neutral-500">{label}: </span>
+    <p className="mt-2 text-body-large text-on-surface">
+      <span className="text-body-medium text-on-surface-variant">{label}: </span>
       {value}
     </p>
   );

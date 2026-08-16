@@ -38,14 +38,14 @@ export default function PostCard({
 
   return (
     <article
-      className={`relative flex flex-col rounded-lg border border-neutral-300 bg-surface transition-colors hover:border-primary ${
+      className={`relative flex flex-col rounded-large border border-outline-variant bg-surface transition-colors hover:border-primary ${
         lead ? "lg:col-span-2" : ""
       }`}
     >
       <div className="flex flex-1 flex-col px-6 py-7">
-        <p className="text-caption font-semibold text-primary">{pick(topic.label)}</p>
+        <p className="text-body-medium font-semibold text-primary">{pick(topic.label)}</p>
 
-        <h2 className={`mt-3 ${lead ? "text-h3" : "text-h4"}`}>
+        <h2 className={`mt-3 ${lead ? "text-headline-small" : "text-title-large"}`}>
           {/* The whole card is not the link. A card-wide anchor swallows the
               date and the summary into one enormous accessible name, and this
               audience reads the summary to decide. The title is the link and
@@ -56,17 +56,17 @@ export default function PostCard({
           </Link>
         </h2>
 
-        <p className="mt-3 text-body text-slate">{pick(post.summary)}</p>
+        <p className="mt-3 text-body-large text-on-surface-variant">{pick(post.summary)}</p>
 
         <div className="mt-auto flex flex-wrap items-baseline justify-between gap-3 pt-7">
-          <time dateTime={post.published} className="text-caption text-neutral-500">
+          <time dateTime={post.published} className="text-body-medium text-on-surface-variant">
             {formatDate(post.published)}
           </time>
           {/* Not a second link. The title already carries the anchor and its hit
               area already covers the card, so a real link here would put two
               stops in the tab order for one destination and read the title
               twice to a screen reader. */}
-          <span aria-hidden className="flex items-center gap-2 text-label text-primary">
+          <span aria-hidden className="flex items-center gap-2 text-label-large text-primary">
             {pick(BLOG_READ)}
             <span>&rarr;</span>
           </span>

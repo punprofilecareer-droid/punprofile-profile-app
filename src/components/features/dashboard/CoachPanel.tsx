@@ -102,11 +102,11 @@ export default function CoachPanel({
   }
 
   return (
-    <div className="rounded-lg border border-neutral-300 bg-surface p-5">
+    <div className="rounded-large border border-outline-variant bg-surface p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="text-label">What the coach knows</h3>
+        <h3 className="text-label-large">What the coach knows</h3>
         <span
-          className="text-caption text-neutral-500"
+          className="text-body-medium text-on-surface-variant"
           aria-live="polite"
           // Announced rather than shown as a toast: the coach is looking at the
           // field they just changed, not at the corner of the screen.
@@ -117,7 +117,7 @@ export default function CoachPanel({
 
       {/* --- rating ------------------------------------------------------- */}
       <fieldset className="mt-4 border-0 p-0">
-        <legend className="text-caption text-slate">
+        <legend className="text-body-medium text-on-surface-variant">
           Your own read, after talking to them. Not a score, and it feeds nothing.
         </legend>
         <div className="mt-2 flex items-center gap-2">
@@ -137,14 +137,14 @@ export default function CoachPanel({
                   // a real state and must stay reachable without a second
                   // control.
                   onClick={() => commit({ leadId, coachRating: coachRating === n ? null : n })}
-                  className="rounded-sm p-0.5 transition-transform duration-100 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-eufit-deep"
+                  className="rounded-small p-0.5 transition-transform duration-100 hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-on-tertiary-container"
                 >
                   <Star filled={lit} />
                 </button>
               );
             })}
           </div>
-          <span className="text-caption text-slate">
+          <span className="text-body-medium text-on-surface-variant">
             {hoverStar
               ? RATING_MEANING[hoverStar]
               : coachRating
@@ -156,7 +156,7 @@ export default function CoachPanel({
 
       {/* --- linkedin ----------------------------------------------------- */}
       <div className="mt-5">
-        <label htmlFor="coach-linkedin" className="text-caption text-slate">
+        <label htmlFor="coach-linkedin" className="text-body-medium text-on-surface-variant">
           LinkedIn profile
         </label>
         <div className="mt-1 flex flex-wrap gap-2">
@@ -167,20 +167,20 @@ export default function CoachPanel({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="linkedin.com/in/…"
-            className="min-w-0 flex-1 rounded-md border border-neutral-300 px-3 py-2 text-body focus:border-eufit focus:outline-none"
+            className="field min-w-0 flex-1"
           />
           {linkedinUrl && (
             <a
               href={linkedinUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="self-center whitespace-nowrap text-caption text-primary underline"
+              className="self-center whitespace-nowrap text-body-medium text-primary underline"
             >
               Open
             </a>
           )}
         </div>
-        <p className="mt-1 text-caption text-neutral-500">
+        <p className="mt-1 text-body-medium text-on-surface-variant">
           Paste it however you copied it. The query string is stripped before saving, because
           LinkedIn appends parameters that identify whoever did the looking.
         </p>
@@ -188,7 +188,7 @@ export default function CoachPanel({
 
       {/* --- notes -------------------------------------------------------- */}
       <div className="mt-5">
-        <label htmlFor="coach-notes" className="text-caption text-slate">
+        <label htmlFor="coach-notes" className="text-body-medium text-on-surface-variant">
           Notes
         </label>
         <textarea
@@ -197,9 +197,9 @@ export default function CoachPanel({
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Anything the answers do not say."
-          className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2 text-body leading-relaxed focus:border-eufit focus:outline-none"
+          className="field mt-1"
         />
-        <p className="mt-1 text-caption text-neutral-500">
+        <p className="mt-1 text-body-medium text-on-surface-variant">
           One field, overwritten each time, so there is no history. Notes about a specific call go
           in the call log instead.
           {notesAt && (
@@ -212,7 +212,7 @@ export default function CoachPanel({
         </p>
       </div>
 
-      {error && <p className="mt-3 text-caption text-error">{error}</p>}
+      {error && <p role="alert" className="field-support-error mt-3">{error}</p>}
 
       <div className="mt-4 flex items-center gap-3">
         <button
@@ -225,11 +225,11 @@ export default function CoachPanel({
               notes: text.trim() || null,
             })
           }
-          className="rounded-md bg-accent px-5 py-2 text-label text-on-accent transition-colors hover:bg-accent-bright disabled:cursor-not-allowed disabled:opacity-40"
+          className="btn-filled px-5 py-2 text-label-large"
         >
           Save
         </button>
-        {dirty && <span className="text-caption text-neutral-500">Unsaved changes</span>}
+        {dirty && <span className="text-body-medium text-on-surface-variant">Unsaved changes</span>}
       </div>
     </div>
   );
@@ -245,11 +245,11 @@ function Star({ filled }: { filled: boolean }) {
       height="22"
       viewBox="0 0 24 24"
       aria-hidden="true"
-      fill={filled ? "var(--color-warning, #E8A33D)" : "none"}
-      stroke={filled ? "var(--color-warning, #E8A33D)" : "currentColor"}
+      fill={filled ? "var(--color-warning)" : "none"}
+      stroke={filled ? "var(--color-warning)" : "currentColor"}
       strokeWidth="1.6"
       strokeLinejoin="round"
-      className={filled ? "" : "text-neutral-300"}
+      className={filled ? "" : "text-outline"}
     >
       <path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8L3.5 9.7l5.9-.9z" />
     </svg>

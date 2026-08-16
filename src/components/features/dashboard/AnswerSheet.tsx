@@ -48,7 +48,7 @@ export default function AnswerSheet({
   if (Object.keys(responses).length === 0 && corrected.byKey.size === 0) {
     return (
       <Section title="Questions and answers">
-        <p className="text-body text-neutral-500">No answers yet.</p>
+        <p className="text-body-large text-on-surface-variant">No answers yet.</p>
       </Section>
     );
   }
@@ -58,7 +58,7 @@ export default function AnswerSheet({
 
   return (
     <Section title="Questions and answers">
-      <p className="mb-3 text-caption text-neutral-500">
+      <p className="mb-3 text-body-medium text-on-surface-variant">
         {sheet.answered} of {sheet.rows.length} answered.{" "}
         {sheet.instrument === "survey"
           ? "From the Lead Discovery Survey, imported. Question numbers are that form's."
@@ -66,7 +66,7 @@ export default function AnswerSheet({
         {corrected.byKey.size > 0 && (
           <>
             {" "}
-            <span className="text-primary-deep">
+            <span className="text-on-primary-container">
               {corrected.changed.length} corrected, {corrected.filled.length} filled in by you.
             </span>
           </>
@@ -87,7 +87,7 @@ export default function AnswerSheet({
 
       {columns.length > 0 && (
         <>
-          <h3 className="mt-6 text-label text-slate">Carried across from the sheet</h3>
+          <h3 className="mt-6 text-label-large text-on-surface-variant">Carried across from the sheet</h3>
           {columns.map((r) => (
             <QaRow key={r.key} leadId={leadId} row={r} />
           ))}
@@ -99,7 +99,7 @@ export default function AnswerSheet({
           {/* A stored key the instrument does not account for: a leftover from
               an older question set, or a field added since. Shown as its raw
               key, because hiding it would lose it silently. */}
-          <h3 className="mt-6 text-label text-slate">Not part of this question set</h3>
+          <h3 className="mt-6 text-label-large text-on-surface-variant">Not part of this question set</h3>
           {sheet.extras.map((r) => (
             <QaRow key={r.key} leadId={leadId} row={r} />
           ))}
@@ -135,31 +135,31 @@ function QaRow({
     : null;
 
   return (
-    <div className="border-b border-neutral-300 py-2">
+    <div className="border-b border-outline-variant py-2">
       <div className="grid gap-x-6 sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <p className="text-body text-slate">{row.question}</p>
+        <p className="text-body-large text-on-surface-variant">{row.question}</p>
         <div>
           {/* The candidate's own answer, struck through only when a correction
               replaced it. A field they never answered has nothing to strike. */}
           {row.answer === null ? (
-            <p className="text-body text-neutral-500">not answered</p>
+            <p className="text-body-large text-on-surface-variant">not answered</p>
           ) : (
-            <p className={`text-body ${correctedText ? "text-neutral-500 line-through" : "text-ink"}`}>
+            <p className={`text-body-large ${correctedText ? "text-on-surface-variant line-through" : "text-on-surface"}`}>
               {row.answer}
             </p>
           )}
 
           {correctedText && (
-            <p className="text-body text-ink">
+            <p className="text-body-large text-on-surface">
               {correctedText}
-              <span className="ml-2 rounded-full bg-mint-tint px-2 py-0.5 text-caption text-primary-deep">
+              <span className="ml-2 rounded-full bg-secondary-container px-2 py-0.5 text-body-medium text-on-primary-container">
                 yours
               </span>
             </p>
           )}
 
           {correction && (
-            <p className="mt-1 text-caption text-neutral-500">
+            <p className="mt-1 text-body-medium text-on-surface-variant">
               {correction.note}
               {correction.by ? ` — ${correction.by}` : ""}, {stamp(correction.at)}{" "}
               <button
@@ -173,7 +173,7 @@ function QaRow({
           )}
 
           {row.options && onOpen && (
-            <button type="button" onClick={onOpen} className="mt-1 text-caption text-primary underline">
+            <button type="button" onClick={onOpen} className="mt-1 text-body-medium text-primary underline">
               {open ? "Cancel" : correction ? "Correct again" : row.answer === null ? "Fill in" : "Correct"}
             </button>
           )}
@@ -205,8 +205,8 @@ function CorrectionForm({
   const options = row.options ?? [];
 
   return (
-    <div className="mt-3 rounded-md border border-neutral-300 bg-mint-wash p-4">
-      <label className="block text-label text-slate">
+    <div className="mt-3 rounded-medium border border-outline-variant bg-secondary-container p-4">
+      <label className="field-label">
         {row.multi ? "What is true, all that apply" : "What is actually true"}
         <select
           multiple={row.multi}
@@ -219,7 +219,7 @@ function CorrectionForm({
             )
           }
           size={row.multi ? Math.min(options.length, 6) : undefined}
-          className="mt-1 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink"
+          className="field mt-1"
         >
           {!row.multi && <option value="">Choose</option>}
           {options.map((o) => (
@@ -230,21 +230,21 @@ function CorrectionForm({
         </select>
       </label>
 
-      <label className="mt-3 block text-label text-slate">
+      <label className="field-label mt-3">
         Why
         <input
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="e.g. said B2 on the form, could not sustain it on the call"
-          className="mt-1 w-full rounded-sm border border-neutral-300 bg-surface px-4 py-3 text-body text-ink"
+          className="field mt-1"
         />
-        <span className="mt-1 block text-caption font-normal text-neutral-500">
+        <span className="mt-1 block text-body-medium font-normal text-on-surface-variant">
           Required. A corrected value with no reason is a second opinion with better
           formatting, and this record outlives the memory of the call.
         </span>
       </label>
 
-      {error && <p className="mt-2 text-body text-error">{error}</p>}
+      {error && <p role="alert" className="field-support-error mt-2">{error}</p>}
 
       <button
         type="button"
@@ -265,7 +265,7 @@ function CorrectionForm({
             setSaving(false);
           }
         }}
-        className="mt-4 h-11 rounded-md bg-primary px-6 text-label text-on-primary transition-colors hover:bg-primary-deep disabled:bg-neutral-300 disabled:text-neutral-500"
+        className="btn-tonal mt-4 h-12 px-6 text-label-large"
       >
         {saving ? "Saving..." : "Record this"}
       </button>
@@ -276,7 +276,7 @@ function CorrectionForm({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-h4">{title}</h2>
+      <h2 className="text-title-large">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
   );
