@@ -18,21 +18,19 @@ import {
  * already resolved in the layout, and a footer that ships client JS to render
  * eleven links is paying for nothing.
  *
- * **Why `primary-deep` and not white.** `design.md` says two things about this
- * element that do not agree: one passage puts the footer on plain `surface`
- * with ink text so navigation chrome never competes with content, and another
- * says the header, footer, sign-in screen and dashboard all stay `primary`.
- * This follows the second, one stop down its own ramp, and the reason is
- * measured rather than aesthetic. On `primary` (#068376) white body text holds
- * 4.71:1, which passes AA and leaves nothing for a second tier, so a muted
- * heading or a caption would have to fail. On `primary-deep` (#04524a) white
- * holds 8.97:1 and `accent-tint` holds 5.37:1, which buys a real eyebrow colour
- * at AA. The competitor footer this is modelled on gets its structure from
- * exactly that headroom, and the light version cannot have it.
+ * **Why a dark footer.** It is the only dark surface in the app, which is the
+ * point: it ends the page rather than trailing off, and it does so without
+ * touching the dark mode that does not exist.
  *
- * It is also the only dark surface in the app, which is the point: it ends the
- * page rather than trailing off, and it does so without touching the dark mode
- * that is still deferred.
+ * The reason was always headroom rather than taste. A footer needs two tiers of
+ * text, a heading and a quieter caption, and a ground that only just clears AA
+ * for the first tier leaves nothing for the second.
+ *
+ * Under M3 that is what `inverse-surface` is for, and it is what this now uses.
+ * `inverse-on-surface` on it holds 11.65:1, and `inverse-primary` holds 7.72:1,
+ * so the eyebrow colour clears AAA rather than scraping AA. The old note here
+ * reasoned the same way about `primary-deep` (#04524a) in the teal palette;
+ * the reasoning outlived the colours, 16/08/2026.
  *
  * **Not rendered during an assessment.** `NavLockGate` in the layout removes
  * it, on the same signal and for the same reason as the menu. An earlier note
@@ -46,7 +44,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
   const th = locale === "th";
 
   return (
-    <footer className="mt-auto bg-primary-deep px-6 py-14 text-on-primary">
+    <footer className="mt-auto bg-inverse-surface px-6 py-14 text-inverse-on-surface">
       <div className="mx-auto w-full max-w-5xl">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_2fr]">
           {/* The left block. Where the newsletter capture would be on the page
@@ -54,21 +52,21 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
               See the note in `footer.ts`. */}
           <div>
             <Image
-              src="/punprofile-wordmark-reversed.png"
+              src="/punprofile-logo-reversed.svg"
               alt={t("nav.brand", locale)}
-              width={594}
-              height={96}
-              className="h-7 w-auto"
+              width={2421}
+              height={657}
+              className="h-11 w-auto"
             />
-            <p className={`mt-8 text-accent-tint ${EYEBROW(locale)}`}>
+            <p className={`mt-8 text-inverse-primary ${EYEBROW(locale)}`}>
               {pick(FOLLOW_EYEBROW, locale)}
             </p>
-            <p className="mt-3 max-w-sm text-body">{pick(FOLLOW_BODY, locale)}</p>
+            <p className="mt-3 max-w-sm text-body-large">{pick(FOLLOW_BODY, locale)}</p>
             <a
               href={FACEBOOK_PAGE}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 inline-flex min-h-11 items-center gap-2.5 rounded-full border border-on-primary/40 px-5 text-body transition-colors hover:bg-on-primary/10"
+              className="mt-5 inline-flex min-h-12 items-center gap-2.5 rounded-full border border-on-primary/40 px-5 text-body-large transition-colors hover:bg-on-primary/10"
             >
               {/* Facebook's mark, drawn rather than fetched: one path, no
                   network request, and it inherits the text colour so it can
@@ -84,7 +82,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
           <nav className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {FOOTER_COLUMNS.map((col) => (
               <div key={col.heading.en}>
-                <h2 className={`text-accent-tint ${EYEBROW(locale)}`}>
+                <h2 className={`text-inverse-primary ${EYEBROW(locale)}`}>
                   {pick(col.heading, locale)}
                 </h2>
                 <ul className="mt-4 flex flex-col gap-3">
@@ -100,14 +98,14 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
                             href={l.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-body text-on-primary/90 underline-offset-4 transition-colors hover:text-on-primary hover:underline"
+                            className="text-body-large text-on-primary/90 underline-offset-4 transition-colors hover:text-on-primary hover:underline"
                           >
                             {pick(l.label, locale)}
                           </a>
                         ) : (
                           <Link
                             href={localePath(l.href, locale)}
-                            className="text-body text-on-primary/90 underline-offset-4 transition-colors hover:text-on-primary hover:underline"
+                            className="text-body-large text-on-primary/90 underline-offset-4 transition-colors hover:text-on-primary hover:underline"
                           >
                             {pick(l.label, locale)}
                           </Link>
@@ -124,11 +122,11 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
 
         {/* What PunProfile is not. Long on purpose: every clause is already
             said somewhere the reader can check, so none of it is a surprise. */}
-        <p className="mt-8 max-w-4xl text-caption leading-relaxed text-on-primary/75">
+        <p className="mt-8 max-w-4xl text-body-medium leading-relaxed text-on-primary/75">
           {pick(DISCLAIMER, locale)}
         </p>
 
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 text-caption text-on-primary/75">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 text-body-medium text-on-primary/75">
           {/* The exact wording Paul specified on 14/08/2026, kept in the copy
               bank rather than retyped here. It is the same string in both
               languages by his decision: a Thai transliteration of a legal
