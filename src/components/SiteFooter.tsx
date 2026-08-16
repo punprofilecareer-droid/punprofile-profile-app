@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { pick, t } from "@/lib/locale";
+import { localePath, pick, t } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 import {
   DISCLAIMER,
@@ -106,7 +106,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
                           </a>
                         ) : (
                           <Link
-                            href={l.href}
+                            href={localePath(l.href, locale)}
                             className="text-body text-on-primary/90 underline-offset-4 transition-colors hover:text-on-primary hover:underline"
                           >
                             {pick(l.label, locale)}
@@ -135,7 +135,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
               formula reads as a mistake rather than as a courtesy. */}
           <span>{t("footer.brand", locale)}</span>
           <Link
-            href="/privacy"
+            href={localePath("/privacy", locale)}
             className="underline underline-offset-4 transition-colors hover:text-on-primary"
           >
             {t("consent.privacyLink", locale)}

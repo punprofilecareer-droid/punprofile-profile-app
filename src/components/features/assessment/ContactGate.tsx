@@ -64,7 +64,7 @@ export default function ContactGate({
     marketingConsent?: boolean;
   }) => Promise<void>;
 }) {
-  const { t, pick } = useCopy();
+  const { t, pick, path } = useCopy();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -217,7 +217,7 @@ export default function ContactGate({
 
       <p className="mt-6 text-caption text-neutral-500">
         {pick(CONSENT_COPY["consent.purpose"])}{" "}
-        <Link href="/privacy" className="text-eufit-deep underline">
+        <Link href={path("/privacy")} className="text-eufit-deep underline">
           {pick(CONSENT_COPY["consent.privacyLink"])}
         </Link>
       </p>

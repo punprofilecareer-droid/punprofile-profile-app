@@ -35,35 +35,29 @@
 
 import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
+import {
+  CONTACT_ALREADY_IN_QUEUE,
+  CONTACT_CHANNELS,
+  CONTACT_HEADING,
+  CONTACT_INTRO,
+} from "@/lib/content/contact";
 
 export default function ContactPage() {
-  const { locale } = useCopy();
-  const th = locale === "th";
+  // The words moved into `src/lib/content/contact.ts` on 16/08/2026, when the
+  // page's title and meta description became a third and fourth reader of them.
+  const { pick } = useCopy();
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
-      <h1 className="text-h2">{th ? "ติดต่อเรา" : "Contact"}</h1>
-      <p className="mt-4 text-body-lg text-slate">
-        {th
-          ? "มีคำถามเรื่องบริการ เรื่องผลประเมิน หรือเรื่องข้อมูลของคุณ ทักมาได้เลย เราอ่านทุกข้อความ"
-          : "Questions about the services, about your result, or about your own data. Write to us, we read everything."}
-      </p>
+      <h1 className="text-h2">{pick(CONTACT_HEADING)}</h1>
+      <p className="mt-4 text-body-lg text-slate">{pick(CONTACT_INTRO)}</p>
 
       <CallToAction page="/contact" className="mt-8" />
 
-      {/* Which channel suits what, in one line rather than in two cards. The
-          distinction is real and worth keeping: LINE is faster, email holds an
-          attachment. */}
-      <p className="mt-5 text-caption text-neutral-500">
-        {th
-          ? "LINE มักได้คำตอบเร็วกว่า ส่วนอีเมลเหมาะกับคำถามที่มีรายละเอียดเยอะ หรือถ้าคุณอยากแนบ CV มาด้วย"
-          : "LINE is usually the faster reply. Email is better for anything detailed, or if you want to attach a CV."}
-      </p>
+      <p className="mt-5 text-caption text-neutral-500">{pick(CONTACT_CHANNELS)}</p>
 
       <p className="mt-10 text-caption text-neutral-500">
-        {th
-          ? "ถ้าคุณทำแบบประเมินและฝากช่องทางติดต่อไว้แล้ว คุณอยู่ในคิวเรียบร้อย ไม่ต้องส่งข้อความมาซ้ำ"
-          : "If you have already taken the check and left your details, you are in the queue. No need to write as well."}
+        {pick(CONTACT_ALREADY_IN_QUEUE)}
       </p>
     </div>
   );

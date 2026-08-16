@@ -1,3 +1,26 @@
+import type { Metadata } from "next";
+import { ALL_COPY } from "@/lib/locale";
+import { pageMetadata } from "@/lib/seo";
+
+/**
+ * The assessment's own title and description. Added 16/08/2026.
+ *
+ * Deliberately open to crawlers, which `robots.ts` says out loud: this is the
+ * product, it is what every Facebook post links to, and it is the only page on
+ * the site somebody might search for by its name. The landing page sells it and
+ * this is it, so the two are close by design and separated by the title: the
+ * landing page is the pitch, `EU Fit Check` is the thing.
+ *
+ * `EU Fit Check` is `fixed: true` in `termbase.yml`, so it is written here the
+ * way it is written everywhere, and it comes out of the copy bank rather than
+ * being typed, which is what makes that true rather than merely intended.
+ */
+export const metadata: Metadata = pageMetadata({
+  path: "/assess",
+  title: ALL_COPY["nav.assess"],
+  description: ALL_COPY["landing.subhead"],
+});
+
 /**
  * The lavender field the assessment sits on. Added 14/08/2026 with the Liquid
  * Glass pass, and it is not decoration: glass works by bending what is behind

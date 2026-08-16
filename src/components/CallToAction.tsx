@@ -60,7 +60,7 @@ function LineMark() {
   );
 }
 
-function Primary({ action, label }: { action: Action; label: string }) {
+function Primary({ action, label, href }: { action: Action; label: string; href: string }) {
   const line = action.brand === "line";
   const body = (
     <>
@@ -75,14 +75,14 @@ function Primary({ action, label }: { action: Action; label: string }) {
   // the client router.
   return action.external ? (
     <a
-      href={action.href}
+      href={href}
       className={line ? LINE_CLASS : PRIMARY_CLASS}
       {...(line ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       {body}
     </a>
   ) : (
-    <Link href={action.href} className={PRIMARY_CLASS}>
+    <Link href={href} className={PRIMARY_CLASS}>
       {body}
     </Link>
   );
@@ -110,7 +110,7 @@ export default function CallToAction({
    */
   show?: "both" | "primary" | "secondary";
 }) {
-  const { pick } = useCopy();
+  const { pick, path } = useCopy();
   const actions = PAGE_ACTIONS[page];
   // A page not in the table renders nothing rather than guessing. The check
   // makes this impossible to ship, so it only ever happens mid-edit.
@@ -130,14 +130,19 @@ export default function CallToAction({
       {channels.length > 0 && (
         <div className={`flex flex-wrap gap-3 ${align === "center" ? "justify-center" : ""}`}>
           {channels.map((action) => (
-            <Primary key={action.href} action={action} label={pick(action.label)} />
+            <Primary
+              key={action.href}
+              action={action}
+              href={path(action.href)}
+              label={pick(action.label)}
+            />
           ))}
         </div>
       )}
 
       {secondary && (
         <Link
-          href={secondary.href}
+          href={path(secondary.href)}
           className="text-body text-primary underline underline-offset-2"
         >
           {pick(secondary.label)}

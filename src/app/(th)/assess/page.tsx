@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
 import { STAGE1 } from "@/lib/content/questions";
 import QuestionCard from "@/components/features/assessment/QuestionCard";
 import { BLOCKS, blockFor } from "@/lib/content/blocks";
@@ -91,7 +91,7 @@ const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL;
 const ENGLISH_SWITCH_AT: readonly string[] = ["B1", "B2", "C1", "C2"];
 
 export default function AssessPage() {
-  const { t, pick, locale, setLocale } = useCopy();
+  const { t, pick, path, locale, setLocale } = useCopy();
   const [leadId, setLeadId] = useState<Id<"leads"> | null>(null);
   const [local, setLocal] = useState<Record<string, Answer>>({});
   const [step, setStep] = useState(0); // 0..STAGE1.length-1 = questions, then the contact gate, then the teaser
@@ -615,7 +615,7 @@ export default function AssessPage() {
               stat block is the one he wants loud. `mt-auto` keeps the button on
               the card's floor so it lines up with the card beside it. */}
           <Link
-            href={weakest ? `/services?focus=${weakest}` : "/services"}
+            href={path(weakest ? `/services?focus=${weakest}` : "/services")}
             className="mt-5 inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-primary px-7 py-4 text-body-lg font-semibold text-on-primary transition-colors hover:bg-primary-deep lg:mt-auto lg:self-start"
           >
             {t("services.cta.button")}

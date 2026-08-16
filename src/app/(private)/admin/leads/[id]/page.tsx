@@ -9,7 +9,7 @@
 import { use } from "react";
 import AdminGate from "@/components/AdminGate";
 import LeadDetail from "@/components/features/dashboard/LeadDetail";
-import type { Id } from "../../../../../convex/_generated/dataModel";
+import type { Id } from "../../../../../../convex/_generated/dataModel";
 
 export default function LeadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

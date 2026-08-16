@@ -28,7 +28,8 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { LOCALES, type Locale } from "@/lib/locale";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { LOCALES, localePath, stripLocale, type Locale } from "@/lib/locale";
 import { useCopy } from "./LocaleProvider";
 
 /**
@@ -108,6 +109,41 @@ export default function LocaleToggle() {
   const { locale, setLocale, t } = useCopy();
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
+
+  /**
+   * Switching language now moves you to the other language's URL, and that is
+   * the change the `/en` routing made necessary on 16/08/2026.
+   *
+   * Before, this only wrote a cookie and re-rendered in place, because both
+   * languages lived at one URL. They no longer do, so setting the cookie alone
+   * would leave an English reader on a Thai URL rendering English, which is the
+   * exact ambiguity the routing was introduced to remove: the page would be
+   * unshareable and uncitable in the language it was being read in.
+   *
+   * The cookie is still written. It is what sends a returning visitor to the
+   * right tree when they arrive on a bare link with no prefix.
+   *
+   * `push`, not `replace`: switching language is a thing a person did, and the
+   * back button should undo it. The query string is carried over because
+   * `/services?focus=employability` is a real link and dropping its parameter
+   * would land the reader on a page that no longer points at their own chart.
+   *
+   * `/admin` and `/login` are outside both trees, so `localePath` leaves their
+   * paths alone and the toggle there behaves exactly as it always did: the
+   * cookie changes and nothing navigates.
+   */
+  const choose = (next: Locale) => {
+    setLocale(next);
+    setOpen(false);
+
+    const query = params.toString();
+    const target = localePath(stripLocale(pathname), next);
+    const stays = target === pathname;
+    if (!stays) router.push(query ? `${target}?${query}` : target);
+  };
 
   // Close on an outside tap or on Escape. Both, because a phone never sends
   // Escape and a keyboard user should not have to aim at the background.
@@ -159,10 +195,7 @@ export default function LocaleToggle() {
                 type="button"
                 role="menuitemradio"
                 aria-checked={locale === l}
-                onClick={() => {
-                  setLocale(l);
-                  setOpen(false);
-                }}
+                onClick={() => choose(l)}
                 className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-body transition-colors hover:bg-black/5 ${
                   locale === l ? "text-ink" : "text-slate"
                 }`}

@@ -10,7 +10,7 @@
  */
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { DEFAULT_LOCALE, LOCALE_COOKIE, t } from "@/lib/locale";
+import { DEFAULT_LOCALE, LOCALE_COOKIE, localePath, t } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 import type { Copy } from "@/lib/content/copy";
 import type { AnyCopyKey } from "@/lib/locale";
@@ -23,6 +23,17 @@ interface LocaleContextValue {
   t: (key: AnyCopyKey, vars?: Record<string, string | number>) => string;
   /** Resolve any {en, th} pair, for question and option copy. */
   pick: (copy: Copy) => string;
+  /**
+   * A link, in this reader's language tree. Added 16/08/2026 with the `/en`
+   * routing.
+   *
+   * Every link table in the app writes its Thai path and every component that
+   * renders one passes it through here, so an English reader who taps FAQ stays
+   * in English. Sitting on the same context as `t` and `pick` is what makes that
+   * hard to forget: a component that needs the language for its words already
+   * has this in the same destructure.
+   */
+  path: (href: string) => string;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -51,6 +62,7 @@ export default function LocaleProvider({
       setLocale,
       t: (key, vars) => t(key, locale, vars),
       pick: (copy) => pick(copy, locale),
+      path: (href) => localePath(href, locale),
     }),
     [locale, setLocale],
   );
@@ -68,6 +80,7 @@ export function useCopy(): LocaleContextValue {
       setLocale: () => {},
       t: (key, vars) => t(key, DEFAULT_LOCALE, vars),
       pick: (copy) => pick(copy, DEFAULT_LOCALE),
+      path: (href) => localePath(href, DEFAULT_LOCALE),
     };
   }
   return ctx;

@@ -23,7 +23,7 @@
 
 import Image from "next/image";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { useCopy } from "@/components/LocaleProvider";
 import { EYEBROW } from "@/lib/content/footer";
 import CallToAction from "@/components/CallToAction";

@@ -19,7 +19,7 @@ import CallToAction from "@/components/CallToAction";
 import { FAQ, FAQ_CLOSE, FAQ_HEADING, FAQ_INTRO } from "@/lib/content/faq";
 
 export default function FaqPage() {
-  const { pick } = useCopy();
+  const { pick, path } = useCopy();
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-16">
@@ -52,7 +52,7 @@ export default function FaqPage() {
               ))}
               {item.link && (
                 <Link
-                  href={item.link.href}
+                  href={path(item.link.href)}
                   className="text-body text-primary underline underline-offset-2"
                 >
                   {pick(item.link.label)}

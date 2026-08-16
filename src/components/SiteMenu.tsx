@@ -57,7 +57,7 @@ import { getNavLocked, getNavLockedServer, subscribeNavLock } from "@/lib/navLoc
 const NEVER_CHANGES = () => () => {};
 
 export default function SiteMenu() {
-  const { t } = useCopy();
+  const { t, path } = useCopy();
   const pathname = usePathname();
 
   /**
@@ -248,11 +248,16 @@ export default function SiteMenu() {
 
               <nav className="flex flex-col gap-1">
                 {NAV.map((item) => {
-                  const here = pathname === item.href;
+                  // `path()` first, then compare. `pathname` is the real URL, so
+                  // on the English tree it is `/en/faq` and the table's `/faq`
+                  // would never match, leaving the menu with nothing marked as
+                  // the current page.
+                  const href = path(item.href);
+                  const here = pathname === href;
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      href={href}
                       // Marks the page you are on for a screen reader, the only
                       // cue the visual highlight below has an equivalent for.
                       aria-current={here ? "page" : undefined}

@@ -15,6 +15,7 @@
 import Link from "next/link";
 import { useCopy } from "@/components/LocaleProvider";
 import {
+  PRIVACY_HEADING,
   PRIVACY_INTRO,
   PRIVACY_LAST_UPDATED,
   PRIVACY_REVIEWED,
@@ -22,7 +23,7 @@ import {
 } from "@/lib/content/privacy";
 
 export default function PrivacyPage() {
-  const { locale, pick } = useCopy();
+  const { locale, pick, path } = useCopy();
   const th = locale === "th";
 
   return (
@@ -35,7 +36,7 @@ export default function PrivacyPage() {
         </p>
       )}
 
-      <h1 className="text-h2">{th ? "นโยบายความเป็นส่วนตัว" : "Privacy Policy"}</h1>
+      <h1 className="text-h2">{pick(PRIVACY_HEADING)}</h1>
       <p className="mt-2 text-caption text-neutral-500">
         {th ? "ปรับปรุงล่าสุด" : "Last updated"} {PRIVACY_LAST_UPDATED}
       </p>
@@ -67,7 +68,7 @@ export default function PrivacyPage() {
       ))}
 
       <p className="mt-12">
-        <Link href="/" className="text-caption text-primary underline">
+        <Link href={path("/")} className="text-caption text-primary underline">
           {th ? "กลับหน้าแรก" : "Back to the start"}
         </Link>
       </p>
