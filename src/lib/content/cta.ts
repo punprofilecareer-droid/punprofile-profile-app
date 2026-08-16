@@ -239,6 +239,18 @@ export const PAGE_ACTIONS: Record<string, PageActions> = {
     because:
       "They know what the three offerings are and what is left is the price, which is settled in conversation. The secondary goes back to the check for anyone who arrived here cold.",
   },
+  "/blog": {
+    primary: "assess",
+    secondary: "coaching",
+    because:
+      "A blog reader arrived from search or a shared link and owes us nothing. The check is the cheapest thing we can ask for and the only one that hands something back the same minute, which is the landing page's reasoning and applies here for the same reason.",
+  },
+  "/blog/post": {
+    primary: "assess",
+    secondary: "services",
+    because:
+      "Someone who read a whole article is convinced the writing is worth their time, not yet that they need a coach. The check is still the right ask; the secondary goes to the services page for the reader who has already made that jump.",
+  },
   "/faq": {
     primary: "assess",
     secondary: "contact",
