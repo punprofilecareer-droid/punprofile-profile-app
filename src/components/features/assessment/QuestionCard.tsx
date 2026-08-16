@@ -160,9 +160,9 @@ export default function QuestionCard({
           lavender field, content with no surface under it floated with nothing
           holding it together, and the option rows in particular read as four
           unrelated boxes rather than one set to choose from. */}
-      <div className="material rounded-lg px-5 py-6">
+      <div className="card-outlined rounded-large px-5 py-6">
         <div className="mb-1 flex min-h-6 items-center justify-between">
-          <p className="text-caption text-neutral-500">
+          <p className="text-body-medium text-on-surface-variant">
             {t("assess.progress", { step, total })}
           </p>
           {/* Quiet on purpose: revising an answer is allowed (PRD § 11) but it
@@ -173,7 +173,7 @@ export default function QuestionCard({
             <button
               type="button"
               onClick={onBack}
-              className="-mr-2 flex items-center gap-1 rounded-sm px-2 py-1 text-caption text-slate transition-colors hover:text-eufit-deep"
+              className="-mr-2 flex items-center gap-1 rounded-small px-2 py-1 text-body-medium text-on-surface-variant transition-colors hover:text-on-tertiary-container"
             >
               <span aria-hidden>&larr;</span>
               {t("assess.back")}
@@ -181,7 +181,7 @@ export default function QuestionCard({
           )}
         </div>
         <div
-          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300"
+          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-surface-container-highest"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={total}
@@ -189,11 +189,11 @@ export default function QuestionCard({
         >
           {/* Lavender, not Terracotta: progress is feedback, not the action. */}
           <div
-            className="h-full rounded-full bg-eufit transition-all"
+            className="h-full rounded-full bg-tertiary transition-all"
             style={{ width: `${(step / total) * 100}%` }}
           />
         </div>
-        <h2 id={`q-${step}`} className="mb-4 text-h4">
+        <h2 id={`q-${step}`} className="mb-4 text-title-large">
           {prompt}
         </h2>
         <div
@@ -208,24 +208,15 @@ export default function QuestionCard({
                 key={o.value}
                 onClick={() => handleTap(o.value)}
                 aria-pressed={on}
-                className={`flex min-h-12 items-center justify-between gap-3 rounded-md border px-4 py-3 text-left text-body transition-colors ${
-                  on
-                    ? "border-eufit-deep bg-eufit-deep text-on-eufit"
-                    : "border-neutral-300 bg-surface hover:border-eufit hover:bg-lavender-wash"
-                }`}
+                className="tile"
               >
                 <span>{o.label}</span>
                 {/* The ring is the affordance. Without it a row is a box with
                     text in it, and nothing on the screen says these are
                     choices rather than headings until one is already tapped,
                     which is one tap too late. */}
-                <span
-                  aria-hidden
-                  className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                    on ? "border-on-eufit" : "border-neutral-300"
-                  }`}
-                >
-                  {on && <span className="block size-2.5 rounded-full bg-on-eufit" />}
+                <span aria-hidden className="tile-mark">
+                  {on && <span />}
                 </span>
               </button>
             );
@@ -252,7 +243,7 @@ export default function QuestionCard({
           <button
             onClick={onContinue}
             disabled={chosen.length === 0}
-            className="min-h-14 w-full rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+            className="min-h-14 w-full btn-filled px-7 py-4 text-body-large font-semibold"
           >
             <span className="flex items-center justify-center gap-2">
               {t("assess.continue")}

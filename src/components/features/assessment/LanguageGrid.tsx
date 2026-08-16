@@ -117,20 +117,20 @@ export default function LanguageGrid({
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-8">
-      <div className="material rounded-lg px-5 py-6">
+      <div className="card-outlined rounded-large px-5 py-6">
         {/* The same header a QuestionCard shows, because since 14/08/2026 this
             IS one of the questions rather than a bonus round after the result.
             A step in a sequence that hides the counter reads as an
             interruption. */}
         <div className="mb-1 flex min-h-6 items-center justify-between">
-          <p className="text-caption text-neutral-500">
+          <p className="text-body-medium text-on-surface-variant">
             {t("assess.progress", { step, total })}
           </p>
           {onBack && (
             <button
               type="button"
               onClick={onBack}
-              className="-mr-2 flex items-center gap-1 rounded-sm px-2 py-1 text-caption text-slate transition-colors hover:text-eufit-deep"
+              className="-mr-2 flex items-center gap-1 rounded-small px-2 py-1 text-body-medium text-on-surface-variant transition-colors hover:text-on-tertiary-container"
             >
               <span aria-hidden>&larr;</span>
               {t("assess.back")}
@@ -138,19 +138,19 @@ export default function LanguageGrid({
           )}
         </div>
         <div
-          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-neutral-300"
+          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-surface-container-highest"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={total}
           aria-valuenow={step}
         >
           <div
-            className="h-full rounded-full bg-eufit transition-all"
+            className="h-full rounded-full bg-tertiary transition-all"
             style={{ width: `${(step / total) * 100}%` }}
           />
         </div>
-        <h2 className="text-h4">{t("lang.heading")}</h2>
-        <p className="mt-2 text-body text-slate">{t("lang.body")}</p>
+        <h2 className="text-title-large">{t("lang.heading")}</h2>
+        <p className="mt-2 text-body-large text-on-surface-variant">{t("lang.body")}</p>
 
         <div className="mt-5 flex flex-col gap-2">
           {EUROPEAN_LANGUAGES.map((lang) => {
@@ -161,26 +161,18 @@ export default function LanguageGrid({
                   type="button"
                   onClick={() => toggle(lang)}
                   aria-pressed={on}
-                  className={`flex min-h-12 w-full items-center justify-between gap-3 rounded-md border px-4 py-3 text-left text-body transition-colors ${
-                    on
-                      ? "border-eufit-deep bg-eufit-deep text-on-eufit"
-                      : "border-neutral-300 bg-surface hover:border-eufit hover:bg-lavender-wash"
-                  }`}
+                  className="tile"
                 >
                   <span>{label(lang)}</span>
                   <span
-                    aria-hidden
-                    className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                      on ? "border-on-eufit" : "border-neutral-300"
-                    }`}
-                  >
-                    {on && <span className="block size-2.5 rounded-full bg-on-eufit" />}
+                    aria-hidden className="tile-mark">
+                    {on && <span />}
                   </span>
                 </button>
 
                 {on && (
                   <div
-                    className="mt-2 mb-1 flex gap-1.5 pl-1"
+                    className="mt-2 mb-1 flex pl-1"
                     role="group"
                     aria-label={`${label(lang)} ${t("lang.levelLabel")}`}
                   >
@@ -190,11 +182,7 @@ export default function LanguageGrid({
                         type="button"
                         onClick={() => setLevels((prev) => ({ ...prev, [lang]: lv }))}
                         aria-pressed={levels[lang] === lv}
-                        className={`min-h-11 flex-1 rounded-sm border text-caption transition-colors ${
-                          levels[lang] === lv
-                            ? "border-eufit bg-eufit text-on-eufit"
-                            : "border-neutral-300 bg-surface text-slate hover:border-eufit"
-                        }`}
+                        className="segment"
                       >
                         {lv}
                       </button>
@@ -206,7 +194,7 @@ export default function LanguageGrid({
           })}
         </div>
 
-        <p className="mt-4 text-caption text-neutral-500">{t("lang.scale")}</p>
+        <p className="mt-4 text-body-medium text-on-surface-variant">{t("lang.scale")}</p>
       </div>
 
       <ActionBarSpacer />
@@ -216,7 +204,7 @@ export default function LanguageGrid({
             type="button"
             onClick={skip}
             disabled={busy}
-            className="min-h-14 rounded-md border border-neutral-300 bg-surface px-5 text-body text-slate transition-colors hover:bg-neutral-100"
+            className="btn-outlined min-h-14 px-5 text-body-large hover:bg-surface-container"
           >
             {t("lang.skip")}
           </button>
@@ -224,7 +212,7 @@ export default function LanguageGrid({
             type="button"
             onClick={submit}
             disabled={busy || Object.keys(levels).length === 0}
-            className="min-h-14 flex-1 rounded-md bg-accent px-7 py-4 text-body-lg font-semibold text-on-accent transition-colors hover:bg-accent-bright disabled:bg-neutral-300 disabled:text-neutral-500"
+            className="min-h-14 flex-1 btn-filled px-7 py-4 text-body-large font-semibold"
           >
             <span className="flex items-center justify-center gap-2">
               {busy ? t("gate.working") : t("lang.submit")}
