@@ -11,7 +11,7 @@
  */
 
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ActionBar, { ActionBarSpacer } from "./ActionBar";
 import { EXCLUSIVE_VALUES } from "@/lib/content/questions";
 import { useCopy } from "@/components/LocaleProvider";
@@ -41,31 +41,42 @@ function useScrollToTop() {
 }
 
 /**
- * The block's photograph, when one has been sourced.
+ * The block's photograph: half the screen on desktop, absent on phones.
  *
- * A sibling of the animated card, not a child, and keyed on the block rather
- * than the question. Both follow from the same decision: the image marks a
- * section, so it must sit still while the questions inside that section change
- * and only move when the section does.
+ * **Was a band across the top and that did not work.** Paul, 16/08/2026: "they
+ * are all not great as could not see anything, the one with Berlin the word
+ * Berlin is cut in half." He is right, and the reason is arithmetic. A 224px
+ * strip of a 2000x1333 photograph is eleven per cent of the frame, so whatever
+ * the photograph was of, the strip was of something else.
  *
- * **The question never waits for it.** No `priority`, no blocking placeholder,
- * and a reserved box so nothing reflows when it arrives. This audience opens the
- * assessment on mid-range Android over mobile data, and a photograph that
- * delayed the first question would cost more than it buys.
+ * A half-screen panel shows the picture nearly whole, which is what the
+ * reference does and what makes these images worth sourcing at all.
+ *
+ * **Nothing on a phone.** There is no honest way to give a photograph real room
+ * on a 390px screen without pushing the question below the fold, and the
+ * question is the product.
+ *
+ * `sizes` declares a 1px candidate below the breakpoint. Chrome usually skips
+ * fetching an image inside a `display: none` subtree, but that is engine
+ * behaviour rather than a guarantee, so the `sizes` hint is the part that can be
+ * relied on: if a browser does fetch it, it fetches the smallest variant instead
+ * of a half-screen one. That matters because this audience is mostly on
+ * mid-range Android over mobile data.
+ *
+ * **Sticky, at viewport height, not content height.** The first version stretched
+ * to match the question column, so a question with twelve options made the panel
+ * taller and `object-cover` re-framed the photograph mid-block. The image is
+ * supposed to mark a section, which means it must sit still while the questions
+ * inside that section change, so it holds the viewport and the questions scroll
+ * past it. 72px is the sticky header above.
+ *
+ * The question never waits for it either way: no `priority`, no blocking
+ * placeholder, and the panel has its own width so nothing reflows on arrival.
  */
 function BlockImage({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative h-36 w-full overflow-hidden bg-neutral-100 sm:h-48 md:h-56">
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes="100vw"
-        className="object-cover"
-        // Portrait sources on a landscape band: bias the crop upward, because a
-        // centred crop of a standing figure lands on their torso.
-        style={{ objectPosition: "50% 35%" }}
-      />
+    <div className="relative hidden shrink-0 self-start bg-neutral-100 md:sticky md:top-[72px] md:block md:h-[calc(100dvh-72px)] md:w-1/2">
+      <Image src={src} alt={alt} fill sizes="(max-width: 767px) 1px, 50vw" className="object-cover object-center" />
     </div>
   );
 }
@@ -124,14 +135,31 @@ export default function QuestionCard({
     onSelect(isChosen(value) ? kept.filter((v) => v !== value) : [...kept, value]);
   }
 
+  /**
+   * Did they ARRIVE with an answer, as opposed to having just tapped one.
+   *
+   * Captured once per question, because the reactive version was a bug the
+   * question transition made visible rather than caused. On a "one" question a
+   * tap sets `selected` and commits in the same breath, so a reactive check
+   * turned the bar on for the 460ms the card spends holding and leaving: the
+   * candidate saw a terracotta Continue button appear on a screen that was
+   * already on its way out. Before the hold existed it appeared and vanished
+   * inside one frame, which is why nobody had seen it.
+   *
+   * The bar's own comment below says it is for someone who came back to look.
+   * This makes the code say that too.
+   */
+  const [arrivedAnswered] = useState(() => select === "many" || chosen.length > 0);
+
   return (
-    <>
+    <div className="flex flex-1 flex-col md:flex-row">
       {image && <BlockImage src={image.src} alt={image.alt} />}
-      <div
-        className={`mx-auto w-full max-w-md px-6 py-8 ${
-          phase === "leaving" ? "q-leaving" : "q-entering"
-        }`}
-      >
+      <div className="flex flex-1 items-center justify-center">
+        <div
+          className={`w-full max-w-md px-6 py-8 ${
+            phase === "leaving" ? "q-leaving" : "q-entering"
+          }`}
+        >
         {/* A panel, not a bare column. From the 14/08/2026 design pass: on the
             lavender field, content with no surface under it floated with nothing
             holding it together, and the option rows in particular read as four
@@ -213,7 +241,7 @@ export default function QuestionCard({
             there, which means the candidate came back to look: without it their
             only way forward would be to re-tap an option they had not come to
             change. */}
-        {(select === "many" || chosen.length > 0) && (
+        {(select === "many" || arrivedAnswered) && (
           <>
             <ActionBarSpacer />
             <ActionBar>
@@ -230,7 +258,8 @@ export default function QuestionCard({
             </ActionBar>
           </>
         )}
+        </div>
       </div>
-    </>
+    </div>
   );
 }

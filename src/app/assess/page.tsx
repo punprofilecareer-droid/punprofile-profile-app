@@ -297,7 +297,22 @@ export default function AssessPage() {
     const commit = (value: Answer) => {
       void submitAnswer({ leadId, questionKey: q.key, value });
       const css = getComputedStyle(document.documentElement);
-      const ms = (name: string) => parseFloat(css.getPropertyValue(name)) || 0;
+      /**
+       * Read a CSS time as milliseconds, honouring the unit.
+       *
+       * `parseFloat` alone was a bug and a well-hidden one. The stylesheet says
+       * `260ms`; the production minifier rewrites that to the shorter `.26s`,
+       * so `parseFloat` returned 0.26 and the hold became a quarter of a
+       * millisecond. The transition looked broken in exactly the way Paul
+       * described, "too fast, acting weird", and it worked in the source and
+       * failed in the build, which is the worst place for a difference to live.
+       */
+      const ms = (name: string) => {
+        const raw = css.getPropertyValue(name).trim();
+        const n = parseFloat(raw);
+        if (!Number.isFinite(n)) return 0;
+        return raw.endsWith("ms") ? n : n * 1000;
+      };
       setPhase("leaving");
       window.setTimeout(
         () => {
