@@ -16,7 +16,9 @@
     "verify:attribution": "tsx scripts/verify-attribution.ts",
     "verify:thai-register": "tsx scripts/verify-thai-register.ts",
     "audit:thai": "tsx scripts/audit-thai.ts",
-    "send-pack": "tsx scripts/build-send-pack.ts"
+    "send-pack": "tsx scripts/build-send-pack.ts",
+    "design:html": "tsx scripts/build-design-html.ts",
+    "tokens": "tsx scripts/build-tokens.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
