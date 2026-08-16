@@ -64,7 +64,7 @@ export const absolute = (path: string): string => new URL(path, SITE_URL).toStri
  */
 export const PUBLIC_ROUTES: readonly { path: string; priority: number }[] = [
   { path: "/", priority: 1 },
-  { path: "/assess", priority: 0.9 },
+  { path: "/efc-assessment", priority: 0.9 },
   { path: "/coaching", priority: 0.8 },
   { path: "/services", priority: 0.8 },
   ...(POSTS.length > 0 ? [{ path: "/blog", priority: 0.7 }] : []),
@@ -195,7 +195,7 @@ export function organizationJsonLd(facebookPage: string, disclaimer: string) {
     name: "PunProfile Career Coaching",
     alternateName: "PunProfile",
     url: SITE_URL,
-    logo: absolute("/punprofile-wordmark.png"),
+    logo: absolute("/punprofile-logo.svg"),
     image: absolute("/og.png"),
     sameAs: [facebookPage],
     description:
