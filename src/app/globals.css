@@ -1,133 +1,40 @@
 @import "tailwindcss";
+@import "./tokens.generated.css";
 
 /*
- * The PunProfile design system, from `design.md` in the sibling coaching repo.
- * That file's YAML frontmatter is the source of truth for every value here; do
- * not invent a token, and do not restate one anywhere else in this repo.
+ * The token layer is GENERATED from `design.md` in the sibling coaching repo by
+ * `scripts/build-tokens.ts`. Run `npm run tokens` after changing a token there,
+ * and commit both. Do not declare a colour, a type role, a radius, a shadow or
+ * an easing curve in this file; it will drift, which is exactly what the two
+ * hand-maintained copies before it did.
  *
- * The system defines NO dark palette. Its base is white with full-bleed colour
- * washes, so there is deliberately no `prefers-color-scheme` block below. The
- * dark mode this file used to carry was an invention.
+ * Everything below is hand-written and is deliberately NOT a token: the base
+ * layer, the chart styles, the animations.
+ *
+ * **There is a dark palette since 16/08/2026, and no component should ever name
+ * it.** `tokens.generated.css` redefines the same `--color-*` names inside a
+ * `prefers-color-scheme: dark` block, so every utility in the app switches on
+ * its own. Do not use Tailwind's `dark:` prefix: a component that has to name
+ * both schemes is a component that can get one of them wrong, and there are
+ * roughly nine hundred colour utilities here.
  *
  * Spacing is deliberately absent: the system's 4/8/16/24/32/48/64/96 scale maps
  * exactly onto Tailwind's default 4px base, so space-1..space-8 are already
  * `1 2 4 6 8 12 16 24`. A second scale would buy nothing.
  */
 
-@theme {
-  /* The app's one opinion about weight. Chosen for the site menu, TASK-085,
-     because it decelerates hard so a panel settles rather than glides, and
-     reused by the assessment's question transitions so there is one curve
-     rather than two. */
-  --ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
-  /* Teal. The colour PunProfile is known by: washes, secondary actions. */
-  --color-primary: #068376;
-  --color-primary-deep: #04524a;
-  --color-primary-bright: #5dc9be;
-  --color-on-primary: #ffffff;
-
-  /* Terracotta. Reserved for the single primary action per view. */
-  --color-accent: #cc3f00;
-  --color-accent-bright: #ff4f00;
-  --color-accent-tint: #ffb999;
-  --color-on-accent: #ffffff;
-
-  /* Section-background washes. One per section, never blended. */
-  /* Mascot Orange. Named in `design.md` as the one colour the character may be
-     drawn in, and added to the theme 14/08/2026 when the founder section asked
-     for a strong orange ground.
-
-     NOT `accent`. Terracotta (#cc3f00) is reserved for the single primary
-     action on a screen, and a full-bleed section in the button colour spends
-     the persuasive weight the reservation exists to protect. Mascot Orange is
-     the brand's illustration orange, so it can carry a large fill without
-     competing with anything that asks to be pressed.
-
-     It takes INK text, not white: white on this holds 3.08:1 and fails AA at
-     body size, ink holds 5.12:1 and passes. The founder section is the longest
-     body of running text on the site, so that difference is the whole decision
-     rather than a detail. */
-  --color-mascot: #e7703a;
-  --color-lavender-wash: #e9e6ff;
-  --color-mint-wash: #e3faf3;
-  --color-mint-tint: #c9faee;
-  --color-cream-wash: #fffae7;
-
-  --color-surface: #ffffff;
-  --color-ink: #242425;
-  --color-slate: #413b51;
-  --color-neutral-100: #f5f5f5;
-  --color-neutral-300: #d9d8dc;
-  --color-neutral-500: #8d8997;
-
-  /* Semantic. `error` is deliberately not Terracotta: "something went wrong"
-     must never look like "click here". */
-  --color-success: #068376;
-  --color-on-success: #ffffff;
-  --color-warning: #e8a33d;
-  --color-on-warning: #242425;
-  --color-error: #b3261e;
-  --color-on-error: #ffffff;
-  /* EU Fit Check's own identity, the Lavender family (design.md, 14/08/2026).
-     Three stops because `lavender-wash` is a background and nothing else: ink
-     on it holds 12.7:1, white on it is unreadable. `eufit` is AA at 4.96:1, so
-     body and above; `eufit-deep` at 8.41:1 carries white text and captions.
-     Neither ever goes on a button. Terracotta is the action, lavender is the
-     product, and a screen with two things asking to be pressed has neither.
-     These replace the `info` token, which was never used and held this exact
-     value. */
-  --color-eufit: #6b63c7;
-  --color-eufit-deep: #4a3f9e;
-  --color-on-eufit: #ffffff;
-
-  --text-display: 56px;
-  --text-display--line-height: 1.05;
-  --text-display--font-weight: 900;
-  --text-display--letter-spacing: -0.01em;
-  --text-h1: 40px;
-  --text-h1--line-height: 1.1;
-  --text-h1--font-weight: 700;
-  --text-h1--letter-spacing: -0.01em;
-  --text-h2: 32px;
-  --text-h2--line-height: 1.15;
-  --text-h2--font-weight: 700;
-  --text-h3: 24px;
-  --text-h3--line-height: 1.2;
-  --text-h3--font-weight: 600;
-  --text-h4: 20px;
-  --text-h4--line-height: 1.25;
-  --text-h4--font-weight: 600;
-  --text-body-lg: 18px;
-  --text-body-lg--line-height: 1.5;
-  --text-body: 16px;
-  --text-body--line-height: 1.5;
-  --text-caption: 14px;
-  --text-caption--line-height: 1.4;
-  --text-label: 14px;
-  --text-label--line-height: 1.2;
-  --text-label--font-weight: 600;
-  --text-label--letter-spacing: 0.01em;
-
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-
-  /* Elevation is chosen by what a surface sits on, not by component type:
-     border-only on white, soft on a wash, floating for proof points. Every
-     surface in the app today sits on white, so these wait for the first
-     wash-backed section rather than being invented then. */
-  --shadow-soft: 0 8px 24px rgba(36, 36, 37, 0.12);
-  --shadow-floating: 0 16px 40px rgba(36, 36, 37, 0.18);
-}
-
 @theme inline {
   /*
    * One stack per tier serves both scripts. Fraunces and Inter carry no Thai
-   * glyphs, so the browser falls through per glyph to the Noto Thai face; no
-   * conditional class and no language detection anywhere in the app.
+   * glyphs, so the browser falls through per glyph to Anuphan; no conditional
+   * class and no language detection anywhere in the app.
+   *
+   * Anuphan appears in both stacks on purpose. It is variable, so the display
+   * stack takes it at weight 700 and the body stack at 400, which is one file
+   * doing what two Noto families used to.
    */
-  --font-display: var(--font-fraunces), var(--font-noto-serif-thai), Georgia, serif;
-  --font-sans: var(--font-inter), var(--font-noto-sans-thai), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), var(--font-anuphan), Georgia, serif;
+  --font-sans: var(--font-inter), var(--font-anuphan), system-ui, sans-serif;
 }
 
 @layer base {
@@ -165,13 +72,12 @@
     scrollbar-gutter: stable;
   }
 
-  html {
-    color-scheme: light;
-  }
+  /* `color-scheme` is set by the token layer, light in `:root` and dark inside
+     the media query, so form controls and scrollbars follow the palette. */
 
   body {
-    background: var(--color-surface);
-    color: var(--color-ink);
+    background: var(--color-background);
+    color: var(--color-on-surface);
     font-family: var(--font-sans);
     /*
      * The system asks for body 1.5 and thai-body 1.6, but a per-glyph fallback
@@ -189,68 +95,64 @@
   }
 
   /*
-   * The system specifies a 2px accent ring for `input-focus` only. Extending it
-   * to every focusable is a deliberate addition: buttons need to be visible to
-   * keyboard users and the spec is silent on them.
+   * Every focusable gets a visible focus indicator. The system specified one
+   * for fields only; extending it is deliberate, because keyboard users need to
+   * see where they are on buttons and links too.
+   *
+   * `primary`, not `action`. It was the action colour until 16/08/2026, which
+   * was wrong twice over: M3 marks focus with primary, and `action` is reserved
+   * for the single primary button on a view, so a focus ring in it made every
+   * focused link briefly look like that button.
    */
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
 }
 
 /*
- * Spider chart role tokens, consumed by `src/lib/radar.ts` through CSS custom
- * properties only. Teal replaces the placeholder blue, which introduced a hue
- * the brand forbids. `primary-bright` (#5dc9be) is the system's stated colour
- * for a chart accent "where full Teal reads too dark" and is held for a second
- * series rather than spent here.
+ * Spider chart styles. The role tokens themselves (`--viz-surface`, `--viz-grid`,
+ * `--viz-muted`, `--viz-series-1`) are no longer declared here: they come from
+ * `tokens.generated.css`, which maps them onto design-system roles in one place.
+ * This block used to redeclare them from the old palette, which after the M3
+ * swap would have resolved every one of them to an undefined variable and
+ * silently emptied the chart.
+ *
+ * `radar.ts` reads them through `var()` and holds no colours itself. Keep it
+ * that way.
  */
-.viz-root {
-  --viz-surface: var(--color-surface);
-  --viz-grid: var(--color-neutral-300);
-  --viz-muted: var(--color-neutral-500);
-  /* The chart is the product's own surface, so it takes the product's colour
-     rather than the company's. 14/08/2026. `eufit`, not `eufit-deep`: the
-     series is a 2px stroke over a 16% fill, read as a shape rather than as
-     text, and the deeper stop would sit too heavily against the grid. */
-  --viz-series-1: var(--color-eufit);
-}
 .viz-root .viz-radar { display: block; }
-.viz-root .viz-axis-label { font: 500 11px var(--font-sans); fill: var(--color-slate); }
+.viz-root .viz-axis-label { font: 500 11px var(--font-sans); fill: var(--color-on-surface-variant); }
 .viz-root .viz-axis-unscored { fill: var(--viz-muted); }
-.viz-root .viz-axis-value { font-weight: 700; fill: var(--color-ink); font-variant-numeric: tabular-nums; }
+.viz-root .viz-axis-value { font-weight: 700; fill: var(--color-on-surface); font-variant-numeric: tabular-nums; }
 .viz-root .viz-axis-unscored .viz-axis-value { fill: var(--viz-muted); font-weight: 500; }
 .viz-root .viz-tick { font: 10px var(--font-sans); fill: var(--viz-muted); font-variant-numeric: tabular-nums; }
 .viz-root .viz-caption { font: 11px var(--font-sans); fill: var(--viz-muted); }
 /* Emitted by radarSvg when fewer than three axes exist; previously unstyled. */
-.viz-root .viz-empty { color: var(--color-neutral-500); font-size: var(--text-caption); }
+.viz-root .viz-empty { color: var(--color-on-surface-variant); font-size: var(--text-body-medium); }
 
 /* ---------------------------------------------------------------------------
-   Liquid Glass, adapted from Apple's material to the web. 14/08/2026.
+   Liquid Glass was here, and it is retired. 16/08/2026.
 
-   Read the HIG before touching this. Two rules from it decided the whole
-   shape of this block:
+   Three chrome surfaces (sticky header, language menu, floating action bar)
+   plus a content-layer `.material` pair and the `.eufit-field` background it
+   needed something to bend. All removed with the move to Material Design 3,
+   which answers the same question with tonal surfaces and elevation. An app
+   carrying both would have two definitions of what a floating control looks
+   like. `design.md` records the decision and the reasoning that went with it.
 
-   1. "Don't use Liquid Glass in the content layer." It is a FUNCTIONAL layer
-      for controls and navigation that floats above content. So exactly three
-      surfaces here are glass, all of them chrome: the sticky header, the
-      language menu, and the floating action bar. Option tiles, cards and the
-      chart stay flat. They are content.
-   2. "Use Liquid Glass effects sparingly." Three surfaces is the budget, not
-      a starting point.
+   Two things that came out of that work survive, because they were about the
+   audience rather than the material. The bottom action bar stays sticky; that
+   was a navigation decision made in the same change, not a consequence of the
+   effect. And the reason the effect had three fallback paths was that a
+   sustained backdrop-filter on a scrolling page is one of the most expensive
+   things a mid-range Android phone can be asked to do, and that phone is this
+   product's actual audience. Removing it removes the cost outright, which is a
+   gain for exactly those users rather than a neutral change.
 
-   Only the REGULAR variant is implemented. Apple's clear variant is for
-   components floating over visually rich backgrounds like photos and video,
-   and needs a 35% dimming layer when what is behind it is bright. Nothing in
-   this app floats over media, so building clear would be building a thing
-   with no correct use.
-
-   The material is four layers, not a blur: a translucent tint that keeps text
-   legible, a backdrop blur plus saturation that does the lensing, a hairline
-   border that gives it an edge, and an inset highlight along the top that
-   reads as light catching a bevel. Drop any one and it stops looking like
-   glass and starts looking like a semi-transparent div.
+   Replacements are in the component list in `design.md`: `top-app-bar-scrolled`
+   for the header, `card-elevated` at level 2 for the language menu, and
+   `navigation-bar` on `surface-container` for the bottom bar.
    --------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------
@@ -261,16 +163,24 @@
    as the page changing rather than as something opening. 220ms is enough to
    show the direction and short enough that a second tap never feels blocked.
 
-   `cubic-bezier(0.32, 0.72, 0, 1)` rather than `ease-out`: it decelerates hard
-   at the end, which is what makes a panel feel like it has weight and settles
-   rather than gliding to a stop. The scrim uses plain opacity on a slightly
-   shorter curve, so the dimming has already begun before the panel arrives.
+   `--ease-emphasized` rather than `ease-out`. This used to be `--ease-settle`,
+   `cubic-bezier(0.32, 0.72, 0, 1)`, chosen because it decelerates hard at the
+   end so a panel feels like it settles rather than gliding to a stop. Retired
+   16/08/2026: M3's motion set is four curves defined against each other, and
+   mixing a fifth in from outside means its accelerate and decelerate variants
+   no longer relate to the standard one. Expect this to feel slightly less
+   settled than it did. That is the trade, and it was made knowingly.
+
+   The scrim uses plain opacity on M3's decelerate curve entering and its
+   accelerate curve leaving, on a slightly shorter duration, so the dimming has
+   already begun before the panel arrives. It was CSS's own `ease-out` and
+   `ease-in` until 16/08/2026; the point of M3's motion set is that its four
+   curves are defined against each other, and two of them came from outside.
 
    Only `transform` and `opacity` are animated, so both stay on the compositor
-   and neither triggers layout. Worth being deliberate about here because the
-   panel also carries `backdrop-filter`, and animating anything that forces a
-   repaint would make the blur recompute every frame on exactly the mid-range
-   Android hardware this audience is on.
+   and neither triggers layout. That discipline mattered more when the panel
+   also carried a backdrop filter; it is kept because it is still correct on the
+   mid-range Android hardware this audience is on.
    --------------------------------------------------------------------------- */
 
 @keyframes menu-panel-in {
@@ -295,16 +205,16 @@
 
 @layer components {
   .menu-panel-in {
-    animation: menu-panel-in 220ms cubic-bezier(0.32, 0.72, 0, 1) both;
+    animation: menu-panel-in 220ms var(--ease-emphasized) both;
   }
   .menu-panel-out {
-    animation: menu-panel-out 200ms cubic-bezier(0.32, 0.72, 0, 1) both;
+    animation: menu-panel-out 200ms var(--ease-emphasized) both;
   }
   .menu-scrim-in {
-    animation: menu-scrim-in 200ms ease-out both;
+    animation: menu-scrim-in 200ms var(--ease-emphasized-decelerate) both;
   }
   .menu-scrim-out {
-    animation: menu-scrim-out 180ms ease-in both;
+    animation: menu-scrim-out 180ms var(--ease-emphasized-accelerate) both;
   }
 }
 
@@ -321,187 +231,426 @@
 }
 
 @layer components {
-  .glass {
-    background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
-    box-shadow:
-      inset 0 1px 0 0 color-mix(in srgb, #ffffff 65%, transparent),
-      0 8px 24px rgba(36, 36, 37, 0.08);
-  }
-
-  /* The header is a bar, not a card: it needs an edge underneath and nothing
-     else, or it reads as a floating panel that happens to be full width. */
-  .glass-bar {
-    background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
-    box-shadow: inset 0 1px 0 0 color-mix(in srgb, #ffffff 65%, transparent);
-  }
-
-  /* The action bar sits at the bottom, so its highlight and its edge flip. */
-  .glass-bar-bottom {
-    background-color: color-mix(in srgb, var(--color-surface) 76%, transparent);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-top: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
-    box-shadow: 0 -8px 24px rgba(36, 36, 37, 0.06);
-  }
-
-  /* The lavender field the glass has something to bend. Without a background
-     with structure in it, glass over white is an expensive way to draw a
-     1px border. Three soft radial pools rather than a linear gradient,
-     because a linear ramp has no local variation for the blur to pick up as
-     the page scrolls under the bar. */
-  /* Deepened 14/08/2026 after looking at it. The first values were measured
-     for subtlety and produced a page that was white with a faint stain at the
-     bottom, which is worse than either a plain white page or a real field:
-     the material had nothing to bend, so the cost of the blur bought a 1px
-     border. Smaller pools at higher strength, on the wash rather than on
-     white, so there is local variation for a bar to lens as content scrolls
-     under it. */
-  .eufit-field {
-    background-image:
-      radial-gradient(38rem 26rem at 8% -6%, color-mix(in srgb, var(--color-eufit) 34%, transparent), transparent 62%),
-      radial-gradient(30rem 24rem at 102% 4%, color-mix(in srgb, var(--color-eufit) 24%, transparent), transparent 60%),
-      radial-gradient(34rem 30rem at 50% 106%, color-mix(in srgb, var(--color-eufit) 22%, transparent), transparent 64%);
-    background-color: var(--color-lavender-wash);
-    background-attachment: fixed;
+  /*
+   * The serif tier carries its own family.
+   *
+   * `design.md` says Fraunces carries display, headline and title, and Inter
+   * carries body and label. Tailwind's `--text-*` namespace only holds size,
+   * weight, line-height and tracking, so a `text-title-medium` on a <p> would
+   * inherit `--font-sans` from the body and quietly render the whole title tier
+   * in Inter. The base layer's `h1..h4` rule covered headings and nothing else,
+   * which is why this was invisible: every heading looked right.
+   *
+   * Bound to the classes rather than added at 13 call sites, so the next one is
+   * correct without anybody remembering. In the components layer, so an explicit
+   * `font-sans` utility at a call site still wins.
+   *
+   * The thai-* roles are here too. `--font-display` falls through per glyph to
+   * Anuphan, which is a sans, so a Thai headline is Anuphan at weight 700 while
+   * the Latin beside it is Fraunces. That is deliberate; `SiteShell` has the
+   * reasoning.
+   */
+  .text-display-large,
+  .text-display-medium,
+  .text-display-small,
+  .text-headline-large,
+  .text-headline-medium,
+  .text-headline-small,
+  .text-title-large,
+  .text-title-medium,
+  .text-title-small,
+  .text-thai-display,
+  .text-thai-headline,
+  .text-thai-title {
+    font-family: var(--font-display);
   }
 }
-
-/* --------------------------------------------------------------------------
-   Fallbacks. Three separate reasons the material must become solid, and each
-   one is somebody for whom the effect is worse than nothing.
-   -------------------------------------------------------------------------- */
-
-/* 1. The browser cannot do it. Without this the tint alone renders and text
-      sits on 72% white over a gradient, which is the one genuinely unreadable
-      outcome in this file. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass,
-  .glass-bar,
-  .glass-bar-bottom {
-    background-color: var(--color-surface);
-  }
-}
-
-/* 2. The device cannot do it cheaply. `data-perf="low"` is set by a small
-      inline script in the layout from deviceMemory and hardwareConcurrency.
-      A sustained backdrop-filter on a scrolling page is one of the most
-      expensive things a mid-range Android phone can be asked to do, and that
-      phone on mobile data is this product's actual audience, not its edge
-      case. */
-[data-perf="low"] .glass,
-[data-perf="low"] .glass-bar,
-[data-perf="low"] .glass-bar-bottom {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background-color: var(--color-surface);
-}
-
-[data-perf="low"] .eufit-field {
-  background-attachment: scroll;
-}
-
-/* 3. The person asked for it off. Apple's own material changes behaviour
-      under these settings rather than ignoring them. */
-@media (prefers-reduced-transparency: reduce) {
-  .glass,
-  .glass-bar,
-  .glass-bar-bottom {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background-color: var(--color-surface);
-  }
-  .eufit-field {
-    background-image: none;
-    background-color: var(--color-surface);
-  }
-}
-
-@media (prefers-contrast: more) {
-  .glass,
-  .glass-bar,
-  .glass-bar-bottom {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    background-color: var(--color-surface);
-    border-color: var(--color-ink);
-  }
-  .eufit-field {
-    background-image: none;
-    background-color: var(--color-surface);
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   Standard material, for the CONTENT layer. Added 14/08/2026.
-
-   Paul asked for glass on everything, including cards and option tiles. The
-   HIG says not to put Liquid Glass there, and it also says what to use
-   instead: "use standard materials for elements in the content layer". Apple
-   ships two material families for exactly this split, and the difference is
-   thickness. "Thicker materials, which are more opaque, can provide better
-   contrast for text and other elements with fine features."
-
-   So content gets the same optical treatment, tuned the other way: 88% tint
-   against chrome's 72%, and half the blur radius. It reads as the same
-   material family from across the room and keeps Thai body text legible over
-   the lavender field, which chrome-weight glass would not. Noto Sans Thai has
-   fine features and tone marks that disappear first when contrast drops.
-   --------------------------------------------------------------------------- */
 
 @layer components {
-  .material {
-    background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
-    -webkit-backdrop-filter: blur(10px) saturate(140%);
-    backdrop-filter: blur(10px) saturate(140%);
-    border: 1px solid color-mix(in srgb, var(--color-ink) 7%, transparent);
-  }
-
-  /* The tinted variants keep their hue but stop being flat fills, so a callout
-     still separates from a plain card sitting next to it on the same field. */
-  .material-mint {
-    background-color: color-mix(in srgb, var(--color-mint-wash) 88%, transparent);
-    -webkit-backdrop-filter: blur(10px) saturate(140%);
-    backdrop-filter: blur(10px) saturate(140%);
-    border: 1px solid color-mix(in srgb, var(--color-ink) 7%, transparent);
+  /*
+   * A fixed ground re-pins its own content colours.
+   *
+   * Found the moment the dark scheme went in, 16/08/2026, and it is the one
+   * genuine hazard of having colours outside the role system. Brand lime and
+   * brand orange do not change between schemes, by design. Everything *inside*
+   * them does: a paragraph on `on-surface-variant` flipped from a dark olive to
+   * a pale grey-green and became nearly invisible on a chartreuse ground.
+   *
+   * So a section on a fixed ground establishes a local colour context, pinning
+   * the content roles to their light values for its subtree. This is what M3
+   * means when it says a container defines its own on-colours; ours just have to
+   * do it by hand, because the container is not a role.
+   *
+   * Put this on any element that sets `bg-brand-lime` or `bg-brand-orange`.
+   * Measured on lime: ink 14.31, on-surface-variant 8.03, primary 5.44.
+   */
+  .ground-fixed {
+    --color-on-surface: #1a1d16;
+    --color-on-surface-variant: #45483c;
+    --color-outline: #76786b;
+    --color-outline-variant: #c6c8b8;
+    --color-primary: #566423;
+    --color-surface: #f9faef;
+    --color-surface-container-lowest: #ffffff;
+    /* `btn-contrast` is the button style for exactly these grounds, and it is
+       built on the inverse pair. Those invert with the scheme like everything
+       else, so in dark the button went light-on-lime at about 1.15. Pinned. */
+    --color-inverse-surface: #2f312a;
+    --color-inverse-on-surface: #f0f2e7;
+    color: var(--color-on-surface);
   }
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .material { background-color: var(--color-surface); }
-  .material-mint { background-color: var(--color-mint-wash); }
-}
-
-[data-perf="low"] .material,
-[data-perf="low"] .material-mint {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-[data-perf="low"] .material { background-color: var(--color-surface); }
-[data-perf="low"] .material-mint { background-color: var(--color-mint-wash); }
-
-@media (prefers-reduced-transparency: reduce) {
-  .material, .material-mint {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+@layer components {
+  /*
+   * `text-field-outlined` from `design.md`, and the three corrections the
+   * 16/08/2026 audit made to it.
+   *
+   * **The border is `outline`, not `outline-variant`.** Every field in the app
+   * used the variant until the audit. It is a contrast failure rather than a
+   * style slip: `outline-variant` holds 1.61 on the ground against the 3:1 that
+   * non-text UI has to meet, so those fields had no perceivable edge for a
+   * low-vision reader. The skill says this twice.
+   *
+   * **Focus is a 2px `primary` outline, not a ring.** M3 marks focus by
+   * thickening the boundary and switching its colour. Drawn with `outline`
+   * rather than `border` so the box does not resize by a pixel on focus, which
+   * is what a border-width change would do and what makes a form jitter.
+   *
+   * **56px, not 48.** 48 is the touch-target floor, not the field height.
+   *
+   * `.field-error` is the invalid state; it takes a line of supporting text as
+   * well, because colour alone is not available to every reader.
+   */
+  .field {
+    width: 100%;
+    min-height: 56px;
+    padding: 0 16px;
+    background-color: transparent;
+    color: var(--color-on-surface);
+    border: 1px solid var(--color-outline);
+    border-radius: var(--radius-small);
+    font-size: var(--text-body-large);
+    line-height: var(--text-body-large--line-height);
+    transition: outline-color 120ms var(--ease-standard);
   }
-  .material { background-color: var(--color-surface); }
-  .material-mint { background-color: var(--color-mint-wash); }
+  /* Textareas own their own height and need symmetric padding. */
+  textarea.field {
+    padding: 16px;
+    line-height: 1.6;
+  }
+  .field::placeholder {
+    color: var(--color-on-surface-variant);
+  }
+  .field:focus,
+  .field:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+  .field:disabled {
+    border-color: color-mix(in srgb, var(--color-on-surface) 12%, transparent);
+    color: color-mix(in srgb, var(--color-on-surface) 38%, transparent);
+    cursor: not-allowed;
+  }
+  .field-error,
+  .field[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
+  .field-error:focus,
+  .field[aria-invalid="true"]:focus {
+    outline-color: var(--color-error);
+  }
+
+  /*
+   * The assessment's option tile: a selectable list item with a radio or
+   * checkbox affordance on the right. Extracted 16/08/2026 when the same three
+   * problems the form fields had turned up here as well.
+   *
+   * **The resting border is `outline`, not `outline-variant`.** At 1.61 the
+   * tile had no perceivable edge, which matters more here than anywhere else in
+   * the app: the whole screen is a list of these, and if their edges are
+   * invisible the page is a wall of text with no indication that any of it can
+   * be tapped.
+   *
+   * **The ring uses `on-surface-variant` when unselected.** It was
+   * `outline-variant` too. The comment beside it in `QuestionCard` says the
+   * ring is the affordance, that without it a row is a box with text in it and
+   * nothing says these are choices until one is already tapped. That reasoning
+   * was right and the colour was undoing it.
+   *
+   * **Selected is a container fill, not an inverted one.** It was
+   * `on-tertiary-container` as a background, which is a text role used as a
+   * fill. M3 pairs a container with its on-colour: light fill, dark label. The
+   * tile now reads as filled-in rather than blacked-out.
+   *
+   * Tertiary rather than secondary, which is what M3 uses for selection
+   * generally, because this is EU Fit Check and `design.md` gives the
+   * assessment the tertiary family. One colour story per surface.
+   *
+   * 56px, matching the text field. 48 is the touch-target floor.
+   */
+  .tile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 56px;
+    padding: 12px 16px;
+    text-align: left;
+    border: 1px solid var(--color-outline);
+    border-radius: var(--radius-medium);
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-size: var(--text-body-large);
+    line-height: var(--text-body-large--line-height);
+    transition: background-color 150ms var(--ease-standard), border-color 150ms var(--ease-standard);
+  }
+  .tile:hover:not([aria-pressed="true"]) {
+    background-color: color-mix(
+      in srgb, var(--color-on-surface) calc(var(--state-hover) * 100%), var(--color-surface));
+    border-color: var(--color-tertiary);
+  }
+  .tile[aria-pressed="true"] {
+    background-color: var(--color-tertiary-container);
+    border-color: var(--color-tertiary);
+    color: var(--color-on-tertiary-container);
+  }
+  /* The affordance. Sized and coloured so an unselected tile still says it is
+     a choice, which is the entire reason it exists. */
+  .tile-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    inline-size: 20px;
+    block-size: 20px;
+    border: 2px solid var(--color-on-surface-variant);
+    border-radius: 999px;
+  }
+  .tile[aria-pressed="true"] .tile-mark {
+    border-color: var(--color-on-tertiary-container);
+  }
+  .tile-mark span {
+    display: block;
+    inline-size: 10px;
+    block-size: 10px;
+    border-radius: 999px;
+    background-color: var(--color-on-tertiary-container);
+  }
+
+  /*
+   * The language-level segments. M3's segmented button: one connected group,
+   * selected takes the container fill. Separate pills read as three unrelated
+   * buttons rather than one control with three positions.
+   */
+  .segment {
+    flex: 1 1 0;
+    min-height: 44px;
+    border: 1px solid var(--color-outline);
+    background-color: var(--color-surface);
+    color: var(--color-on-surface-variant);
+    font-size: var(--text-body-medium);
+    transition: background-color 150ms var(--ease-standard);
+  }
+  .segment:first-child { border-radius: var(--radius-full) 0 0 var(--radius-full) }
+  .segment:last-child  { border-radius: 0 var(--radius-full) var(--radius-full) 0 }
+  .segment:not(:first-child) { margin-inline-start: -1px }
+  .segment:hover:not([aria-pressed="true"]) {
+    background-color: color-mix(
+      in srgb, var(--color-on-surface) calc(var(--state-hover) * 100%), var(--color-surface));
+  }
+  .segment[aria-pressed="true"] {
+    background-color: var(--color-tertiary-container);
+    border-color: var(--color-tertiary);
+    color: var(--color-on-tertiary-container);
+    font-weight: 600;
+    z-index: 1;
+  }
+
+  /*
+   * Checkbox. M3's own glyph is 18dp and its touch target is 48dp; the target
+   * here is the whole `<label>`, which is why every one of these is wrapped in
+   * one and why they must stay wrapped.
+   *
+   * `accent-color` rather than a drawn box: it gets the platform's own control,
+   * with its own focus and pressed behaviour and its own high-contrast-mode
+   * handling, tinted to the theme. A hand-drawn checkbox loses all three.
+   *
+   * The colour is `primary`, matching M3, and the audit found one of these on
+   * `accent-eufit`, a token that stopped existing in the rebrand and had been
+   * silently rendering as the browser default ever since.
+   */
+  .checkbox {
+    inline-size: 18px;
+    block-size: 18px;
+    flex: none;
+    accent-color: var(--color-primary);
+  }
+
+  /* The visible label above a field. A placeholder is not a label: it leaves
+     the moment someone types, which removes the question exactly as they answer
+     it. */
+  .field-label {
+    display: block;
+    color: var(--color-on-surface-variant);
+    font-size: var(--text-body-small);
+    line-height: var(--text-body-small--line-height);
+  }
+
+  /* Supporting text and error text sit under the field, indented to its text. */
+  .field-support {
+    display: block;
+    padding: 4px 16px 0;
+    color: var(--color-on-surface-variant);
+    font-size: var(--text-body-small);
+    line-height: var(--text-body-small--line-height);
+  }
+  .field-support-error {
+    display: block;
+    padding: 4px 16px 0;
+    color: var(--color-error);
+    font-size: var(--text-body-small);
+    line-height: var(--text-body-small--line-height);
+  }
 }
 
-@media (prefers-contrast: more) {
-  .material, .material-mint {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border-color: var(--color-ink);
+@layer components {
+  /*
+   * `button-filled` from `design.md`: the single primary action per view.
+   *
+   * A class rather than ten copies of the same six utilities, because the two
+   * parts that are easy to get wrong are the ones utilities express badly.
+   *
+   * **Hover is a state layer, not a colour.** The old system had a second,
+   * brighter terracotta for hover. M3 has no hover colours at all: interaction
+   * feedback is a translucent layer of the element's OWN content colour, at 8%,
+   * over the element's own background. That is one rule for every component
+   * instead of a second token per interactive colour, and it is why
+   * `--color-accent-bright` no longer exists.
+   *
+   * **Disabled is on-surface, not a neutral.** M3 disables by dropping to the
+   * text colour of the surface at 12% for the fill and 38% for the label,
+   * which stays legible-as-disabled on any container. The old
+   * `disabled:bg-neutral-300 disabled:text-neutral-500` was a fixed grey that
+   * only worked on white.
+   *
+   * Shape is `full`; the no-pill rule was retired 16/08/2026. Sizing and
+   * spacing stay at the call site, because they genuinely differ per screen.
+   */
+  .btn-filled {
+    background-color: var(--color-action);
+    color: var(--color-on-action);
+    border-radius: var(--radius-full);
+    transition: background-color 150ms var(--ease-standard);
   }
-  .material { background-color: var(--color-surface); }
-  .material-mint { background-color: var(--color-mint-wash); }
+  .btn-filled:hover:not(:disabled) {
+    background-color: color-mix(
+      in srgb,
+      var(--color-on-action) calc(var(--state-hover) * 100%),
+      var(--color-action)
+    );
+  }
+  .btn-filled:active:not(:disabled) {
+    background-color: color-mix(
+      in srgb,
+      var(--color-on-action) calc(var(--state-pressed) * 100%),
+      var(--color-action)
+    );
+  }
+  /*
+   * The tiers below `btn-filled`. One filled `action` button per view; anything
+   * else that still needs to be pressed takes one of these.
+   *
+   * **`btn-tonal` carries a hairline that M3's filled-tonal button does not.**
+   * `primary-container` on `surface` measures 1.22, so the button's shape is
+   * invisible even though its label is legible. M3's version assumes a surface
+   * it separates from more than this warm off-white does. The skill's own 3:1
+   * bar for a non-text UI element outranks the component's default styling, so
+   * ours gets a border. `design.md` records the departure.
+   *
+   * **`btn-contrast` is for a button on a fixed high-energy ground.** Brand lime
+   * and brand orange sit outside the role system, so there is no container pair
+   * for a button on them, and the tonal one measures 1.08 on lime. This is
+   * `inverse-surface`, which is M3's role for an element that must contrast
+   * against its surroundings, and measures 11.06 there.
+   *
+   * All three are pills, like `btn-filled`. Shape is what makes a button read as
+   * a button before its colour does, and three radii for one control was most of
+   * why the set looked unrelated.
+   */
+  .btn-tonal,
+  .btn-outlined,
+  .btn-contrast {
+    border-radius: var(--radius-full);
+    transition: background-color 150ms var(--ease-standard);
+  }
+  .btn-tonal {
+    background-color: var(--color-primary-container);
+    color: var(--color-on-primary-container);
+    border: 1px solid var(--color-outline);
+  }
+  .btn-tonal:hover:not(:disabled) {
+    background-color: color-mix(
+      in srgb, var(--color-on-primary-container) calc(var(--state-hover) * 100%),
+      var(--color-primary-container));
+  }
+  .btn-outlined {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-outline);
+  }
+  .btn-outlined:hover:not(:disabled) {
+    background-color: color-mix(
+      in srgb, var(--color-primary) calc(var(--state-hover) * 100%), transparent);
+  }
+  .btn-contrast {
+    background-color: var(--color-inverse-surface);
+    color: var(--color-inverse-on-surface);
+  }
+  .btn-contrast:hover:not(:disabled) {
+    background-color: color-mix(
+      in srgb, var(--color-inverse-on-surface) calc(var(--state-hover) * 100%),
+      var(--color-inverse-surface));
+  }
+  .btn-tonal:disabled,
+  .btn-outlined:disabled,
+  .btn-contrast:disabled {
+    background-color: color-mix(in srgb, var(--color-on-surface) 12%, transparent);
+    color: color-mix(in srgb, var(--color-on-surface) 38%, transparent);
+    border-color: transparent;
+    cursor: not-allowed;
+  }
+
+  .btn-filled:disabled {
+    background-color: color-mix(in srgb, var(--color-on-surface) 12%, transparent);
+    color: color-mix(in srgb, var(--color-on-surface) 38%, transparent);
+    cursor: not-allowed;
+  }
+}
+
+@layer components {
+  /*
+   * The two content-layer surfaces, replacing `.material` and `.material-mint`
+   * from the retired glass system. Renamed 16/08/2026 as well as reskinned: a
+   * class called `.material` meaning "Apple's translucent material" inside a
+   * Material Design 3 codebase is a trap for the next reader.
+   *
+   * `card-outlined` and `card-tonal` are the two card specs in `design.md`.
+   * Neither takes elevation: M3 keeps level 0 for almost everything and builds
+   * depth from the surface container tiers instead.
+   */
+  .card-outlined {
+    background-color: var(--color-surface-container-lowest);
+    border: 1px solid var(--color-outline-variant);
+  }
+
+  /* The tinted callout. It was mint, and mint is now `secondary-container`, so
+     the colour barely moves even though the mechanism did. Ink on it holds
+     13.24, so it carries body text at any size. */
+  .card-tonal {
+    background-color: var(--color-secondary-container);
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -523,9 +672,10 @@
    - **700ms per question, not 1200.** The reference is a fifteen-second quiz
      where motion is most of the product. This is sixteen questions plus a
      language grid, so 1200ms each is twenty seconds of watching animation.
-   - **`--ease-settle`, not `ease-in-out`.** The site menu above already chose
-     this curve and wrote down why. A second opinion about weight in the same
-     app is worse than either opinion.
+   - **`--ease-emphasized`, not `ease-in-out`.** The site menu above uses the
+     same curve. A second opinion about weight in the same app is worse than
+     either opinion. Both were `--ease-settle` until 16/08/2026; see the menu's
+     note for why that curve was retired.
    - **Options stagger.** The reference does not do this. It is free on a
      compositor-only property and it is the difference between a list appearing
      and a list arriving.
@@ -556,23 +706,23 @@
 
 @layer components {
   .q-leaving {
-    animation: q-leave var(--q-out) var(--ease-settle) both;
+    animation: q-leave var(--q-out) var(--ease-emphasized) both;
     pointer-events: none;
   }
   .q-entering {
-    animation: q-enter var(--q-in) var(--ease-settle) both;
+    animation: q-enter var(--q-in) var(--ease-emphasized) both;
   }
   /* Options arrive after the card they sit in, one after another. Capped at
      eight: past that the last option waits longer than the whole transition,
      and the longest question here has six. */
-  .q-entering .q-stagger > *:nth-child(1) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 1); }
-  .q-entering .q-stagger > *:nth-child(2) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 2); }
-  .q-entering .q-stagger > *:nth-child(3) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 3); }
-  .q-entering .q-stagger > *:nth-child(4) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 4); }
-  .q-entering .q-stagger > *:nth-child(5) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 5); }
-  .q-entering .q-stagger > *:nth-child(6) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 6); }
-  .q-entering .q-stagger > *:nth-child(7) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 7); }
-  .q-entering .q-stagger > *:nth-child(n + 8) { animation: q-enter var(--q-in) var(--ease-settle) both; animation-delay: calc(var(--q-stagger) * 8); }
+  .q-entering .q-stagger > *:nth-child(1) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 1); }
+  .q-entering .q-stagger > *:nth-child(2) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 2); }
+  .q-entering .q-stagger > *:nth-child(3) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 3); }
+  .q-entering .q-stagger > *:nth-child(4) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 4); }
+  .q-entering .q-stagger > *:nth-child(5) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 5); }
+  .q-entering .q-stagger > *:nth-child(6) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 6); }
+  .q-entering .q-stagger > *:nth-child(7) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 7); }
+  .q-entering .q-stagger > *:nth-child(n + 8) { animation: q-enter var(--q-in) var(--ease-emphasized) both; animation-delay: calc(var(--q-stagger) * 8); }
 }
 
 /* Travel and stagger go; the fade and the hold stay. The hold is what confirms
@@ -607,7 +757,7 @@
 
 @layer components {
   .q-photo-in {
-    animation: q-photo-in 900ms var(--ease-settle) both;
+    animation: q-photo-in 900ms var(--ease-emphasized) both;
   }
 }
 
@@ -634,7 +784,7 @@
 
 @layer components {
   .mascot-in {
-    animation: mascot-in 520ms var(--ease-settle) both;
+    animation: mascot-in 520ms var(--ease-emphasized) both;
   }
 }
 
