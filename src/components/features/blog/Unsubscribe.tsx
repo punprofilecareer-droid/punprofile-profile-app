@@ -25,6 +25,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useCopy } from "@/components/LocaleProvider";
 import {
+  BLOG_BACK,
   UNSUBSCRIBE_BODY,
   UNSUBSCRIBE_HEADING,
   UNSUBSCRIBE_RESTART,
@@ -42,11 +43,20 @@ export default function Unsubscribe({ token }: { token: string }) {
   useEffect(() => {
     if (fired.current) return;
     fired.current = true;
-    // Settled either way. A failure here means the request did not reach the
-    // server, and there is nothing a reader can do about that from this page;
-    // the address in the privacy notice is the fallback the notice already
-    // promises.
-    unsubscribe({ token }).finally(() => setDone(true));
+    // `.catch` before `.finally`, and it is not decoration. `.finally` passes a
+    // rejection through, so the version without this produced an
+    // `unhandledRejection` on every failed call: caught in dev on 16/08/2026
+    // against a deployment that did not yet have the index this reads.
+    //
+    // Swallowed rather than shown. A failure here means the request did not
+    // reach the server, there is nothing a reader can do about it from this
+    // page, and the address in the privacy notice is the fallback that notice
+    // already promises. Sentry sees the console line; the reader sees the same
+    // page either way, which is the same reason a bad token is not
+    // distinguished from a good one.
+    unsubscribe({ token })
+      .catch((err) => console.error("unsubscribe failed", err))
+      .finally(() => setDone(true));
   }, [unsubscribe, token]);
 
   return (
@@ -63,7 +73,7 @@ export default function Unsubscribe({ token }: { token: string }) {
               href={path("/blog")}
               className="text-primary underline underline-offset-2"
             >
-              /blog
+              {pick(BLOG_BACK)}
             </Link>
           </p>
         </>

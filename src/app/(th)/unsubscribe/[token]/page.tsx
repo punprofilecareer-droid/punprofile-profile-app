@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Unsubscribe from "@/components/features/blog/Unsubscribe";
+import { UNSUBSCRIBE_HEADING } from "@/lib/content/blog";
+import { DEFAULT_LOCALE, pick } from "@/lib/locale";
 import { NOT_INDEXED } from "@/lib/seo";
 
 /**
@@ -17,7 +19,13 @@ import { NOT_INDEXED } from "@/lib/seo";
  * should arrive at twice, and declaring an alternate would advertise the same
  * capability at a second address.
  */
-export const metadata: Metadata = NOT_INDEXED;
+export const metadata: Metadata = {
+  ...NOT_INDEXED,
+  // A title of its own, even though no search engine will read it. Without one
+  // the tab said "See where you stand on your path to working in Europe",
+  // which is the site default and the opposite of what this page does.
+  title: pick(UNSUBSCRIBE_HEADING, DEFAULT_LOCALE),
+};
 
 export default async function UnsubscribePage({
   params,
