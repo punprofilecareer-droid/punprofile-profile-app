@@ -121,7 +121,7 @@ export interface Action {
  */
 export const DESTINATIONS = {
   assess: {
-    href: "/assess",
+    href: "/efc-assessment",
     cost: COST.answer,
     label: { en: "Start the EU Fit Check", th: "เริ่มทำ EU Fit Check" },
   },
@@ -210,9 +210,9 @@ export interface PageActions {
 /**
  * Every candidate-facing page, and what it asks for.
  *
- * `/assess` is absent on purpose. The assessment's own action is "answer this
- * question", which is the flow rather than a destination, and the result screen
- * is covered by the `/assess-result` entry below.
+ * `/efc-assessment` is absent on purpose. The assessment's own action is "answer
+ * this question", which is the flow rather than a destination, and the result
+ * screen is covered by the `/efc-assessment-result` entry below.
  */
 export const PAGE_ACTIONS: Record<string, PageActions> = {
   "/": {
@@ -221,7 +221,7 @@ export const PAGE_ACTIONS: Record<string, PageActions> = {
     because:
       "A stranger from the group knows nothing about us yet. The check is the cheapest thing we can ask for and the only one that gives them something back immediately.",
   },
-  "/assess-result": {
+  "/efc-assessment-result": {
     primary: "services",
     secondary: undefined,
     because:

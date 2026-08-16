@@ -60,7 +60,7 @@ export interface NavItem {
 }
 
 export const NAV: readonly NavItem[] = [
-  { href: "/assess", label: "nav.assess", primary: true },
+  { href: "/efc-assessment", label: "nav.assess", primary: true },
   { href: "/services", label: "nav.services" },
   { href: "/coaching", label: "nav.coaching" },
   ...(POSTS.length > 0

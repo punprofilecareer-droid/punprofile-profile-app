@@ -48,8 +48,8 @@ import { DESTINATIONS } from "./cta";
  */
 export const EYEBROW = (locale: string) =>
   locale === "th"
-    ? "text-caption font-semibold"
-    : "text-caption font-semibold uppercase tracking-[0.14em]";
+    ? "text-body-medium font-semibold"
+    : "text-body-medium font-semibold uppercase tracking-[0.14em]";
 
 export interface FooterLink {
   href: string;
@@ -94,7 +94,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
     heading: { en: "EU Fit Check", th: "EU Fit Check" },
     links: [
-      { href: "/assess", label: { en: "Take the check", th: "ทำ EU Fit Check" } },
+      { href: "/efc-assessment", label: { en: "Take the check", th: "ทำ EU Fit Check" } },
       { href: "/faq", label: { en: "FAQ", th: "FAQ" } },
     ],
   },

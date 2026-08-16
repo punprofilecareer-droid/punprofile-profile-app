@@ -254,14 +254,14 @@ export default function AssessPage() {
       <div className="mx-auto w-full max-w-md px-6 py-24 text-center">
         {startFailed ? (
           <>
-            <p className="text-body text-slate">{t("assess.busy")}</p>
+            <p className="text-body-large text-on-surface-variant">{t("assess.busy")}</p>
             <button
               type="button"
               onClick={() => {
                 setStartFailed(false);
                 setAttempt((n) => n + 1);
               }}
-              className="mt-6 h-12 rounded-md bg-accent px-7 text-label text-on-accent transition-colors hover:bg-accent-bright"
+              className="mt-6 h-12 btn-filled px-7 text-label-large"
             >
               {t("assess.retry")}
             </button>
@@ -280,9 +280,9 @@ export default function AssessPage() {
               height={746}
               priority
               sizes="(max-width: 640px) 90vw, 420px"
-              className="mascot-in mx-auto mb-4 w-full max-w-[420px] rounded-lg"
+              className="mascot-in mx-auto mb-4 w-full max-w-[420px] rounded-large"
             />
-            <p className="text-body text-neutral-500" role="status">
+            <p className="text-body-large text-on-surface-variant" role="status">
               {t("assess.starting")}
             </p>
           </>
@@ -505,8 +505,8 @@ export default function AssessPage() {
   // would break that; only the shape changes.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center lg:max-w-5xl lg:px-8 lg:py-16">
-      <h1 className="text-h2 text-eufit-deep lg:text-h1">{t("teaser.headline")}</h1>
-      <p className="mt-2 text-body text-slate lg:text-body-lg">{t("teaser.selfReported")}</p>
+      <h1 className="text-headline-large text-on-tertiary-container lg:text-display-small">{t("teaser.headline")}</h1>
+      <p className="mt-2 text-body-large text-on-surface-variant lg:text-body-large">{t("teaser.selfReported")}</p>
 
       {/* Chart and read, side by side from `lg`. `items-start` rather than
           stretch: the read is shorter than the chart card for most profiles and
@@ -515,10 +515,10 @@ export default function AssessPage() {
         {/* The chart gets its own surface. The radar's grid is 1px neutral-300
             and the field's gradient moves through the same value range, so on
             the field alone the grid reads as noise rather than as structure. */}
-        <div className="material mt-6 rounded-lg px-4 py-6 text-left lg:mt-0 lg:px-6 lg:py-7">
-          <h2 className="text-h4 text-eufit-deep">{t("teaser.chart.heading")}</h2>
+        <div className="card-outlined mt-6 rounded-large px-4 py-6 text-left lg:mt-0 lg:px-6 lg:py-7">
+          <h2 className="text-title-large text-on-tertiary-container">{t("teaser.chart.heading")}</h2>
           <SpiderChart scores={scores} variant="teaser" />
-          <div className="mt-2 border-t border-neutral-300 pt-5">
+          <div className="mt-2 border-t border-outline-variant pt-5">
             <ScoreLegend scores={scores} />
           </div>
         </div>
@@ -529,8 +529,8 @@ export default function AssessPage() {
               can claim more than the answers support. */}
           {summary && (
             <div className="mt-8 space-y-4 text-left lg:mt-0">
-              <p className="text-body-lg text-ink">{summary.opener}</p>
-              <p className="text-body text-slate">{summary.standing}</p>
+              <p className="text-title-medium text-on-surface">{summary.opener}</p>
+              <p className="text-body-large text-on-surface-variant">{summary.standing}</p>
             </div>
           )}
 
@@ -553,19 +553,19 @@ export default function AssessPage() {
           {summary && (
             <div className="space-y-3 text-left">
               {summary.strengthLead && (
-                <p className="text-body-lg text-ink">{summary.strengthLead}</p>
+                <p className="text-title-medium text-on-surface">{summary.strengthLead}</p>
               )}
               {/* The most actionable sentence on the screen, and no longer in a
                   panel of its own. Three stacked coloured boxes meant none of
                   them read as important; the label carries the emphasis. */}
               {summary.next && (
-                <p className="text-body text-slate">
-                  <span className="font-semibold text-eufit-deep">{summary.nextLead} </span>
+                <p className="text-body-large text-on-surface-variant">
+                  <span className="font-semibold text-on-tertiary-container">{summary.nextLead} </span>
                   {summary.next}
                 </p>
               )}
               {summary.unmeasured && (
-                <p className="text-caption text-neutral-500">{summary.unmeasured}</p>
+                <p className="text-body-medium text-on-surface-variant">{summary.unmeasured}</p>
               )}
             </div>
           )}
@@ -574,11 +574,11 @@ export default function AssessPage() {
               happens next rather than asking for anything. It stays inside the
               read's column on desktop: it is the end of that thought, and full
               width would make a queue notice the widest thing on the page. */}
-          <div className="material-mint mt-6 flex items-start gap-3 rounded-lg px-5 py-4 text-left">
+          <div className="card-tonal mt-6 flex items-start gap-3 rounded-large px-5 py-4 text-left">
             <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-primary">
               <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM13.25 17h-2.5v-6.5h2.5V17Z" />
             </svg>
-            <p className="text-body text-ink">{t("teaser.nextStep")}</p>
+            <p className="text-body-large text-on-surface">{t("teaser.nextStep")}</p>
           </div>
         </div>
       </div>
@@ -600,13 +600,13 @@ export default function AssessPage() {
             queue, so what they can usefully do now is read what the work is.
             Secondary treatment throughout, because when TASK-046 turns the
             booking CTA on below, that one is the revenue step. */}
-        <div className="material mt-4 flex flex-col rounded-lg px-5 py-6 text-left lg:mt-4">
-          <h2 className="text-h4">{t("services.cta.heading")}</h2>
-          <p className="mt-2 text-body text-slate">{t("services.cta.body")}</p>
+        <div className="card-outlined mt-4 flex flex-col rounded-large px-5 py-6 text-left lg:mt-4">
+          <h2 className="text-title-large">{t("services.cta.heading")}</h2>
+          <p className="mt-2 text-body-large text-on-surface-variant">{t("services.cta.body")}</p>
           {/* Still hand-rolled, and the one deliberate exception to the table:
               this link carries `?focus=` so the services page opens on the axis
               the candidate scored lowest, which no shared component can know.
-              It is the table's `/assess-result` primary in every other respect,
+              It is the table's `/efc-assessment-result` primary in every other respect,
               including its destination.
 
               **Teal, from 16/08/2026.** It was Terracotta until the percentile
@@ -616,7 +616,7 @@ export default function AssessPage() {
               the card's floor so it lines up with the card beside it. */}
           <Link
             href={path(weakest ? `/services?focus=${weakest}` : "/services")}
-            className="mt-5 inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-primary px-7 py-4 text-body-lg font-semibold text-on-primary transition-colors hover:bg-primary-deep lg:mt-auto lg:self-start"
+            className="btn-tonal mt-5 inline-flex min-h-14 items-center justify-center gap-2 px-7 py-4 text-body-large font-semibold lg:mt-auto lg:self-start"
           >
             {t("services.cta.button")}
             <span aria-hidden>&rarr;</span>
@@ -632,11 +632,11 @@ export default function AssessPage() {
           treatment at that point rather than both shouting. */}
       {BOOKING_URL && (
         <div className="mt-8 text-left">
-          <h2 className="text-h4">{t("narrative.cta.heading")}</h2>
-          <p className="mt-2 text-body text-slate">{t("narrative.cta.body")}</p>
+          <h2 className="text-title-large">{t("narrative.cta.heading")}</h2>
+          <p className="mt-2 text-body-large text-on-surface-variant">{t("narrative.cta.body")}</p>
           <a
             href={BOOKING_URL}
-            className="mt-4 inline-block rounded-md bg-accent px-7 py-3.5 text-label text-on-accent transition-colors hover:bg-accent-bright"
+            className="mt-4 inline-block btn-filled px-7 py-3.5 text-label-large"
           >
             {t("narrative.cta.button")}
           </a>
@@ -648,7 +648,7 @@ export default function AssessPage() {
       <button
         type="button"
         onClick={() => setStep(STAGE1.length - 1)}
-        className="mt-6 rounded-sm px-2 py-1 text-caption text-slate underline underline-offset-2 transition-colors hover:text-eufit-deep"
+        className="mt-6 rounded-small px-2 py-1 text-body-medium text-on-surface-variant underline underline-offset-2 transition-colors hover:text-on-tertiary-container"
       >
         {t("teaser.revise")}
       </button>

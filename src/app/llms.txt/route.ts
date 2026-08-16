@@ -59,7 +59,7 @@ export function GET() {
       "What PunProfile is, and the way into the free check",
     ),
     route(
-      "/assess",
+      "/efc-assessment",
       "EU Fit Check",
       "The free assessment. Around two minutes, on a phone, no sign-up before the first result. Scores four dimensions: professional capability, employability, mobility readiness, European market fit",
     ),
