@@ -36,10 +36,61 @@ const fontVars = [
   notoSansThai.variable,
 ].join(" ");
 
+/**
+ * The canonical origin, for absolute URLs in metadata.
+ *
+ * Social crawlers do not resolve relative image paths, so `metadataBase` has to
+ * be a real origin. `SITE_URL` is the same variable `convex/notify.ts` reads and
+ * `scripts/launch-prod.sh` sets; the fallback is the domain claimed 14/08/2026.
+ * A preview deployment inherits the production origin here on purpose: a preview
+ * that advertises its own hostname to Facebook gets that hostname cached in
+ * Facebook's scraper, and the preview is gone a week later.
+ */
+const SITE_URL = process.env.SITE_URL ?? "https://punprofile.vercel.app";
+
+/**
+ * The share card. Added 16/08/2026, because a link posted into the Facebook
+ * group rendered as a bare URL with no image, no headline and no reason to tap.
+ *
+ * **Thai, not English.** A crawler arrives with no locale cookie, so it would
+ * otherwise get the English fallback while every real reader of that post is
+ * Thai. `DEFAULT_LOCALE` is Thai and the strings come from the copy bank rather
+ * than being retyped here, which is what stops the card and the landing page
+ * from drifting apart.
+ *
+ * The image is `public/og.png`, a static 1200x630 file. Static rather than
+ * generated per request: it never changes per visitor, Facebook caches it for
+ * days anyway, and `og.png`'s Thai headline needs the real Noto Serif Thai
+ * rather than whatever a runtime image renderer can be persuaded to load.
+ * `public/README-og.md` says how it was built and how to rebuild it.
+ */
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "PunProfile",
   description:
     "An honest, coach-informed first read on your EU job-market readiness.",
+  openGraph: {
+    type: "website",
+    siteName: "PunProfile",
+    locale: "th_TH",
+    url: "/",
+    title: t("landing.headline", DEFAULT_LOCALE),
+    description: t("landing.subhead", DEFAULT_LOCALE),
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: t("landing.headline", DEFAULT_LOCALE),
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: t("landing.headline", DEFAULT_LOCALE),
+    description: t("landing.subhead", DEFAULT_LOCALE),
+    images: ["/og.png"],
+  },
 };
 
 export default async function RootLayout({
