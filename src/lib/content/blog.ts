@@ -1,4 +1,5 @@
 import type { Copy } from "./copy";
+import { START_IN_EUROPE } from "./posts/start-in-europe";
 
 /**
  * The blog. 16/08/2026.
@@ -31,6 +32,13 @@ import type { Copy } from "./copy";
  * confirmed to be his own, and he held all three. They are queued in the
  * coaching repo's `blog-queue.md` with their slugs, pillars, citation maps, line
  * ranges into the Thai source and finished English.
+ *
+ * **Article 1 was superseded on 18/08/2026** by a longer piece written to the
+ * same slug, `start-in-europe`, which is Paul's Thai in the coaching repo's
+ * `blog-first-30-days-th.md`. It is the first article to carry a FAQ, which is
+ * where the `qa` block below came from. The queue's entry for the article it
+ * replaced is marked rather than deleted, so two articles are waiting there and
+ * one is waiting beside it.
  *
  * **An empty blog must not advertise itself**, so the menu entry, the footer
  * link and the sitemap all read `POSTS.length`. Filling this array is the whole
@@ -271,13 +279,17 @@ export interface Post {
  * order is editable here rather than being a property of the dates.
  */
 export const POSTS: readonly Post[] = [
-  // Empty on purpose, and this is the state the section shipped in.
+  // The first article, published 18/08/2026. Its prose lives in
+  // `posts/start-in-europe.ts` rather than inline: it is about 3,000 words in
+  // two languages, and this file defines the schema. The array is still the
+  // registry and still the running order, which is all it ever was.
+  START_IN_EUROPE,
   //
-  // Three articles were prepared from `golden-th/other/thai-europe-job-guide.md`
-  // and Paul held all three on 16/08/2026. They are queued in the coaching
-  // repo's `blog-queue.md`, which carries the slug, the pillar, the citation
-  // map, the line ranges into the Thai source and the finished English, so
-  // publishing them is filling this array rather than deciding anything again.
+  // Two more are queued in the coaching repo's `blog-queue.md`, which carries
+  // the slug, the pillar, the citation map, the line ranges into the Thai
+  // source and the finished English, so publishing them is adding them here
+  // rather than deciding anything again. Article 1 of the original three was
+  // superseded by the one above; see the note at the top of this file.
   //
   // Nothing else in the app needs changing when they land. The menu entry, the
   // footer link and the sitemap all read `POSTS.length`, so they appear on
