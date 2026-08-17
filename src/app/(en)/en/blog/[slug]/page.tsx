@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ArticleRoute from "@/components/features/blog/ArticleRoute";
 import { POSTS, postBySlug } from "@/lib/content/blog";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, shareCard } from "@/lib/seo";
 
 /** `/en/blog/<slug>`. See `src/app/(en)/en/page.tsx` for why this file exists. */
 export function generateStaticParams() {
@@ -23,11 +23,18 @@ export async function generateMetadata({
     description: post.summary,
     locale: "en",
     type: "article",
+    // The same card in both trees. It is modelled clay with no text in it, so
+    // nothing about it is in one language.
+    image: shareCard(post),
   });
 
   return {
     ...base,
-    openGraph: { ...base.openGraph, type: "article", publishedTime: post.published },
+    openGraph: {
+      ...base.openGraph,
+      type: "article",
+      publishedTime: post.published,
+    },
   };
 }
 

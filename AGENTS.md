@@ -319,8 +319,25 @@ npm run lint
 npm run verify:copy
 npm run verify:pages
 npm run verify:consent
+npm run blog:cards -- --check
 git push origin master
 ```
+
+**`blog:cards --check` joined this list on 18/08/2026**, with the first article
+to carry its own artwork. It fails if an article has an image and no sharing
+card at `public/blog/share/<slug>.jpg`, or if the card is not 1200x630.
+
+The check exists because the failure it catches is invisible locally. Every
+platform that renders a link card, Facebook, Line, X, LinkedIn and Slack, crops
+what it is given to about 1.91:1. The article art is 4:3, so a centre crop takes
+135px off the top and the bottom, which on the first article cuts the figure's
+head off. Nothing in a local build, a lint or a typecheck can see that; the first
+person to find out is whoever pastes the link into a group.
+
+`npm run blog:cards` generates any that are missing, skips ones that already
+exist, and takes `--force` to redo them. It is macOS only and its output is
+committed, the same arrangement as `npm run tokens`, so the Vercel build never
+runs it.
 
 Then watch the Vercel build show `convex deploy` running **before** `next
 build`, and run any pending backfill against `--prod` afterwards.

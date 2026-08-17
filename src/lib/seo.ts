@@ -89,6 +89,7 @@ export function pageMetadata({
   description,
   locale = DEFAULT_LOCALE,
   type = "website",
+  image,
 }: {
   /** The Thai path. The English one is derived, never passed. */
   path: string;
@@ -96,9 +97,26 @@ export function pageMetadata({
   description: Copy;
   locale?: Locale;
   type?: "website" | "article";
+  /**
+   * The sharing card, as a site-absolute path. Sets `og:image` AND
+   * `twitter:image`, which is why it is one argument rather than something a
+   * caller assembles: they were drifting apart the moment there were two of
+   * them. X falls back to `og:image` when `twitter:image` is absent, so the
+   * missing one was invisible rather than broken, which is the harder kind of
+   * wrong to notice.
+   *
+   * Omit it and the page falls through to the site image on the root layout.
+   * That is right for a page about the whole site and wrong for an article,
+   * which is what `shareCard` exists to prevent.
+   */
+  image?: string;
 }): Metadata {
   const t = pick(title, locale);
   const d = pick(description, locale);
+  // Absolute, because Line, Slack and several crawlers do not resolve a
+  // relative og:image against the page URL. `metadataBase` covers Next's own
+  // rendering, and this covers everything that reads the tag directly.
+  const card = image ? [{ url: absolute(image), width: 1200, height: 630 }] : undefined;
 
   return {
     title: t,
@@ -122,9 +140,36 @@ export function pageMetadata({
       url: localePath(path, locale),
       title: t,
       description: d,
+      ...(card ? { images: card } : {}),
     },
-    twitter: { card: "summary_large_image", title: t, description: d },
+    twitter: {
+      card: "summary_large_image",
+      title: t,
+      description: d,
+      ...(card ? { images: card } : {}),
+    },
   };
+}
+
+/**
+ * The sharing card for an article, by convention rather than by a field.
+ *
+ * An article with art at `/blog/<slug>.jpg` has a card at
+ * `/blog/share/<slug>.jpg`, cut to 1200x630 by `scripts/build-share-cards.ts`.
+ * Deriving it from the slug means there is nothing per-article to set and
+ * therefore nothing to forget, and `npm run blog:cards -- --check` fails the
+ * pre-push list if an article has art and no card.
+ *
+ * **Why not just reuse the article image.** Every platform renders a link card
+ * at about 1.91:1 and centre-crops to get there. The art is 4:3, so a centre
+ * crop takes 135px off the top, which on the first article cuts the figure's
+ * head off. The card is the same picture recut with an upward bias.
+ *
+ * Returns undefined for an article with no art, and the page then falls through
+ * to the site image, which is the correct fallback rather than a broken one.
+ */
+export function shareCard(post: { slug: string; image?: { src: string } }): string | undefined {
+  return post.image ? `/blog/share/${post.slug}.jpg` : undefined;
 }
 
 /**

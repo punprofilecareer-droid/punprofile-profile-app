@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ArticleRoute from "@/components/features/blog/ArticleRoute";
 import { POSTS, postBySlug } from "@/lib/content/blog";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, shareCard } from "@/lib/seo";
 
 /**
  * One article, Thai. 16/08/2026.
@@ -34,6 +34,11 @@ export async function generateMetadata({
     title: post.title,
     description: post.summary,
     type: "article",
+    // The article's own sharing card, cut to the ratio every platform crops to.
+    // `pageMetadata` puts it on both `og:image` and `twitter:image`, and
+    // `shareCard` returns undefined for an article with no art, which falls
+    // through to the site image rather than to nothing.
+    image: shareCard(post),
   });
 
   return {
@@ -45,9 +50,7 @@ export async function generateMetadata({
       // discriminant, so without this line the object is no longer provably an
       // article and `publishedTime` has nowhere to live.
       type: "article",
-      // The one field only an article has. No per-article image exists, so the
-      // card falls through to the site image declared in the tree's root layout
-      // rather than pointing at a file nobody made.
+      // The one field only an article has.
       publishedTime: post.published,
     },
   };

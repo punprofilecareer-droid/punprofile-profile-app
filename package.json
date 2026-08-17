@@ -21,7 +21,8 @@
     "send-pack": "tsx scripts/build-send-pack.ts",
     "design:html": "tsx scripts/build-design-html.ts",
     "tokens": "tsx scripts/build-tokens.ts",
-    "review:thai": "tsx scripts/export-thai-review.ts"
+    "review:thai": "tsx scripts/export-thai-review.ts",
+    "blog:cards": "tsx scripts/build-share-cards.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
