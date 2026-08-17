@@ -3,6 +3,12 @@ import type { Copy } from "./copy";
 /**
  * The blog. 16/08/2026.
  *
+ * **This is Paul's own Thai, as of 17/08/2026.** He read all twenty-eight strings
+ * on the generated review sheet and rewrote eleven, including retiring a topic.
+ * `scripts/lib/provenance.ts` reads this claim and `npm run audit:thai` files the
+ * module on the strength of it, so it is a statement about who wrote the words
+ * and never an inference from how good they look.
+ *
  * ---------------------------------------------------------------------------
  * WHAT THIS IS FOR
  * ---------------------------------------------------------------------------
