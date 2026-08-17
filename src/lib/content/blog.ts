@@ -169,9 +169,53 @@ export interface Cite {
   href: string;
 }
 
+/**
+ * A question and its answer, added 18/08/2026 with the first article to carry a
+ * FAQ.
+ *
+ * It is a block rather than eight more `Section`s, and that is the whole reason
+ * it exists. A `Section` heading renders at `h2`, so a FAQ built out of sections
+ * would put "How much savings do I need?" at the same level as the article's own
+ * arguments, and a reader scanning the headings would meet a list of questions
+ * with no signal that the piece has ended and its appendix has begun.
+ *
+ * The second reason is the one `Content_Strategy.md` § Playbooks cares about:
+ * a playbook is the piece someone finds by typing the question into a search
+ * engine or asking an assistant. Marking a question AS a question is what lets
+ * either of them see it, and `articleJsonLd` emits an `FAQPage` node from these
+ * blocks for exactly that. A heading and a paragraph that happen to sit next to
+ * each other carry none of it.
+ *
+ * `a` is a list of paragraphs, not one string. Every answer in the first article
+ * runs to two or three, and joining them with a newline would render as one
+ * block of text in a `<p>`.
+ */
 export type Block =
   | { kind: "p"; text: Copy; cite?: Cite }
-  | { kind: "list"; items: readonly Copy[]; ordered?: boolean };
+  /**
+   * `bare` drops the marker, added 18/08/2026. Several passages in
+   * `start-in-europe` are short lines stacked with no bullets: the four
+   * questions a reader starts asking themselves, the three conditions an
+   * application is testing. They are a list, which is why they are one here, but
+   * a bullet turns four private worries into a checklist and a dot in front of
+   * "อายุเท่านี้ยังทันหรือเปล่า" reads as an instruction. Rendering them as
+   * separate paragraphs was the alternative and it loses the stanza: paragraph
+   * spacing between four one-line questions reads as four paragraphs.
+   */
+  | { kind: "list"; items: readonly Copy[]; ordered?: boolean; bare?: boolean }
+  /**
+   * A subheading inside a section, added 18/08/2026 for the same article. Its
+   * 30-day plan is one section with four weeks under it, and a `Section` has one
+   * heading, so without this the plan is either four sections that lose their
+   * frame or four bold-looking paragraphs that are not headings to anything
+   * reading the document rather than looking at it.
+   *
+   * It is not `qa` with the answer left out. `qa` carries the `FAQPage` markup
+   * and this carries none, which is the difference that matters: a subheading is
+   * structure, a question is a claim about what the section answers.
+   */
+  | { kind: "sub"; text: Copy }
+  | { kind: "qa"; q: Copy; a: readonly Copy[] };
 
 export interface Section {
   /** Absent on the opening section, which runs straight on from the title. */

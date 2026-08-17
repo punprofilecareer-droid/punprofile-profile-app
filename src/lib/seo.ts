@@ -3,6 +3,7 @@ import type { Copy } from "./content/copy";
 import { DEFAULT_LOCALE, localePath, pick } from "./locale";
 import type { Locale } from "./locale";
 import { POSTS } from "./content/blog";
+import type { Block, Section } from "./content/blog";
 
 /**
  * Everything the site says about itself to a machine. 16/08/2026.
@@ -275,14 +276,33 @@ export function blogJsonLd(locale: Locale, heading: Copy, intro: Copy) {
  * with a name and a job title would be the first fabricated claim in the site's
  * structured data. The organisation is true and is enough. Give it a `Person`
  * when there is a byline on the page to match it.
+ *
+ * **An `FAQPage` node joins the graph when the article carries `qa` blocks**,
+ * added 18/08/2026. That is the reason the block kind exists at all: a playbook
+ * is the piece someone reaches by asking the question, and this is the only form
+ * in which the question and its answer travel as a pair. It is emitted from the
+ * blocks rather than hand-written, so the page and the markup cannot say
+ * different things, and an article with no FAQ gets no node rather than an empty
+ * one.
  */
 export function articleJsonLd(
-  post: { slug: string; title: Copy; summary: Copy; published: string },
+  post: {
+    slug: string;
+    title: Copy;
+    summary: Copy;
+    published: string;
+    sections: readonly Section[];
+    image?: { src: string };
+  },
   section: Copy,
   locale: Locale,
 ) {
   const at = (path: string) => absolute(localePath(path, locale));
   const url = at(`/blog/${post.slug}`);
+
+  const qa = post.sections
+    .flatMap((s) => s.body)
+    .filter((b): b is Extract<Block, { kind: "qa" }> => b.kind === "qa");
 
   return {
     "@context": "https://schema.org",
@@ -310,6 +330,27 @@ export function articleJsonLd(
           { "@type": "ListItem", position: 3, name: pick(post.title, locale) },
         ],
       },
+      ...(qa.length
+        ? [
+            {
+              "@type": "FAQPage",
+              "@id": `${url}#faq`,
+              // The answer is the article's own paragraphs joined, because the
+              // markup has to say what the page says. Two paragraphs on screen
+              // are one answer to the question, and a reader who gets only the
+              // first of them has been given a different, shorter answer than
+              // the one that was written.
+              mainEntity: qa.map((b) => ({
+                "@type": "Question",
+                name: pick(b.q, locale),
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: b.a.map((p) => pick(p, locale)).join(" "),
+                },
+              })),
+            },
+          ]
+        : []),
     ],
   };
 }

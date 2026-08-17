@@ -38,10 +38,21 @@ function Body({ blocks }: { blocks: readonly Block[] }) {
   return (
     <>
       {blocks.map((block, i) => {
+        if (block.kind === "sub") {
+          return (
+            <h3 key={i} className="mt-10 text-title-medium text-on-surface">
+              {pick(block.text)}
+            </h3>
+          );
+        }
+
         if (block.kind === "list") {
           const items = block.items.map((item, j) => (
             <li key={j} className="flex gap-3 text-body-large text-on-surface">
-              {block.ordered ? (
+              {/* A bare list keeps the `li`, and therefore the list semantics,
+                  and drops only the drawn marker. See `blog.ts` for why these
+                  passages are a list at all. */}
+              {block.bare ? null : block.ordered ? (
                 <span aria-hidden className="shrink-0 font-semibold text-primary">
                   {j + 1}.
                 </span>
@@ -62,6 +73,23 @@ function Body({ blocks }: { blocks: readonly Block[] }) {
             <ul key={i} className="mt-5 flex flex-col gap-3">
               {items}
             </ul>
+          );
+        }
+
+        if (block.kind === "qa") {
+          return (
+            // `h3`, under the section's own `h2`. The FAQ is an appendix to the
+            // argument above it, not a continuation of it, and the heading
+            // outline is the only thing that says so to a screen reader or to
+            // anything else reading the document rather than looking at it.
+            <div key={i} className="mt-10 first:mt-6">
+              <h3 className="text-title-medium text-on-surface">{pick(block.q)}</h3>
+              {block.a.map((para, j) => (
+                <p key={j} className="mt-3 text-body-large text-on-surface-variant">
+                  {pick(para)}
+                </p>
+              ))}
+            </div>
           );
         }
 
