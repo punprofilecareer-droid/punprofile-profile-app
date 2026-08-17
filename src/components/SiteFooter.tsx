@@ -57,13 +57,38 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
               being on a product surface. `footer.ts` carries the full history,
               including the two separate reasons that line was wrong. */}
           <div>
-            <Image
-              src="/punprofile-logo-reversed.svg"
-              alt={t("nav.brand", locale)}
-              width={2421}
-              height={657}
-              className="h-11 w-auto"
-            />
+            {/* Both wordmarks, and the footer declares that it sits on
+                `inverse-surface` rather than declaring a colour scheme.
+
+                This was hard-coded to the reversed asset until 17/08/2026, on
+                the reasoning that the footer is on `inverse-surface` in both
+                schemes so its logo never needs to change. The premise was right
+                and the conclusion was backwards: `inverse-surface` is the role
+                that flips, `#2f312a` in light and `#e2e4d8` in dark, so a
+                `#F0F2E7` wordmark that is correct in light lands at about 1.06:1
+                on the dark scheme's pale ground. Paul spotted it.
+
+                The header declares `surface` and gets the opposite pair.
+                `globals.css` holds the one rule that knows what either ground
+                means in either scheme. */}
+            <span data-logo-ground="inverse" className="contents">
+              <Image
+                src="/punprofile-logo-reversed.svg"
+                alt={t("nav.brand", locale)}
+                width={2421}
+                height={657}
+                className="brand-wordmark-white h-11 w-auto"
+              />
+              <Image
+                src="/punprofile-logo.svg"
+                // Empty: the copy above already names the brand for a screen
+                // reader and only one of the two is ever displayed.
+                alt=""
+                width={2421}
+                height={657}
+                className="brand-wordmark-black h-11 w-auto"
+              />
+            </span>
             <p className={`mt-8 text-inverse-primary ${EYEBROW(locale)}`}>
               {pick(FOLLOW_EYEBROW, locale)}
             </p>

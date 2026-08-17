@@ -78,9 +78,10 @@ export default function BrandLockup() {
    * mark is identical in both schemes and only the type flips.
    *
    * **Neither element names the scheme**, which is the rule in `AGENTS.md`: no
-   * component may know about dark, and `dark:` is banned. They carry
-   * `brand-logo-light` and `brand-logo-dark`, and `globals.css` decides, in the
-   * one place that already reasons about `prefers-color-scheme`.
+   * component may know about dark, and `dark:` is banned. This declares the
+   * ground it sits on, `surface`, which it legitimately knows, and `globals.css`
+   * works out which wordmark that means in which scheme. `SiteFooter` declares
+   * `inverse` and gets the opposite answer.
    *
    * The cost is one extra request. Both files are small vectors, `priority` is on
    * the light one only, and the alternative is a component that has to be told
@@ -90,7 +91,7 @@ export default function BrandLockup() {
    * on `inverse-surface` in both schemes, which is what that role is for.
    */
   return (
-    <>
+    <span data-logo-ground="surface" className="contents">
       <Image
         // Both are vector, and both carry the brand orange mark, which is what
         // makes the pair read as one family rather than two logos.
@@ -99,7 +100,7 @@ export default function BrandLockup() {
         width={w}
         height={h}
         priority
-        className={`brand-logo-light ${box}`}
+        className={`brand-wordmark-black ${box}`}
       />
       <Image
         src={efc ? "/efc-logo-reversed.svg" : "/punprofile-logo-reversed.svg"}
@@ -109,8 +110,8 @@ export default function BrandLockup() {
         alt=""
         width={w}
         height={h}
-        className={`brand-logo-dark ${box}`}
+        className={`brand-wordmark-white ${box}`}
       />
-    </>
+    </span>
   );
 }

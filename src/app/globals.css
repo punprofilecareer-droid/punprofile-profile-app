@@ -212,20 +212,34 @@
   to   { opacity: 0; }
 }
 
-/* The brand lockup, one asset per colour scheme.
-   Added 17/08/2026, on Paul's read that the wordmark should invert in dark.
+/* The brand lockup, one asset per colour scheme AND per ground.
+   Added 17/08/2026 on Paul's read that the wordmark should invert in dark, and
+   corrected the same day when the footer stayed wrong.
 
-   `BrandLockup` renders both and names neither scheme, which is the rule: no
-   component may know about dark. This is the one place that decides, and it sits
-   beside the token file that already reasons about `prefers-color-scheme`.
+   Two variants of each logo exist and differ in one respect: the wordmark is
+   `#000000` in the light files and `#F0F2E7` in the reversed ones. Brand orange
+   and EU Fit Check's blue are identical in both, so the mark never changes
+   colour, which `design.md` requires and which a CSS `invert()` filter would
+   have broken.
 
-   Only the wordmark differs between the two assets. Brand orange and EU Fit
-   Check's blue are identical in both, so the mark never changes colour, which
-   `design.md` requires and which a CSS `invert()` filter would have broken. */
-.brand-logo-dark { display: none; }
+   **The choice is not the colour scheme, it is the ground the logo sits on**,
+   and that is why the first version of this rule was wrong. The header sits on
+   `surface`, which is light in the light scheme and dark in the dark one. The
+   footer sits on `inverse-surface`, which is the opposite by definition:
+   `#2f312a` in light and `#e2e4d8` in dark. Hard-coding the footer to the
+   reversed asset put a `#F0F2E7` wordmark on an `#e2e4d8` ground in dark mode,
+   about 1.06:1, which is invisible rather than merely wrong.
+
+   So a component declares the ground it is on, which it legitimately knows, and
+   never the scheme, which `AGENTS.md` forbids it from knowing. */
+[data-logo-ground="surface"] .brand-wordmark-white { display: none; }
+[data-logo-ground="inverse"] .brand-wordmark-black { display: none; }
+
 @media (prefers-color-scheme: dark) {
-  .brand-logo-light { display: none; }
-  .brand-logo-dark { display: block; }
+  [data-logo-ground="surface"] .brand-wordmark-black { display: none; }
+  [data-logo-ground="surface"] .brand-wordmark-white { display: block; }
+  [data-logo-ground="inverse"] .brand-wordmark-white { display: none; }
+  [data-logo-ground="inverse"] .brand-wordmark-black { display: block; }
 }
 
 @layer components {
