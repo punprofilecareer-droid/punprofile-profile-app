@@ -10,6 +10,8 @@
     "termbase": "tsx scripts/sync-termbase.ts",
     "market": "tsx scripts/sync-market-snapshot.ts",
     "verify:copy": "tsx scripts/verify-copy.ts",
+    "verify:pages": "tsx scripts/verify-pages.ts",
+    "review:page": "tsx scripts/export-page-review.ts",
     "lint:thai": "tsx scripts/lint-thai.ts",
     "verify:consent": "tsx scripts/verify-consent.ts",
     "dictionary": "tsx scripts/build-field-dictionary.ts",
@@ -18,7 +20,8 @@
     "audit:thai": "tsx scripts/audit-thai.ts",
     "send-pack": "tsx scripts/build-send-pack.ts",
     "design:html": "tsx scripts/build-design-html.ts",
-    "tokens": "tsx scripts/build-tokens.ts"
+    "tokens": "tsx scripts/build-tokens.ts",
+    "review:thai": "tsx scripts/export-thai-review.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
