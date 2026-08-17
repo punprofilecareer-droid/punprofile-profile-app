@@ -33,6 +33,31 @@ Cross-references in this repo's code are bare filenames in backticks, never
 paths, which is what let those files move without breaking a single citation.
 Keep it that way.
 
+### Setting up a machine needs both repos, from two GitHub accounts
+
+Recorded 17/08/2026, when the coaching repo got a remote for the first time.
+
+| Repo | GitHub |
+|---|---|
+| This one | `punprofilecareer-droid/punprofile-profile-app` |
+| The coaching repo | `paulthinks/punprofile-career-coaching` |
+
+Two owners, both private, and **they must be cloned as siblings in the same
+parent folder**, because eleven scripts here read across the boundary by relative
+path: `build-tokens.ts` generates the whole token layer from `design.md`,
+`sync-termbase.ts` reads `termbase.yml`, `verify-thai-register.ts` reads
+`golden-th/`, and `verify-pages.ts` and the review exporters write their output
+there.
+
+So a clone of this repo alone installs and runs, and cannot regenerate its own
+colours or its own termbase. `verify-copy.ts` says so out loud when the sibling
+is missing rather than silently passing, which is the behaviour to preserve in
+anything new that reads across.
+
+**Candidate data is not in either repo.** `/data` here is gitignored and always
+was; the coaching repo's history was scrubbed of a 101-record survey export on
+17/08/2026, before its first push. `data-inventory.md` there is the record.
+
 Read the owning document before reasoning about anything. The workspace root
 `../CLAUDE.md` carries the full map, and it exists because reading this repo in
 isolation has already produced wrong work twice.

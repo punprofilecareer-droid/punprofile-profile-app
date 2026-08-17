@@ -95,6 +95,71 @@ interface Item {
 }
 
 const SECTIONS: Record<string, { title: string; items: Item[] }[]> = {
+  blog: [
+    {
+      title: "1. The blog index, top of the page",
+      items: [
+        { key: "BLOG_HEADING", where: "The page headline", from: "new" },
+        { key: "BLOG_INTRO", where: "Under the headline", from: "new" },
+      ],
+    },
+    {
+      title: "2. The email signup, which sits directly under the intro",
+      items: [
+        { key: "SIGNUP_LABEL", where: "The field label", from: "new" },
+        { key: "SIGNUP_NOTE", where: "Under the field. What they are agreeing to receive", from: "new" },
+        { key: "SIGNUP_CONSENT", where: "The consent line. PDPA", from: "new" },
+        { key: "SIGNUP_BUTTON", where: "The button", from: "new" },
+        { key: "SIGNUP_BUSY", where: "The button while it is submitting", from: "new" },
+        { key: "SIGNUP_DONE", where: "After a successful signup", from: "new" },
+        { key: "SIGNUP_BAD_EMAIL", where: "When the address is malformed", from: "new" },
+      ],
+    },
+    {
+      title: "3. The topic row",
+      items: [
+        { key: "BLOG_TOPICS_LABEL", where: "Above the topic buttons", from: "new" },
+        { key: "BLOG_ALL", where: "The first topic button, meaning no filter", from: "new" },
+        { key: "TOPICS[0].label", where: "Topic button: how-to", from: "new" },
+        { key: "TOPICS[1].label", where: "Topic button: the European job market", from: "new" },
+        { key: "TOPICS[2].label", where: "Topic button: perspective", from: "new" },
+        { key: "TOPICS[3].label", where: "Topic button: questions and doubts", from: "new" },
+        { key: "TOPICS[4].label", where: "Topic button: client stories", from: "new" },
+      ],
+    },
+    {
+      title: "4. The start-here block, and the article cards",
+      items: [
+        { key: "PLAYBOOKS_HEADING", where: "Heading over the start-here block", from: "new" },
+        { key: "PLAYBOOKS_INTRO", where: "Under that heading", from: "new" },
+        { key: "BLOG_READ", where: "The link on every article card", from: "new" },
+      ],
+    },
+    {
+      title: "5. When there is nothing to show",
+      items: [
+        { key: "BLOG_NONE_YET", where: "The whole index, while no article exists at all", from: "new" },
+        { key: "BLOG_EMPTY", where: "When a topic filter matches nothing", from: "new" },
+      ],
+    },
+    {
+      title: "6. Inside an article",
+      items: [
+        { key: "BLOG_BACK", where: "The link back to the index", from: "new" },
+        { key: "BLOG_QUESTION_LABEL", where: "Above the question the article answers", from: "new" },
+        { key: "BLOG_CLOSE", where: "The closing line, on the index and at the foot of every article", from: "new" },
+      ],
+    },
+    {
+      title: "7. Unsubscribing, reached only from an email link",
+      items: [
+        { key: "UNSUBSCRIBE_HEADING", where: "The page headline", from: "new" },
+        { key: "UNSUBSCRIBE_WORKING", where: "While the unsubscribe is in flight", from: "new" },
+        { key: "UNSUBSCRIBE_BODY", where: "After it succeeds", from: "new" },
+        { key: "UNSUBSCRIBE_RESTART", where: "The way to resubscribe", from: "new" },
+      ],
+    },
+  ],
   home: [
     {
       title: "1. Hero",
