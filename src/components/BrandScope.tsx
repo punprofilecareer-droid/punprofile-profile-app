@@ -37,8 +37,21 @@ export default function BrandScope({
   // `undefined` rather than a second value: a page that is not EU Fit Check has
   // no brand scope at all, and the attribute should not be in the DOM claiming
   // otherwise.
+  //
+  // **`text-on-surface` is not decoration, it is the fix for a real bug**, found
+  // while checking the scope in dark. Redefining `--color-on-surface` here does
+  // nothing for text that merely inherits its colour: `body` sits ABOVE this
+  // element, so it resolved `var(--color-on-surface)` against the parent's
+  // palette and every uncoloured heading and paragraph in the assessment
+  // inherited that already-computed olive-black. Custom properties cascade
+  // forwards, not backwards. Declaring the colour again on the scope itself is
+  // what makes the ink follow the brand, and it is one line rather than a colour
+  // class on every element that did not need one before.
   return (
-    <div data-brand={isAssessment(pathname) ? "efc" : undefined} className={className}>
+    <div
+      data-brand={isAssessment(pathname) ? "efc" : undefined}
+      className={`text-on-surface ${className ?? ""}`}
+    >
       {children}
     </div>
   );
