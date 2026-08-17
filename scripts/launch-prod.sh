@@ -68,9 +68,9 @@ npx tsx scripts/verify-copy.ts         # reports missing Thai, does not fail
 # minutes here beats debugging it in a deploy log.
 npm run build
 
-git -c user.name=agentsiam -c user.email=hi@agentsiam.com \
+git -c user.name=punprofile -c user.email=punprofile.career@gmail.com \
   add convex/_generated
-git -c user.name=agentsiam -c user.email=hi@agentsiam.com \
+git -c user.name=punprofile -c user.email=punprofile.career@gmail.com \
   commit -m "Regenerate Convex types for the new-lead notification" || true
 
 
@@ -186,7 +186,7 @@ npx convex run --prod importLeads:importLegacyLeads "$(cat data/backfill.json)"
 #   run Stage 1 end to end with a throwaway email
 #   the contact step has NO "Not for production" banner
 #   the chart renders with Professional Capability hollow, that is correct
-#   $SITE/privacy    has NO draft banner, says hi@agentsiam.com, twelve
+#   $SITE/privacy    has NO draft banner, says punprofile.career@gmail.com, twelve
 #                    months from last contact
 #   $SITE/admin      your test lead appears, scored, email visible
 #   your inbox       a "EU Fit Check: new lead" mail with NO candidate
