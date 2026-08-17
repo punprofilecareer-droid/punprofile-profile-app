@@ -73,6 +73,13 @@ import type { Copy } from "./copy";
  *   Reusing them here would caption an article with a picture of something else.
  *   The cards carry a topic wash instead, which is the system's own device
  *   (`design.md` § Colors) and needs no asset that does not exist.
+ *
+ *   **Reversed 18/08/2026, and the reasoning above is why it could be.** The
+ *   objection was never to illustration, it was to captioning an article with a
+ *   picture of something else. `start-in-europe` has an image made for it, so
+ *   `image` is now an optional field on `Post`: an article with art gets it, an
+ *   article without renders exactly as the blog did before, and neither waits
+ *   for the other.
  */
 
 /**
@@ -242,6 +249,18 @@ export interface Post {
   title: Copy;
   /** One line. The card, and the share preview a LINE paste renders. */
   summary: Copy;
+  /**
+   * The article's own illustration, optional. Same shape as `services.ts` uses,
+   * deliberately: one `src` and one translated `alt`, cover-cropped to 4:3 in
+   * the asset rather than at render, so the crop is decided once.
+   *
+   * It reaches four places and they are not interchangeable. The card and the
+   * article header show it; `generateMetadata` makes it the Open Graph image, so
+   * a LINE paste previews the article rather than the site; and `articleJsonLd`
+   * carries it, which is what an answer engine quotes alongside the headline.
+   * An article without one falls through to `og.png` on all of them.
+   */
+  image?: { src: string; alt: Copy };
   sections: readonly Section[];
   /** Paul's closing question, where the piece has one. */
   question?: Copy;

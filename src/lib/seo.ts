@@ -319,6 +319,10 @@ export function articleJsonLd(
         dateModified: post.published,
         inLanguage: locale,
         articleSection: pick(section, locale),
+        // Absolute, because a schema consumer is not reading this from the page
+        // it sits on. Omitted rather than null when the article has no art, so
+        // the node never claims an image that is not there.
+        ...(post.image ? { image: absolute(post.image.src) } : {}),
         author: { "@id": absolute("/#organization") },
         publisher: { "@id": absolute("/#organization") },
       },

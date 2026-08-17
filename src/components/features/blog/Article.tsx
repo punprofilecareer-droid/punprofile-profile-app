@@ -19,6 +19,7 @@
  * for the eye to reacquire itself than the same line in Latin.
  */
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
@@ -151,6 +152,30 @@ export default function Article({ slug }: { slug: string }) {
           </div>
         </div>
       </header>
+
+      {/* Between the header and the body, spanning the reading column rather
+          than the window. A full-bleed hero would be the widest thing on a site
+          whose every other page holds one measure, and the article's own header
+          already carries the topic wash that a hero would be competing with.
+
+          `priority` because on an article page this is the largest element above
+          the fold and lazy-loading it is the one case Next's own guidance calls
+          out. Sized to the column, not the viewport, so a desktop reader is not
+          served an image three times the box it lands in. */}
+      {post.image && (
+        <div className="mx-auto w-full max-w-2xl px-6 pt-10">
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-large">
+            <Image
+              src={post.image.src}
+              alt={pick(post.image.alt)}
+              fill
+              priority
+              sizes="(max-width: 672px) 100vw, 672px"
+              className="object-cover"
+            />
+          </div>
+        </div>
+      )}
 
       <div className="mx-auto w-full max-w-2xl px-6 py-14">
         <p className="text-body-large text-on-surface-variant">{pick(post.summary)}</p>

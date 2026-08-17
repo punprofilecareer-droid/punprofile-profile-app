@@ -20,6 +20,7 @@
  * the blog.
  */
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCopy } from "@/components/LocaleProvider";
 import { BLOG_READ, formatDate, topicById } from "@/lib/content/blog";
@@ -42,6 +43,23 @@ export default function PostCard({
         lead ? "large:col-span-2" : ""
       }`}
     >
+      {/* Above the text, not beside it, and only when the article has one. The
+          4:3 box and `object-cover` are `services/page.tsx`'s pattern, so the
+          two grids of cards on this site crop art the same way. `rounded-t` and
+          `overflow-hidden` because the card's own corner is `rounded-large` and
+          a square image inside it would show four white notches. */}
+      {post.image && (
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-large">
+          <Image
+            src={post.image.src}
+            alt={pick(post.image.alt)}
+            fill
+            sizes={lead ? "(max-width: 1200px) 100vw, 66vw" : "(max-width: 1200px) 100vw, 33vw"}
+            className="object-cover"
+          />
+        </div>
+      )}
+
       <div className="flex flex-1 flex-col px-6 py-7">
         <p className="text-body-medium font-semibold text-primary">{pick(topic.label)}</p>
 
