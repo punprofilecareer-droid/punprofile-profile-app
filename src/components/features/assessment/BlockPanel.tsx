@@ -28,6 +28,8 @@ export type BlockImage = {
   alt: string;
   priority: boolean;
   blurDataURL: string | null;
+  /** CSS `object-position`. See `focus` in `blocks.ts` for why this exists. */
+  focus: string;
 };
 
 export default function BlockPanel({
@@ -84,7 +86,8 @@ export default function BlockPanel({
               alt=""
               fill
               sizes="(max-width: 839px) 1px, 33vw"
-              className="object-cover object-center"
+              style={{ objectPosition: leaving.focus }}
+              className="object-cover"
             />
           )}
           <Image
@@ -109,7 +112,10 @@ export default function BlockPanel({
               : {})}
             sizes="(max-width: 839px) 1px, 33vw"
             onAnimationEnd={() => setLeaving(null)}
-            className={`object-cover object-center ${leaving ? "q-photo-in" : ""}`}
+            // The subject's position in the frame, not the frame's centre.
+            // `blocks.ts` says why they are not the same thing.
+            style={{ objectPosition: shown.focus }}
+            className={`object-cover ${leaving ? "q-photo-in" : ""}`}
           />
         </div>
       )}

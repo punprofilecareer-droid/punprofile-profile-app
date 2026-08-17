@@ -24,6 +24,21 @@ const DIMS: { key: string; copyKey: CopyKey }[] = [
   { key: "europeanMarketFit", copyKey: "dimension.europeanMarketFit" },
 ];
 
+/**
+ * One decimal, unless there is nothing after the point. 17/08/2026, Paul's read.
+ *
+ * `3.0/5` is a number pretending to be a measurement: the decimal claims a
+ * precision the scorer did not produce, and four of them in a grid make the
+ * whole panel look like a spreadsheet. `3/5` says the same thing and reads as an
+ * answer.
+ *
+ * Rounded first and stripped second, so 3.04 becomes `3` rather than `3.0`. The
+ * question is what the reader is shown, not what the float happens to be.
+ */
+function format(score: number): string {
+  return score.toFixed(1).replace(/\.0$/, "");
+}
+
 export default function ScoreLegend({ scores }: { scores: Record<string, number | undefined> }) {
   const { t } = useCopy();
 
@@ -48,7 +63,7 @@ export default function ScoreLegend({ scores }: { scores: Record<string, number 
               </p>
               {measured ? (
                 <p className="mt-0.5 text-body-large font-semibold tabular-nums text-on-surface">
-                  {t("teaser.score.value", { score: score.toFixed(1) })}
+                  {t("teaser.score.value", { score: format(score) })}
                 </p>
               ) : (
                 <p className="mt-0.5 text-body-medium italic text-on-surface-variant">

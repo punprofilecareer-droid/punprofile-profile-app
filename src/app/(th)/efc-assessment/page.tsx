@@ -92,6 +92,8 @@ function panelFor(item: FlowStep): BlockImage | null {
     // Only the first block preloads. The rest are minutes away.
     priority: b.id === BLOCKS[0].id,
     blurDataURL: b.blurDataURL,
+    // Centred unless the photograph says otherwise, which most of them do not.
+    focus: b.focus ?? "center",
   };
 }
 
@@ -557,10 +559,15 @@ export default function AssessPage() {
       <h1 className="text-headline-large text-on-tertiary-container large:text-display-small">{t("teaser.headline")}</h1>
       <p className="mt-2 text-body-large text-on-surface-variant large:text-body-large">{t("teaser.selfReported")}</p>
 
-      {/* Chart and read, side by side from `lg`. `items-start` rather than
-          stretch: the read is shorter than the chart card for most profiles and
-          a white card grown to match it would be mostly empty. */}
-      <div className="large:mt-12 large:grid large:grid-cols-2 large:items-start large:gap-10">
+      {/* Chart and read, side by side from `lg`.
+          **`items-stretch` since 17/08/2026, reversing the note that used to
+          sit here.** It said the read was shorter than the chart card for most
+          profiles, so a white card grown to match would be mostly empty. The
+          read has since gained the mascot, the strength line, the next action
+          and the queue notice, and it is now the taller of the two by a long
+          way: the chart card stopped short and the section had a ragged floor.
+          Matching them is what makes the two columns read as one row. */}
+      <div className="large:mt-12 large:grid large:grid-cols-2 large:items-stretch large:gap-10">
         {/* The chart gets its own surface. The radar's grid is 1px neutral-300
             and the field's gradient moves through the same value range, so on
             the field alone the grid reads as noise rather than as structure. */}

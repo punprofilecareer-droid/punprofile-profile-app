@@ -43,6 +43,20 @@ export type Block = {
    */
   blurDataURL: string | null;
   /**
+   * Where the subject actually is, as a CSS `object-position`. Omit for centred.
+   *
+   * Added 17/08/2026, after Paul saw a photograph with its subject cut in half.
+   * The panel is a third of the screen and full height, so a landscape source is
+   * cropped to about the middle 44% of its width, and a subject sitting off
+   * centre in the frame falls outside that. The crop was already centred; the
+   * photograph was not.
+   *
+   * **A property of the photograph, so it lives beside the photograph.** The
+   * alternative was re-cropping the files, which throws away pixels that a wider
+   * layout might want back and leaves nothing on record about why.
+   */
+  focus?: string;
+  /**
    * What the picture is doing, in one line. Kept next to the slot rather than
    * only in the sourcing brief, because whoever swaps the file later will read
    * this and not that.
@@ -103,6 +117,10 @@ export const BLOCKS: readonly Block[] = [
     image: "cost.jpg",
     blurDataURL:
       "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCARXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAABSgAwAEAAAAAQAAAA8AAAAA/8IAEQgADwAUAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAMCBAEFAAYHCAkKC//EAMMQAAEDAwIEAwQGBAcGBAgGcwECAAMRBBIhBTETIhAGQVEyFGFxIweBIJFCFaFSM7EkYjAWwXLRQ5I0ggjhU0AlYxc18JNzolBEsoPxJlQ2ZJR0wmDShKMYcOInRTdls1V1pJXDhfLTRnaA40dWZrQJChkaKCkqODk6SElKV1hZWmdoaWp3eHl6hoeIiYqQlpeYmZqgpaanqKmqsLW2t7i5usDExcbHyMnK0NTV1tfY2drg5OXm5+jp6vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAQIAAwQFBgcICQoL/8QAwxEAAgIBAwMDAgMFAgUCBASHAQACEQMQEiEEIDFBEwUwIjJRFEAGMyNhQhVxUjSBUCSRoUOxFgdiNVPw0SVgwUThcvEXgmM2cCZFVJInotIICQoYGRooKSo3ODk6RkdISUpVVldYWVpkZWZnaGlqc3R1dnd4eXqAg4SFhoeIiYqQk5SVlpeYmZqgo6SlpqeoqaqwsrO0tba3uLm6wMLDxMXGx8jJytDT1NXW19jZ2uDi4+Tl5ufo6ery8/T19vf4+fr/2wBDAAkJCQkJCRAJCRAWEBAQFh4WFhYWHiYeHh4eHiYuJiYmJiYmLi4uLi4uLi43Nzc3NzdBQUFBQUlJSUlJSUlJSUn/2wBDAQsMDBIREiARESBMMyozTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEz/2gAMAwEAAhEDEQAAAeoZIqTLQ3VD/9oACAEBAAEFAkyJykuEIBSCxmXMJiQtYH//2gAIAQMRAT8Baf/aAAgBAhEBPwFt/9oACAEBAAY/Ai1JPm6vyZFBR0L/AP/EADMQAQADAAICAgICAwEBAAACCwERACExQVFhcYGRobHB8NEQ4fEgMEBQYHCAkKCwwNDg/9oACAEBAAE/IQrux1Zou35ivQ7s5mH7qykd92IJmZf/2gAMAwEAAhEDEQAAEOPv/8QAMxEBAQEAAwABAgUFAQEAAQEJAQARITEQQVFhIHHwkYGhsdHB4fEwQFBgcICQoLDA0OD/2gAIAQMRAT8QC3f/2gAIAQIRAT8QsX//2gAIAQEAAT8QRUJrl4pKqEEPREPfd5yAkSl58YxPD8VIl8lA9m0YYmHSDjl5v//Z",
+    // The two women sit in the right-hand third of a 2000px frame, centred on
+    // roughly 67%. A centred crop kept the left one and cut the right one in
+    // half, which is the frame Paul photographed.
+    focus: "65% 50%",
     intent: "Money and family, the hardest block. Domestic and quiet.",
   },
 ] as const;

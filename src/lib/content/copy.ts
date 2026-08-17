@@ -417,17 +417,24 @@ export const COPY = {
     // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "งานที่เราคัดกรองให้กลุ่มนี้",
   },
-  "stats.market.value": {
-    screen: "First read, the job-pipeline figure. {screened} and {published} are counts",
-    en: "{screened} roles read, {published} cleared the visa-sponsorship bar.",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "อ่านประกาศงาน {screened} ตำแหน่ง ผ่านเกณฑ์สปอนเซอร์วีซ่า {published} ตำแหน่ง",
+  "stats.market.screened": {
+    screen: "First read, the label under the count of roles read",
+    en: "roles read",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul. The words are
+    // lifted from the sentence this replaced rather than composed fresh.
+    th: "ประกาศงานที่อ่าน",
+  },
+  "stats.market.published": {
+    screen: "First read, the label under the count that cleared the sponsorship bar",
+    en: "cleared the visa-sponsorship bar",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "ผ่านเกณฑ์สปอนเซอร์วีซ่า",
   },
   "stats.market.foot": {
-    screen: "First read, under the job-pipeline figure. {from} {to} {employers}",
-    en: "Between {from} and {to}, from {employers} employers. We post these in the Thai Jobs in Europe group.",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "ระหว่าง {from} ถึง {to} จาก {employers} บริษัท และประกาศในกลุ่ม Thai Jobs in Europe",
+    screen: "First read, under the job-pipeline figures. {to} is the snapshot date",
+    en: "Last updated {to}",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "อัปเดตล่าสุด {to}",
   },
 
   // ------------------------------------------------------- community stats
