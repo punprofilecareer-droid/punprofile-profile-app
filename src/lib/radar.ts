@@ -92,6 +92,8 @@ export interface RadarOptions {
  */
 const WIDTH_RATIO = 1.6;
 const RADIUS_RATIO = 0.35;
+/** One line of `viz-axis-label` at 13px, for the space calculation below. */
+const LINE_H = 16;
 
 const MARK = { line: 2, dot: 8 };
 
@@ -109,14 +111,34 @@ export function radarSvg(axes: RadarAxis[], opts: RadarOptions): string {
   const W = Math.round(size * (opts.widthRatio ?? WIDTH_RATIO));
   const cx = W / 2;
   const cy = size / 2 - 4;
-  const R = size * RADIUS_RATIO;
   const maxLabel = opts.maxLabel ?? 24;
   const showValues = opts.values ?? true;
   const wrap = opts.wrapLabels ?? false;
   const hasIcons = axes.some((a) => a.icon);
   /** Where the icon ring sits, and how far past it the label starts. */
   const ICON = { gap: 20, r: 15, scale: 0.62 };
-  const labelGap = hasIcons ? ICON.gap + ICON.r + 13 : 18;
+  /**
+   * Past the FAR edge of the ring, not past its centre.
+   *
+   * Corrected 17/08/2026 after Paul screenshotted the top label sitting inside
+   * its own icon. The ring spans `gap` to `gap + 2r` from the rim, so a label
+   * placed at `gap + r + 13` is 2px short of the ring's centre. It has to clear
+   * `gap + 2r` and then some.
+   */
+  const labelGap = hasIcons ? ICON.gap + ICON.r * 2 + 10 : 18;
+  /*
+   * The plot radius, capped so the icon ring and two lines of label fit inside
+   * the viewBox rather than outside it.
+   *
+   * Added 17/08/2026 after Paul screenshotted the top label cut off by the top of
+   * the box. `RADIUS_RATIO` alone put the rim at 0.35 of the height, which leaves
+   * 0.15 for everything outside it: fine for an 18px label gap, not for a 15px
+   * ring sitting 20px out with two lines of text past it.
+   *
+   * The cap is derived rather than tuned, so raising `size` gives the shape its
+   * radius back instead of needing a new number here.
+   */
+  const R = Math.min(size * RADIUS_RATIO, size / 2 - (labelGap + LINE_H * 2));
   const n = axes.length;
   if (n < 3) return `<p class="viz-empty">Needs at least three axes to draw.</p>`;
 
@@ -190,13 +212,84 @@ export function radarSvg(axes: RadarAxis[], opts: RadarOptions): string {
    * letter-space Thai.
    */
   const lines = (text: string): string[] => {
-    if (!wrap) return [text];
-    const spaces: number[] = [];
-    for (let k = 0; k < text.length; k++) if (text[k] === " ") spaces.push(k);
-    if (!spaces.length) return [text];
+    if (!wrap || text.length < 12) return [text];
     const mid = text.length / 2;
-    const at = spaces.reduce((best, k) => (Math.abs(k - mid) < Math.abs(best - mid) ? k : best), spaces[0]);
-    return [text.slice(0, at), text.slice(at + 1)];
+
+    // A space is always the best break, and Latin labels have them.
+    const spaces: number[] = [];
+    for (let k = 1; k < text.length - 1; k++) if (text[k] === " ") spaces.push(k);
+    if (spaces.length) {
+      const at = spaces.reduce((b, k) => (Math.abs(k - mid) < Math.abs(b - mid) ? k : b), spaces[0]);
+      return [text.slice(0, at), text.slice(at + 1)];
+    }
+
+    /*
+     * **Thai is written without spaces, so the space rule found nothing and the
+     * labels stayed one line.** That shipped on 17/08/2026 and Paul screenshotted
+     * it: the labels were the same length as before, pushed 30px further out by
+     * the new icons, and clipped by the viewBox on three sides.
+     *
+     * Thai cannot be broken anywhere. Two constraints, and both are about not
+     * splitting a cluster:
+     *
+     * - **Never before a combining mark.** Upper and lower vowels and tone marks
+     *   (U+0E31, U+0E34-U+0E3A, U+0E47-U+0E4E) render on the consonant before
+     *   them. Orphaning one puts a floating accent at the start of line two.
+     * - **Never after a leading vowel.** เ แ โ ใ ไ (U+0E40-U+0E44) are written
+     *   before the consonant they are pronounced after, so the pair is one unit.
+     *
+     * This is not a line-breaking algorithm and does not pretend to be: proper
+     * Thai wrapping needs a dictionary, which is why browsers ship one and an SVG
+     * `<text>` cannot use it. It picks the safest character nearest the middle,
+     * which puts the break inside a word about as often as not. That is visible
+     * and acceptable; a clipped label is neither.
+     */
+    // **Thai text only.** Without this guard "Employability", which is one word
+    // with no space, fell through to the character rule and rendered as
+    // "Employ / ability". A Latin word that does not fit stays on one line; a
+    // mid-word break with no hyphen is worse than a long label.
+    if (!/[\u0E00-\u0E7F]/.test(text)) return [text];
+
+    /*
+     * Prefer a break immediately before a common Thai function word.
+     *
+     * Added 17/08/2026 after looking at the four real axis labels. The
+     * safest-character rule below got three of them right by luck of where the
+     * midpoint fell, and split the fourth as `ความพร้อมในก / ารย้ายประเทศ`,
+     * cutting `การ` in half. Every one of these labels is a compound built from a
+     * handful of function words, so looking for those first fixes the whole class
+     * rather than that one string.
+     *
+     * Not a dictionary and not trying to be. It is the nine words that actually
+     * start segments in this product's Thai, and it fails over to the character
+     * rule when none of them lands near the middle.
+     */
+    const STARTS = ["การ", "ความ", "ใน", "และ", "ของ", "ที่", "กับ", "จาก", "เพื่อ"];
+    const wordStarts: number[] = [];
+    for (const w of STARTS) {
+      let from = 1;
+      for (;;) {
+        const k = text.indexOf(w, from);
+        if (k < 0 || k > text.length - 3) break;
+        if (k >= 3) wordStarts.push(k);
+        from = k + 1;
+      }
+    }
+    if (wordStarts.length) {
+      const at = wordStarts.reduce((b, k) => (Math.abs(k - mid) < Math.abs(b - mid) ? k : b), wordStarts[0]);
+      return [text.slice(0, at), text.slice(at)];
+    }
+
+    const isMark = (c: string) => /[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/.test(c);
+    const isLeadVowel = (c: string) => /[\u0E40-\u0E44]/.test(c);
+    const safe: number[] = [];
+    for (let k = 4; k < text.length - 3; k++) {
+      if (isMark(text[k]) || isLeadVowel(text[k - 1])) continue;
+      safe.push(k);
+    }
+    if (!safe.length) return [text];
+    const at = safe.reduce((b, k) => (Math.abs(k - mid) < Math.abs(b - mid) ? k : b), safe[0]);
+    return [text.slice(0, at), text.slice(at)];
   };
 
   // Markers and labels.

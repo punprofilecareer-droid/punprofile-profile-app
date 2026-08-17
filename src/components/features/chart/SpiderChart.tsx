@@ -93,7 +93,11 @@ export default function SpiderChart({ scores, variant = "teaser", axisLabels }: 
       // Both grew on 17/08/2026 with the icons and the bigger labels: the ring at
       // the end of every axis needs the room the plot used to have, and shrinking
       // the plot to make space would have undone the point of the change.
-      size: variant === "teaser" ? 360 : 470,
+      // Raised again on 17/08/2026. `radar.ts` now caps the plot radius so the
+      // icon ring and two lines of label fit inside the box, which means a small
+      // `size` buys a small radar rather than a clipped one. These give the shape
+      // back the radius it had before the icons, with the rings inside the box.
+      size: variant === "teaser" ? 470 : 560,
       // No truncation on the teaser: the widened box below holds the longest
       // Thai name whole, and a name cut to "ความพร้อมในการ…" is indistinguishable
       // from the axis next to it.
@@ -113,14 +117,27 @@ export default function SpiderChart({ scores, variant = "teaser", axisLabels }: 
       // no reason, which was visible as soon as the desktop layout gave the
       // chart a card of its own. Measured off the longest label rather than off
       // the locale, so a future language gets the right box without a rule.
-      // Two-line labels take roughly half the horizontal room a one-line label
-      // did, so the Thai case no longer needs the widest box. Still measured off
-      // the longest label rather than off the locale.
+      /*
+       * Raised again on 17/08/2026, after being lowered the same day and clipping
+       * three of the four Thai labels.
+       *
+       * The lowering assumed two-line labels take half the width. They do, and it
+       * was still wrong on two counts: the wrap did nothing for Thai until the
+       * break rule in `radar.ts` was fixed, and the icons push every label 40px
+       * further from the centre, which the ratio has to pay for whether or not the
+       * label wrapped.
+       *
+       * So it is measured rather than guessed. At `size` 360 the plot radius is
+       * 126, the label anchor sits 60 past it, and the longest Thai axis name over
+       * two lines needs about 90 more. That is 276 of half-width against 270 at
+       * ratio 1.5, which is why it was clipping by a hair on the widest label and
+       * badly on the unwrapped one.
+       */
       widthRatio:
         variant === "teaser"
           ? Math.max(...axes.map((a) => a.label.length)) > 16
-            ? 1.7
-            : 1.5
+            ? 1.95
+            : 1.7
           : undefined,
     });
     // `locale` is the real dependency; `t` is rebuilt whenever it changes.

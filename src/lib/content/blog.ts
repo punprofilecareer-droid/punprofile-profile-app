@@ -351,8 +351,19 @@ export const SIGNUP_BUTTON: Copy = {
  * pinned post's move 5: say what this is not, in the same breath as the offer.
  */
 export const SIGNUP_NOTE: Copy = {
-  en: "Only roles that match you. No spam, and you can stop at any time.",
-  th: "ส่งเฉพาะตำแหน่งที่ตรงกับคุณ ไม่มีสแปม ยกเลิกได้ทุกเมื่อ",
+  // The fifth and last of the job-alert promises, caught by Paul 17/08/2026
+  // after the other four were fixed. It said "only roles that match you", which
+  // is the same Phase 4 paid feature.
+  //
+  // **Worth recording that it took two passes.** Four strings were corrected by
+  // grepping for `แจ้งตำแหน่งงาน` and `matching roles`, and this one used neither:
+  // it says `ส่งเฉพาะตำแหน่งที่ตรงกับคุณ`, the same promise in different words. A
+  // grep finds the phrasing it was given and a person reading the form finds the
+  // promise. That is why he found it and the search did not.
+  //
+  // The no-spam and stop-any-time halves are unchanged and are still true.
+  en: "News and practical advice only. No spam, and you can stop at any time.",
+  th: "ส่งเฉพาะข่าวสารและคำแนะนำ ไม่มีสแปม ยกเลิกได้ทุกเมื่อ",
 };
 
 /**
