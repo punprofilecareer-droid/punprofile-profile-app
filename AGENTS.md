@@ -144,6 +144,10 @@ GENERATED, and that is the thing to know before touching styling:
   `.card-outlined` and `.card-tonal`. Do not reintroduce a backdrop filter.
 - **`--ease-settle` is retired**; motion is M3's four curves. Mixing a fifth in
   from outside breaks the relationship between them.
+- **Elevation is a tone, not a shadow.** Level 1 is `surface-container-low`, 2 is
+  `surface-container`, 3 is `surface-container-high`, 4 and 5 are
+  `surface-container-highest`. A `shadow-level-*` is earned only when the element
+  floats over content that may be busy. Three surfaces in this app qualify.
 - **No spacing tokens.** The system's scale already maps onto Tailwind's 4px base.
 - **`src/lib/radar.ts` holds no colours** and should stay that way.
 - **The `--viz-*`, `--ink-*` and `--border` names are load-bearing.**

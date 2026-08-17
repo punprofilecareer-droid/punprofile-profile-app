@@ -221,9 +221,10 @@ export default function SiteMenu() {
                 closing ? "menu-scrim-out" : "menu-scrim-in"
               }`}
             />
-            {/* Same surface as the language menu, which is the other floating
-                control a reader meets in this header, one tier up in elevation
-                because a drawer covers more. Only the right corners are
+            {/* One tier above the language menu, because a drawer covers more.
+                Level 3, which the skill maps to `surface-container-high`; the
+                tone is what carries the elevation and the shadow only earns its
+                place because the drawer floats over the page. Only the right corners are
                 rounded, because the left edge is against the screen and a
                 rounded corner there would float the panel off an edge it is
                 supposed to be attached to. */}
@@ -234,7 +235,7 @@ export default function SiteMenu() {
               role="dialog"
               aria-modal="true"
               aria-label={t("nav.menu")}
-              className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,80vw)] flex-col overflow-hidden rounded-r-large bg-surface-container-low px-5 pt-5 shadow-level-3 outline-none ${
+              className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,80vw)] flex-col overflow-hidden rounded-r-large bg-surface-container-high px-5 pt-5 shadow-level-3 outline-none ${
                 closing ? "menu-panel-out" : "menu-panel-in"
               }`}
               style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}

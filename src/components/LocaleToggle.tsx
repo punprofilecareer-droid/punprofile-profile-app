@@ -183,12 +183,14 @@ export default function LocaleToggle() {
       {open && (
         <ul
           role="menu"
-          // `card-elevated` at level 2, from `design.md`. This was glass until
-          // 16/08/2026; M3 says a floating control is a raised surface rather
-          // than a translucent one, and a menu that reads clearly over whatever
-          // it covers is the point. `overflow-hidden` has to stay, or the item
-          // highlights square off the rounded corners.
-          className="absolute right-0 z-50 mt-1 min-w-[9rem] overflow-hidden rounded-medium bg-surface-container-low py-1 shadow-level-2"
+          // Level 2, which the skill maps to `surface-container`. Elevation in
+          // M3 is a tone first and a shadow second: the tone is what says how
+          // high something sits, and the shadow only earns its place because a
+          // menu floats over content that may be busy. The tone was
+          // `surface-container-low` until 17/08/2026, which is level 1's.
+          // `overflow-hidden` has to stay, or the item highlights square off
+          // the rounded corners.
+          className="absolute right-0 z-50 mt-1 min-w-[9rem] overflow-hidden rounded-medium bg-surface-container py-1 shadow-level-2"
         >
           {LOCALES.map((l) => (
             <li key={l} role="none">
