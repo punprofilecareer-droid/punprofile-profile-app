@@ -3,6 +3,12 @@ import type { Copy } from "./copy";
 /**
  * The contact page's words. Extracted from the page 16/08/2026.
  *
+ * **This is Paul's own Thai, as of 17/08/2026.** He read all four strings on the
+ * generated review sheet, rewrote two and left two. `scripts/lib/provenance.ts`
+ * reads this claim and `npm run audit:thai` files the module on the strength of
+ * it, so it is a statement about who wrote the words and never an inference from
+ * how good they look.
+ *
  * They were four `locale === "th" ? … : …` ternaries inline in the JSX, which
  * was fine while the page was the only thing that read them. It is not any
  * more: the page's `<title>` and meta description are set in a route layout,
@@ -18,8 +24,11 @@ import type { Copy } from "./copy";
 export const CONTACT_HEADING: Copy = { en: "Contact", th: "ติดต่อเรา" };
 
 export const CONTACT_INTRO: Copy = {
-  en: "Questions about the services, about your result, or about your own data. Write to us, we read everything.",
-  th: "มีคำถามเรื่องบริการ เรื่องผลประเมิน หรือเรื่องข้อมูลของคุณ ทักมาได้เลย เราอ่านทุกข้อความ",
+  en: "Whatever you want to ask about, the services, your result, or your data, just write. We read every message.",
+  // Paul's wording, 17/08/2026. `ไม่ว่าจะ` turns a list of three permitted
+  // subjects into an invitation that covers all of them, and drops the two
+  // repeated `เรื่อง`.
+  th: "ไม่ว่าจะมีคำถามเรื่องบริการ ผลประเมิน หรือข้อมูลของคุณ ทักมาได้เลย เราอ่านทุกข้อความ",
 };
 
 /**
@@ -28,8 +37,18 @@ export const CONTACT_INTRO: Copy = {
  * attachment.
  */
 export const CONTACT_CHANNELS: Copy = {
-  en: "LINE is usually the faster reply. Email is better for anything detailed, or if you want to attach a CV.",
-  th: "Line มักได้คำตอบเร็วกว่า ส่วนอีเมลเหมาะกับคำถามที่มีรายละเอียดเยอะ หรือถ้าคุณอยากแนบ CV มาด้วย",
+  en: "We usually reply faster on Line. Email suits anything detailed, or when you want to attach a CV.",
+  // Paul's wording, 17/08/2026. `ปกติเราตอบ` puts us in the sentence: it
+  // was the channel that was fast, and now it is us being faster on it,
+  // which is a thing we can be held to.
+  //
+  // **He wrote `LINE` and this says `Line`**, which is the one departure
+  // from his text. `channel-line` in `termbase.yml` is `fixed: true` with
+  // `LINE` explicitly banned, so the capitalisation is a decided term
+  // rather than a preference and `lint-thai` fails the build on it. If the
+  // decision should change, it changes in the termbase and everywhere at
+  // once.
+  th: "ปกติเราตอบทาง Line ได้เร็วกว่า ส่วนอีเมลเหมาะกับคำถามที่มีรายละเอียดเยอะหรือเมื่อต้องการแนบ CV มาด้วย",
 };
 
 /** For the person who already left their details and is about to do it twice. */

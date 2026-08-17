@@ -102,7 +102,9 @@ export const TOPICS: readonly Topic[] = [
     // The loanword, per LR-05: Thai career writing says "How to" and any Thai
     // compound built for it reads as an invention. The rule's own worked example
     // is แบบเช็ก, a compound assembled to avoid saying "survey".
-    label: { en: "How-to", th: "How to" },
+    // `How-to` in both, corrected 17/08/2026. Paul hyphenated it on the review
+    // sheet, matching the pillar's own name in `Content_Strategy.md`.
+    label: { en: "How-to", th: "How-to" },
     wash: "var(--color-secondary-container)",
   },
   {
@@ -274,8 +276,11 @@ export const BLOG_ALL: Copy = { en: "All", th: "ทั้งหมด" };
 export const BLOG_BACK: Copy = { en: "All articles", th: "บทความทั้งหมด" };
 
 export const BLOG_EMPTY: Copy = {
-  en: "Nothing under this topic yet.",
-  th: "หัวข้อนี้ยังไม่มีบทความ",
+  en: "Nothing in this topic yet.",
+  // Paul's wording, 17/08/2026. He cut `ลองดูหัวข้ออื่น`: the topic row is
+  // directly above this line, so telling the reader to try another one is
+  // narrating a control they can already see.
+  th: "ยังไม่มีบทความในหัวข้อนี้",
 };
 
 /**
@@ -285,8 +290,13 @@ export const BLOG_EMPTY: Copy = {
  * the page still carries its action, so nobody arrives at a dead end.
  */
 export const BLOG_NONE_YET: Copy = {
-  en: "No articles here yet. The first ones are being written.",
-  th: "ตอนนี้ยังไม่มีบทความ กำลังเขียนชิ้นแรกอยู่",
+  en: "There is nothing to read yet. We are writing the first one.",
+  // Paul's wording, 17/08/2026, and this is the one that matters most on
+  // this page: with no articles published it is the only Thai a visitor to
+  // `/blog` actually sees. `ให้อ่าน` says what is missing from the reader's
+  // side, and `เรา` puts someone behind the work rather than leaving it as
+  // a state the page is in.
+  th: "ตอนนี้ยังไม่มีบทความให้อ่าน เรากำลังเขียนชิ้นแรกอยู่",
 };
 
 export const BLOG_QUESTION_LABEL: Copy = {
@@ -326,13 +336,19 @@ export const BLOG_READ: Copy = { en: "Read", th: "อ่านบทความ
 // ---------------------------------------------------------------------------
 
 export const PLAYBOOKS_HEADING: Copy = {
-  en: "New here? Start with the playbooks.",
-  th: "เพิ่งมาครั้งแรก? เริ่มจากคู่มือเหล่านี้",
+  en: "First time here? Start with these guides.",
+  // Paul's wording, 17/08/2026. `ใช่ไหม` and `ได้เลย` are the difference
+  // between a label and someone speaking: the first makes the question a
+  // real one and the second gives permission rather than an instruction.
+  th: "เพิ่งเข้ามาครั้งแรกใช่ไหม? เริ่มจากคู่มือเหล่านี้ได้เลย",
 };
 
 export const PLAYBOOKS_INTRO: Copy = {
-  en: "The ones worth reading first. Each one takes a thing from the start until you can act on it yourself.",
-  th: "บทความที่ควรอ่านก่อน แต่ละเรื่องอธิบายตั้งแต่ต้นจนคุณลงมือทำต่อได้เอง",
+  en: "The articles to start with. Each one explains from the basics through to what you can go and do yourself.",
+  // Paul's wording, 17/08/2026. `ควรเริ่มอ่าน` rather than `ควรอ่านก่อน`,
+  // which is where to begin rather than an order of merit, and `พื้นฐาน`
+  // names what they start from.
+  th: "บทความที่ควรเริ่มอ่าน แต่ละเรื่องอธิบายตั้งแต่พื้นฐานจนคุณนำไปลงมือทำต่อได้ด้วยตัวเอง",
 };
 
 /** The field's accessible name. Never rendered as a visible label. */
@@ -419,8 +435,11 @@ export const SIGNUP_DONE: Copy = {
 };
 
 export const SIGNUP_BAD_EMAIL: Copy = {
-  en: "That email does not look right. Please check it.",
-  th: "อีเมลนี้ดูไม่ถูกต้อง ลองตรวจดูอีกครั้ง",
+  en: "That email is not right. Please check it.",
+  // Paul's wording, 17/08/2026. `ดู` goes: the field either parses or it
+  // does not, and hedging a validation error makes the reader wonder
+  // whether they have to fix it.
+  th: "อีเมลนี้ไม่ถูกต้อง ลองตรวจดูอีกครั้ง",
 };
 
 // ---------------------------------------------------------------------------
@@ -447,13 +466,19 @@ export const UNSUBSCRIBE_HEADING: Copy = {
 };
 
 export const UNSUBSCRIBE_BODY: Copy = {
-  en: "We have recorded that you asked us to stop, with the date. Your record and your assessment result are untouched, and we can still answer you about your own result.",
-  th: "เราบันทึกไว้แล้วว่าคุณขอให้หยุดส่ง พร้อมวันที่ ข้อมูลและผลการประเมินของคุณยังอยู่เหมือนเดิม และเรายังตอบคำถามเรื่องผลของคุณได้",
+  en: "We have recorded your request to stop, with the date. Your details and your result are unchanged, and you can still contact us about your result at any time.",
+  // Paul's wording, 17/08/2026. It names what was recorded rather than only
+  // that something was: `คำขอหยุดรับข่าวสารพร้อมวันที่` is the PDPA record
+  // this page exists to create, and `privacy.ts` promises exactly it.
+  th: "เราได้บันทึกคำขอหยุดรับข่าวสารพร้อมวันที่ไว้แล้ว ข้อมูลและผลประเมินของคุณยังอยู่ตามเดิม และคุณยังติดต่อเราเพื่อสอบถามเกี่ยวกับผลได้เสมอ",
 };
 
 export const UNSUBSCRIBE_RESTART: Copy = {
-  en: "Changed your mind? Sign up again on the articles page, or write to us.",
-  th: "เปลี่ยนใจ? สมัครรับใหม่ได้ที่หน้าบทความ หรือเขียนมาหาเรา",
+  en: "Change your mind whenever, and you can sign up again from the blog, or just contact us.",
+  // Paul's wording, 17/08/2026. It adds the second route: someone who has
+  // just unsubscribed may not want to hunt for a form, and the contact page
+  // is a person.
+  th: "เปลี่ยนใจเมื่อไหร่ ก็กลับมาสมัครรับข่าวสารใหม่ได้ที่หน้าบทความ หรือติดต่อเราได้เลย",
 };
 
 export const UNSUBSCRIBE_WORKING: Copy = {
@@ -480,6 +505,14 @@ export const SIGNUP_BUSY: Copy = {
  * visits reads as a different string.
  */
 export const BLOG_CLOSE: Copy = {
-  en: "Read this far and still not sure where to start? Check which stage you are at first. It takes two minutes.",
-  th: "อ่านมาถึงตรงนี้แล้ว แต่ยังไม่รู้ว่าจะเริ่มตรงไหน? เช็กก่อนว่าตอนนี้คุณอยู่ขั้นไหน ใช้เวลาแค่ 2 นาที",
+  en: "Read this far and still not sure where to start? Two minutes, and you will know which stage of the path to working in Europe you are on.",
+  // Paul's wording, 17/08/2026, and it is the closing line on the index and
+  // at the foot of every article.
+  //
+  // `อ่านมาถึงตรงนี้แล้ว` earns the ask from what the reader just did,
+  // which is the one thing a closing line can do that an opening cannot.
+  // The second half is his own closing sentence from the pinned post,
+  // already used on the home page, so the blog closes the way the site
+  // closes.
+  th: "อ่านมาถึงตรงนี้แล้วยังไม่รู้ว่าจะเริ่มจากไหน? ใช้เวลาแค่ 2 นาที เช็กว่าตอนนี้คุณอยู่ขั้นไหนบนเส้นทางไปทำงานในยุโรป",
 };
