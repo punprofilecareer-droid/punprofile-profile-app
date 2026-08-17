@@ -98,6 +98,31 @@ function panelFor(item: FlowStep): BlockImage | null {
   };
 }
 
+/**
+ * Open the screen this renders inside at the top of the page.
+ *
+ * The third instance of one bug, fixed the same way twice already in
+ * `QuestionCard` and `ContactGate`: a step swaps its content without moving the
+ * window, so it inherits wherever the previous step was scrolled to. On a phone
+ * the contact step is tall enough to be scrolled to its submit button, and the
+ * result then opened at roughly its own midpoint, with the headline and the
+ * chart above the fold. Reported 17/08/2026.
+ *
+ * The other two do it in their own `useEffect` on mount. This screen has no
+ * component of its own to hang one on, and deriving "am I showing the result"
+ * from the render guards would restate them, so instead the reset mounts with
+ * the screen and cannot disagree with it.
+ *
+ * `instant`, for the reason `QuestionCard` gives: a scroll animation on top of
+ * a content swap is two motions describing one event.
+ */
+function ResetScroll() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+  return null;
+}
+
 type Answer = string | string[];
 
 const isAnswer = (v: unknown): v is Answer =>
@@ -566,6 +591,7 @@ export default function AssessPage() {
   // would break that; only the shape changes.
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center large:max-w-5xl large:px-8 large:py-16">
+      <ResetScroll />
       <h1 className="text-headline-large text-on-tertiary-container large:text-display-small">{t("teaser.headline")}</h1>
       <p className="mt-2 text-body-large text-on-surface-variant large:text-body-large">{t("teaser.selfReported")}</p>
 
