@@ -57,7 +57,13 @@ function ServicesBody() {
         because two columns of three items leaves an orphan on its own row and
         one column reads better than that until all three fit.
       */}
-      <div className="mt-12 grid items-start gap-6 large:grid-cols-3">
+      {/* No `items-start`, removed 17/08/2026 on Paul's screenshot: it sized
+          every card to its own content, so three cards with different amounts of
+          text ended at three different heights and the row looked broken. The
+          default `stretch` makes them share the tallest, and the card is already
+          `flex flex-col` with a `flex-1` body, so the extra height lands in the
+          text column rather than stretching the image. */}
+      <div className="mt-12 grid gap-6 large:grid-cols-3">
         {SERVICES.map((s) => {
           const on = focused === s.id;
           return (
@@ -68,17 +74,32 @@ function ServicesBody() {
                 on ? "border-tertiary bg-tertiary-container" : "border-outline-variant bg-surface"
               }`}
             >
-              {/* The mascot sits on the exact wash it was drawn on, so the
-                  image has no visible edge against its own panel. Each service
-                  gets a different one, which is `design.md`'s rule that a
-                  mascot illustration carries its own wash. */}
-              <div style={{ backgroundColor: s.image.wash }}>
+              {/* A fixed 4:3 band, filled.
+                  
+                  The three illustrations became photographs on 17/08/2026, and
+                  that changes the treatment rather than just the file. The old
+                  ones were flat vector-ish art on a single colour, so the panel
+                  behind them was painted to that exact colour and the image had
+                  no visible edge. These are studio renders on a soft grey with a
+                  gradient and a cast shadow: there is no single colour to match,
+                  and a panel painted to the average would show a seam wherever
+                  the backdrop falls away.
+
+                  So the image fills the band edge to edge instead, and there is
+                  no panel to match. `object-cover` in a fixed-ratio box also
+                  makes all three bands exactly the same height, which is half of
+                  what Paul asked for; the grid change above is the other half.
+
+                  The sources were cover-cropped to 4:3 at build time rather than
+                  here, so the crop is decided once in the asset rather than
+                  every render. */}
+              <div className="relative aspect-[4/3] w-full">
                 <Image
                   src={s.image.src}
                   alt={pick(s.image.alt)}
-                  width={1442}
-                  height={720}
-                  className="h-auto w-full"
+                  fill
+                  sizes="(max-width: 1200px) 100vw, 33vw"
+                  className="object-cover"
                 />
               </div>
 

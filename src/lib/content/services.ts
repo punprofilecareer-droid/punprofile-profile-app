@@ -18,11 +18,14 @@ import type { Copy } from "./copy";
  * either, so the page ends on a conversation. This comment is the thing to
  * delete first when the pilot closes.
  *
- * Each service carries its own mascot illustration and the wash that
- * illustration was drawn on, which is `design.md`'s rule: one wash per section,
- * never blended, and each mascot on its own. The washes are read off the assets
- * rather than from the token file because the artwork bakes its background in,
- * and a token that is two shades off produces a visible rectangle.
+ * **The three illustrations became photographs on 17/08/2026**, on Paul's call:
+ * `pp_mascot_steping`, `pp_mascot_cv_laptop` and `pp_mascot_magnifying` from the
+ * brand assets inbox. They are studio renders of the mascot rather than flat art,
+ * which is why `wash` went with them; see the note on `image` below.
+ *
+ * All three were cover-cropped to 4:3 and re-encoded at build time, 1200x900 at
+ * quality 82, which took them from 0.5-1.7MB each to 58-85KB. The crop is decided
+ * once in the asset rather than on every render.
  */
 
 export type ServiceId = "coaching" | "profile" | "applications";
@@ -36,8 +39,18 @@ export interface Service {
   question: Copy;
   summary: Copy;
   includes: Copy[];
-  /** Public path to the mascot, and the exact background it was drawn on. */
-  image: { src: string; wash: string; alt: Copy };
+  /**
+   * Public path to the photograph for this service.
+   *
+   * **`wash` is gone, 17/08/2026.** It held the exact colour each illustration
+   * was drawn on, so the panel behind it could be painted to match and the image
+   * would have no visible edge. That was right for flat art on a single colour
+   * and is wrong for what replaced it: these are studio renders on a soft grey
+   * with a gradient and a cast shadow, so there is no colour to match and a panel
+   * painted to the average would seam wherever the backdrop falls away. The image
+   * fills its band edge to edge instead.
+   */
+  image: { src: string; alt: Copy };
   /**
    * The chart axis this service answers, so the result screen can open the page
    * on the card a candidate's own chart points at. A low score here is a reason
@@ -103,9 +116,7 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     image: {
-      src: "/mascot-stepping.png",
-      // Read off the asset, not from a token: the artwork bakes its own cream in.
-      wash: "#fcf5e2",
+      src: "/services/direction.jpg",
       alt: {
         en: "The PunProfile character climbing steps towards a signpost",
         th: "ตัวการ์ตูน PunProfile กำลังเดินขึ้นบันไดไปหาป้ายบอกทาง",
@@ -143,8 +154,7 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     image: {
-      src: "/mascot-laptop.png",
-      wash: "#efedfb",
+      src: "/services/profile.jpg",
       alt: {
         en: "The PunProfile character beside a laptop showing a profile page",
         th: "ตัวการ์ตูน PunProfile ยืนข้างแล็ปท็อปที่เปิดหน้าโปรไฟล์อยู่",
@@ -186,8 +196,7 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     image: {
-      src: "/mascot-magnifier.png",
-      wash: "#e4fbf5",
+      src: "/services/applications.jpg",
       alt: {
         en: "The PunProfile character reading a document through a magnifying glass",
         th: "ตัวการ์ตูน PunProfile กำลังส่องเอกสารด้วยแว่นขยาย",

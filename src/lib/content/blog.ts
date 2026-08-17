@@ -118,13 +118,26 @@ export const TOPICS: readonly Topic[] = [
     wash: "var(--color-tertiary-container)",
   },
   {
-    id: "questions",
-    label: { en: "Questions and doubts", th: "คำถามที่คนมักกังวล" },
-    wash: "var(--color-secondary-container)",
-  },
-  {
+    /*
+     * **Was Client stories until 17/08/2026.** Paul relabelled it on the review
+     * sheet to `เรื่องที่หลายคนกังวล`, the things many people worry about, which
+     * is what the `questions` topic beside it already said. Two buttons meaning
+     * the same thing on one row reads as a bug, so `questions` is deleted rather
+     * than both being kept.
+     *
+     * **Which of the two survives is the decision, and it is his.** Client
+     * stories is `Content_Strategy.md`'s Social Proof pillar, which that document
+     * records as empty because PunProfile is pre-pilot: the topic had no articles
+     * and no prospect of any until the first client outcome exists. The worries
+     * topic has the content brief already written, in the open-text answers of
+     * the Lead Discovery Survey.
+     *
+     * So this is the pillar with something to say taking the slot from the one
+     * without. When Social Proof has outcomes to show, it comes back as its own
+     * topic rather than by editing this label a second time.
+     */
     id: "stories",
-    label: { en: "Client stories", th: "เรื่องจากคนที่เดินเส้นทางนี้" },
+    label: { en: "What people worry about", th: "เรื่องที่หลายคนกังวล" },
     wash: "var(--color-primary-container)",
   },
 ];
