@@ -72,6 +72,29 @@ const FLOW: FlowStep[] = [
 
 const TOTAL_STEPS = FLOW.length;
 
+/**
+ * The photograph for a step in the flow, or null while its block has none.
+ *
+ * Module level rather than inline, since 17/08/2026, because the loading screen
+ * now needs the same answer as the first question. Deriving both from `FLOW`
+ * makes "the picture does not change when the first question arrives" true by
+ * construction rather than by two call sites agreeing.
+ */
+function panelFor(item: FlowStep): BlockImage | null {
+  const b = blockFor("custom" in item ? "languages" : item.key);
+  if (!b?.image) return null;
+  return {
+    src: `/assess/blocks/${b.image}`,
+    // Decorative. The section it marks is already named by the question the
+    // candidate is reading, so describing the photograph would put a sentence
+    // between them and the question for no gain.
+    alt: "",
+    // Only the first block preloads. The rest are minutes away.
+    priority: b.id === BLOCKS[0].id,
+    blurDataURL: b.blurDataURL,
+  };
+}
+
 type Answer = string | string[];
 
 const isAnswer = (v: unknown): v is Answer =>
@@ -267,9 +290,29 @@ export default function AssessPage() {
     [session, locale],
   );
 
+  /**
+   * The wait is already the split, 17/08/2026, on Paul's read.
+   *
+   * This was a centred column, so the assessment opened as one narrow thing in
+   * the middle of a wide screen and then rebuilt itself into a two-column layout
+   * the moment the first question arrived. The candidate's first impression of
+   * the product was a page changing shape under them.
+   *
+   * It is the first question's own photograph, taken from `FLOW[0]` rather than
+   * named here, so nothing moves at the handover: the panel is already painted
+   * and only the right-hand column changes. It is also the block that carries
+   * `priority`, so the 1.5s floor below is spent fetching a picture the
+   * candidate is about to need rather than waiting in front of an empty panel.
+   *
+   * Below `expanded` the panel hides itself, exactly as it does for the
+   * questions, and this stays the centred column it always was on a phone.
+   */
   if (!leadId || !minWaitDone) {
     return (
-      <div className="mx-auto w-full max-w-md px-6 py-24 text-center">
+      <BlockPanel image={panelFor(FLOW[0])}>
+      {/* The same width and padding as `QuestionCard`'s own wrapper, so the
+          column the message sits in is the column the question will sit in. */}
+      <div className="w-full max-w-md px-6 py-8 text-center">
         {startFailed ? (
           <>
             <p className="text-body-large text-on-surface-variant">{t("assess.busy")}</p>
@@ -306,6 +349,7 @@ export default function AssessPage() {
           </>
         )}
       </div>
+      </BlockPanel>
     );
   }
 
@@ -340,20 +384,7 @@ export default function AssessPage() {
      * version put the panel inside the card, which the page keys on the
      * question, so it remounted on every tap and its crossfade could never run.
      */
-    const panel: BlockImage | null = (() => {
-      const b = blockFor("custom" in item ? "languages" : item.key);
-      if (!b?.image) return null;
-      return {
-        src: `/assess/blocks/${b.image}`,
-        // Decorative. The section it marks is already named by the question the
-        // candidate is reading, so describing the photograph would put a
-        // sentence between them and the question for no gain.
-        alt: "",
-        // Only the first block preloads. The rest are minutes away.
-        priority: b.id === BLOCKS[0].id,
-        blurDataURL: b.blurDataURL,
-      };
-    })();
+    const panel = panelFor(item);
 
     if ("custom" in item) {
       return (
