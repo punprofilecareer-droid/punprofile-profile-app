@@ -1,4 +1,4 @@
-import type { Copy } from "./copy";
+import type { Copy, CopyKey } from "./copy";
 
 /**
  * The home page. 17/08/2026.
@@ -53,28 +53,61 @@ import type { Copy } from "./copy";
  * published string is the typo and this is what he meant.
  */
 export const HERO_STANDING: Copy = {
-  en: "We have talked with hundreds of Thai professionals who want to work in Europe, and the same pattern keeps coming back.",
-  th: "เราคุยกับคนไทยที่อยากไปทำงานยุโรปมาเป็นร้อยคน เจอแพทเทิร์นเดิมซ้ำ ๆ",
+  en: "We have talked with over a hundred Thai professionals who want to work in Europe, and we see the same picture come up again and again.",
+  // **Rewritten by Paul, 17/08/2026**, from his own pinned-post sentence.
+  // The note above about `มารับร้อยคน` being a typo for `มาเป็นร้อยคน` is
+  // settled by this: he wrote `กว่าร้อยคน`, and moved it in front of the
+  // clause it modifies rather than leaving it trailing.
+  //
+  // `เห็นภาพเดิมเกิดขึ้นซ้ำ ๆ` replaces `เจอแพทเทิร์นเดิมซ้ำ ๆ`. The loanword
+  // goes, which is the opposite of LR-05's usual direction and right here:
+  // ภาพ is ordinary Thai for what he means, and แพทเทิร์น was carrying
+  // nothing the Thai could not.
+  th: "เราคุยกับคนไทยกว่าร้อยคนที่อยากไปทำงานในยุโรป และเห็นภาพเดิมเกิดขึ้นซ้ำ ๆ",
 };
 
 /**
  * The reframe. Move 4, the brand's emotional core: relocate the cause from the
  * reader's worth to a system nobody has shown them.
  *
- * Built on the pinned post's "การหางานในยุโรปมีกติกาที่ต่างจากไทยเยอะ" and
- * deliberately not on `/coaching`'s version of the same move, which runs
- * through visibility rather than through rules. Two pages making the brand's
- * one argument from two angles is the intent; two pages making it in nearly the
- * same words would be drift.
+ * Built on the pinned post's กติกา and deliberately not on `/coaching`'s
+ * version of the same move, which runs through visibility rather than through
+ * rules. Two pages making the brand's one argument from two angles is the
+ * intent; two pages making it in nearly the same words would be drift.
  *
  * The pinned post ends this sentence on "!" and this does not. Emphasis rationed
  * to one sentence is a feed rule, and a page carrying an exclamation mark in its
  * second paragraph reads as a sales letter.
+ *
+ * **Revised 17/08/2026 after measuring the first draft against his page copy,
+ * and this is the string that most needed it.** Three words came out:
+ *
+ * - `เยอะ` occurs ZERO times in his page and long-form Thai. It is in the pinned
+ *   post, which is a feed surface, and § Short-form and long-form says wording
+ *   is shared but this one is register rather than vocabulary: it reads chatty
+ *   on a page.
+ * - `พวกนั้น` also zero. `เหล่านั้น` is what he writes, four times.
+ * - `บอก...กับคุณ` became `อธิบาย...ให้ฟัง`. `อธิบาย` is his, eight uses.
+ *
+ * What came IN is his own construction: `ไม่ได้อยู่ที่ X แต่อยู่ที่ Y`, which he
+ * uses in the guide, and `ไม่ใช่` more broadly, thirty-five times. Recombining an
+ * approved sentence pattern beats a fresh one, which is the whole of the
+ * composer skill's step 1.
  */
 export const HERO_REFRAME: Copy = {
-  en: "It is rarely about ability. Hiring in Europe runs on rules that are not the ones you learned in Thailand, and nobody hands you those rules.",
-  // TH-UNREVIEWED: composed 17/08/2026 from the pinned post's own clause.
-  th: "ปัญหาไม่ค่อยได้อยู่ที่ความสามารถ แต่การหางานในยุโรปมีกติกาที่ต่างจากไทยเยอะ และไม่มีใครบอกกติกาพวกนั้นกับคุณ",
+  en: "Most of the problem is not that you are not good enough. It is that the European job market plays by a different set of rules from Thailand's, and nobody tells you at the start what those rules are.",
+  // **Paul's wording, 17/08/2026.** Worth reading against what it replaced,
+  // because it is the same move landed harder.
+  //
+  // `ไม่ใช่ว่าคุณเก่งไม่พอ` rather than `ไม่ได้อยู่ที่ความสามารถ`: the abstract
+  // noun becomes the thing the reader actually says to themselves, in the
+  // second person. That is move 4 doing its job, and my version had sanded
+  // it into a proposition.
+  //
+  // `ตลาดงานยุโรปเล่นด้วยกติกาคนละชุด` gives the market the verb. The rules
+  // stop being a property of a situation and become something someone else
+  // is already playing by.
+  th: "ปัญหาส่วนใหญ่ไม่ใช่ว่าคุณเก่งไม่พอ แต่เป็นเพราะตลาดงานยุโรปเล่นด้วยกติกาคนละชุดกับไทย และไม่มีใครบอกคุณตั้งแต่แรกว่ากติกาเหล่านั้นคืออะไร",
 };
 
 export const HERO_MASCOT_ALT: Copy = {
@@ -95,58 +128,78 @@ export const HERO_MASCOT_ALT: Copy = {
  * Nothing refreshes it. `npm run market`, then commit both files.
  */
 export const MARKET_HEADING: Copy = {
-  en: "What we actually do, week after week",
-  // TH-UNREVIEWED: composed 17/08/2026.
-  th: "สิ่งที่เราทำอยู่จริง ทุกสัปดาห์",
+  en: "What we actually do, every day",
+  // **Daily, not weekly**, corrected by Paul 17/08/2026. That is a fact
+  // rather than a wording preference and I had it wrong: `run.sh` in the
+  // coaching repo's `work-skills/daily-jobs/` fires every day at 18:00
+  // Europe/Berlin.
+  //
+  // `ทุกๆวัน` is his spacing and is left exactly as he typed it.
+  th: "สิ่งที่เราทำจริงในทุกๆวัน",
 };
 
 export const MARKET_BODY: Copy = {
-  en: "We read job adverts across Europe, check which employers genuinely sponsor a visa, and publish only the roles a Thai applicant can act on.",
-  // TH-UNREVIEWED: composed 17/08/2026. ตำแหน่ง rather than โอกาส, per LR-05:
-  // this is about specific openings, not opportunity in the abstract.
-  th: "เราอ่านประกาศงานทั่วยุโรป ตรวจว่าบริษัทไหนสปอนเซอร์วีซ่าจริง แล้วประกาศเฉพาะตำแหน่งที่คนไทยสมัครได้",
+  en: "We go through job adverts from across Europe, check which employers really do sponsor a visa, and pick out only the roles a Thai applicant can genuinely apply for.",
+  // **`สปอนเซอร์วีซ่า`, decided by Paul 17/08/2026**, overriding the
+  // `สนับสนุนวีซ่า` this line briefly carried. He used it as a verb three
+  // times in one review pass, here, on the stat label below and in
+  // `VISA_BODY`, which settles a term that had never actually been decided.
+  // It belongs in `termbase.yml`.
+  //
+  // `ไล่ดู` and `คัดมา` rather than `อ่าน` and `ประกาศ`: the first pair
+  // describes sifting, the second described reading and republishing, and
+  // sifting is what the pipeline does. `สมัครได้จริง` closes on the reader.
+  th: "เราไล่ดูประกาศงานจากทั่วยุโรป เช็กว่าบริษัทไหนสปอนเซอร์วีซ่าจริง แล้วคัดมาเฉพาะตำแหน่งที่คนไทยสมัครได้จริง",
 };
 
+/**
+ * A figure from `MARKET`, and the copy key that labels it.
+ *
+ * **The labels are not in this file**, and that changed on 17/08/2026. They were
+ * here as `{ en, th }` pairs, and the first read had its own copies of the same
+ * two in `copy.ts`: two sessions split the old one-sentence `stats.market.value`
+ * on the same day and each gave the pieces their own home. Two definitions of one
+ * label is two wordings of it, which is the failure the one-string-one-place rule
+ * exists to prevent, and it had already happened here inside a day.
+ *
+ * `copy.ts` won rather than this file, for two reasons. `verify-copy.ts` runs the
+ * Thai lint over it and not over the page modules, and the first read needs these
+ * strings too, so a page module would have been the wrong owner even if the lint
+ * reached it.
+ */
 export interface MarketStat {
   /** Key into `MARKET`. The value is never written in this file. */
   field: "screened" | "published" | "employers";
-  label: Copy;
+  /** Key into `COPY`. The label is never written in this file either. */
+  label: CopyKey;
 }
 
 export const MARKET_STATS: readonly MarketStat[] = [
-  {
-    field: "screened",
-    label: {
-      en: "roles read",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ตำแหน่งที่อ่าน",
-    },
-  },
-  {
-    field: "published",
-    label: {
-      en: "cleared the visa-sponsorship bar",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ผ่านเกณฑ์สปอนเซอร์วีซ่า",
-    },
-  },
-  {
-    field: "employers",
-    label: {
-      en: "employers",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "บริษัท",
-    },
-  },
+  { field: "screened", label: "stats.market.screened" },
+  { field: "published", label: "stats.market.published" },
+  { field: "employers", label: "stats.market.employers" },
 ];
 
 export const MARKET_FOOT: Copy = {
-  en: "Between {from} and {to}. We post these in the Thai Jobs in Europe group, free and public.",
-  // "เปิดฟรีและเป็นสาธารณะ" is reused verbatim from `FOLLOW_BODY` in `footer.ts`,
-  // which Paul passed on 15/08/2026. Reusing an approved collocation is safer
-  // than composing a second one for the same idea, and LR-04 is exactly the rule
-  // that punishes composing a new one.
-  th: "ระหว่าง {from} ถึง {to} เราประกาศตำแหน่งเหล่านี้ในกลุ่ม Thai Jobs in Europe เปิดฟรีและเป็นสาธารณะ",
+  en: "Figures from {from} to {to}. We post these roles in the Thai Jobs in Europe group.",
+  /*
+   * The free-and-public clause was here and came out on 17/08/2026, for two
+   * reasons that landed together.
+   *
+   * The first is a rule. It was `เปิดฟรีและเป็นสาธารณะ`, reused verbatim from
+   * `FOLLOW_BODY` in `footer.ts` on the reasoning that an approved collocation
+   * beats a fresh one. Running `lint-thai` over the page modules, which
+   * `verify-copy.ts` does not reach, **failed it under LR-04**: ฟรี is attached
+   * to เปิด, and LR-04 allows ฟรี only on a word that already denotes a valuable
+   * service. The reuse was sound and the string it reused had simply never been
+   * linted. `footer.ts` still carries it and that is Paul's to decide; see
+   * `npm run verify:pages`.
+   *
+   * The second is better than the first. The claim belongs in `COST_ROWS`, which
+   * is a whole section about what is free, and a footnote about dates is not
+   * where a reader looks for it. Removing it removed a duplicate.
+   */
+  th: "ข้อมูลระหว่าง {from} ถึง {to} เราประกาศตำแหน่งเหล่านี้ในกลุ่ม Thai Jobs in Europe",
 };
 
 // ------------------------------------------------- three things we help with
@@ -159,16 +212,19 @@ export const MARKET_FOOT: Copy = {
  */
 export const HELP_HEADING: Copy = {
   en: "Three things we help with",
-  // TH-UNREVIEWED: composed 17/08/2026.
+  // Read and passed by Paul on 17/08/2026. He left it unchanged in the review
+  // sheet and confirmed that was approval rather than a skip when asked, which
+  // is why the marker is gone rather than downgraded.
   th: "สามเรื่องที่เราช่วยคุณได้",
 };
 
 export const HELP_INTRO: Copy = {
-  en: "Career coaching is where everyone starts. The other two can be taken on their own.",
-  // Compressed from `SERVICES_INTRO` in `services.ts`, which is Paul's Thai. The
-  // full sentence belongs on the page that sells them.
-  // TH-UNREVIEWED: composed 17/08/2026.
-  th: "แคเรียร์โค้ชชิ่งคือจุดเริ่มต้นของทุกคน ส่วนอีกสองบริการเลือกใช้แยกกันได้",
+  en: "Everyone starts with career coaching. The other two can be taken on their own, depending on what you need.",
+  // **Paul's wording, 17/08/2026.** The reader is the subject now rather
+  // than the service, and he glossed `แคเรียร์โค้ชชิ่ง (Career Coaching)` on
+  // its first appearance on the page, which is the same courtesy LR-01 asks
+  // for on the brand name.
+  th: "ทุกคนเริ่มต้นด้วยแคเรียร์โค้ชชิ่ง (Career Coaching) ส่วนอีกสองบริการเลือกใช้แยกกันได้ตามความต้องการ",
 };
 
 // ------------------------------------------------------------ the visa answer
@@ -180,17 +236,26 @@ export const HELP_INTRO: Copy = {
  *
  * The "we are not immigration lawyers" half of this is in `DISCLAIMER` in
  * `footer.ts` on every page of the site and is not restated here.
+ *
+ * **There is no heading, and that is deliberate as of 17/08/2026.** There was
+ * one, `เรื่องวีซ่าสปอนเซอร์`, and his sentence opens on those same three words,
+ * so the section said them twice in a row. The alternatives were to paraphrase
+ * his sentence, which is not available, or to invent a heading that says
+ * something the paragraph does not. A one-paragraph section on its own ground
+ * needs neither.
  */
-export const VISA_HEADING: Copy = {
-  en: "About visa sponsorship",
-  // TH-UNREVIEWED: composed 17/08/2026.
-  th: "เรื่องวีซ่าสปอนเซอร์",
-};
-
 export const VISA_BODY: Copy = {
-  en: "It is the question we are asked most. What we can affect is making your profile strong enough to compete from the start, rather than leaving it to luck.",
-  // PAUL, verbatim, from `pinned-post-punprofile-intro.md`. Do not paraphrase.
-  th: "เรื่องวีซ่าสปอนเซอร์เป็นคำถามที่เจอบ่อยที่สุด สิ่งที่เราช่วยได้คือทำให้โปรไฟล์ของคุณแข็งแกร่งพอที่จะแข่งขันได้ตั้งแต่ต้น ไม่ใช่แค่รอโชคช่วย",
+  en: "Visa sponsorship is the question we are asked most. What we can do is help make your profile strong enough to compete from the start, rather than waiting for luck to fall your way.",
+  // **Paul rewrote his own pinned-post sentence for this page, 17/08/2026.**
+  // The note that used to sit here said it was his verbatim and not to be
+  // paraphrased, which was right about everyone except him.
+  //
+  // `การสปอนเซอร์วีซ่า` nominalises what was a bare noun phrase, `แข็งแรง`
+  // replaces `แข็งแกร่ง`, and `แทนที่จะต้องรอให้โชคเข้าข้าง` replaces
+  // `ไม่ใช่แค่รอโชคช่วย`. That last one is the interesting change: the feed
+  // version refuses the magic in four words, and a page has room to say
+  // what you do instead of waiting.
+  th: "คำถามเรื่องการสปอนเซอร์วีซ่าคือเรื่องที่เราเจอบ่อยที่สุด สิ่งที่เราทำได้คือช่วยให้โปรไฟล์ของคุณแข็งแรงพอที่จะแข่งขันได้ตั้งแต่แรก แทนที่จะต้องรอให้โชคเข้าข้าง",
 };
 
 // ------------------------------------------------ what is free and what is not
@@ -225,28 +290,34 @@ export interface CostRow {
 }
 
 export const COST_HEADING: Copy = {
-  en: "What is free, and what is not",
-  // TH-UNREVIEWED: composed 17/08/2026.
-  th: "อะไรไม่มีค่าใช้จ่าย และอะไรมีค่าบริการ",
+  en: "What is free, and what costs",
+  // **Paul's wording, 17/08/2026, and it settles the ฟรี question.** He kept
+  // `ส่วนไหน` and put `ฟรี` back where this file had been avoiding it. See the
+  // note on `COST_ROWS` above.
+  th: "ส่วนไหนฟรี และส่วนไหนมีค่าใช้จ่าย",
 };
 
 export const COST_ROWS: readonly CostRow[] = [
   {
     id: "jobs",
     surface: {
-      en: "The jobs we screen",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ตำแหน่งงานที่เราคัดมา",
+      en: "The jobs we screen for you",
+      // Paul's wording, 17/08/2026. `ให้` on the end: screened for the reader,
+      // not screened in the abstract.
+      th: "ตำแหน่งงานที่เราคัดมาให้",
     },
     price: {
-      en: "Free, always",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ไม่มีค่าใช้จ่าย ตลอดไป",
+      en: "Free",
+      // Paul's wording, 17/08/2026. It read `ไม่มีค่าใช้จ่าย ตลอดไป` and he cut it
+      // to one word, which is what a price label on a card should be.
+      th: "ฟรี",
     },
     body: {
-      en: "Posted in the Thai Jobs in Europe group. Anyone can read them, and that does not change.",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ประกาศในกลุ่ม Thai Jobs in Europe ใครก็เข้าอ่านได้ และจะเป็นแบบนี้ต่อไป",
+      en: "Posted in the Thai Jobs in Europe group, free for anyone to read.",
+      // Paul's wording, 17/08/2026. He also dropped `และจะเป็นอย่างนี้ต่อไป`:
+      // promising a policy will never change is a promise, and the card only has
+      // to say what is true today.
+      th: "ประกาศงานในกลุ่ม Thai Jobs in Europe เปิดให้ทุกคนอ่านฟรี",
     },
   },
   {
@@ -257,13 +328,16 @@ export const COST_ROWS: readonly CostRow[] = [
     },
     price: {
       en: "Free",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ไม่มีค่าใช้จ่าย",
+      // Paul's wording, 17/08/2026, the same cut as the card above.
+      th: "ฟรี",
     },
     body: {
-      en: "Answer on your phone and see where you stand the moment you finish. We follow up personally afterwards.",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ตอบคำถามบนมือถือ แล้วดูผลเบื้องต้นได้ทันทีที่ทำเสร็จ จากนั้นเราจะติดต่อกลับไปคุยกับคุณเอง",
+      en: "Answer on your phone, and the moment you finish you see your first read. After that a real person reads your answers and gets back to you.",
+      // Paul's wording, 17/08/2026. `จริง ๆ` goes back onto `จะมีคนอ่าน`, where
+      // his own `faq.ts` answer has it. It is the word carrying the claim: the
+      // point of the sentence is that a human reads it, not that a reply
+      // arrives.
+      th: "ตอบคำถามบนมือถือได้เลย พอทำเสร็จ คุณจะเห็นผลเบื้องต้นทันที จากนั้นจะมีคนอ่านคำตอบของคุณจริง ๆ และติดต่อกลับ",
     },
   },
   {
@@ -275,13 +349,22 @@ export const COST_ROWS: readonly CostRow[] = [
     },
     price: {
       en: "Paid",
-      // TH-UNREVIEWED: composed 17/08/2026.
+      // Retyped unchanged by Paul on 17/08/2026, which is an approval rather
+      // than a skip. `COST_HEADING` above says `มีค่าใช้จ่าย` and this says
+      // `มีค่าบริการ`; both are his and the difference is deliberate, since the
+      // heading asks about cost in general and this names a service fee.
       th: "มีค่าบริการ",
     },
     body: {
-      en: "Working one to one on your own CV, your own applications and your own interviews. What it costs is settled in the conversation.",
-      // TH-UNREVIEWED: composed 17/08/2026.
-      th: "ทำงานตัวต่อตัวกับ CV ใบสมัคร และการสัมภาษณ์ของคุณเอง ส่วนค่าบริการคุยกันตอนปรึกษา",
+      en: "Working one to one with a coach on your CV, your applications and your interview preparation. We go through the details and the cost clearly the first time we talk, and then you decide.",
+      // Paul's wording, 17/08/2026, and it is now `faq.ts`'s price answer almost
+      // word for word, which is the right outcome: one question answered the
+      // same way on both pages.
+      //
+      // `ทำงานร่วมกับโค้ชแบบตัวต่อตัว` names who is on the other side of the
+      // table. The first draft said `ทำงานตัวต่อตัวกับ CV`, which puts the CV
+      // there instead.
+      th: "ทำงานร่วมกับโค้ชแบบตัวต่อตัว ทั้งเรื่อง CV การสมัครงาน และการเตรียมสัมภาษณ์ เราจะคุยรายละเอียดและค่าบริการให้ชัดตั้งแต่ครั้งแรก แล้วคุณค่อยตัดสินใจ",
     },
   },
 ];
@@ -295,6 +378,8 @@ export const COST_ROWS: readonly CostRow[] = [
  */
 export const CLOSE_LEAD: Copy = {
   en: "See which stage of the path to working in Europe you are on.",
-  // PAUL, from `pinned-post-punprofile-intro.md`, with the timing clause removed.
-  th: "เช็กว่าตอนนี้คุณอยู่ขั้นไหนบนเส้นทางสู่การทำงานในยุโรป",
+  // PAUL, from `pinned-post-punprofile-intro.md`, with the timing clause
+  // removed, and `ไปทำงาน` restored on his read of 17/08/2026 where this
+  // file had drifted to `สู่การทำงาน`.
+  th: "เช็กว่าตอนนี้คุณอยู่ขั้นไหนบนเส้นทางไปทำงานในยุโรป",
 };

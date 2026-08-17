@@ -50,7 +50,6 @@ import {
   MARKET_HEADING,
   MARKET_STATS,
   VISA_BODY,
-  VISA_HEADING,
 } from "@/lib/content/home";
 
 export default function Home() {
@@ -127,7 +126,7 @@ export default function Home() {
             {MARKET_STATS.map((stat) => (
               <div key={stat.field} className="card-outlined rounded-large px-6 py-7">
                 <p className="text-headline-large text-primary">{MARKET[stat.field]}</p>
-                <p className="mt-2 text-body-large text-on-surface">{pick(stat.label)}</p>
+                <p className="mt-2 text-body-large text-on-surface">{t(stat.label)}</p>
               </div>
             ))}
           </div>
@@ -182,11 +181,17 @@ export default function Home() {
           `secondary-container` teal, the second of the three rotation grounds
           this page uses. Not `tertiary-container`: blue is EU Fit Check's
           identity and spending it on a PunProfile section blurs the one
-          distinction the sub-brand exists to make. */}
+          distinction the sub-brand exists to make.
+
+          **No heading.** It had one, and his sentence opens on the same three
+          words it did. Paraphrasing him to fix that is not available and
+          inventing a heading that says something else is worse, so the
+          paragraph is the section. Set one tier up, in `headline-small` rather
+          than `title-medium`, because it is now carrying the section on its
+          own. */}
       <section className="bg-secondary-container px-6 py-16">
         <div className="mx-auto w-full max-w-3xl">
-          <h2 className="text-headline-small">{pick(VISA_HEADING)}</h2>
-          <p className="mt-4 max-w-2xl text-title-medium text-on-surface">{pick(VISA_BODY)}</p>
+          <p className="max-w-2xl text-headline-small">{pick(VISA_BODY)}</p>
         </div>
       </section>
 

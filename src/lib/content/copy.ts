@@ -438,18 +438,43 @@ export const COPY = {
     // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "งานที่เราคัดกรองให้กลุ่มนี้",
   },
+  /*
+   * The three figure labels, and they are shared.
+   *
+   * **Both the first read and the home page render the same three numbers out of
+   * `market-snapshot.generated.ts`.** They were briefly defined twice, here and
+   * as `MARKET_STATS` in `home.ts`, by two sessions on 17/08/2026 that split the
+   * old one-sentence `stats.market.value` at the same time. `home.ts` now reads
+   * these keys instead of carrying its own copies, so there is one definition
+   * and it is the one the lint can see.
+   *
+   * **The Thai is Paul's**, from the home-page review of 17/08/2026, which
+   * supersedes the draft wording the split inherited: `ประกาศงานที่อ่าน` became
+   * `ประกาศงานที่ตรวจสอบแล้ว`, because the number counts what was screened and
+   * reading is only how it was screened, and `ผ่านเกณฑ์สปอนเซอร์วีซ่า` became
+   * `ตำแหน่งงานที่บริษัทสปอนเซอร์วีซ่า`, because a role does not sponsor anything
+   * and a company does.
+   *
+   * `visa-sponsorship` in `termbase.yml`, decided the same day, is what keeps a
+   * third rendering from appearing.
+   */
   "stats.market.screened": {
-    screen: "First read, the label under the count of roles read",
-    en: "roles read",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul. The words are
-    // lifted from the sentence this replaced rather than composed fresh.
-    th: "ประกาศงานที่อ่าน",
+    screen: "First read and the home page, the label under the count of adverts checked",
+    en: "job adverts checked",
+    th: "ประกาศงานที่ตรวจสอบแล้ว",
   },
   "stats.market.published": {
-    screen: "First read, the label under the count that cleared the sponsorship bar",
-    en: "cleared the visa-sponsorship bar",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
-    th: "ผ่านเกณฑ์สปอนเซอร์วีซ่า",
+    screen: "First read and the home page, the label under the count that cleared the sponsorship bar",
+    en: "roles where the employer sponsors a visa",
+    th: "ตำแหน่งงานที่บริษัทสปอนเซอร์วีซ่า",
+  },
+  "stats.market.employers": {
+    // Not shown on the first read, which prints only the two counts and the
+    // snapshot date. Defined here anyway because the home page shows all three
+    // and the alternative is a third figure label in a fourth place.
+    screen: "The home page, the label under the count of employers",
+    en: "employers",
+    th: "บริษัทผู้จ้างงาน",
   },
   "stats.market.foot": {
     screen: "First read, under the job-pipeline figures. {to} is the snapshot date",
