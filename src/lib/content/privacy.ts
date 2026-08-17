@@ -3,11 +3,17 @@
  * `consent-copy.ts`.
  *
  * **Founder-signed off 14/08/2026, same gate as the consent copy.** Paul
- * settled the withdrawal contact (`hi@agentsiam.com`) and the retention basis
- * (twelve months rolling from last contact), which were the two placeholders
- * holding this back. `PRIVACY_REVIEWED` is true from that sign-off. It is a
- * founder sign-off, not an external legal opinion; a lawyer's wording would
- * replace these strings wholesale rather than being merged into them.
+ * settled the withdrawal contact and the retention basis (twelve months rolling
+ * from last contact), which were the two placeholders holding this back.
+ * `PRIVACY_REVIEWED` is true from that sign-off. It is a founder sign-off, not
+ * an external legal opinion; a lawyer's wording would replace these strings
+ * wholesale rather than being merged into them.
+ *
+ * **The contact address was corrected 17/08/2026 to
+ * `punprofile.career@gmail.com`**, on Paul's instruction. It had been an
+ * address at a domain belonging to a different business of his, repeated here
+ * and in four other documents from one original mistake. The reasoning is in
+ * `consent-copy.ts`, which owns the address; this file publishes it.
  *
  * What IS reliable here is the factual half. Every claim about what the system
  * collects, where it stores it, who processes it and what leaves Thailand was
@@ -295,8 +301,8 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     },
     body: [
       {
-        en: "Email hi@agentsiam.com. We answer data requests from that address.",
-        th: "อีเมล hi@agentsiam.com เราตอบคำขอเกี่ยวกับข้อมูลส่วนบุคคลจากที่อยู่นี้",
+        en: "Email punprofile.career@gmail.com. We answer data requests from that address.",
+        th: "อีเมล punprofile.career@gmail.com เราตอบคำขอเกี่ยวกับข้อมูลส่วนบุคคลจากที่อยู่นี้",
       },
     ],
   },

@@ -2,12 +2,17 @@
  * PDPA consent copy, Thai-first (TASK-023, PRD FR-006).
  *
  * **Founder-signed off 14/08/2026 (TASK-047).** Paul settled the two open
- * decisions the review was waiting on: the withdrawal contact is
- * `hi@agentsiam.com`, and retention is twelve months rolling from the
- * candidate's last contact rather than twelve months from submission. The
- * purpose text was also corrected, because it previously promised an emailed
- * result and no email is sent by the system; the result is delivered by a
- * person. `CONSENT_COPY_REVIEWED` is true from that sign-off.
+ * decisions the review was waiting on: the withdrawal contact, and retention at
+ * twelve months rolling from the candidate's last contact rather than twelve
+ * months from submission. The purpose text was also corrected, because it
+ * previously promised an emailed result and no email is sent by the system; the
+ * result is delivered by a person. `CONSENT_COPY_REVIEWED` is true from that
+ * sign-off.
+ *
+ * **The address that sign-off recorded was wrong, and was corrected 17/08/2026
+ * to `punprofile.career@gmail.com`.** It had been an address on a domain
+ * belonging to a different business of Paul's. See note 2 below: the sign-off
+ * itself stands, only the string was wrong.
  *
  * This is a founder sign-off, not an external legal opinion. Thailand's PDPA
  * requires consent that is specific, informed and freely given. If a lawyer
@@ -61,11 +66,23 @@ import type { CopyEntry } from "./content/copy";
  *    months from last contact. A consent screen that promises something
  *    narrower than the policy it links to is the one inconsistency in here
  *    that could actually matter.
- * 2. The withdrawal address is `hi@agentsiam.com`. His message showed
- *    `punprofile@gmail.com` as the link text over a `mailto:hi@agentsiam.com`
- *    href, and the policy, the roadmap and the decision log all say
- *    hi@agentsiam.com. Treated as a paste artefact, flagged, not guessed at
- *    silently.
+ * 2. ~~The withdrawal address is the other business's one.~~ **Wrong, and
+ *    corrected 17/08/2026 on Paul's instruction: the address is
+ *    `punprofile.career@gmail.com`.**
+ *
+ *    Kept rather than deleted, because the reasoning that produced the error is
+ *    the useful part. His message showed a PunProfile gmail address as the link
+ *    text over a `mailto:` href pointing at the other domain. That session
+ *    called the gmail the paste artefact, on the grounds that the policy, the
+ *    roadmap and the decision log all agreed on the other address. They did
+ *    agree, and they were all wrong together: every one of them was a copy of
+ *    the same original mistake, so the agreement was not evidence of anything.
+ *    It was the link TEXT, the half he typed himself, that was right.
+ *
+ *    The old address belongs to a different business of Paul's. A PDPA
+ *    withdrawal address is the one string in the product where being wrong
+ *    routes a data subject's request to someone with no standing to act on it,
+ *    which is why this is worth a dozen lines instead of a silent edit.
  *
  * Original note, from the pass his wording replaced. Rewritten the same day on
  * his read of the live screen:
@@ -95,7 +112,7 @@ export const CONSENT_COPY_REVIEWED = true;
  * are reviewed as sentences, and a template hole in a consent clause is a
  * sentence nobody actually read.
  */
-export const CONTACT_EMAIL = 'hi@agentsiam.com';
+export const CONTACT_EMAIL = 'punprofile.career@gmail.com';
 
 export const CONSENT_COPY = {
   "consent.statement": {
@@ -115,8 +132,8 @@ export const CONSENT_COPY = {
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
-    en: "We use your email to send your result. If you would like us to contact you by phone or on LINE, fill in that channel and tick the consent box. We keep your information for twelve months from the last time you were in touch, and we do not pass it to anyone else. Change your mind at any point and tell us at hi@agentsiam.com.",
-    th: "เราจะใช้อีเมลของคุณเพื่อส่งผลประเมิน หากต้องการให้เราติดต่อทางโทรศัพท์หรือ Line ให้กรอกช่องทางนั้นและติ๊กช่องยินยอม เราจะเก็บข้อมูลของคุณไว้สิบสองเดือนนับจากการติดต่อครั้งล่าสุด และจะไม่ส่งต่อข้อมูลให้บุคคลอื่น หากคุณเปลี่ยนใจ แจ้งเราได้ทุกเมื่อที่ hi@agentsiam.com",
+    en: "We use your email to send your result. If you would like us to contact you by phone or on LINE, fill in that channel and tick the consent box. We keep your information for twelve months from the last time you were in touch, and we do not pass it to anyone else. Change your mind at any point and tell us at punprofile.career@gmail.com.",
+    th: "เราจะใช้อีเมลของคุณเพื่อส่งผลประเมิน หากต้องการให้เราติดต่อทางโทรศัพท์หรือ Line ให้กรอกช่องทางนั้นและติ๊กช่องยินยอม เราจะเก็บข้อมูลของคุณไว้สิบสองเดือนนับจากการติดต่อครั้งล่าสุด และจะไม่ส่งต่อข้อมูลให้บุคคลอื่น หากคุณเปลี่ยนใจ แจ้งเราได้ทุกเมื่อที่ punprofile.career@gmail.com",
   },
   /**
    * Rendered as a link to `/privacy`, which is why it is its own key: an
