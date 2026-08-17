@@ -112,6 +112,18 @@ function BlogBody() {
           <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
             {pick(PLAYBOOKS_INTRO)}
           </p>
+          {/*
+            **Feed**, one of M3's three canonical layouts: a collection of
+            browsable cards. The spec's progression is 1 / 2 / 3 / 4 across
+            compact, medium, expanded and large, and this runs 1 / 2 / 3 for two
+            reasons that are both in `design.md`.
+
+            The third column arrives at `large` rather than `expanded`, because
+            the standard drawer takes 280px from `expanded` up and three columns
+            in the 560 that leaves would be 170px each. And there is no fourth,
+            because the reading measure caps this container at 1024 and four
+            columns inside that is a card too narrow to carry a Thai headline.
+          */}
           <div className="mt-10 grid items-start gap-6 medium:grid-cols-2 large:grid-cols-3">
             {playbooks().map((p) => (
               <PostCard key={p.slug} post={p} />

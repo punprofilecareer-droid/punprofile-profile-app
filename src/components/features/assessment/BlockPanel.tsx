@@ -55,20 +55,35 @@ export default function BlockPanel({
     setShown(image);
   }
 
+  /*
+   * **Supporting pane**, one of M3's three canonical layouts. The questions are
+   * the primary content and the photograph is supporting: it sets a place and a
+   * tone and carries no information the candidate needs.
+   *
+   * The spec's split is two thirds primary to one third supporting, and this was
+   * a half each until 17/08/2026. At an 840 window that gave the question card
+   * 420px for a Thai question and four options, which is compact-width content
+   * inside an expanded-width layout. The photograph loses nothing by being
+   * narrower; it is cropped to fill either way.
+   *
+   * Stacked below `expanded`, per the spec's compact behaviour, except that the
+   * photograph is hidden rather than stacked. On a phone it would push the first
+   * question below the fold, and this is a flow somebody is trying to finish.
+   */
   return (
     <div className="flex flex-1 flex-col expanded:flex-row">
       {shown && (
         // Lavender rather than grey underneath. It is the field the assessment
         // already sits on, so a panel with nothing in it yet reads as part of
         // the page instead of a hole in it.
-        <div className="relative hidden shrink-0 self-start overflow-hidden bg-tertiary-container expanded:sticky expanded:top-[72px] expanded:block expanded:h-[calc(100dvh-72px)] expanded:w-1/2">
+        <div className="relative hidden shrink-0 self-start overflow-hidden bg-tertiary-container expanded:sticky expanded:top-[72px] expanded:block expanded:h-[calc(100dvh-72px)] expanded:w-1/3">
           {leaving && (
             <Image
               key={leaving.src}
               src={leaving.src}
               alt=""
               fill
-              sizes="(max-width: 767px) 1px, 50vw"
+              sizes="(max-width: 839px) 1px, 33vw"
               className="object-cover object-center"
             />
           )}
@@ -92,7 +107,7 @@ export default function BlockPanel({
             {...(shown.blurDataURL
               ? { placeholder: "blur" as const, blurDataURL: shown.blurDataURL }
               : {})}
-            sizes="(max-width: 767px) 1px, 50vw"
+            sizes="(max-width: 839px) 1px, 33vw"
             onAnimationEnd={() => setLeaving(null)}
             className={`object-cover object-center ${leaving ? "q-photo-in" : ""}`}
           />

@@ -51,6 +51,12 @@ function ServicesBody() {
           stretching to match the tallest, and `auto-rows-fr` is deliberately
           NOT used: equal-height cards would leave the two shorter ones with a
           band of dead space above their button. */}
+      {/*
+        **Feed**, though a fixed one: three services rather than a browsable
+        collection. It skips the spec's 2-column medium step deliberately,
+        because two columns of three items leaves an orphan on its own row and
+        one column reads better than that until all three fit.
+      */}
       <div className="mt-12 grid items-start gap-6 large:grid-cols-3">
         {SERVICES.map((s) => {
           const on = focused === s.id;
