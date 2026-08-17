@@ -238,8 +238,12 @@ export function formatDate(iso: string): string {
 // ---------------------------------------------------------------------------
 
 export const BLOG_HEADING: Copy = {
-  en: "The road to working in Europe, one piece at a time",
-  th: "เส้นทางไปทำงานในยุโรป อธิบายทีละเรื่อง",
+  // Paul's wording, 17/08/2026. It was a description of the blog's method,
+  // "explained one piece at a time"; his is a promise about what the reader gets
+  // out of it. `ลงหลักปักฐาน`, putting down roots, is the first time anything on
+  // this site names the actual end state rather than the job.
+  en: "Stories from Europe, on the road to settling there",
+  th: "เรื่องเล่าจากยุโรป บนเส้นทางสู่การลงหลักปักฐาน",
 };
 
 export const BLOG_INTRO: Copy = {
@@ -382,8 +386,16 @@ export const SIGNUP_CONSENT: Copy = {
   // order to send you matching roles", which is the Phase 4 paid feature. The
   // no-onward-disclosure half is unchanged and is true; `privacy.ts` says the
   // same thing at length.
-  en: "By pressing this you agree that PunProfile may keep your email address in order to send you news and practical advice. We do not pass it to anyone else.",
-  th: "เมื่อกดปุ่มนี้ คุณยินยอมให้ PunProfile เก็บอีเมลของคุณไว้เพื่อส่งข่าวสารและคำแนะนำ และเราจะไม่ส่งต่อข้อมูลให้บุคคลอื่น",
+  // Paul's wording, 17/08/2026. Two changes worth keeping straight: he drops
+  // "เมื่อกดปุ่มนี้", since a consent line under a button does not need to say
+  // which button, and he writes `เก็บและใช้` rather than `เก็บ`. The second is
+  // the substantive one for PDPA: keeping and using are different operations and
+  // the notice discloses both, so the consent should name both.
+  //
+  // `ปั้นโปรไฟล์` in Thai script rather than the wordmark, which is LR-01 where
+  // the brand opens a Thai clause.
+  en: "You agree that PunProfile may keep and use your email address to send you news and practical advice. We do not pass your details to anyone else.",
+  th: "ยินยอมให้ ปั้นโปรไฟล์ เก็บและใช้อีเมลของคุณเพื่อส่งข่าวสารและคำแนะนำ เราจะไม่ส่งต่อข้อมูลของคุณให้บุคคลอื่น",
 };
 
 export const SIGNUP_DONE: Copy = {
@@ -437,8 +449,11 @@ export const UNSUBSCRIBE_WORKING: Copy = {
 };
 
 export const SIGNUP_BUSY: Copy = {
-  en: "We could not save that just now. Please try again in a moment.",
-  th: "ยังบันทึกไม่ได้ในตอนนี้ โปรดลองอีกครั้งในอีกสักครู่",
+  // Paul's wording, 17/08/2026. Shorter, and it leads with what happened rather
+  // than with our inability to do it: `บันทึกไม่สำเร็จ` states the outcome where
+  // `ยังบันทึกไม่ได้ในตอนนี้` narrates our side of it.
+  en: "That did not save. Please try again in a moment.",
+  th: "บันทึกไม่สำเร็จ ลองอีกครั้งในอีกสักครู่",
 };
 
 /**
