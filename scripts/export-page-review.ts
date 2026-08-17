@@ -44,9 +44,16 @@
  * Nothing was lost either time, because his corrections had already been applied
  * to the code first, and that was luck rather than design.
  *
- * So: if the file already carries a filled `แก้เป็น:` line or a `PB:` note, this
- * exits without writing and says which lines it found. `--force` overwrites, and
- * the only time that is correct is after the corrections are in the code.
+ * So: if the file already carries a filled `แก้เป็น:` line, a `PB:` note, or a
+ * quotation that no longer matches the code, this exits without writing and says
+ * which lines it found. `--force` overwrites, and the only time that is correct is
+ * after the corrections are in the code.
+ *
+ * **The third signal is the one that fires.** Paul does not use the `แก้เป็น:`
+ * line. He edits the quoted Thai in place, which he did on this sheet and again
+ * on `thai-review-queue.md`, where the narrower guard let a whole review pass be
+ * overwritten. A guard against losing someone's work has to be built around how
+ * they actually work rather than how they were asked to.
  *
  * **`PB:` is Paul's marker for a note addressed to whoever reads the file next**,
  * anywhere in a markdown file, and it is not a correction. It is recorded in the
@@ -275,21 +282,48 @@ const OUT =
  * A `แก้เป็น:` line with nothing after the colon is the empty template and is not
  * a correction. Anything after it is.
  */
-function unappliedWork(path: string): string[] {
+function unappliedWork(path: string, quoted: Set<string>): string[] {
   if (!existsSync(path)) return [];
-  return readFileSync(path, "utf8")
+  const found: string[] = [];
+  readFileSync(path, "utf8")
     .split("\n")
-    .map((line, i) => ({ line: line.trim(), no: i + 1 }))
-    .filter(
-      ({ line }) =>
-        (line.startsWith("แก้เป็น:") && line.slice("แก้เป็น:".length).trim() !== "") ||
-        line.startsWith("PB:"),
-    )
-    .map(({ line, no }) => `  line ${no}: ${line.slice(0, 90)}`);
+    .forEach((raw, i) => {
+      const line = raw.trim();
+      const no = i + 1;
+      if (line.startsWith("PB:")) {
+        found.push(`  line ${no}: ${line.slice(0, 90)}`);
+        return;
+      }
+      if (line.startsWith("แก้เป็น:")) {
+        if (line.slice("แก้เป็น:".length).trim()) {
+          found.push(`  line ${no}: ${line.slice(0, 90)}`);
+        }
+        return;
+      }
+      // A quoted Thai line is `> <string>`; the English is `*<string>*`.
+      const th = line.startsWith("> ") ? line.slice(2).trim() : null;
+      const en = /^\*[^*].*\*$/.test(line) ? line.slice(1, -1).trim() : null;
+      const text = th ?? en;
+      if (text && text !== "TODO" && !quoted.has(text)) {
+        found.push(`  line ${no}: edited in place -> ${text.slice(0, 80)}`);
+      }
+    });
+  return found;
+}
+
+/** Every string this run would print, so an edited quotation is detectable. */
+const quoted = new Set<string>();
+for (const section of sections) {
+  for (const item of section.items) {
+    const copy = resolve(mod, item.key, copyBank);
+    if (!copy) continue;
+    quoted.add(copy.th.trim());
+    quoted.add(copy.en.trim());
+  }
 }
 
 const force = process.argv.includes("--force");
-const pending = force ? [] : unappliedWork(OUT);
+const pending = force ? [] : unappliedWork(OUT, quoted);
 if (pending.length) {
   console.error(`\n${OUT}\n`);
   console.error(`${pending.length} line(s) of review work would be overwritten:\n`);

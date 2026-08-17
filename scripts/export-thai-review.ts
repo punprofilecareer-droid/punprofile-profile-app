@@ -254,29 +254,60 @@ ${unmatchedValues.map((v) => `- a marked Thai string not found in any exported v
 }`;
 
 /**
- * Refuses to overwrite review work, the same guard and the same markers as
- * `export-page-review.ts`.
+ * Review work in the file this run is about to replace.
  *
- * A filled `แก้เป็น:` is a correction that is not in the code yet. A `PB:` line
- * is a note from Paul to whoever opens the file next, recorded in the workspace
- * root `CLAUDE.md`, and it counts as work even when no correction follows it.
- * Either one means regenerating would throw away the only copy.
+ * Three signals, and the third was added 17/08/2026 after this guard let a whole
+ * review pass be overwritten.
+ *
+ * 1. A filled `แก้เป็น:` line. Empty is the template and is not a correction.
+ * 2. A `PB:` note, Paul's marker for a note to the next reader.
+ * 3. **An edited quotation.** Paul does not use the `แก้เป็น:` line. He edits the
+ *    `> **TH**` and `> **EN**` lines in place, twice now, on this file and on the
+ *    page review sheet. So any quoted line that no longer matches what the code
+ *    says is unapplied review work, and that is the signal that actually fires.
+ *
+ * The third is worth stating as a lesson rather than a fix. The first two checked
+ * the mechanism the file's author designed; the third checks the one its reader
+ * uses. A guard against losing someone's work has to be built around how they
+ * actually work, not around how they were asked to.
  */
-function unappliedWork(path: string): string[] {
+function unappliedWork(path: string, quoted: Set<string>): string[] {
   if (!existsSync(path)) return [];
-  return readFileSync(path, "utf8")
+  const found: string[] = [];
+  readFileSync(path, "utf8")
     .split("\n")
-    .map((line, i) => ({ line: line.trim(), no: i + 1 }))
-    .filter(
-      ({ line }) =>
-        (line.startsWith("แก้เป็น:") && line.slice("แก้เป็น:".length).trim() !== "") ||
-        line.startsWith("PB:"),
-    )
-    .map(({ line, no }) => `  line ${no}: ${line.slice(0, 90)}`);
+    .forEach((raw, i) => {
+      const line = raw.trim();
+      const no = i + 1;
+      if (line.startsWith("PB:")) {
+        found.push(`  line ${no}: ${line.slice(0, 90)}`);
+        return;
+      }
+      if (line.startsWith("\u0e41\u0e01\u0e49\u0e40\u0e1b\u0e47\u0e19:")) {
+        const rest = line.slice("\u0e41\u0e01\u0e49\u0e40\u0e1b\u0e47\u0e19:".length).trim();
+        if (rest) found.push(`  line ${no}: ${line.slice(0, 90)}`);
+        return;
+      }
+      const m = line.match(/^> \*\*(TH|EN)\*\* (.+)$/);
+      if (m && !quoted.has(m[2].trim())) {
+        found.push(`  line ${no}: edited in place -> ${m[2].slice(0, 80)}`);
+      }
+    });
+  return found;
 }
 
+/** Every string this run would quote, so an edited quotation is detectable. */
+const quotedStrings = (): Set<string> => {
+  const out = new Set<string>();
+  for (const r of [...unreviewed, ...missing]) {
+    out.add(r.en.trim());
+    out.add(r.th.trim());
+  }
+  return out;
+};
+
 const force = process.argv.includes("--force");
-const pending = force ? [] : unappliedWork(OUT);
+const pending = force ? [] : unappliedWork(OUT, quotedStrings());
 if (pending.length) {
   console.error(`\n${OUT}\n`);
   console.error(`${pending.length} line(s) of review work would be overwritten:\n`);

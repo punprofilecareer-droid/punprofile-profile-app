@@ -94,9 +94,12 @@ export const SERVICES: readonly Service[] = [
       // that the words are Paul's Thai and the English is the translation. This
       // one arrived in English, so the Thai below is mine and awaits his pass.
       {
-        en: "Sessions are held in English, so every conversation doubles as practice for the interviews you are preparing for",
-        // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
-        th: "เซสชันโค้ชชิ่งใช้ภาษาอังกฤษ ทุกครั้งที่คุยกันจึงได้ฝึกภาษาอังกฤษสำหรับการสัมภาษณ์ไปในตัว",
+        en: "Sessions are held mainly in English, so every conversation doubles as practice for the interviews you are preparing for",
+        // Paul's wording, 17/08/2026. `เป็นหลัก` added, and it is a promise being
+        // made accurate rather than softened: sessions are mainly in English, and a
+        // flat claim that they ARE in English is one a Thai reader could hold
+        // against the first session that switches.
+        th: "เซสชันโค้ชชิ่งใช้ภาษาอังกฤษเป็นหลัก ทุกครั้งที่คุยกันจึงได้ฝึกภาษาอังกฤษสำหรับการสัมภาษณ์ไปในตัว",
       },
     ],
     image: {

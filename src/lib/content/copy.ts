@@ -329,14 +329,18 @@ export const COPY = {
   "english.switch.title": {
     screen: "Assessment, the panel after the English question is answered B1 or above",
     en: "Let's finish this in English!",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "ทำแบบประเมินต่อเป็นภาษาอังกฤษกันเลย",
+    // Paul's wording, 17/08/2026. `เลยดีกว่า` rather than `กันเลย`: the panel
+    // is proposing something, and `ดีกว่า` is how a Thai speaker proposes it.
+    th: "ทำแบบประเมินต่อเป็นภาษาอังกฤษเลยดีกว่า",
   },
   "english.switch.body": {
     screen: "Assessment, the English switch panel",
-    en: "You said your English is B1 or better, so we switched the questions over. You can go back to Thai whenever you like.",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "คุณระบุว่าใช้ภาษาอังกฤษได้ระดับ B1 ขึ้นไป เราเลยเปลี่ยนคำถามเป็นภาษาอังกฤษให้ และเปลี่ยนกลับเป็นภาษาไทยได้ทุกเมื่อ",
+    en: "You said your English is B1 or better, so we switched the questions over so we can practice your English. You can go back to Thai whenever you like.",
+    // Paul's wording, 17/08/2026, and he added a reason the panel did not
+    // give: the switch is practice, not administration. It now says the same
+    // thing `SERVICES[0].includes[4]` says about the coaching sessions, which
+    // he wrote the same day.
+    th: "คุณระบุว่าภาษาอังกฤษของคุณอยู่ในระดับ B1 ขึ้นไป เราจึงเปลี่ยนคำถามเป็นภาษาอังกฤษให้คุณได้ฝึกฝน สามารถเปลี่ยนกลับเป็นภาษาไทยได้ทุกเมื่อ",
   },
   "english.switch.stay": {
     screen: "Assessment, the English switch panel, the primary button",
@@ -388,9 +392,13 @@ export const COPY = {
   // presentation, not ability. One of them alone is an anecdote.
   "stats.readiness.label": {
     screen: "First read, the title of the readiness card",
-    en: "Where this group stands on the three things a recruiter checks first",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "ความพร้อม 3 อย่างแรกที่ผู้จ้างงานดู",
+    en: "Where this group stands on the three things a hiring manager checks first",
+    // Paul's wording, 17/08/2026. `Hiring Manager` in Latin, and the English
+    // follows it off `recruiter`: the person who reads a CV and decides is a
+    // hiring manager, and a recruiter is often neither. LR-05's principle,
+    // which is to reach for the loanword the audience already uses rather than
+    // translate into a vaguer Thai noun. `ผู้จ้างงาน` was that vaguer noun.
+    th: "ความพร้อม 3 อย่างแรกที่ Hiring Manager ดู",
   },
   "stats.readiness.cv": {
     screen: "First read, readiness bar 1",
@@ -401,8 +409,10 @@ export const COPY = {
   "stats.readiness.portfolio": {
     screen: "First read, readiness bar 2",
     en: "No portfolio or work anyone can look at",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "ยังไม่มีผลงานให้ผู้จ้างงานดู",
+    // Paul's wording, 17/08/2026. `portfolio` rather than `ผลงาน`, matching
+    // `item.portfolioEvidence` below, and the audience is dropped: on a bar in
+    // a readiness stack, who would look at it is not the point.
+    th: "ยังไม่มี portfolio ให้ดู",
   },
   "stats.readiness.linkedin": {
     screen: "First read, readiness bar 3",
@@ -435,8 +445,10 @@ export const COPY = {
   "stats.market.label": {
     screen: "First read, the title of the job-pipeline card",
     en: "Jobs we screened for this group",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "งานที่เราคัดกรองให้กลุ่มนี้",
+    // Paul's wording, 17/08/2026. `มาแชร์ใน` rather than `ให้`, which read as
+    // screened FOR this group as a service. They are screened and then shared,
+    // and the group is where they are shared rather than the client.
+    th: "งานที่เราคัดกรองมาแชร์ในกลุ่มนี้",
   },
   /*
    * The three figure labels, and they are shared.
@@ -768,9 +780,12 @@ export const COPY = {
     // Says what is missing and why, in the candidate's own terms. The coach's
     // copy names each blank item individually; this names the number, which is
     // the honest form of the same fact without listing things they cannot act on.
-    en: "{count} more things in this area need a conversation rather than a form, so they are left blank rather than guessed at.",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
-    th: "ในด้านนี้ยังมีอีก {count} หัวข้อที่ต้องใช้การพูดคุยจึงจะประเมินได้ เราจึงเว้นไว้แทนการเดา",
+    en: "{count} more things in this area need a conversation rather than a form, so they are left blank.",
+    // Paul's wording, 17/08/2026. `ต้องมาพูดคุยกัน` is an invitation where
+    // `ต้องใช้การพูดคุย` was a requirement, and he cut `แทนการเดา`: the sentence
+    // already says the areas are left blank, and defending the choice not to
+    // guess draws attention to guessing.
+    th: "ในด้านนี้ยังมีอีก {count} หัวข้อที่ต้องมาพูดคุยกัน จึงจะประเมินได้",
   },
   "report.strengths": {
     screen: "Candidate PDF, section heading over the strengths list",
@@ -792,9 +807,18 @@ export const COPY = {
   },
   "report.footer": {
     screen: "Candidate PDF, the footing on the last page",
-    en: "Prepared by PunProfile Career Coaching from the answers you gave. A 30-minute conversation covers the parts a form cannot see.",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
-    th: "จัดทำโดย PunProfile Career Coaching จากคำตอบที่คุณให้ไว้ การพูดคุย 30 นาทีจะช่วยประเมินในส่วนที่แบบฟอร์มยังสะท้อนไม่ได้",
+    en: "This report was prepared by PunProfile Career Coaching from your EU Fit Check answers. A 30-minute conversation covers the parts a form cannot fully reflect.",
+    // Paul's wording, 17/08/2026. It names the instrument the answers came
+    // from, opens on what the document is, and turns the closing clause into
+    // an invitation, `นัดคุยกัน`, rather than a statement about coverage.
+    //
+    // **`PunProfile แคเรียร์โค้ชชิ่ง` is half-transliterated, and that is his**
+    // rather than a slip to tidy: LR-01 exempts the legal entity
+    // `PunProfile Career Coaching` from translation where it names the data
+    // controller, and a report footing says who prepared a document rather
+    // than who controls the data. `footer.brand`, which does name the
+    // controller, is a `fixed` termbase string and is untouched.
+    th: "ผลประเมินนี้จัดทำโดย PunProfile แคเรียร์โค้ชชิ่ง จากคำตอบใน EU Fit Check นัดคุยกัน 30 นาที เพื่อประเมินส่วนที่แบบฟอร์มยังสะท้อนได้ไม่ครบ",
   },
   "report.savePdf": {
     screen: "Candidate PDF, the button that reopens the print dialog. Screen only, never printed",
@@ -822,9 +846,12 @@ export const COPY = {
   },
   "band.indicative": {
     screen: "Candidate PDF, under a dimension score, when coverage is under 25%",
-    en: "an early indication only, most of this needs a real conversation",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
-    th: "เป็นเพียงภาพเบื้องต้น ส่วนใหญ่ยังต้องใช้การพูดคุยเพิ่มเติม",
+    en: "an early indication only, and much of it needs a conversation before it gets any clearer",
+    // Paul's wording, 17/08/2026. `ผลประเมินเบื้องต้น` rather than `ภาพ`, which
+    // matches every other place the app names this thing, and `หลายส่วน` rather
+    // than `ส่วนใหญ่`: several parts, not most of it. The band is the lowest
+    // coverage tier and still should not overstate how little is known.
+    th: "นี่เป็นเพียงผลประเมินเบื้องต้น หลายส่วนยังต้องพูดคุยเพิ่มเติมจึงจะประเมินได้ชัดเจนขึ้น",
   },
 
   // -------------------------------------------------------- competency names
