@@ -122,8 +122,17 @@
  * that way.
  */
 .viz-root .viz-radar { display: block; }
-.viz-root .viz-axis-label { font: 500 11px var(--font-sans); fill: var(--color-on-surface-variant); }
+/* 13px, up from 11px on 17/08/2026, on Paul's read that the labels were too
+   small to read. The size is only affordable because `wrapLabels` puts a Thai
+   axis name over two lines: at 11px on one line the label was already forcing
+   the viewBox wide enough to shrink the plot, and 13px on one line would have
+   been worse. Two lines and a bigger face cost the same width and read. */
+.viz-root .viz-axis-label { font: 500 13px var(--font-sans); fill: var(--color-on-surface-variant); }
 .viz-root .viz-axis-unscored { fill: var(--viz-muted); }
+/* The icon ring inherits its stroke from the text colour of the axis, which is
+   how an unscored axis dims its glyph without `radar.ts` naming a colour. */
+.viz-root .viz-axis-icon { color: var(--color-on-surface-variant); }
+.viz-root .viz-axis-icon.viz-axis-unscored { color: var(--viz-muted); }
 .viz-root .viz-axis-value { font-weight: 700; fill: var(--color-on-surface); font-variant-numeric: tabular-nums; }
 .viz-root .viz-axis-unscored .viz-axis-value { fill: var(--viz-muted); font-weight: 500; }
 .viz-root .viz-tick { font: 10px var(--font-sans); fill: var(--viz-muted); font-variant-numeric: tabular-nums; }

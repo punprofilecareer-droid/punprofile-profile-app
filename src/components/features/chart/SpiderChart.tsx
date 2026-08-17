@@ -49,6 +49,36 @@ const DIMS: { key: keyof SpiderChartProps["scores"]; copyKey: CopyKey }[] = [
   { key: "europeanMarketFit", copyKey: "dimension.europeanMarketFit" },
 ];
 
+/**
+ * One glyph per dimension, `0 0 24 24`, stroked and never filled.
+ *
+ * Added 17/08/2026 on Paul's read, from a reference that put a circled icon at
+ * the end of every axis. The reason it works is not decoration: a Thai axis name
+ * is a noun phrase of twenty-odd characters and the icon is recognised before the
+ * phrase is read, so the chart becomes scannable at a glance rather than only
+ * legible on inspection.
+ *
+ * Drawn here rather than in `radar.ts`, which is a geometry builder and holds no
+ * content, and inline rather than as assets, because four short paths cost less
+ * than four network requests and cannot 404.
+ *
+ * Each one is the plainest thing that reads at 19px:
+ *
+ * - **Professional Capability** — a toolbox. What you can do.
+ * - **Employability** — a document with lines. The CV and the profile.
+ * - **Mobility Readiness** — a paper plane. Leaving.
+ * - **European Market Fit** — a target. Hitting what the market asks for.
+ */
+const ICONS: Record<string, string> = {
+  professionalCapability:
+    '<path d="M3 8h18v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8Z"/><path d="M9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M3 13h18"/>',
+  employability:
+    '<path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h4"/><path d="M8 13h7M8 17h5"/>',
+  mobilityReadiness: '<path d="M21 3 3 10l6 3 3 8 9-18Z"/><path d="M9 13l12-10"/>',
+  europeanMarketFit:
+    '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+};
+
 export default function SpiderChart({ scores, variant = "teaser", axisLabels }: SpiderChartProps) {
   const { t, locale } = useCopy();
 
@@ -56,14 +86,23 @@ export default function SpiderChart({ scores, variant = "teaser", axisLabels }: 
     const axes: RadarAxis[] = DIMS.map((d) => ({
       label: axisLabels?.[d.key] ?? t(d.copyKey),
       value: typeof scores[d.key] === "number" ? (scores[d.key] as number) : null,
+      icon: ICONS[d.key],
     }));
     return radarSvg(axes, {
       idPrefix: variant,
-      size: variant === "teaser" ? 300 : 420,
+      // Both grew on 17/08/2026 with the icons and the bigger labels: the ring at
+      // the end of every axis needs the room the plot used to have, and shrinking
+      // the plot to make space would have undone the point of the change.
+      size: variant === "teaser" ? 360 : 470,
       // No truncation on the teaser: the widened box below holds the longest
       // Thai name whole, and a name cut to "ความพร้อมในการ…" is indistinguishable
       // from the axis next to it.
       maxLabel: variant === "teaser" ? 40 : 26,
+      // Two lines per label, 17/08/2026, and it is what pays for the bigger type
+      // in `globals.css`. English axis names have spaces and split evenly; Thai
+      // names mostly have none and come back as one line, which is correct
+      // rather than a failure. See the note in `radar.ts`.
+      wrapLabels: true,
       // The teaser is the only variant with a `ScoreLegend` under it, and the
       // legend carries all four numbers in full. Leaving them on the axes too
       // printed each one twice and pushed the longest Thai label off the card.
@@ -74,11 +113,14 @@ export default function SpiderChart({ scores, variant = "teaser", axisLabels }: 
       // no reason, which was visible as soon as the desktop layout gave the
       // chart a card of its own. Measured off the longest label rather than off
       // the locale, so a future language gets the right box without a rule.
+      // Two-line labels take roughly half the horizontal room a one-line label
+      // did, so the Thai case no longer needs the widest box. Still measured off
+      // the longest label rather than off the locale.
       widthRatio:
         variant === "teaser"
           ? Math.max(...axes.map((a) => a.label.length)) > 16
-            ? 1.95
-            : 1.6
+            ? 1.7
+            : 1.5
           : undefined,
     });
     // `locale` is the real dependency; `t` is rebuilt whenever it changes.

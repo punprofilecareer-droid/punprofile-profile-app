@@ -188,8 +188,12 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     ? [
         {
           heading: {
-            en: "Job emails, if you asked for them",
-            th: "อีเมลแจ้งตำแหน่งงาน หากคุณเลือกรับ",
+            // Retitled 17/08/2026 with the tick it describes. It said "job
+            // emails", which is the Phase 4 paid feature Paul took out of the
+            // consent. A notice section named after something the form does not
+            // ask for sends a reader looking for a box that is not there.
+            en: "News emails, if you asked for them",
+            th: "อีเมลข่าวสาร หากคุณเลือกรับ",
           },
           body: [
             {
@@ -197,8 +201,8 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
               th: "ช่องนี้เป็นตัวเลือก และไม่ได้ถูกติ๊กไว้ล่วงหน้า การไม่ติ๊กไม่มีผลต่อผลการประเมินของคุณ และไม่มีผลต่อสิ่งอื่นที่เราทำให้คุณ",
             },
             {
-              en: "If you tick it, we send matching roles and short guidance by email. We do not send them on Line or by phone, whatever you consented to for those channels: they are for talking to you about your own result and your coaching.",
-              th: "หากคุณติ๊ก เราจะส่งตำแหน่งที่ตรงกับคุณและคำแนะนำสั้น ๆ ทางอีเมล เราจะไม่ส่งทาง Line หรือโทรศัพท์ ไม่ว่าคุณจะให้ความยินยอมช่องทางเหล่านั้นไว้หรือไม่ เพราะช่องทางเหล่านั้นมีไว้พูดคุยเรื่องผลการประเมินและการโค้ชของคุณ",
+              en: "If you tick it, we send news and practical advice by email. We do not send them on Line or by phone, whatever you consented to for those channels: they are for talking to you about your own result and your coaching.",
+              th: "หากคุณติ๊ก เราจะส่งข่าวสารและคำแนะนำทางอีเมล เราจะไม่ส่งทาง Line หรือโทรศัพท์ ไม่ว่าคุณจะให้ความยินยอมช่องทางเหล่านั้นไว้หรือไม่ เพราะช่องทางเหล่านั้นมีไว้พูดคุยเรื่องผลการประเมินและการโค้ชของคุณ",
             },
             {
               en: "You can stop at any time by writing to the address at the end of this notice. We record the date you asked. Stopping does not delete your record and does not stop us answering you about your own result.",

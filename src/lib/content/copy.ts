@@ -333,14 +333,37 @@ export const COPY = {
   },
   "teaser.nextStep": {
     screen: "First read, the closing card. What happens after this screen",
-    // Paul's wording, 14/08/2026, and a deliberate downgrade of the promise.
-    // The line before it said the team would be in touch, full stop, which is
-    // a commitment made to every single finisher by a team of one. Naming the
-    // queue costs nothing and buys the thing a promise cannot: a candidate who
-    // waits a week has been told a week is normal, rather than concluding they
-    // were the one who did not qualify.
-    en: "We are getting a lot of enquiries at the moment, so the team may not reach you until your turn comes round.",
-    th: "ขณะนี้มีผู้ติดต่อเข้ามาจำนวนมาก ทีมงานอาจใช้เวลาสักระยะ และจะติดต่อกลับเมื่อถึงคิวของคุณ",
+    /*
+     * **Rewritten 17/08/2026, and the change is the flow rather than the
+     * wording.** It said the team is dealing with a lot of enquiries and would
+     * reach the candidate when their turn came round, which was Paul's own line
+     * from 14/08/2026 and a deliberate downgrade of an earlier promise: naming
+     * the queue meant a candidate who waited a week had been told a week was
+     * normal rather than concluding they had not qualified.
+     *
+     * That was the right fix for a screen whose last word was a promise. It is
+     * the wrong last word for a screen that has just shown someone their own
+     * result, because it ends on our capacity instead of on their position, which
+     * is the opposite of move 6 in `03_Content_System.md`.
+     *
+     * **The queue is still named.** It is true, it is the reason a reply may take
+     * time, and deleting it would put back the silence the 14/08 line was written
+     * to explain. What changes is what follows it: the wait is stated and then
+     * handed back as a condition the reader can act on. Someone who needs to be
+     * in Europe inside three months is told to say so.
+     *
+     * That condition is not invented for the copy. `stats.timing` on this same
+     * screen reports the share of this pool who want to be in Europe within three
+     * months, so the reader has just been shown that they are not unusual in
+     * being in a hurry.
+     *
+     * The card it sits in gains a `Talk to me` button, which is why this string
+     * no longer has to do the asking on its own.
+     */
+    en: "The queue is genuinely long at the moment. If you are serious about landing a role within three months, tell us and we will look at yours first.",
+    // TH-UNREVIEWED: composed 17/08/2026 from Paul's English brief, not yet read
+    // back by him. `คิว` is his own word from the line this replaces.
+    th: "ตอนนี้คิวค่อนข้างยาว แต่ถ้าคุณตั้งใจจริงว่าจะให้ได้งานภายใน 3 เดือน บอกเราได้เลย เราจะดูเคสของคุณก่อน",
   },
   "teaser.revise": {
     screen: "Teaser, the link back to the last question",

@@ -199,14 +199,8 @@ export const CONSENT_COPY = {
    * consent string where the brand is the subject rather than the controller
    * being named in a legal formula.
    *
-   * **What is NOT here, and is a decision rather than an omission.** Paul also
-   * asked for a second line, `การกรอกอีเมลถือว่าคุณยอมรับข้อกำหนดการใช้บริการและ
-   * นโยบายความเป็นส่วนตัวของเรา`, with Terms of Service and Privacy Policy linked.
-   * It is held for two reasons, both in the reply that raised them: there is no
-   * Terms of Service page to link, and "entering your email is taken as
-   * acceptance" is implied consent, which is a different legal instrument from
-   * the tick this string labels. `consent.privacyLink` above already links the
-   * privacy notice from this screen.
+   * Paul's second line is `consent.marketingNote` below, placed under the tick
+   * rather than inside its label, for the reason recorded there.
    */
   "consent.marketing": {
     screen: "Contact gate, a separate optional tick under the consent statement",
@@ -215,6 +209,34 @@ export const CONSENT_COPY = {
     // end: it is the third constraint above and it was in the string this
     // replaces.
     th: "รับข่าวสารและคำแนะนำดี ๆ จากปั้นโปรไฟล์ ส่งตรงถึงอีเมลของคุณ หากไม่อยากรับต่อ แจ้งเราได้ทุกเมื่อ",
+  },
+
+  /**
+   * The note under the marketing tick, 17/08/2026. Paul's second line.
+   *
+   * **It is supporting text and not the tick's label, and that distinction is
+   * the whole reason it is a separate key.** He wrote it as "entering your email
+   * is taken as acceptance", which is implied consent. The box above it is
+   * explicit consent: unticked, optional, affirmative, timestamped in the event
+   * log. Putting implied wording inside an explicit tick's label would leave the
+   * screen claiming both at once, and the weaker of the two is the one a
+   * regulator would read.
+   *
+   * So the tick still carries the consent and this sits beneath it as a notice,
+   * which is what a terms-and-privacy line is everywhere else on the web.
+   *
+   * **Terms of Service is named and not linked, because there is no such page.**
+   * `/privacy` exists; `/terms` does not. `ContactGate` links the privacy notice
+   * here and leaves the terms as words until a page exists, which is the honest
+   * shape: naming a document a reader cannot open is worse than not naming it,
+   * and inventing one would be fabricating our own terms. When `/terms` ships,
+   * link it here and delete this paragraph.
+   */
+  "consent.marketingNote": {
+    screen: "Contact gate, directly under the optional marketing tick",
+    en: "By entering your email, you agree to our Terms of Service and Privacy Policy.",
+    // Paul's wording, 17/08/2026, unchanged.
+    th: "การกรอกอีเมลถือว่าคุณยอมรับข้อกำหนดการใช้บริการและนโยบายความเป็นส่วนตัวของเรา",
   },
 } as const satisfies Record<string, CopyEntry>;
 

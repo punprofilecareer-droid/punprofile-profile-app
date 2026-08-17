@@ -324,9 +324,26 @@ export const SIGNUP_LABEL: Copy = { en: "Your email", th: "อีเมลขอ
 /** An example address, which is neither language. */
 export const SIGNUP_PLACEHOLDER = "name@email.com";
 
+/*
+ * **Rewritten 17/08/2026, and it was promising a paid feature.**
+ *
+ * It said "get job openings by email" / `รับอีเมลแจ้งตำแหน่งงาน`, which is the
+ * same promise the assessment's marketing tick was making and which Paul removed
+ * there the same day: `01_Project_Foundation.md` lists email notification for
+ * jobs under the app as "free to start, paid for depth", and `AGENTS.md` puts it
+ * in Phase 4.
+ *
+ * He did not ask for this one, and it is changed anyway. Two surfaces asking for
+ * consent to the same unbuilt paid feature is one error in two places, and fixing
+ * the half he happened to be looking at would have left the other live.
+ *
+ * Wording follows `consent.marketing` in `consent-copy.ts` rather than being
+ * composed again, so the blog and the assessment ask for the same thing in the
+ * same words.
+ */
 export const SIGNUP_BUTTON: Copy = {
-  en: "Get job openings by email",
-  th: "รับอีเมลแจ้งตำแหน่งงาน",
+  en: "Get news and advice by email",
+  th: "รับข่าวสารและคำแนะนำทางอีเมล",
 };
 
 /**
@@ -350,13 +367,19 @@ export const SIGNUP_NOTE: Copy = {
  * `จะไม่ส่งต่อข้อมูลให้บุคคลอื่น` is Paul's own, from `consent.purpose`.
  */
 export const SIGNUP_CONSENT: Copy = {
-  en: "By pressing this you agree that PunProfile may keep your email address in order to send you matching roles. We do not pass it to anyone else.",
-  th: "เมื่อกดปุ่มนี้ คุณยินยอมให้ PunProfile เก็บอีเมลของคุณไว้เพื่อส่งตำแหน่งที่ตรงกับคุณ และเราจะไม่ส่งต่อข้อมูลให้บุคคลอื่น",
+  // Same correction as `SIGNUP_BUTTON` above: it said the email is kept "in
+  // order to send you matching roles", which is the Phase 4 paid feature. The
+  // no-onward-disclosure half is unchanged and is true; `privacy.ts` says the
+  // same thing at length.
+  en: "By pressing this you agree that PunProfile may keep your email address in order to send you news and practical advice. We do not pass it to anyone else.",
+  th: "เมื่อกดปุ่มนี้ คุณยินยอมให้ PunProfile เก็บอีเมลของคุณไว้เพื่อส่งข่าวสารและคำแนะนำ และเราจะไม่ส่งต่อข้อมูลให้บุคคลอื่น",
 };
 
 export const SIGNUP_DONE: Copy = {
-  en: "Done. We will send matching roles to this address.",
-  th: "เรียบร้อย เราจะส่งตำแหน่งที่ตรงกับคุณไปที่อีเมลนี้",
+  // Last of the four, 17/08/2026. Same paid-feature promise in the success
+  // message, which is the one a reader sees only after they have said yes.
+  en: "Done. We will send news and practical advice to this address.",
+  th: "เรียบร้อย เราจะส่งข่าวสารและคำแนะนำไปที่อีเมลนี้",
 };
 
 export const SIGNUP_BAD_EMAIL: Copy = {

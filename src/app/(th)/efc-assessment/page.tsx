@@ -18,6 +18,7 @@ import EnglishSwitchPrompt from "@/components/features/assessment/EnglishSwitchP
 import CommunityStats from "@/components/features/assessment/CommunityStats";
 import MarketProof from "@/components/features/assessment/MarketProof";
 import Link from "next/link";
+import { DESTINATIONS } from "@/lib/content/cta";
 import { setNavLocked } from "@/lib/navLock";
 import { setLocaleSwitchInPlace } from "@/lib/localeInPlace";
 import { buildTeaserSummary } from "@/lib/views";
@@ -643,7 +644,26 @@ export default function AssessPage() {
             <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-primary">
               <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM13.25 17h-2.5v-6.5h2.5V17Z" />
             </svg>
-            <p className="text-body-large text-on-surface">{t("teaser.nextStep")}</p>
+            <div>
+              <p className="text-body-large text-on-surface">{t("teaser.nextStep")}</p>
+              {/* The card stops being a notice and becomes the ask, 17/08/2026.
+                  `copy.ts` says why the line changed; this is the half that makes
+                  the new last sentence actionable, since "tell us" with nothing to
+                  tap is worse than the queue notice it replaced.
+
+                  `/contact` and not `/services`: the reader has just been told to
+                  say something, and the services page is a page about us. The
+                  result screen's declared primary in `cta.ts` is still `services`
+                  and still renders further down, which is the framework working
+                  rather than being bypassed: one primary action per view, and this
+                  is a link inside a card rather than a second filled button. */}
+              <Link
+                href={path(DESTINATIONS.contact.href)}
+                className="mt-2 inline-block text-body-large text-primary underline underline-offset-2"
+              >
+                {pick(DESTINATIONS.contact.label)}
+              </Link>
+            </div>
           </div>
         </div>
       </div>

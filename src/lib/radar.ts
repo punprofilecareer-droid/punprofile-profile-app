@@ -22,6 +22,20 @@ export interface RadarAxis {
   value: number | null;
   /** Rendered as a small superscript marker beside the label. */
   tag?: string;
+  /**
+   * Path data in a `0 0 24 24` box, drawn in a ring at the end of this axis.
+   *
+   * Added 17/08/2026, on Paul's read: the four-axis chart's labels were too small
+   * to read and an icon carries the axis faster than a Thai noun phrase does.
+   * Stroked, never filled, and it inherits `currentColor` so it dims with its
+   * label when the axis is unscored. No colour enters this file, which is the
+   * rule `AGENTS.md` states about it.
+   *
+   * **Optional per axis rather than required**, because the eleven-axis
+   * competency charts in the coach report would be a wall of eleven glyphs. Four
+   * axes get icons; eleven do not.
+   */
+  icon?: string;
 }
 
 export interface RadarOptions {
@@ -33,6 +47,19 @@ export interface RadarOptions {
   idPrefix: string;
   /** Axis labels longer than this are truncated. */
   maxLabel?: number;
+  /**
+   * Wrap each axis label onto at most two lines, breaking at the space nearest
+   * the middle. Default off.
+   *
+   * Added 17/08/2026 with the icons, and it is what buys the label its size back.
+   * A Thai axis name like `ความสอดคล้องกับตลาดยุโรป` on one line forced the
+   * viewBox wide enough that the drawn radar shrank to fit around it; over two
+   * lines it takes half the width and the plot keeps its radius.
+   *
+   * Two lines and not three: at three the labels on the left and right start
+   * colliding with the ones above and below them.
+   */
+  wrapLabels?: boolean;
   /**
    * Print each axis's number beside its label. Default true.
    *
@@ -85,6 +112,11 @@ export function radarSvg(axes: RadarAxis[], opts: RadarOptions): string {
   const R = size * RADIUS_RATIO;
   const maxLabel = opts.maxLabel ?? 24;
   const showValues = opts.values ?? true;
+  const wrap = opts.wrapLabels ?? false;
+  const hasIcons = axes.some((a) => a.icon);
+  /** Where the icon ring sits, and how far past it the label starts. */
+  const ICON = { gap: 20, r: 15, scale: 0.62 };
+  const labelGap = hasIcons ? ICON.gap + ICON.r + 13 : 18;
   const n = axes.length;
   if (n < 3) return `<p class="viz-empty">Needs at least three axes to draw.</p>`;
 
@@ -147,26 +179,65 @@ export function radarSvg(axes: RadarAxis[], opts: RadarOptions): string {
     }
   }
 
+  /**
+   * One label as up to two `<tspan>` lines, broken at the space nearest the
+   * middle so the two halves are close to even.
+   *
+   * Thai is written without spaces between words, so a Thai label often has one
+   * space or none and comes back as a single line. That is correct rather than a
+   * failure: breaking Thai at an arbitrary character would split a cluster of a
+   * base character and its vowels, which is the same reason the footer does not
+   * letter-space Thai.
+   */
+  const lines = (text: string): string[] => {
+    if (!wrap) return [text];
+    const spaces: number[] = [];
+    for (let k = 0; k < text.length; k++) if (text[k] === " ") spaces.push(k);
+    if (!spaces.length) return [text];
+    const mid = text.length / 2;
+    const at = spaces.reduce((best, k) => (Math.abs(k - mid) < Math.abs(best - mid) ? k : best), spaces[0]);
+    return [text.slice(0, at), text.slice(at + 1)];
+  };
+
   // Markers and labels.
   for (let i = 0; i < n; i++) {
     const a = axes[i];
-    const outer = polar(cx, cy, R + 18, i, n);
+    const outer = polar(cx, cy, R + labelGap, i, n);
     const anchor = Math.abs(outer.x - cx) < 6 ? "middle" : outer.x > cx ? "start" : "end";
     const labelText = a.label.length > maxLabel ? a.label.slice(0, maxLabel - 1) + "…" : a.label;
+    const rows = lines(labelText);
+    // Two lines are centred on the anchor point rather than hanging below it, so
+    // the label's optical centre still sits on the axis.
+    const dy0 = rows.length > 1 ? -0.35 : 0;
+
+    if (a.icon) {
+      const c = polar(cx, cy, R + ICON.gap + ICON.r, i, n);
+      const off = -12 * ICON.scale;
+      parts.push(
+        `<g class="viz-axis-icon${scored[i] ? "" : " viz-axis-unscored"}">` +
+          `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${ICON.r}" fill="var(--viz-surface)" stroke="currentColor" stroke-width="1.25" stroke-opacity="0.45" />` +
+          `<g transform="translate(${(c.x + off).toFixed(1)} ${(c.y + off).toFixed(1)}) scale(${ICON.scale})" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${a.icon}</g>` +
+          `</g>`,
+      );
+    }
+
+    const labelTspans = rows
+      .map((row, r) => `<tspan x="${outer.x.toFixed(1)}" dy="${r === 0 ? dy0 : 1.15}em">${esc(row)}</tspan>`)
+      .join("");
 
     if (scored[i]) {
       const p = polar(cx, cy, (R * (a.value as number)) / max, i, n);
       // 2px surface ring keeps the dot legible where it sits on the stroke.
       parts.push(`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${MARK.dot / 2}" fill="var(--viz-series-1)" stroke="var(--viz-surface)" stroke-width="2" />`);
       parts.push(
-        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label"><tspan>${esc(labelText)}</tspan>${showValues ? `<tspan class="viz-axis-value" dx="4">${(a.value as number).toFixed(1)}</tspan>` : ""}</text>`,
+        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label">${labelTspans}${showValues ? `<tspan class="viz-axis-value" dx="4">${(a.value as number).toFixed(1)}</tspan>` : ""}</text>`,
       );
     } else {
       // Hollow marker at the rim: "we didn't measure this", not "you scored zero".
       const rim = polar(cx, cy, R, i, n);
       parts.push(`<circle cx="${rim.x.toFixed(1)}" cy="${rim.y.toFixed(1)}" r="${MARK.dot / 2}" fill="var(--viz-surface)" stroke="var(--viz-muted)" stroke-width="1.5" stroke-dasharray="2 2" />`);
       parts.push(
-        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label viz-axis-unscored"><tspan>${esc(labelText)}</tspan>${showValues ? `<tspan class="viz-axis-value" dx="4">—</tspan>` : ""}</text>`,
+        `<text x="${outer.x.toFixed(1)}" y="${outer.y.toFixed(1)}" text-anchor="${anchor}" class="viz-axis-label viz-axis-unscored">${labelTspans}${showValues ? `<tspan class="viz-axis-value" dx="4">—</tspan>` : ""}</text>`,
       );
     }
   }

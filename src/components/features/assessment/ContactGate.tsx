@@ -323,11 +323,25 @@ export default function ContactGate({
           appear by accident. Flipping `MARKETING_CONSENT_COPY_REVIEWED` is the
           only thing that turns it on. */}
       {MARKETING_CONSENT_COPY_REVIEWED && (
-        <Consent
-          checked={marketingConsent}
-          onChange={setMarketingConsent}
-          label={pick(CONSENT_COPY["consent.marketing"])}
-        />
+        <>
+          <Consent
+            checked={marketingConsent}
+            onChange={setMarketingConsent}
+            label={pick(CONSENT_COPY["consent.marketing"])}
+          />
+          {/* Under the tick, not inside its label. `consent-copy.ts` says why:
+              the tick is explicit consent and this line is implied acceptance,
+              and a screen claiming both at once is read at the weaker of the two.
+
+              Terms of Service is named and not linked because `/terms` does not
+              exist. Only the privacy notice becomes a link. */}
+          <p className="mt-2 text-body-small text-on-surface-variant">
+            {pick(CONSENT_COPY["consent.marketingNote"])}{" "}
+            <Link href={path("/privacy")} className="text-on-tertiary-container underline">
+              {pick(CONSENT_COPY["consent.privacyLink"])}
+            </Link>
+          </p>
+        </>
       )}
 
       {/* `error`, never Terracotta: a problem must not look like an action. */}
