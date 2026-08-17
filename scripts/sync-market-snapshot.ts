@@ -14,12 +14,18 @@
  * names its own date is honest. A stale figure that does not is the trust
  * failure this whole product is trying to avoid.
  *
- * **What is deliberately not emitted: the country split.** Of the 84 published
- * roles in the 16/08/2026 snapshot, 64 are in Germany, and that is a fact about
- * the board the pipeline sources from, not about Europe. Publishing it would be
- * the mistake the workspace `CLAUDE.md` warns about, one layer down: reading the
- * shape of the market off an artefact of how we collect it. If the sourcing ever
- * widens, this is the note to revisit.
+ * **What is deliberately not emitted: the country split.** The published set is
+ * heavily one country, Germany, and that is a fact about the boards the pipeline
+ * sources from rather than about Europe. Publishing it would be the mistake the
+ * workspace `CLAUDE.md` warns about, one layer down: reading the shape of the
+ * market off an artefact of how we collect it. If the sourcing ever widens, this
+ * is the note to revisit.
+ *
+ * The counts that used to be in this paragraph are gone, 17/08/2026. It said
+ * "of the 84 published roles in the 16/08/2026 snapshot, 64 are in Germany", and
+ * the first of those numbers went stale the next time anyone ran this script.
+ * A comment that restates a generated figure is the drift this repo's own rule
+ * forbids: name the fact, never the number, and let the generated file hold it.
  */
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
