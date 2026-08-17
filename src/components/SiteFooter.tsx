@@ -5,7 +5,6 @@ import type { Locale } from "@/lib/locale";
 import {
   DISCLAIMER,
   FACEBOOK_PAGE,
-  FOLLOW_BODY,
   EYEBROW,
   FOLLOW_EYEBROW,
   FOOTER_COLUMNS,
@@ -49,7 +48,14 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
         <div className="grid gap-12 large:grid-cols-[1.4fr_2fr]">
           {/* The left block. Where the newsletter capture would be on the page
               this is modelled on, and is not, because there is no newsletter.
-              See the note in `footer.ts`. */}
+              See the note in `footer.ts`.
+
+              The paragraph that used to sit between the eyebrow and the button
+              is gone, 17/08/2026, on Paul: the app does not advertise Facebook.
+              An eyebrow and a labelled link are enough to say where to find us,
+              and the sales copy under them was the part that had no business
+              being on a product surface. `footer.ts` carries the full history,
+              including the two separate reasons that line was wrong. */}
           <div>
             <Image
               src="/punprofile-logo-reversed.svg"
@@ -61,12 +67,11 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
             <p className={`mt-8 text-inverse-primary ${EYEBROW(locale)}`}>
               {pick(FOLLOW_EYEBROW, locale)}
             </p>
-            <p className="mt-3 max-w-sm text-body-large">{pick(FOLLOW_BODY, locale)}</p>
             <a
               href={FACEBOOK_PAGE}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 inline-flex min-h-12 items-center gap-2.5 rounded-full border border-on-primary/40 px-5 text-body-large transition-colors hover:bg-on-primary/10"
+              className="mt-4 inline-flex min-h-12 items-center gap-2.5 rounded-full border border-on-primary/40 px-5 text-body-large transition-colors hover:bg-on-primary/10"
             >
               {/* Facebook's mark, drawn rather than fetched: one path, no
                   network request, and it inherits the text colour so it can

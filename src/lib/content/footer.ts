@@ -18,9 +18,14 @@ import { DESTINATIONS } from "./cta";
  * field and "one insight a week". PunProfile has no newsletter, no sending
  * infrastructure and no consent copy covering a marketing list, and a field
  * that collects an email address under PDPA without a lawful basis is a
- * compliance problem rather than a design flourish. The honest equivalent is
- * the thing that already publishes weekly, which is the Facebook presence, so
- * the left block points there instead.
+ * compliance problem rather than a design flourish.
+ *
+ * What went in its place was a paragraph about the Facebook presence, and that
+ * is retired too, 17/08/2026: see the note where `FOLLOW_BODY` used to be. The
+ * left block is now the logo, a label and a link, which is what a footer owes.
+ * **The lesson is the one the newsletter note already had**, applied a step
+ * further: the answer to an empty slot is a smaller block, not a different
+ * thing to sell in it.
  *
  * **The legal paragraph is the other thing worth copying.** Theirs names what
  * they are not: not migration agents, no guarantee of employment. Ours says the
@@ -77,13 +82,31 @@ export const FACEBOOK_PAGE = "https://www.facebook.com/punprofile";
 
 export const FOLLOW_EYEBROW: Copy = { en: "Follow", th: "ติดตามเรา" };
 
-export const FOLLOW_BODY: Copy = {
-  // Describes the Page, which is what it links to. The first version described
-  // the group and pointed at the Page, which is the kind of small untruth
-  // nobody notices until the person who clicks it does.
-  en: "Jobs in Europe, and what each one is actually looking for. Free and public, and where most people find us first.",
-  th: "งานในยุโรป และสิ่งที่แต่ละตำแหน่งมองหาจริง ๆ เปิดฟรีและเป็นสาธารณะ และเป็นที่ที่คนส่วนใหญ่เจอเราเป็นที่แรก",
-};
+/*
+ * `FOLLOW_BODY` was here and is retired, 17/08/2026, on Paul: "it does not make
+ * sense, we're not promoting the FB group on the web app."
+ *
+ * Worth recording properly, because the line was wrong twice in three days for
+ * two different reasons and only the second one is the real one.
+ *
+ * It began as a description of the Facebook Group's free job posts sitting above
+ * a link to the Facebook Page. `Content_Strategy.md` § Channels has said since
+ * 11/07/2026 that those are different surfaces carrying different pillars: the
+ * Group has Job Trend and How-Tos, the Page has Thought Leadership, How-Tos and
+ * Social Proof. A note on 14/08/2026 claimed to have fixed exactly that and had
+ * only changed the reasoning. Rewritten on 17/08/2026 to describe the Page.
+ *
+ * **Then retired the same day, which supersedes all of it.** The app does not
+ * advertise Facebook. A paragraph selling a channel is a paragraph the footer
+ * does not owe anyone, and the question of which Facebook surface it described
+ * stops mattering once there is no paragraph.
+ *
+ * `FOLLOW_EYEBROW` and the Facebook button below it stay. A labelled link is a
+ * link; it was the sales copy under it that had no business being there.
+ * `FACEBOOK_PAGE` also stays: `SiteShell` reads it for the organisation's
+ * `sameAs` in JSON-LD, which is a machine-readable fact about who we are rather
+ * than a promotion.
+ */
 
 /**
  * Three columns, grouped by what the reader wants rather than by route.
