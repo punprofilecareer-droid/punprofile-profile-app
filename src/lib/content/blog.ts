@@ -250,8 +250,21 @@ export const BLOG_INTRO: Copy = {
   // "Not shortcuts" is the pinned post's move 5, name the objection and refuse
   // the magic, in the smallest form it comes in. A career blog's first promise
   // is usually a shortcut, and this one says at the top that it is not one.
-  en: "Articles on the European job market, visas, CVs and getting ready. Written from what can be checked, not from shortcuts.",
-  th: "รวมบทความเรื่องตลาดงานยุโรป วีซ่า เรซูเม่ และการเตรียมตัว เขียนจากสิ่งที่ตรวจสอบได้ ไม่ใช่สูตรลัด",
+  // Paul's wording, 17/08/2026. He wrote two versions on the review sheet and
+  // chose this one, the later of the two.
+  //
+  // Three changes from what it replaced, and the last is the one that matters.
+  // `การหางานในยุโรป` rather than `ตลาดงานยุโรป`: the reader's activity rather
+  // than the subject area. `ข้อมูลจริงที่ตรวจสอบได้` rather than
+  // `สิ่งที่ตรวจสอบได้`. And the closing clause is now an argument rather than a
+  // label: `ไม่ใช่สูตรลัดที่ฟังดูดีแต่ใช้จริงไม่ได้`, not shortcuts that sound
+  // good and do not work, where it had said only "not shortcuts".
+  //
+  // His other draft closed on `ไม่ขายฝันด้วยสูตรลัด`, we do not sell dreams. He
+  // did not pick it, and it is worth recording why that is the right call: it
+  // accuses the rest of the market, and nothing else on this site does.
+  en: "Articles on finding work in Europe: visas, CVs and getting ready. Written from real information you can check, not shortcuts that sound good and do not work.",
+  th: "รวมบทความเรื่องการหางานในยุโรป วีซ่า เรซูเม่ และการเตรียมตัว เขียนจากข้อมูลจริงที่ตรวจสอบได้ ไม่ใช่สูตรลัดที่ฟังดูดีแต่ใช้จริงไม่ได้",
 };
 
 export const BLOG_TOPICS_LABEL: Copy = { en: "Pick a topic", th: "เลือกหัวข้อ" };
