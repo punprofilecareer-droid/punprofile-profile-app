@@ -123,7 +123,7 @@ ${BRAND_TOKENS_CSS.replace(/\n  \}$/, `\n${BRAND_FONT_STACKS}\n  }`)}
   .cols { display:grid; gap:1.5rem; grid-template-columns:1fr; max-width:80rem; margin:0 auto; }
   @media (min-width:64rem) { .cols { grid-template-columns:1fr 1fr; } }
   .pane { background:var(--viz-surface); border:1px solid var(--border); border-radius:16px; padding:1.25rem 1.5rem; }
-  .pane.candidate { border-top:3px solid var(--primary); }
+  .pane.candidate { border-top:3px solid var(--color-primary); }
   h2,h3 { font-family:var(--font-display); }
   h2 { margin:0; font-size:1.1rem; } h3 { font-size:.95rem; margin:1.4rem 0 .4rem; }
   .sub { color:var(--ink-2); margin:.15rem 0 0; }
@@ -134,9 +134,9 @@ ${BRAND_TOKENS_CSS.replace(/\n  \}$/, `\n${BRAND_FONT_STACKS}\n  }`)}
   .mut { color:var(--viz-muted); font-size:.8rem; }
   ul { padding-left:1.2rem; margin:.4rem 0; } ul.steps { list-style:none; padding-left:0; }
   ul.steps li { padding:.25rem 0; border-bottom:1px solid var(--border); }
-  .mark { display:inline-block; width:1.3rem; color:var(--primary); font-weight:700; }
+  .mark { display:inline-block; width:1.3rem; color:var(--color-primary); font-weight:700; }
   .s-done { color:var(--ink-2); } .s-next { font-weight:600; }
-  .card { border:1px solid var(--border); border-left:3px solid var(--primary); border-radius:10px; padding:.75rem 1rem; margin:.75rem 0; }
+  .card { border:1px solid var(--border); border-left:3px solid var(--color-primary); border-radius:10px; padding:.75rem 1rem; margin:.75rem 0; }
   .card h3 { margin:0 0 .3rem; }
 </style></head><body>
 <div class="cols">

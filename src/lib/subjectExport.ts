@@ -309,7 +309,7 @@ ${BRAND_TOKENS_CSS.replace(/\n  \}$/, `\n${BRAND_FONT_STACKS}\n  }`)}
   th,td { text-align:left; padding:.5rem .5rem .5rem 0; border-bottom:1px solid var(--border); vertical-align:top; }
   th[scope="row"] { font-weight:600; width:38%; color:var(--ink-2); }
   .none { color:var(--viz-muted); }
-  .note { background:var(--viz-surface); border:1px solid var(--border); border-left:3px solid var(--primary);
+  .note { background:var(--viz-surface); border:1px solid var(--border); border-left:3px solid var(--color-primary);
     border-radius:8px; padding:.75rem 1rem; font-size:.88rem; color:var(--ink-2); margin:1rem 0 0; }
 </style>
 </head>
