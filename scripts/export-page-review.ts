@@ -60,7 +60,8 @@
  * workspace root `CLAUDE.md`.
  */
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
+import { checkOverwrite, stamp } from "./lib/review-guard.js";
 import { COPY } from "../src/lib/content/copy.js";
 import { isCopy, walkCopy, type Copy } from "./lib/copy-walk.js";
 import * as home from "../src/lib/content/home.js";
@@ -276,66 +277,18 @@ const OUT =
   positional[1] ??
   `../punprofile-career-coaching/punprofile-work/work-projects/eu-fit-check/${which}-copy-review.md`;
 
-/**
- * Unapplied review work in the file this run is about to replace.
- *
- * A `แก้เป็น:` line with nothing after the colon is the empty template and is not
- * a correction. Anything after it is.
- */
-function unappliedWork(path: string, quoted: Set<string>): string[] {
-  if (!existsSync(path)) return [];
-  const found: string[] = [];
-  readFileSync(path, "utf8")
-    .split("\n")
-    .forEach((raw, i) => {
-      const line = raw.trim();
-      const no = i + 1;
-      if (line.startsWith("PB:")) {
-        found.push(`  line ${no}: ${line.slice(0, 90)}`);
-        return;
-      }
-      if (line.startsWith("แก้เป็น:")) {
-        if (line.slice("แก้เป็น:".length).trim()) {
-          found.push(`  line ${no}: ${line.slice(0, 90)}`);
-        }
-        return;
-      }
-      // A quoted Thai line is `> <string>`; the English is `*<string>*`.
-      const th = line.startsWith("> ") ? line.slice(2).trim() : null;
-      const en = /^\*[^*].*\*$/.test(line) ? line.slice(1, -1).trim() : null;
-      const text = th ?? en;
-      if (text && text !== "TODO" && !quoted.has(text)) {
-        found.push(`  line ${no}: edited in place -> ${text.slice(0, 80)}`);
-      }
-    });
-  return found;
-}
-
-/** Every string this run would print, so an edited quotation is detectable. */
-const quoted = new Set<string>();
-for (const section of sections) {
-  for (const item of section.items) {
-    const copy = resolve(mod, item.key, copyBank);
-    if (!copy) continue;
-    quoted.add(copy.th.trim());
-    quoted.add(copy.en.trim());
-  }
-}
 
 const force = process.argv.includes("--force");
-const pending = force ? [] : unappliedWork(OUT, quoted);
-if (pending.length) {
-  console.error(`\n${OUT}\n`);
-  console.error(`${pending.length} line(s) of review work would be overwritten:\n`);
-  for (const line of pending) console.error(line);
-  console.error(
-    "\nApply these to the code first, then re-run with --force. `PB:` lines are" +
-      "\nPaul's notes to the reader and count as review work even when no" +
-      "\ncorrection follows them.",
-  );
+const guard = force ? { safe: true, reasons: [] } : checkOverwrite(OUT);
+if (!guard.safe) {
+  console.error(`
+${OUT}
+`);
+  for (const line of guard.reasons) console.error(line);
+  console.error("");
   process.exit(1);
 }
 
-writeFileSync(OUT, lines.join("\n"));
+writeFileSync(OUT, stamp(lines.join("\n")));
 console.log(`wrote ${OUT}`);
 console.log(`${n} strings${missing ? `, ${missing} could not be resolved` : ""}`);

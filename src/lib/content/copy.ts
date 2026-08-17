@@ -542,8 +542,17 @@ export const COPY = {
     // have shown the same number twice in three words of each other. `{n}` is
     // gone from the text for that reason; `{dimension}` stays.
     en: "of the people here score lower than you on {dimension}.",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
-    th: "ของผู้ทำแบบประเมินกลุ่มนี้ มีคะแนนด้าน {dimension} ต่ำกว่าคุณ",
+    // **Paul's wording, 17/08/2026**, with one typo corrected on his
+    // confirmation: he wrote `ผู้ทำรับการประเมิน`, which is `ผู้ทำ` and
+    // `ผู้เข้ารับการประเมิน` merged. Held rather than shipped, because a merged
+    // phrase on the screen every candidate reaches is not a thing to guess at.
+    //
+    // His change of substance is the denominator: `ทั้งหมด`, everyone assessed,
+    // rather than `กลุ่มนี้`, which read as some subgroup the reader could not
+    // identify. It is also true, which the sentence next to it is not:
+    // `stats.readiness.foot` keeps its per-question denominator for that reason,
+    // on his call the same day.
+    th: "ของผู้เข้ารับการประเมินทั้งหมด มีคะแนนด้าน {dimension} ต่ำกว่าคุณ",
   },
   "stats.percentile.foot": {
     screen: "First read, under the percentile line",
@@ -822,9 +831,15 @@ export const COPY = {
   },
   "report.savePdf": {
     screen: "Candidate PDF, the button that reopens the print dialog. Screen only, never printed",
-    en: "Save as PDF",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
-    th: "บันทึกเป็น PDF",
+    en: "Download as PDF",
+    // **Paul's wording, 17/08/2026**, with the น์ restored on his confirmation.
+    // `ดาวน์โหลด` is the standard spelling and `ดาวโหลด` is a common enough
+    // misspelling to look deliberate, which is why it was held rather than
+    // corrected silently.
+    //
+    // The change of substance is his: download rather than save. The button
+    // reopens the print dialog, and what a reader wants from it is a file.
+    th: "ดาวน์โหลด PDF",
   },
 
   // ------------------------------------------------ confidence bands, 17/08/2026
