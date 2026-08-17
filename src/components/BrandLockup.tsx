@@ -54,19 +54,63 @@ export default function BrandLockup() {
   const pathname = usePathname() ?? "";
   const efc = isAssessment(pathname);
 
+  const alt = efc ? `${t("nav.assess")} — ${t("nav.brand")}` : t("nav.brand");
+  // The EFC lockup is wider relative to its height and its descriptor line is
+  // smaller, so it needs a little more box to read at the same optical size as
+  // the parent.
+  const box = efc ? "h-10 w-auto" : "h-9 w-auto";
+  const w = efc ? 1911 : 2421;
+  const h = efc ? 488 : 657;
+
+  /*
+   * **Both schemes are rendered and CSS picks one, 17/08/2026, on Paul's read
+   * that the wordmark should invert in dark.**
+   *
+   * It could not before: the asset bakes its wordmark colour in, `#000000` in
+   * the light files and `#F0F2E7` in the reversed ones, so a single `<img>` was
+   * always going to be black text on a dark ground.
+   *
+   * **A filter was the wrong answer and worth saying why.** `invert()` would take
+   * the wordmark from black to white and the brand orange mark to a blue-green,
+   * and `design.md` is explicit that the mark is never recoloured outside brand
+   * orange. The reversed assets already solve this properly: they change only the
+   * wordmark and leave `#E7703A` and EU Fit Check's `#135CB4` untouched, so the
+   * mark is identical in both schemes and only the type flips.
+   *
+   * **Neither element names the scheme**, which is the rule in `AGENTS.md`: no
+   * component may know about dark, and `dark:` is banned. They carry
+   * `brand-logo-light` and `brand-logo-dark`, and `globals.css` decides, in the
+   * one place that already reasons about `prefers-color-scheme`.
+   *
+   * The cost is one extra request. Both files are small vectors, `priority` is on
+   * the light one only, and the alternative is a component that has to be told
+   * which scheme it is in.
+   *
+   * `SiteFooter` keeps the reversed asset unconditionally and must: the footer is
+   * on `inverse-surface` in both schemes, which is what that role is for.
+   */
   return (
-    <Image
-      // Both are vector, and both carry the brand orange mark, which is what
-      // makes the pair read as one family rather than two logos.
-      src={efc ? "/efc-logo.svg" : "/punprofile-logo.svg"}
-      alt={efc ? `${t("nav.assess")} — ${t("nav.brand")}` : t("nav.brand")}
-      width={efc ? 1911 : 2421}
-      height={efc ? 488 : 657}
-      priority
-      // The EFC lockup is wider relative to its height and its descriptor line
-      // is smaller, so it needs a little more box to read at the same optical
-      // size as the parent.
-      className={efc ? "h-10 w-auto" : "h-9 w-auto"}
-    />
+    <>
+      <Image
+        // Both are vector, and both carry the brand orange mark, which is what
+        // makes the pair read as one family rather than two logos.
+        src={efc ? "/efc-logo.svg" : "/punprofile-logo.svg"}
+        alt={alt}
+        width={w}
+        height={h}
+        priority
+        className={`brand-logo-light ${box}`}
+      />
+      <Image
+        src={efc ? "/efc-logo-reversed.svg" : "/punprofile-logo-reversed.svg"}
+        // Empty, because the light one above already names this for a screen
+        // reader and the pair is one logo. Two identical alts would announce the
+        // brand twice on every page.
+        alt=""
+        width={w}
+        height={h}
+        className={`brand-logo-dark ${box}`}
+      />
+    </>
   );
 }

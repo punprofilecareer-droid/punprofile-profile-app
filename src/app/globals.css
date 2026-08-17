@@ -212,6 +212,22 @@
   to   { opacity: 0; }
 }
 
+/* The brand lockup, one asset per colour scheme.
+   Added 17/08/2026, on Paul's read that the wordmark should invert in dark.
+
+   `BrandLockup` renders both and names neither scheme, which is the rule: no
+   component may know about dark. This is the one place that decides, and it sits
+   beside the token file that already reasons about `prefers-color-scheme`.
+
+   Only the wordmark differs between the two assets. Brand orange and EU Fit
+   Check's blue are identical in both, so the mark never changes colour, which
+   `design.md` requires and which a CSS `invert()` filter would have broken. */
+.brand-logo-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  .brand-logo-light { display: none; }
+  .brand-logo-dark { display: block; }
+}
+
 @layer components {
   .menu-panel-in {
     animation: menu-panel-in 220ms var(--ease-emphasized) both;
