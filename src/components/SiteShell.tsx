@@ -8,6 +8,7 @@ import SiteMenu from "@/components/SiteMenu";
 import SiteFooter from "@/components/SiteFooter";
 import NavLockGate from "@/components/NavLockGate";
 import BrandLockup from "@/components/BrandLockup";
+import BrandScope from "@/components/BrandScope";
 import SideNav from "@/components/SideNav";
 import { DEFAULT_LOCALE } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
@@ -136,7 +137,10 @@ export default function SiteShell({
                 <SideNav />
               </NavLockGate>
 
-              <div className="flex min-w-0 flex-1 flex-col">
+              {/* The content column, and EU Fit Check's colour scope when the
+                  route is the assessment. The drawer above stays outside it and
+                  keeps PunProfile's own ground; `BrandScope` says why. */}
+              <BrandScope className="flex min-w-0 flex-1 flex-col">
             {/* Three columns, not a flex row with the logo in the middle:
                 the wordmark is centred on the SCREEN, and a flex row would
                 centre it on whatever space the two controls left over, so it
@@ -179,7 +183,7 @@ export default function SiteShell({
             <NavLockGate>
               <SiteFooter locale={locale} />
             </NavLockGate>
-              </div>
+              </BrandScope>
             </div>
           </LocaleProvider>
         </body>

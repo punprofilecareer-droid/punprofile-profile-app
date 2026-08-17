@@ -42,7 +42,18 @@ export const metadata: Metadata = pageMetadata({
  */
 export default function AssessLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-surface-container-low">
+    /*
+     * **`bg-surface`, not a container tier, since 17/08/2026.**
+     *
+     * The route is inside EU Fit Check's colour scope now, set by `BrandScope`
+     * one level up so the header carries it too, and inside that scope `surface`
+     * is already the product's own ground rather than the company's. It was
+     * `surface-container-low`, which was the site's ground one tier off, and the
+     * two measured 1.05 apart: the reason the assessment read as a page of the
+     * site rather than as a tool. A container tier here would now be saying "one
+     * step off the page" when this is the page.
+     */
+    <div className="flex min-h-full flex-1 flex-col bg-surface-container">
       {children}
     </div>
   );

@@ -62,6 +62,14 @@ interface Design {
   source: string;
   colors: Record<string, string>;
   "colors-dark": Record<string, string>;
+  /**
+   * EU Fit Check's scope. Optional: a design.md without these emits no scoped
+   * block and the app renders exactly as it did before them.
+   */
+  "colors-efc"?: Record<string, string>;
+  "colors-efc-dark"?: Record<string, string>;
+  "colors-efc-contrast"?: Record<string, string>;
+  "colors-efc-contrast-dark"?: Record<string, string>;
   "state-layers": Record<string, number>;
   typography: Record<string, TypeRole>;
   shape: Record<string, string>;
@@ -285,6 +293,108 @@ function css(): string {
     .map(([k, v]) => `    --color-${k}: ${v.toLowerCase()};`)
     .join("\n");
 
+  /*
+   * EU Fit Check's scope, 17/08/2026.
+   *
+   * The same `--color-*` names again, on `[data-brand="efc"]` rather than on
+   * `:root`, so the assessment route recolours and no component names the scope.
+   * It is the dark scheme's mechanism pointed at a subtree instead of a media
+   * query, and it works for the same reason: custom properties inherit, and a
+   * declaration on an ancestor of the element beats one on `:root` whatever the
+   * specificity of either.
+   *
+   * **Order in the file is load-bearing.** Four blocks, and each later one has to
+   * be able to win inside the scope:
+   *
+   *   1. `:root` light, from `@theme` above.
+   *   2. `:root` dark, the media block above.
+   *   3. `[data-brand="efc"]` light. Wins over both inside the scope, because it
+   *      is closer to the element.
+   *   4. `[data-brand="efc"]` dark, in a media block. Same closeness as 3, later
+   *      in the source, so it wins in dark mode.
+   *
+   * The two contrast blocks repeat that pairing for `prefers-contrast: more`.
+   * They exist because the parent's contrast block sets its boundary roles on
+   * `:root`, and the scope's own `outline` would otherwise beat it and quietly
+   * undo high contrast for anyone taking the assessment.
+   */
+  const scope = (vars: Record<string, string> | undefined, indent: string) =>
+    vars
+      ? Object.entries(vars)
+          .map(([k, v]) => `${indent}--color-${k}: ${v.toLowerCase()};`)
+          .join("\n")
+      : "";
+
+  /*
+   * The bare alias names, resolved inside the scope too.
+   *
+   * `--viz-*`, `--ink-*` and `--border` are written as literal values at `:root`
+   * rather than as `var()` references, because `build-report-book.ts` reads them
+   * out of a rendered stylesheet and a reference would give it a string it cannot
+   * resolve. That is fine everywhere except here: a literal does not follow the
+   * scope, so without this the spider chart on the result screen would draw its
+   * grid and its captions in the parent's olive-tinted greys on the product's
+   * blue ground. `viz-series-1` is `tertiary`, which the scope does not
+   * redefine, so it falls through to the same blue it has always been.
+   */
+  const scopedAliases = (dark: boolean) =>
+    Object.entries(ALIASES)
+      .map(([alias, target]) => {
+        const src = dark
+          ? (d["colors-efc-dark"]?.[target] ?? d["colors-dark"][target])
+          : d["colors-efc"]?.[target];
+        return `    --${alias}: ${(src ?? role(target)).toLowerCase()};`;
+      })
+      .join("\n");
+
+  const efc = d["colors-efc"]
+    ? `
+
+/* EU Fit Check's ground. The parent's neutral construction with the hue rotated
+   to the product's blue; \`design.md\` carries the derivation and the measured
+   pairs. Roles absent here inherit, which is why rust \`action\` is not repeated. */
+[data-brand="efc"] {
+  color-scheme: light;
+${scope(d["colors-efc"], "  ")}
+
+${scopedAliases(false)}
+}
+${
+  d["colors-efc-dark"]
+    ? `
+@media (prefers-color-scheme: dark) {
+  [data-brand="efc"] {
+    color-scheme: dark;
+${scope(d["colors-efc-dark"], "    ")}
+
+${scopedAliases(true)}
+  }
+}
+`
+    : ""
+}${
+        d["colors-efc-contrast"]
+          ? `
+@media (prefers-contrast: more) {
+  [data-brand="efc"] {
+${scope(d["colors-efc-contrast"], "    ")}
+  }
+}
+`
+          : ""
+      }${
+        d["colors-efc-contrast-dark"]
+          ? `
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  [data-brand="efc"] {
+${scope(d["colors-efc-contrast-dark"], "    ")}
+  }
+}
+`
+          : ""
+      }`
+    : "";
+
   return `${BANNER(CSS_OUT)}
 
 @theme {
@@ -391,7 +501,7 @@ ${Object.entries(ALIASES)
   .join("\n")}
   }
 }
-`;
+${efc}`;
 }
 
 // ---------------------------------------------------------------- TS

@@ -453,3 +453,103 @@
     --border: #45483c;
   }
 }
+
+
+/* EU Fit Check's ground. The parent's neutral construction with the hue rotated
+   to the product's blue; `design.md` carries the derivation and the measured
+   pairs. Roles absent here inherit, which is why rust `action` is not repeated. */
+[data-brand="efc"] {
+  color-scheme: light;
+  --color-primary: #135cb4;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d7e3ff;
+  --color-on-primary-container: #00458e;
+  --color-primary-fixed: #d7e3ff;
+  --color-primary-fixed-dim: #abc7ff;
+  --color-on-primary-fixed: #001b3f;
+  --color-on-primary-fixed-variant: #00458e;
+  --color-inverse-primary: #abc7ff;
+  --color-surface-tint: #135cb4;
+  --color-background: #faf8ff;
+  --color-on-background: #141a31;
+  --color-surface: #faf8ff;
+  --color-on-surface: #141a31;
+  --color-surface-dim: #d3d8f8;
+  --color-surface-bright: #faf8ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f2ff;
+  --color-surface-container: #ebedff;
+  --color-surface-container-high: #e4e7ff;
+  --color-surface-container-highest: #dce1ff;
+  --color-inverse-surface: #292f47;
+  --color-inverse-on-surface: #eff0ff;
+  --color-surface-variant: #d9e2ff;
+  --color-on-surface-variant: #374669;
+  --color-outline: #67779c;
+  --color-outline-variant: #b7c6f0;
+
+    --viz-surface: #ffffff;
+    --viz-page: #faf8ff;
+    --viz-grid: #b7c6f0;
+    --viz-muted: #374669;
+    --viz-series-1: #135cb4;
+    --ink-1: #141a31;
+    --ink-2: #374669;
+    --border: #b7c6f0;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-brand="efc"] {
+    color-scheme: dark;
+    --color-primary: #abc7ff;
+    --color-on-primary: #002f65;
+    --color-primary-container: #00458e;
+    --color-on-primary-container: #d7e3ff;
+    --color-primary-fixed: #d7e3ff;
+    --color-primary-fixed-dim: #abc7ff;
+    --color-on-primary-fixed: #001b3f;
+    --color-on-primary-fixed-variant: #00458e;
+    --color-inverse-primary: #135cb4;
+    --color-surface-tint: #abc7ff;
+    --color-background: #0c1229;
+    --color-on-background: #dce1ff;
+    --color-surface: #0c1229;
+    --color-on-surface: #dce1ff;
+    --color-surface-dim: #0c1229;
+    --color-surface-bright: #323850;
+    --color-surface-container-lowest: #070d23;
+    --color-surface-container-low: #141a31;
+    --color-surface-container: #181e35;
+    --color-surface-container-high: #232940;
+    --color-surface-container-highest: #2e344c;
+    --color-inverse-surface: #dce1ff;
+    --color-inverse-on-surface: #292f47;
+    --color-surface-variant: #374669;
+    --color-on-surface-variant: #b7c6f0;
+    --color-outline: #8190b7;
+    --color-outline-variant: #374669;
+
+    --viz-surface: #070d23;
+    --viz-page: #0c1229;
+    --viz-grid: #374669;
+    --viz-muted: #b7c6f0;
+    --viz-series-1: #abc7ff;
+    --ink-1: #dce1ff;
+    --ink-2: #b7c6f0;
+    --border: #374669;
+  }
+}
+
+@media (prefers-contrast: more) {
+  [data-brand="efc"] {
+    --color-outline: #374669;
+    --color-outline-variant: #67779c;
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  [data-brand="efc"] {
+    --color-outline: #b7c6f0;
+    --color-outline-variant: #7c8bb2;
+  }
+}
