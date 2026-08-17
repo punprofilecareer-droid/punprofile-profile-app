@@ -277,6 +277,14 @@ Git is the lock. In practice:
 
 ### Before a production push
 
+**`verify:pages` joined this list on 17/08/2026.** `verify:copy` lints `copy.ts`,
+the question bank and the privacy notice; **it has never read the per-page
+content modules**, which is 91 candidate-facing strings across `home.ts`,
+`coaching.ts`, `services.ts`, `faq.ts` and `footer.ts`. Nobody had noticed,
+because those modules are written from Paul's own Thai and were therefore
+assumed to be fine. The first run found a real LR-04 failure in `footer.ts`
+shipped since 15/08/2026.
+
 ```
 git status --short                        # must be empty
 git rev-list --count origin/master..HEAD  # know what is going out
@@ -284,6 +292,7 @@ npx tsc --noEmit -p tsconfig.json
 npx tsc --noEmit -p convex/tsconfig.json
 npm run lint
 npm run verify:copy
+npm run verify:pages
 npm run verify:consent
 git push origin master
 ```

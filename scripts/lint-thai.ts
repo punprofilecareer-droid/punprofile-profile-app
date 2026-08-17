@@ -55,11 +55,61 @@ const span = (f: LintFinding) => (f.at ? f.at[1] - f.at[0] : 0);
  * The rest are the examples LR-04 names as naturally collocating, kept here
  * rather than in the termbase because they are illustrations of the rule and not
  * decisions PunProfile has made about its own copy.
+ *
+ * **`อ่าน` and `เปิด` added 17/08/2026**, when this check was first pointed at
+ * the per-page content modules and failed three strings, two of them Paul's own
+ * and one shipped in `footer.ts` since 15/08/2026.
+ *
+ * They are added rather than exempted because LR-04's own test admits them. The
+ * rule asks whether the verb alone already reads as something worth paying for,
+ * and names คุย as the counter-example precisely because casual talk is not.
+ * Reading something and having a group open to you both are: อ่านฟรี and เปิดฟรี
+ * are ordinary Thai, and the rule was never aimed at them. It was derived from
+ * the คุยฟรี error and the whitelist simply stopped where that error did.
+ *
+ * The termbase's ban on คุยฟรี, แชทฟรี, ทักฟรี and นัดคุยฟรี is untouched.
+ *
+ * `Language_System.md` owns the rule's wording and lives in the read-mostly
+ * zone, so its LR-04 section still describes the narrower list. That is a
+ * pending edit, not a disagreement.
  */
-const FREE_STEMS = ["ปรึกษา", "ทดลอง", "ตรวจ", "เรียน", "ส่ง", "จัดส่ง", "อบรม"];
+const FREE_STEMS = ["ปรึกษา", "ทดลอง", "ตรวจ", "เรียน", "ส่ง", "จัดส่ง", "อบรม", "อ่าน", "เปิด"];
 
 /** Casual verbs that must stay separate from ฟรี. LR-04. */
 const CASUAL_VERBS = ["คุย", "แชท", "ทัก", "แอด", "เม้าท์", "ถาม"];
+
+/**
+ * Words after which ฟรี is a predicate rather than half a compound.
+ *
+ * Added 17/08/2026 with the two stems above, and it is a different fix for a
+ * different problem. `ส่วนไหนฟรี`, "which part is free", is not a verb with ฟรี
+ * stuck on the end; it is a question whose answer is "free". LR-04 has nothing
+ * to say about it, and the check was firing because it reads the characters
+ * before ฟรี and cannot see grammar.
+ *
+ * Deliberately short, and it is not a general escape hatch: everything here has
+ * to be a word that can only be the subject of a predicate, never a verb ฟรี
+ * could compound with.
+ */
+const FREE_PREDICATE_SUBJECTS = ["ไหน", "นี้", "นั้น"];
+
+/**
+ * The potential marker. `<verb>ได้ฟรี` is "can be done for free", where ฟรี is an
+ * adverb on the whole phrase rather than a compound on the verb.
+ *
+ * Added 17/08/2026, on Paul's own `ทำได้ฟรี` in `faq.ts`, shipped since
+ * 14/08/2026 and only visible once `verify-pages.ts` stopped skipping strings
+ * held inside arrays. It is a grammatical class rather than another word on a
+ * list, which is why it is here and not a third entry in `FREE_STEMS`: `อ่านได้ฟรี`
+ * and `ใช้ได้ฟรี` are the same construction and none of them needs its own
+ * exemption.
+ *
+ * **`CASUAL_VERBS` is still checked first, with this stripped**, so `คุยได้ฟรี`
+ * fails exactly as `คุยฟรี` does. Chatting does not become a paid service by
+ * having a potential marker on it, and that is the one thing LR-04 was written
+ * to catch.
+ */
+const POTENTIAL_MARKER = "ได้";
 
 /**
  * Text with every quoted span blanked out, positions preserved.
@@ -128,8 +178,18 @@ export function lintThai(targets: LintTarget[]): LintFinding[] {
       // Already reported at full width by the banned scan.
       if (kept.some((f) => f.at![0] <= m.index && f.at![1] >= m.index + 3)) continue;
       const before = th.slice(Math.max(0, m.index - 12), m.index);
-      if (FREE_STEMS.some((s) => before.endsWith(s))) continue;
-      const casual = CASUAL_VERBS.find((v) => before.endsWith(v));
+      // A trailing potential marker is stripped before every test below, so
+      // `ทำได้ฟรี` is judged on ทำ and `คุยได้ฟรี` on คุย. Order matters: the
+      // casual-verb check has to see through the marker, or the one form this
+      // rule exists to ban gets a free pass by adding two characters.
+      const adverbial = before.endsWith(POTENTIAL_MARKER);
+      const stem = adverbial ? before.slice(0, -POTENTIAL_MARKER.length) : before;
+      const casual = CASUAL_VERBS.find((v) => stem.endsWith(v));
+      if (!casual) {
+        if (FREE_STEMS.some((s) => stem.endsWith(s))) continue;
+        if (FREE_PREDICATE_SUBJECTS.some((s) => stem.endsWith(s))) continue;
+        if (adverbial) continue;
+      }
       if (casual) {
         add("LR-04", id, `ฟรี attached to the casual verb "${casual}". Attach it to ปรึกษา instead.`);
       } else if (/[฀-๿]$/.test(before)) {
