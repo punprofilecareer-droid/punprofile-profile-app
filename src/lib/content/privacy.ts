@@ -167,8 +167,14 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
       ...(MARKETING_CONSENT_COPY_REVIEWED
         ? [
             {
-              en: "If you ticked the optional box asking for job emails, we also use your email address to send you matching roles and short guidance. That is a separate consent from the one above.",
-              th: "หากคุณติ๊กช่องเลือกรับอีเมลแจ้งตำแหน่งงาน เราจะใช้อีเมลของคุณส่งตำแหน่งที่ตรงกับคุณและคำแนะนำสั้น ๆ ด้วย ความยินยอมนี้แยกจากข้อด้านบน",
+              // Rewritten 17/08/2026 with `consent.marketing` itself. It said
+              // "job emails ... matching roles", which is a paid Phase 4 feature
+              // and was removed from the tick on Paul's call. A privacy notice
+              // that describes a consent the form no longer asks for is worse
+              // than one that says nothing: it is the document a reader checks
+              // the form against.
+              en: "If you ticked the optional box, we also use your email address to send you news and practical advice. That is a separate consent from the one above.",
+              th: "หากคุณติ๊กช่องเลือกไว้ เราจะใช้อีเมลของคุณส่งข่าวสารและคำแนะนำให้ด้วย ความยินยอมนี้แยกจากข้อด้านบน",
             },
           ]
         : []),
@@ -279,8 +285,8 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
       ...(MARKETING_CONSENT_COPY_REVIEWED
         ? [
             {
-              en: "- Stop the job emails without withdrawing anything else. The two consents are recorded separately, so stopping one leaves the other exactly as it was.",
-              th: "- หยุดรับอีเมลแจ้งตำแหน่งงานโดยไม่ต้องถอนความยินยอมอื่น ความยินยอมทั้งสองถูกบันทึกแยกกัน การหยุดอย่างหนึ่งจึงไม่กระทบอีกอย่าง",
+              en: "- Stop the news emails without withdrawing anything else. The two consents are recorded separately, so stopping one leaves the other exactly as it was.",
+              th: "- หยุดรับข่าวสารทางอีเมลโดยไม่ต้องถอนความยินยอมอื่น ความยินยอมทั้งสองถูกบันทึกแยกกัน การหยุดอย่างหนึ่งจึงไม่กระทบอีกอย่าง",
             },
           ]
         : []),

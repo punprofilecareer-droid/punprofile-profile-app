@@ -331,19 +331,28 @@ export default function AssessPage() {
           </>
         ) : (
           <>
-            {/* The mascot, not a spinner. The requirement the spinner met still
-                holds, that something has to move or the pause reads as a stall
-                rather than as work, and the character arriving is that motion.
-                It also does something a ring cannot: the clock it is sitting on
-                says the wait is deliberate. */}
-            <Image
-              src="/assess/mascot/welcome.jpg"
-              alt=""
-              width={1000}
-              height={746}
-              priority
-              sizes="(max-width: 640px) 90vw, 420px"
-              className="mascot-in mx-auto mb-4 w-full max-w-[420px] rounded-large"
+            {/* Back to the spinner, 17/08/2026, on Paul's call. The mascot
+                stood here from 16/08/2026 on the argument that a character
+                arriving is more interesting motion than a ring, which it is, and
+                that is not what a loading state is for: a 420px illustration is
+                the largest thing on the screen at the moment the candidate is
+                waiting to be asked a question.
+
+                The requirement the mascot inherited is unchanged and this still
+                meets it. Something has to move, or the pause reads as a stall
+                rather than as work.
+
+                Roles rather than the literals this markup carried before the
+                rebrand: it was `border-neutral-300 border-t-eufit`, and `eufit`
+                does not exist any more. Inside the assessment's scope `primary`
+                IS the product's blue, so the ring picks up EU Fit Check's colour
+                without naming it, which is what the scope is for.
+
+                `mascot-in` in `globals.css` still has a second caller at the end
+                of the flow, so it stays. */}
+            <div
+              role="presentation"
+              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-outline-variant border-t-primary"
             />
             <p className="text-body-large text-on-surface-variant" role="status">
               {t("assess.starting")}

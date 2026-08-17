@@ -165,52 +165,56 @@ export const CONSENT_COPY = {
   },
 
   /**
-   * **Passed by Paul, 16/08/2026.** Added 15/08/2026 as a machine-written
-   * placeholder that said so; recomposed and read back on that date.
+   * The optional second tick, and **what it asks for changed on 17/08/2026.**
    *
-   * This is a second, separate tick, and separate is the point. The statement
-   * above is `service`: we may contact you about your own result and your
-   * coaching. This one is `marketing`: job digests and nurture sequences, which
-   * TASK-060 and TASK-082 both need and which nobody in the database has ever
-   * been asked for. A single tick covering both would make the marketing
-   * consent unprovable, which is the failure the whole event log exists to
-   * prevent.
+   * It used to say `รับอีเมลแจ้งตำแหน่งงานที่ตรงกับโปรไฟล์ของคุณ`, send me job
+   * openings that match my profile. **Paul removed that: matched-job email
+   * notifications are a paid feature.** `01_Project_Foundation.md` § The three
+   * surfaces lists "Email Notification for jobs" under the app as
+   * "free to start, paid for depth", and `AGENTS.md` puts it in Phase 4. Asking
+   * for consent to send a thing nobody can receive yet, and which will cost money
+   * when they can, is a promise the product cannot keep.
    *
-   * Three constraints on whatever wording replaces this:
+   * It now asks for news and practical advice, in his words. That is a thing the
+   * business can actually send today and does not commit it to a paid feature.
    *
-   * 1. **Unticked by default, and it must stay optional.** A pre-ticked box is
-   *    not freely given consent, and refusing it must not block the form. The
-   *    contact step is already the riskiest copy surface in the flow
-   *    (`customer-journey.md` § 3), so this must not read as a second gate.
-   * 2. **Name what actually gets sent**, not "updates". A digest of matched jobs
-   *    is a concrete thing and it is the reason someone would say yes.
-   * 3. **Say they can stop**, and mean it: the withdrawal mechanism now exists.
+   * **The tick is still a tick, and that is the part not to change.** It is a
+   * second, separate, unticked box, and separate is the whole point. The
+   * statement above it is `service`: we may contact you about your own result.
+   * This one is `marketing`. A single tick covering both would make the marketing
+   * consent unprovable, which is the failure the event log exists to prevent, and
+   * PDPA wants marketing consent freely given, specific and affirmative.
    *
-   * All three conditions above are met by the wording below, and it is worth
-   * saying which line carries which: the tick is unticked in `ContactGate`'s
-   * own state and refusing it blocks nothing; `ตำแหน่งงานที่ตรงกับโปรไฟล์ของคุณ`
-   * is the named payload rather than "updates"; and `แจ้งเราได้ทุกเมื่อ` is the
-   * stop, in Paul's own words from `consent.purpose` above.
+   * Three constraints, all still met:
+   *
+   * 1. **Unticked by default, and optional.** `ContactGate` holds it unticked and
+   *    refusing it blocks nothing.
+   * 2. **Name what gets sent.** `ข่าวสารและคำแนะนำ` is concrete enough to be the
+   *    reason someone says yes, and unlike the wording it replaces it is true.
+   * 3. **Say they can stop.** `แจ้งเราได้ทุกเมื่อ` is his own, from
+   *    `consent.purpose` above, and the withdrawal mechanism exists.
+   *
+   * `ปั้นโปรไฟล์` takes the Thai form here rather than the wordmark: LR-01 says
+   * lead with the Thai where the brand opens a Thai clause, and this is the one
+   * consent string where the brand is the subject rather than the controller
+   * being named in a legal formula.
+   *
+   * **What is NOT here, and is a decision rather than an omission.** Paul also
+   * asked for a second line, `การกรอกอีเมลถือว่าคุณยอมรับข้อกำหนดการใช้บริการและ
+   * นโยบายความเป็นส่วนตัวของเรา`, with Terms of Service and Privacy Policy linked.
+   * It is held for two reasons, both in the reply that raised them: there is no
+   * Terms of Service page to link, and "entering your email is taken as
+   * acceptance" is implied consent, which is a different legal instrument from
+   * the tick this string labels. `consent.privacyLink` above already links the
+   * privacy notice from this screen.
    */
   "consent.marketing": {
     screen: "Contact gate, a separate optional tick under the consent statement",
-    // Composed 16/08/2026 through the `thai-composer` skill, not translated.
-    // **Paul has not read it back.** The placeholder that stood here was
-    // machine-written and said so; this is composed against his own
-    // `consent.purpose` above and still carries the same status until he passes
-    // it, which is why `MARKETING_CONSENT_COPY_REVIEWED` is still false.
-    //
-    // Three shapes lifted from his own copy rather than invented:
-    // `แจ้งเราได้ทุกเมื่อ` is his, verbatim, from `consent.purpose`. `ตำแหน่ง`
-    // is the termbase's word for a specific opening, never `โอกาส`. `Line` is
-    // absent because these go by email only, which is the point of the tick.
-    //
-    // No `ฟรี` anywhere near it: LR-04 attaches it to ปรึกษา and to nothing
-    // else, and a free thing that is free is not the reason to say yes here.
-    // The reason is the named payload, which is the second of the three
-    // constraints recorded above.
-    en: "Send me job openings that match my profile by email. Tell us any time if you want it to stop.",
-    th: "รับอีเมลแจ้งตำแหน่งงานที่ตรงกับโปรไฟล์ของคุณ หากไม่อยากรับต่อ แจ้งเราได้ทุกเมื่อ",
+    en: "Get the latest news and practical advice from PunProfile, delivered straight to your inbox. Tell us any time if you want it to stop.",
+    // Paul's wording, 17/08/2026, with his own `แจ้งเราได้ทุกเมื่อ` kept on the
+    // end: it is the third constraint above and it was in the string this
+    // replaces.
+    th: "รับข่าวสารและคำแนะนำดี ๆ จากปั้นโปรไฟล์ ส่งตรงถึงอีเมลของคุณ หากไม่อยากรับต่อ แจ้งเราได้ทุกเมื่อ",
   },
 } as const satisfies Record<string, CopyEntry>;
 
