@@ -222,7 +222,7 @@ type Pathway = "job_first" | "study_first" | "family" | "not_sure";
  * Falls back to the model's label so an unmapped item degrades to English
  * rather than to a blank.
  */
-function itemName(key: string, fallback: string, locale: Locale): string {
+export function itemName(key: string, fallback: string, locale: Locale): string {
   const copyKey = `item.${key}` as AnyCopyKey;
   if (copyKey in ALL_COPY) return t(copyKey, locale);
   return fallback.replace(/ \(self-declared\)$/, "");
@@ -233,9 +233,21 @@ function itemName(key: string, fallback: string, locale: Locale): string {
  * `model.ts` and the chart both name these; the chart already reads COPY, and
  * anything else that shows a dimension by name to a candidate must too.
  */
-function dimensionName(key: string, fallback: string, locale: Locale): string {
+export function dimensionName(key: string, fallback: string, locale: Locale): string {
   const copyKey = `dimension.${key}` as AnyCopyKey;
   return copyKey in ALL_COPY ? t(copyKey, locale) : fallback;
+}
+
+/**
+ * The same, for callers holding only the English label.
+ *
+ * `Highlight.dimension` carries the label rather than the key, and the
+ * candidate report shows which area a strength came from. Named here beside
+ * `DIM_KEY_BY_LABEL` rather than exporting the map, so the fallback rule lives
+ * in one place.
+ */
+export function dimensionNameByLabel(label: string, locale: Locale): string {
+  return dimensionName(DIM_KEY_BY_LABEL.get(label) ?? "", label, locale);
 }
 
 /**

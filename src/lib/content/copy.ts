@@ -174,25 +174,43 @@ export const COPY = {
     // Names the business, not the assessment. Same phrasing as the footer's
     // Coaching column heading, which is Paul's.
     en: "Career coaching for Thai professionals heading to Europe",
-    // TH-UNREVIEWED: composed 17/08/2026, not yet read back by Paul.
-    th: "โค้ชด้านอาชีพ สำหรับคนไทยที่อยากไปทำงานในยุโรป",
+    // **Paul's wording, 17/08/2026**, from the review sheet. He took
+    // `แคเรียร์` off the front: `โค้ชชิ่งด้านอาชีพ` reads as the category, and
+    // `แคเรียร์โค้ชชิ่ง` is the service name, which belongs on the card in
+    // section 3 rather than in the line that says who this site is for.
+    th: "โค้ชชิ่งด้านอาชีพสำหรับคนไทยที่มุ่งสู่การทำงานในยุโรป",
   },
   "landing.headline": {
     screen: "Landing, and the site's default page title",
     // `01_Project_Foundation.md` states the mission as helping Thai
     // professionals go from "I want to work in Europe" to "I have a signed
     // contract". This is that sentence turned to face the reader.
-    en: "From “I want to work in Europe” to the day you sign a real contract.",
-    // TH-UNREVIEWED: composed 17/08/2026, not yet read back by Paul.
-    th: "จาก “อยากไปทำงานที่ยุโรป” ถึงวันที่ได้เซ็นสัญญาจริง",
+    en: "From the day you thought “I want to work in Europe” to the day you sign a real contract.",
+    // **Paul's wording, 17/08/2026.** Two changes, and both are the same move:
+    // `จากวันที่คิดว่า` rather than a bare `จาก`, and `สู่วันที่` rather than
+    // `ถึงวันที่`, so the sentence runs day to day rather than phrase to day.
+    // The reader is placed at a moment they can remember having, which is what
+    // the quoted thought was always for.
+    //
+    // He also put `ที่ยุโรป` back inside the quotation marks, where my revision
+    // had corrected it to `ในยุโรป` on the evidence of his own prose. That was
+    // the wrong correction to make: the quote is someone thinking out loud, and
+    // it should sound like speech rather than like the page around it.
+    th: "จากวันที่คิดว่า “อยากไปทำงานที่ยุโรป” สู่วันที่ได้เซ็นสัญญาจ้างจริง",
   },
   "landing.subhead": {
     screen: "Landing, and the site's default meta description",
-    en: "PunProfile works on the direction, the profile and the applications themselves, with Thai professionals who have decided Europe is the goal.",
+    en: "PunProfile works alongside Thai professionals who have decided on the European job market, from setting the career direction and reworking the profile through to applying one role at a time.",
     // First mention of the brand in running Thai, so it takes the gloss:
     // LR-01, ปั้นโปรไฟล์ (PunProfile) first, PunProfile alone afterwards.
-    // TH-UNREVIEWED: composed 17/08/2026, not yet read back by Paul.
-    th: "ปั้นโปรไฟล์ (PunProfile) ดูแลตั้งแต่การวางทิศทางอาชีพ การปรับโปรไฟล์ ไปจนถึงการลงมือสมัครจริง กับคนไทยที่ตัดสินใจแล้วว่าเป้าหมายคือยุโรป",
+    //
+    // **Paul's wording, 17/08/2026.** `ทำงานร่วมกับ` rather than `ทำงานกับ`,
+    // which is the difference between working with someone and working
+    // alongside them. `ตลาดงานยุโรป` rather than `ยุโรป`: the decision a reader
+    // has made is about a job market, not about a continent. And
+    // `การสมัครงานทีละตำแหน่ง` rather than `การลงมือสมัครแต่ละตำแหน่ง`, which
+    // says the same thing in three fewer syllables.
+    th: "ปั้นโปรไฟล์ (PunProfile) ทำงานร่วมกับคนไทยที่ตัดสินใจแล้วว่าจะมุ่งสู่ตลาดงานยุโรป ตั้งแต่การวางทิศทางอาชีพและปรับโปรไฟล์ ไปจนถึงการสมัครงานทีละตำแหน่ง",
   },
   // No `landing.cta` here. The landing button's label comes from the table in
   // `cta.ts`, which owns every action on every page. A second definition of the
@@ -200,8 +218,11 @@ export const COPY = {
   // one-string-one-place rule exists to prevent.
   "landing.reassurance": {
     screen: "Landing, under the button",
-    en: "Under 2 minutes. No sign-up before you see your first result.",
-    th: "ใช้เวลาไม่ถึง 2 นาที ดูผลเบื้องต้นได้ทันทีโดยไม่ต้องสมัครสมาชิก",
+    en: "Under 2 minutes. Your first read straight away, with no sign-up.",
+    // Revised by Paul 17/08/2026, from his own 15/08 wording. Three clauses
+    // instead of one sentence with a trailing `โดย`, which is the shape the rest
+    // of this hero now has.
+    th: "ใช้เวลาไม่ถึง 2 นาที รู้ผลเบื้องต้นทันที ไม่ต้องสมัครสมาชิก",
   },
 
   // ------------------------------------------------------------- assessment
@@ -692,6 +713,93 @@ export const COPY = {
     screen: "Full result, journey checklist step",
     en: "Get applications going out",
     th: "เริ่มส่งใบสมัคร",
+  },
+
+  // ---------------------------------------------- the candidate's PDF, 17/08/2026
+  // The report the coach sends after the call. It is the same document as the
+  // coach's own copy with the internals taken out, so most of what it says is
+  // already keyed above: the honesty line, the coverage line, the step names,
+  // the competency and dimension names. What is here is only what the printed
+  // document adds — its section headings, its table headers, and its footing.
+  //
+  // These belong in this file and not beside the coach report, because they are
+  // the one part of that document a candidate reads. The rule at the top of the
+  // file still holds for everything else in it: coach-report strings are English
+  // on purpose and stay out of here.
+  "report.competency": {
+    screen: "Candidate PDF, the score table's first column header",
+    en: "What we looked at",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "หัวข้อที่ประเมิน",
+  },
+  "report.score": {
+    screen: "Candidate PDF, the score table's second column header",
+    en: "Score",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "คะแนน",
+  },
+  "report.unmeasured": {
+    screen: "Candidate PDF, under a dimension's table. {count} is substituted",
+    // Says what is missing and why, in the candidate's own terms. The coach's
+    // copy names each blank item individually; this names the number, which is
+    // the honest form of the same fact without listing things they cannot act on.
+    en: "{count} more things in this area need a conversation rather than a form, so they are left blank rather than guessed at.",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "ในด้านนี้ยังมีอีก {count} หัวข้อที่ต้องใช้การพูดคุยจึงจะประเมินได้ เราจึงเว้นไว้แทนการเดา",
+  },
+  "report.strengths": {
+    screen: "Candidate PDF, section heading over the strengths list",
+    en: "What you already have",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "จุดแข็งของคุณ",
+  },
+  "report.priorities": {
+    screen: "Candidate PDF, section heading over the development list",
+    en: "Where the gains are",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "สิ่งที่ควรพัฒนาต่อ",
+  },
+  "report.next": {
+    screen: "Candidate PDF, section heading over the closing card",
+    en: "What happens next",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "ขั้นตอนต่อไป",
+  },
+  "report.footer": {
+    screen: "Candidate PDF, the footing on the last page",
+    en: "Prepared by PunProfile Career Coaching from the answers you gave. A 30-minute conversation covers the parts a form cannot see.",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "จัดทำโดย PunProfile Career Coaching จากคำตอบที่คุณให้ไว้ การพูดคุย 30 นาทีจะช่วยประเมินในส่วนที่แบบฟอร์มยังสะท้อนไม่ได้",
+  },
+  "report.savePdf": {
+    screen: "Candidate PDF, the button that reopens the print dialog. Screen only, never printed",
+    en: "Save as PDF",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "บันทึกเป็น PDF",
+  },
+
+  // ------------------------------------------------ confidence bands, 17/08/2026
+  // `model.ts` carries these three sentences in English for the coach report.
+  // The candidate's PDF says the same thing to a different reader, so it reads
+  // them from here instead. Two wordings of one fact, which is allowed because
+  // the audiences differ; the BAND itself is computed once, in `bandFor`.
+  "band.moderate": {
+    screen: "Candidate PDF, under a dimension score, when coverage is 45% or better",
+    en: "reasonably well covered by what you told us",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "ประเมินได้ค่อนข้างครบจากคำตอบของคุณ",
+  },
+  "band.limited": {
+    screen: "Candidate PDF, under a dimension score, when coverage is 25% to 45%",
+    en: "a partial read, several areas are still unmeasured",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "ประเมินได้บางส่วน ยังมีอีกหลายหัวข้อที่ยังประเมินไม่ได้",
+  },
+  "band.indicative": {
+    screen: "Candidate PDF, under a dimension score, when coverage is under 25%",
+    en: "an early indication only, most of this needs a real conversation",
+    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+    th: "เป็นเพียงภาพเบื้องต้น ส่วนใหญ่ยังต้องใช้การพูดคุยเพิ่มเติม",
   },
 
   // -------------------------------------------------------- competency names
