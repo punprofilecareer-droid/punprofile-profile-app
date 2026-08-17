@@ -600,17 +600,29 @@ export default function AssessPage() {
             </div>
           )}
 
-          {/* The coach pose, cut out of its backdrop so it stands on the
-              lavender field rather than in a white box. It sits here rather
-              than at the top because the page has just made its two densest
-              claims and the reader needs a beat before the next one.
-              Smaller on desktop, where it shares a column with the text rather
-              than getting the full width to itself. */}
+          {/* The report pose, replacing the coach pose on Paul's call,
+              17/08/2026. The character now holds a clipboard, which is what this
+              screen is: a read of the candidate's answers rather than a greeting.
+
+              It sits here rather than at the top because the page has just made
+              its two densest claims and the reader needs a beat before the next
+              one. Smaller on desktop, where it shares a column with the text
+              rather than getting the full width to itself.
+
+              **Already transparent, so no cutout was needed**, unlike the earlier
+              poses that `scripts/lib/mascot-cutout.py` exists for. It was cropped
+              to its own content: the supplied file is 578x432 with the character
+              occupying 333x299 in the middle, and rendering the padded canvas
+              would have shown the character at three quarters of the size the
+              `max-w` here asks for while its neighbours kept theirs.
+
+              The ratio changed from 1.11 tall-ish to wider, so the box is set
+              from the cropped file rather than carried over. */}
           <Image
-            src="/assess/mascot/coach.png"
+            src="/assess/mascot/report.png"
             alt=""
-            width={640}
-            height={578}
+            width={333}
+            height={299}
             priority
             sizes="(max-width: 640px) 70vw, (max-width: 1024px) 320px, 260px"
             className="mascot-in mx-auto my-6 w-full max-w-[300px] large:my-7 large:max-w-[260px]"
