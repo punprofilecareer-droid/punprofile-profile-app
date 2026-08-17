@@ -52,8 +52,8 @@ const slug = (s: string) =>
   s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "lead";
 
 /**
- * Renders the report at click time from the lead's stored answers, and hands it
- * straight to the browser as a download.
+ * Renders a report at click time from the lead's stored answers, opens it in a
+ * tab, and lets it print itself to PDF.
  *
  * Nothing is persisted. `renderReport` is a pure function of a scored profile,
  * so the report is derived rather than stored: no HTML per candidate in the
@@ -63,12 +63,30 @@ const slug = (s: string) =>
  *
  * The renderer, the scorer and the chart builder are imported dynamically, so
  * none of them are in the admin bundle until the button is actually pressed.
+ *
+ * **The tab is opened before the imports are awaited, and that ordering is the
+ * whole reason this is not three lines shorter.** A `window.open` that happens
+ * after an `await` is not attributable to the click that started it, and every
+ * browser blocks it as a popup. So the tab opens empty and synchronously, and
+ * the document is written into it once the renderer has loaded.
+ *
+ * Was a `.html` download until 17/08/2026. The candidate variant exists to be
+ * sent to the candidate, and an HTML attachment is a file most of this audience
+ * cannot open on the phone they read mail on.
  */
-async function downloadReport(lead: {
-  fullName: string | null;
-  responses: Record<string, unknown>;
-  createdAt: number;
-}) {
+async function openReport(
+  lead: { fullName: string | null; responses: Record<string, unknown>; createdAt: number },
+  variant: "full" | "limited",
+) {
+  const win = window.open("", "_blank");
+  if (!win) {
+    alert("The report opens in a new tab. Allow popups for this site and press the button again.");
+    return;
+  }
+  // Something has to be on screen while the chunks load, or a slow connection
+  // shows a blank tab that reads as a broken button.
+  win.document.write("<!doctype html><title>Building…</title><p>Building the report…");
+
   const [{ renderReport }, { scoreResponse }, { toScoringInputForLead }] = await Promise.all([
     import("@/lib/report"),
     import("@/lib/scoring"),
@@ -79,21 +97,31 @@ async function downloadReport(lead: {
   // scored profile, so an input read with the wrong mapper produced a document
   // that contradicted the database and read as finished while doing it.
   const input = toScoringInputForLead(lead.responses);
-  const html = renderReport(scoreResponse(input), {
-    candidate: lead.fullName ?? "Anonymous lead",
-    submittedAt: new Date(lead.createdAt).toISOString().slice(0, 10),
-    targetCountries: input.targetCountries,
-    targetRole: input.targetRole ?? undefined,
-  });
+  const html = renderReport(
+    scoreResponse(input),
+    {
+      candidate: lead.fullName ?? "Anonymous lead",
+      submittedAt: new Date(lead.createdAt).toISOString().slice(0, 10),
+      targetCountries: input.targetCountries,
+      targetRole: input.targetRole ?? undefined,
+    },
+    // English, decided 17/08/2026 (Paul), and NOT because the Thai is missing:
+    // every string in this document has Thai and `locale: "th"` renders it.
+    //
+    // The 1-1 engagement is conducted in English so the client practises the
+    // language they will be interviewed in, and the document they keep is part
+    // of that. A Thai report handed over before an English engagement would be
+    // the one artefact working against it.
+    //
+    // Was the lead's own recorded locale until that turned out not to exist:
+    // `convex/leads.ts` says the locale a candidate saw is not stored anywhere,
+    // and inferring it from their English answer would be a guess.
+    { variant, locale: "en", autoPrint: true },
+  );
 
-  const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `eu-fit-check-${slug(lead.fullName ?? "lead")}-${new Date().toISOString().slice(0, 10)}.html`;
-  a.click();
-  // Revoked immediately: the download has already been handed to the browser,
-  // and holding the object URL would keep the whole report in memory.
-  URL.revokeObjectURL(url);
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
 }
 
 /** Hands a generated file to the browser. Nothing is stored server-side. */
@@ -123,7 +151,8 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   const deleteLead = useMutation(api.leads.deleteLeadOnRequest);
   const setDisposition = useMutation(api.leads.setDisposition);
   const [dispReason, setDispReason] = useState("");
-  const [building, setBuilding] = useState(false);
+  // Which report is being built, so one spinner cannot appear on both buttons.
+  const [building, setBuilding] = useState<"full" | "limited" | null>(null);
   const [confirmText, setConfirmText] = useState("");
   const [deleteNote, setDeleteNote] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -203,20 +232,38 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           </span>
         </p>
 
+        {/* Two documents, one scored profile. The candidate one is first and is
+            the filled button, because it is the one with a recipient: it gets
+            sent after the call. The coach copy is preparation for that call. */}
         <button
           type="button"
-          disabled={building || Object.keys(corrected.effective).length === 0}
+          disabled={building !== null || Object.keys(corrected.effective).length === 0}
           onClick={async () => {
-            setBuilding(true);
+            setBuilding("limited");
             try {
-              await downloadReport({ ...lead, responses: corrected.effective });
+              await openReport({ ...lead, responses: corrected.effective }, "limited");
             } finally {
-              setBuilding(false);
+              setBuilding(null);
             }
           }}
           className="mt-4 h-12 btn-filled px-7 text-label-large"
         >
-          {building ? "Building..." : "Download report"}
+          {building === "limited" ? "Building..." : "Candidate PDF (English)"}
+        </button>
+        <button
+          type="button"
+          disabled={building !== null || Object.keys(corrected.effective).length === 0}
+          onClick={async () => {
+            setBuilding("full");
+            try {
+              await openReport({ ...lead, responses: corrected.effective }, "full");
+            } finally {
+              setBuilding(null);
+            }
+          }}
+          className="ml-3 mt-4 btn-outlined h-12 px-5 text-label-large hover:bg-surface-container"
+        >
+          {building === "full" ? "Building..." : "Full report PDF (coach)"}
         </button>
 
         {/* Subject-access request. Two formats: the HTML is what you send the

@@ -86,6 +86,18 @@ export const SERVICES: readonly Service[] = [
         en: "Finding the right position to stand in: what makes you worth hiring, and which employers are looking for someone like you",
         th: "หาจุดยืนที่ใช่ ว่าอะไรทำให้คุณน่าจ้าง และนายจ้างแบบไหนกำลังมองหาคนอย่างคุณ",
       },
+      // Added 17/08/2026 (Paul). The sessions were always in English; saying so
+      // turns a fact about how the service runs into a reason to buy it, since
+      // the interview this audience is preparing for is in English too.
+      //
+      // EN-FIRST, which is the wrong direction for this file: its header records
+      // that the words are Paul's Thai and the English is the translation. This
+      // one arrived in English, so the Thai below is mine and awaits his pass.
+      {
+        en: "Sessions are held in English, so every conversation doubles as practice for the interviews you are preparing for",
+        // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
+        th: "เซสชันโค้ชชิ่งใช้ภาษาอังกฤษ ทุกครั้งที่คุยกันจึงได้ฝึกภาษาอังกฤษสำหรับการสัมภาษณ์ไปในตัว",
+      },
     ],
     image: {
       src: "/mascot-stepping.png",
