@@ -149,6 +149,38 @@ export default function QuestionCard({
    *  change. */
   const showBar = select === "many" || arrivedAnswered;
 
+  /**
+   * Enter goes forward. 17/08/2026, Paul: pick an answer with the mouse, then
+   * press Enter, and nothing happened.
+   *
+   * It had not happened because the option is a `<button>`, so after a click the
+   * focus sits on that option and Enter is its activation key: on a multi-select
+   * it un-picked the answer just given, which is worse than doing nothing.
+   *
+   * **The option gives focus back after a pointer click**, which is the half of
+   * this that lives on the button itself. So an option still holding focus here
+   * means a keyboard user is in the middle of choosing, and Enter has to stay
+   * the option's own key or the list becomes unusable to them. Anything else
+   * means Continue.
+   *
+   * On the window rather than the card: after a click on the last option of a
+   * long list the card may be scrolled and focus can be anywhere, and this has to
+   * work from all of it. `repeat` is ignored so a held key advances one question
+   * rather than several.
+   */
+  useEffect(() => {
+    if (!showBar || chosen.length === 0) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter" || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement;
+      if (el instanceof HTMLElement && el.closest(".tile")) return;
+      e.preventDefault();
+      onContinue?.();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showBar, chosen.length, onContinue]);
+
   return (
     <>
     <div
@@ -206,7 +238,26 @@ export default function QuestionCard({
             return (
               <button
                 key={o.value}
-                onClick={() => handleTap(o.value)}
+                /**
+                 * A pointer click hands focus back; a keyboard one keeps it.
+                 *
+                 * `detail` is the click count, which is 0 when a button is
+                 * activated by Enter or Space and 1 or more from a real pointer.
+                 * It is the one signal here that is defined rather than
+                 * inferred, and it is what lets Enter mean two different things
+                 * honestly: for somebody tabbing through the options it stays
+                 * the option's own key, and for somebody who clicked it means
+                 * Continue, because the button they clicked no longer holds it.
+                 *
+                 * `:focus-visible` was tried first and is not reliable enough to
+                 * carry this: it is the browser's own guess about intent, and a
+                 * browser that guesses "keyboard" after a click turns Enter into
+                 * an un-pick of the answer just given.
+                 */
+                onClick={(e) => {
+                  handleTap(o.value);
+                  if (e.detail > 0) e.currentTarget.blur();
+                }}
                 aria-pressed={on}
                 className="tile"
               >

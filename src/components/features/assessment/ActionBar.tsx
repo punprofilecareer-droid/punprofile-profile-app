@@ -28,15 +28,23 @@
 export default function ActionBar({
   children,
   /**
-   * Constrain the bar to the right half on desktop.
+   * Constrain the bar to the question's own column on desktop.
    *
-   * Only true where a block photograph occupies the left half. Paul,
-   * 16/08/2026: the button should span until the middle of the screen and sit
-   * centred under the question. Full width was putting the primary action
-   * half over a photograph and half under the thing it acts on, so it read as
-   * belonging to the page rather than to the question.
+   * Only true where a block photograph occupies the supporting pane. Paul,
+   * 16/08/2026: the button should sit centred under the question. Full width was
+   * putting the primary action half over a photograph and half under the thing
+   * it acts on, so it read as belonging to the page rather than to the question.
    *
-   * Below `md` there is no photograph, so the bar is full width either way.
+   * **`left-1/3`, corrected 17/08/2026, and the bug is worth naming.** This said
+   * `left-1/2` from the day it was written, which was right while the split was
+   * half and half. `BlockPanel` moved to M3's two-thirds-to-one-third supporting
+   * pane and this did not follow, so the bar started at the middle of the screen
+   * while the question column started a third across: the button's centre landed
+   * 120px right of the card's, and Paul saw a Continue button that was not under
+   * the options it continued from. The two numbers have to agree, and this is the
+   * one that was stale.
+   *
+   * Below `expanded` there is no photograph, so the bar is full width either way.
    */
   half = false,
 }: {
@@ -45,12 +53,23 @@ export default function ActionBar({
 }) {
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-container px-6 pt-3 ${
-        half ? "expanded:left-1/2" : ""
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-container pt-3 ${
+        half ? "expanded:left-1/3" : ""
       }`}
       style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
     >
-      <div className="mx-auto w-full max-w-md">{children}</div>
+      {/*
+       * `w-full max-w-md px-6`, which is `QuestionCard`'s own wrapper, character
+       * for character. That is the point rather than a coincidence.
+       *
+       * The padding used to sit on the bar OUTSIDE this max-width while the
+       * question column puts it INSIDE, and the two agreed on a phone by luck:
+       * below `max-w-md` both resolve to the viewport minus 48px. On desktop
+       * they did not, and the button came out 448 wide under a 400 wide card, so
+       * it overhung the question by 24px on each side. Matching the structure
+       * means they cannot drift again, at any width.
+       */}
+      <div className="mx-auto w-full max-w-md px-6">{children}</div>
     </div>
   );
 }

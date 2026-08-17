@@ -27,7 +27,7 @@
  * must never look the same, which is the rule the whole product rests on.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCopy } from "@/components/LocaleProvider";
 import { EUROPEAN_LANGUAGES } from "@/lib/country-english";
 import ActionBar, { ActionBarSpacer } from "./ActionBar";
@@ -105,6 +105,33 @@ export default function LanguageGrid({
     await onSkip();
   }
 
+  /**
+   * Enter goes forward here too, on the same rule as `QuestionCard`. A step of
+   * the sequence that answers a key differently from the sixteen around it is a
+   * step that feels broken rather than special; that file carries the reasoning
+   * and the pointer-versus-keyboard distinction.
+   *
+   * Submit rather than skip, and only once something is picked: Enter must never
+   * be the key that files an empty answer, because here an empty grid is a real
+   * claim, "I speak no other European language", rather than a blank.
+   */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter" || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (busy || Object.keys(levels).length === 0) return;
+      const el = document.activeElement;
+      if (el instanceof HTMLElement && el.closest(".tile")) return;
+      e.preventDefault();
+      void submit();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // No dependency array on purpose. `submit` and `levels` are rebuilt every
+    // render, so re-subscribing each time is what keeps the handler from closing
+    // over a stale grid. Adding and removing one listener is cheaper than the
+    // bug where Enter files the languages the candidate had picked two taps ago.
+  });
+
   async function submit() {
     setBusy(true);
     // `Other` is collected for the coach but matches no country, so it never
@@ -159,7 +186,13 @@ export default function LanguageGrid({
               <div key={lang}>
                 <button
                   type="button"
-                  onClick={() => toggle(lang)}
+                  // Hands focus back after a pointer click, so Enter reaches the
+                  // Continue handler below rather than un-picking this language.
+                  // `QuestionCard` carries the reasoning and does the same.
+                  onClick={(e) => {
+                    toggle(lang);
+                    if (e.detail > 0) e.currentTarget.blur();
+                  }}
                   aria-pressed={on}
                   className="tile"
                 >

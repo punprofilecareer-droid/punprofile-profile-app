@@ -151,15 +151,48 @@ export const COPY = {
   },
 
   // ---------------------------------------------------------------- landing
+  /*
+   * Rewritten 17/08/2026, when the home page stopped being an EU Fit Check
+   * pitch. All three of the old strings were about the assessment, which was
+   * right while it was the only thing the app did and wrong from 04/08/2026,
+   * when `AGENTS.md` named the app as the product and the assessment as one
+   * feature of it. Paul made the same correction to the share card on
+   * 16/08/2026; the page the card points at had not caught up.
+   *
+   * These four stay here rather than moving to `home.ts` with the rest of the
+   * page, and the split is not arbitrary. `verify-copy.ts` runs `lint-thai`
+   * over this file and not over the per-page content modules, and the headline
+   * and subhead are also the site's default `<title>` and meta description in
+   * `(th)/layout.tsx`. The strings carrying the most weight stay where the lint
+   * can see them.
+   *
+   * Reasoning for the page itself is `home-page.md` in the coaching repo's
+   * `work-projects/eu-fit-check/`.
+   */
+  "landing.eyebrow": {
+    screen: "Landing, above the headline",
+    // Names the business, not the assessment. Same phrasing as the footer's
+    // Coaching column heading, which is Paul's.
+    en: "Career coaching for Thai professionals heading to Europe",
+    // TH-UNREVIEWED: composed 17/08/2026, not yet read back by Paul.
+    th: "โค้ชด้านอาชีพ สำหรับคนไทยที่อยากไปทำงานในยุโรป",
+  },
   "landing.headline": {
-    screen: "Landing",
-    en: "See where you stand on your path to working in Europe.",
-    th: "เช็กให้ชัดว่าตอนนี้คุณอยู่ตรงไหนบนเส้นทางไปทำงานในยุโรป",
+    screen: "Landing, and the site's default page title",
+    // `01_Project_Foundation.md` states the mission as helping Thai
+    // professionals go from "I want to work in Europe" to "I have a signed
+    // contract". This is that sentence turned to face the reader.
+    en: "From “I want to work in Europe” to the day you sign a real contract.",
+    // TH-UNREVIEWED: composed 17/08/2026, not yet read back by Paul.
+    th: "จาก “อยากไปทำงานที่ยุโรป” ถึงวันที่ได้เซ็นสัญญาจริง",
   },
   "landing.subhead": {
-    screen: "Landing",
-    en: "An honest first read on your EU job-market readiness, in a few minutes, on your phone.",
-    th: "ประเมินความพร้อมสำหรับตลาดงานยุโรปแบบตรงไปตรงมา ทำได้ง่าย ๆ บนมือถือ",
+    screen: "Landing, and the site's default meta description",
+    en: "PunProfile works on the direction, the profile and the applications themselves, with Thai professionals who have decided Europe is the goal.",
+    // First mention of the brand in running Thai, so it takes the gloss:
+    // LR-01, ปั้นโปรไฟล์ (PunProfile) first, PunProfile alone afterwards.
+    // TH-UNREVIEWED: composed 17/08/2026, not yet read back by Paul.
+    th: "ปั้นโปรไฟล์ (PunProfile) ดูแลตั้งแต่การวางทิศทางอาชีพ การปรับโปรไฟล์ ไปจนถึงการลงมือสมัครจริง กับคนไทยที่ตัดสินใจแล้วว่าเป้าหมายคือยุโรป",
   },
   // No `landing.cta` here. The landing button's label comes from the table in
   // `cta.ts`, which owns every action on every page. A second definition of the
