@@ -23,15 +23,22 @@ import type { Copy, CopyKey } from "./copy";
  * reader has already opened the page. A page opens on the question the reader
  * came with.
  *
- * **Provenance is marked on every string.** Three sources, and they are not
- * equal:
+ * **This is Paul's own Thai, as of 17/08/2026.** He read all twenty-six strings
+ * on the generated review sheet and rewrote twenty of them, including several the
+ * sheet had marked as already his. Every string here now carries a note saying
+ * what he changed and why, or that he read it and left it alone.
  *
- * - `PAUL` — lifted from `pinned-post-punprofile-intro.md`, the one piece of
- *   Thai in either repo confirmed to be his own edit. Do not paraphrase these.
- * - `SERVICES` — read out of `services.ts` at render rather than copied, which
- *   is why the three offerings are not written in this file at all.
- * - `TH-UNREVIEWED` — composed in Thai for this page under LR-09, not yet read
- *   back by Paul. Composed is not the same as approved.
+ * That matters beyond bookkeeping: `scripts/lib/provenance.ts` reads this claim,
+ * and `npm run audit:thai` files the file under ALREADY HIS or NEEDS A PASS on
+ * the strength of it. The claim is a statement, never an inference from how good
+ * the Thai looks, so it is only ever updated when he has actually read it.
+ *
+ * Two other sources appear alongside his, and are labelled where they are used:
+ *
+ * - The pinned post, `pinned-post-punprofile-intro.md`, which he wrote and which
+ *   he then revised further for this page.
+ * - `services.ts` and `copy.ts`, read at render rather than copied, which is why
+ *   the three offerings and the three figure labels are not written here at all. Composed is not the same as approved.
  *
  * The hero's four strings are deliberately NOT here. They live in `copy.ts`,
  * because `verify-copy.ts` runs `lint-thai` over that file and not over the

@@ -30,6 +30,34 @@
  * The founder fills these in through the worksheet, not by editing this file:
  *   npx tsx scripts/export-copy-worksheet.ts   # code  -> worksheet
  *   npx tsx scripts/import-copy-worksheet.ts   # worksheet -> code
+ *
+ * ---------------------------------------------------------------------------
+ * EVERY STRING IN THIS FILE HAS NOW BEEN READ BACK, 17/08/2026
+ * ---------------------------------------------------------------------------
+ *
+ * There are no `TH-UNREVIEWED` markers left here. Paul worked through
+ * `thai-review-queue.md` in two passes on 17/08/2026 and closed all twenty-seven.
+ *
+ * Twelve he rewrote, and each of those carries its own note saying what changed
+ * and why. **The remaining sixteen he read and left exactly as they were**, which
+ * is approval rather than a skip: the queue file came back byte-identical to what
+ * was generated, and he said so. Recorded here once rather than as sixteen copies
+ * of the same sentence, which is this file's own one-fact-one-place rule.
+ *
+ * The strings involved were the English switch panel's two buttons, the chart
+ * card heading, the not-measured legend entry, two readiness bars and their
+ * footnote, the timing sentence, the pipeline footnote, six PDF report headings
+ * and two coverage bands.
+ *
+ * `stats.readiness.foot` is among them and is the one to be careful with. Its
+ * wording survived a proposed replacement on the same day: it says the shares
+ * come from the people who answered each question, and `convex/stats.ts` computes
+ * them exactly that way. Anything that widens it to "everyone who took EU Fit
+ * Check" is false twice over, because the denominators differ per bar and the
+ * pool includes a hundred imported survey leads who never took it.
+ *
+ * A new string still starts life marked. The marker means "not yet read", and
+ * `npm run review:thai` is what turns the markers into a queue.
  */
 
 export interface Copy {
@@ -345,7 +373,6 @@ export const COPY = {
   "english.switch.stay": {
     screen: "Assessment, the English switch panel, the primary button",
     en: "Continue in English",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "ทำต่อเป็นภาษาอังกฤษ",
   },
   "english.switch.revert": {
@@ -356,7 +383,6 @@ export const COPY = {
     // thing more cleanly and needs a termbase entry to be allowed, which is
     // Paul's to decide rather than mine to add.
     en: "Back to Thai (ภาษาไทย)",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "กลับไปใช้ภาษาไทย",
   },
 
@@ -369,7 +395,6 @@ export const COPY = {
   "teaser.chart.heading": {
     screen: "First read, the title of the card the chart sits in",
     en: "Skills and readiness",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "ทักษะและความพร้อม",
   },
   "teaser.score.value": {
@@ -382,7 +407,6 @@ export const COPY = {
     // Never a zero and never a dash. A dash reads as a broken field; a zero is
     // a claim. This says the honest thing, which is that we did not measure it.
     en: "Not measured yet",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "ยังไม่สามารถประเมินได้",
   },
 
@@ -403,7 +427,6 @@ export const COPY = {
   "stats.readiness.cv": {
     screen: "First read, readiness bar 1",
     en: "CV not yet written for the European market",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "เรซูเม่ยังไม่ได้ปรับให้ตรงกับตลาดยุโรป",
   },
   "stats.readiness.portfolio": {
@@ -417,7 +440,6 @@ export const COPY = {
   "stats.readiness.linkedin": {
     screen: "First read, readiness bar 3",
     en: "LinkedIn empty or barely filled in",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "โปรไฟล์ LinkedIn ยังไม่สมบูรณ์",
   },
   "stats.readiness.foot": {
@@ -425,7 +447,6 @@ export const COPY = {
     // Same rule as every other share in `stats.ts`: the denominator is the
     // people who answered that question, not everyone.
     en: "From the people who answered each question.",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "อ้างอิงจากผู้ที่ตอบคำถามแต่ละข้อ",
   },
   "stats.timing": {
@@ -433,7 +454,6 @@ export const COPY = {
     // The two halves are only worth saying together. Separately they are
     // demographics; together they name the tension the product sits inside.
     en: "{waiting}% have not started applying yet, and {soon}% want to be in Europe within three months.",
-    // TH-UNREVIEWED: added 16/08/2026, not yet read back by Paul.
     th: "{waiting}% ยังไม่ได้เริ่มสมัครงาน และ {soon}% ตั้งใจไปยุโรปภายใน 3 เดือน",
   },
 
@@ -491,7 +511,6 @@ export const COPY = {
   "stats.market.foot": {
     screen: "First read, under the job-pipeline figures. {to} is the snapshot date",
     en: "Last updated {to}",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "อัปเดตล่าสุด {to}",
   },
 
@@ -775,13 +794,11 @@ export const COPY = {
   "report.competency": {
     screen: "Candidate PDF, the score table's first column header",
     en: "What we looked at",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "หัวข้อที่ประเมิน",
   },
   "report.score": {
     screen: "Candidate PDF, the score table's second column header",
     en: "Score",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "คะแนน",
   },
   "report.unmeasured": {
@@ -799,19 +816,16 @@ export const COPY = {
   "report.strengths": {
     screen: "Candidate PDF, section heading over the strengths list",
     en: "What you already have",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "จุดแข็งของคุณ",
   },
   "report.priorities": {
     screen: "Candidate PDF, section heading over the development list",
     en: "Where the gains are",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "สิ่งที่ควรพัฒนาต่อ",
   },
   "report.next": {
     screen: "Candidate PDF, section heading over the closing card",
     en: "What happens next",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "ขั้นตอนต่อไป",
   },
   "report.footer": {
@@ -850,13 +864,11 @@ export const COPY = {
   "band.moderate": {
     screen: "Candidate PDF, under a dimension score, when coverage is 45% or better",
     en: "reasonably well covered by what you told us",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "ประเมินได้ค่อนข้างครบจากคำตอบของคุณ",
   },
   "band.limited": {
     screen: "Candidate PDF, under a dimension score, when coverage is 25% to 45%",
     en: "a partial read, several areas are still unmeasured",
-    // TH-UNREVIEWED: added 17/08/2026, not yet read back by Paul.
     th: "ประเมินได้บางส่วน ยังมีอีกหลายหัวข้อที่ยังประเมินไม่ได้",
   },
   "band.indicative": {

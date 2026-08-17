@@ -143,6 +143,14 @@ for (const path of SOURCES) {
   const lines = src.split("\n");
   for (let i = 0; i < lines.length; i++) {
     if (!lines[i].includes("TH-UNREVIEWED")) continue;
+    // A marker inside backticks is the convention being DISCUSSED, not applied.
+    // Both `copy.ts` and `home.ts` explain what the marker means in their file
+    // headers, and both were reported as unresolved markers with no string under
+    // them, which is accurate and useless: the noise would have been permanent,
+    // and a report with two permanent false entries is one nobody finishes
+    // reading. Added 17/08/2026, when the last real marker was cleared and the
+    // only two left were these.
+    if (/`TH-UNREVIEWED`/.test(lines[i])) continue;
     let found = false;
     // Ten lines is past the longest comment tail in these files and short enough
     // that a marker in a file-level doc comment cannot reach a random string.
