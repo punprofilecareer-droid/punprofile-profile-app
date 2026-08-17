@@ -271,7 +271,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           almost never both, and a single scrolling stack made every visit pass
           through the other one. Stacks on narrow screens, where there is no
           second column to be had. */}
-      <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+      <div className="grid gap-x-10 gap-y-8 large:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] large:items-start">
         <div className="space-y-8">
           <Section title="Contact">
             {lead.consentSource === "survey_import" && (

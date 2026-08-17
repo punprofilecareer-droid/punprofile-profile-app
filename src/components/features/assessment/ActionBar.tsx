@@ -46,7 +46,7 @@ export default function ActionBar({
   return (
     <div
       className={`fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-container px-6 pt-3 ${
-        half ? "md:left-1/2" : ""
+        half ? "expanded:left-1/2" : ""
       }`}
       style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
     >

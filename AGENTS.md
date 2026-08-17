@@ -129,6 +129,15 @@ GENERATED, and that is the thing to know before touching styling:
 - **Shape names are M3's**: `rounded-extra-small|small|medium|large|extra-large|full`.
   Tailwind still ships its own `rounded-sm|md|lg` and they will silently resolve
   to Tailwind's values rather than the system's, so do not use them.
+- **Breakpoints are M3's window size classes**: `medium:` 600, `expanded:` 840,
+  `large:` 1200, `xlarge:` 1600. Tailwind's `sm|md|lg|xl` still exist and still
+  mean 640 / 768 / 1024 / 1280, which is a different set of numbers. Do not use
+  them.
+- **A page's columns belong at `large:`, not `expanded:`.** The standard drawer
+  appears at `expanded` and takes 280px, so a page's content pane is only 560
+  wide at an 840 window, which wants one column. Content thresholds sit one
+  class above the window ones. The shell and the assessment are the exceptions
+  and use `expanded:`: the shell IS the drawer, and the assessment hides it.
 - **Liquid Glass is retired**, along with `.material`, `.material-mint`, the
   `.eufit-field` background and the `data-perf` capability probe. M3 answers the
   same question with tonal surfaces and elevation. Content cards are

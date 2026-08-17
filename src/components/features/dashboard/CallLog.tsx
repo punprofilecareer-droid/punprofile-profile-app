@@ -392,7 +392,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
             Only the first three are needed to save. The rest is the write-up and can wait.
           </p>
 
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="mt-4 grid gap-4 medium:grid-cols-2">
             <Select
               label="Type"
               value={draft.type}
@@ -493,7 +493,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                 ungraded because Stage 1 collects none of them, so this is where they first
                 exist.
               </p>
-              <div className="mt-3 grid gap-4 sm:grid-cols-3 sm:items-start">
+              <div className="mt-3 grid gap-4 medium:grid-cols-3 medium:items-start">
                 <Field label="Current job title">
                   <input
                     value={draft.icpJobTitle}
@@ -553,7 +553,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
             any good: the trigger records which rule fired, so changing the rule later
             does not rewrite what the old one produced.
           </p>
-          <div className="mt-3 grid gap-4 sm:grid-cols-2 sm:items-start">
+          <div className="mt-3 grid gap-4 medium:grid-cols-2 medium:items-start">
             <Select
               label="What fired the send"
               value={draft.trigger}

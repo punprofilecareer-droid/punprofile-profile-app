@@ -51,7 +51,7 @@ function ServicesBody() {
           stretching to match the tallest, and `auto-rows-fr` is deliberately
           NOT used: equal-height cards would leave the two shorter ones with a
           band of dead space above their button. */}
-      <div className="mt-12 grid items-start gap-6 lg:grid-cols-3">
+      <div className="mt-12 grid items-start gap-6 large:grid-cols-3">
         {SERVICES.map((s) => {
           const on = focused === s.id;
           return (

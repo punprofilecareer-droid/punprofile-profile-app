@@ -106,7 +106,7 @@ export default function SignupForm() {
         </Link>
       </p>
 
-      <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-3 sm:flex-row">
+      <form onSubmit={onSubmit} className="mt-4 flex flex-col gap-3 medium:flex-row">
         <label className="sr-only" htmlFor="blog-signup-email">
           {pick(SIGNUP_LABEL)}
         </label>

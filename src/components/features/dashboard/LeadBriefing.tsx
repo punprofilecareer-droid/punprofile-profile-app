@@ -125,7 +125,7 @@ export default function LeadBriefing({
         </div>
       </section>
 
-      <div className="grid gap-8 sm:grid-cols-2">
+      <div className="grid gap-8 medium:grid-cols-2">
         <section>
           <h2 className="text-title-large">Lead with these</h2>
           <Highlights items={narrative.strengths} empty="Nothing scored high enough to lead with." />

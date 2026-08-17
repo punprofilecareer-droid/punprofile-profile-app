@@ -504,18 +504,18 @@ export default function AssessPage() {
   // next, who else is here, what we have read. Nothing is moved on desktop that
   // would break that; only the shape changes.
   return (
-    <div className="mx-auto w-full max-w-md px-6 py-10 text-center lg:max-w-5xl lg:px-8 lg:py-16">
-      <h1 className="text-headline-large text-on-tertiary-container lg:text-display-small">{t("teaser.headline")}</h1>
-      <p className="mt-2 text-body-large text-on-surface-variant lg:text-body-large">{t("teaser.selfReported")}</p>
+    <div className="mx-auto w-full max-w-md px-6 py-10 text-center large:max-w-5xl large:px-8 large:py-16">
+      <h1 className="text-headline-large text-on-tertiary-container large:text-display-small">{t("teaser.headline")}</h1>
+      <p className="mt-2 text-body-large text-on-surface-variant large:text-body-large">{t("teaser.selfReported")}</p>
 
       {/* Chart and read, side by side from `lg`. `items-start` rather than
           stretch: the read is shorter than the chart card for most profiles and
           a white card grown to match it would be mostly empty. */}
-      <div className="lg:mt-12 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
+      <div className="large:mt-12 large:grid large:grid-cols-2 large:items-start large:gap-10">
         {/* The chart gets its own surface. The radar's grid is 1px neutral-300
             and the field's gradient moves through the same value range, so on
             the field alone the grid reads as noise rather than as structure. */}
-        <div className="card-outlined mt-6 rounded-large px-4 py-6 text-left lg:mt-0 lg:px-6 lg:py-7">
+        <div className="card-outlined mt-6 rounded-large px-4 py-6 text-left large:mt-0 large:px-6 large:py-7">
           <h2 className="text-title-large text-on-tertiary-container">{t("teaser.chart.heading")}</h2>
           <SpiderChart scores={scores} variant="teaser" />
           <div className="mt-2 border-t border-outline-variant pt-5">
@@ -523,12 +523,12 @@ export default function AssessPage() {
           </div>
         </div>
 
-        <div className="lg:pt-2">
+        <div className="large:pt-2">
           {/* The personalized read. Every sentence is selected from the bank in
               `narrative-copy.ts` by the candidate's own scores, so nothing here
               can claim more than the answers support. */}
           {summary && (
-            <div className="mt-8 space-y-4 text-left lg:mt-0">
+            <div className="mt-8 space-y-4 text-left large:mt-0">
               <p className="text-title-medium text-on-surface">{summary.opener}</p>
               <p className="text-body-large text-on-surface-variant">{summary.standing}</p>
             </div>
@@ -547,7 +547,7 @@ export default function AssessPage() {
             height={578}
             priority
             sizes="(max-width: 640px) 70vw, (max-width: 1024px) 320px, 260px"
-            className="mascot-in mx-auto my-6 w-full max-w-[300px] lg:my-7 lg:max-w-[260px]"
+            className="mascot-in mx-auto my-6 w-full max-w-[300px] large:my-7 large:max-w-[260px]"
           />
 
           {summary && (
@@ -592,7 +592,7 @@ export default function AssessPage() {
       {/* The pipeline figure and the services card it earns, side by side from
           `lg`: the proof and the action it is there to justify, which is the
           one pairing on this page that gains from being read at once. */}
-      <div className="lg:mt-6 lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-6">
+      <div className="large:mt-6 large:grid large:grid-cols-2 large:items-stretch large:gap-6">
         <MarketProof />
 
         {/* TASK-084. The second action on this screen, and deliberately not a
@@ -600,7 +600,7 @@ export default function AssessPage() {
             queue, so what they can usefully do now is read what the work is.
             Secondary treatment throughout, because when TASK-046 turns the
             booking CTA on below, that one is the revenue step. */}
-        <div className="card-outlined mt-4 flex flex-col rounded-large px-5 py-6 text-left lg:mt-4">
+        <div className="card-outlined mt-4 flex flex-col rounded-large px-5 py-6 text-left large:mt-4">
           <h2 className="text-title-large">{t("services.cta.heading")}</h2>
           <p className="mt-2 text-body-large text-on-surface-variant">{t("services.cta.body")}</p>
           {/* Still hand-rolled, and the one deliberate exception to the table:
@@ -616,7 +616,7 @@ export default function AssessPage() {
               the card's floor so it lines up with the card beside it. */}
           <Link
             href={path(weakest ? `/services?focus=${weakest}` : "/services")}
-            className="btn-tonal mt-5 inline-flex min-h-14 items-center justify-center gap-2 px-7 py-4 text-body-large font-semibold lg:mt-auto lg:self-start"
+            className="btn-tonal mt-5 inline-flex min-h-14 items-center justify-center gap-2 px-7 py-4 text-body-large font-semibold large:mt-auto large:self-start"
           >
             {t("services.cta.button")}
             <span aria-hidden>&rarr;</span>

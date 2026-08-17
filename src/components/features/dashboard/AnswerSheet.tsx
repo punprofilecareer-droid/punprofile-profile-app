@@ -136,7 +136,7 @@ function QaRow({
 
   return (
     <div className="border-b border-outline-variant py-2">
-      <div className="grid gap-x-6 sm:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <div className="grid gap-x-6 medium:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <p className="text-body-large text-on-surface-variant">{row.question}</p>
         <div>
           {/* The candidate's own answer, struck through only when a correction

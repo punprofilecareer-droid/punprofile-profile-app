@@ -71,7 +71,7 @@ function ProofPanel() {
   return (
     <section className="mt-20">
       <h2 className="text-headline-small">{pick(PROOF_HEADING)}</h2>
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid gap-4 medium:grid-cols-3">
         {lines.map(({ line, value }) => (
           <div key={line.share} className="card-outlined rounded-large px-6 py-7">
             <p className="text-headline-large text-primary">{value.pct}%</p>
@@ -98,8 +98,8 @@ export default function CoachingPage() {
           section: the founder section below is already on brand orange, and the
           system allows one fixed high-energy ground per page. Two of them is two
           things claiming to be the loudest. 16/08/2026. */}
-      <section className="bg-primary-container px-6 py-16 sm:py-20">
-        <div className="mx-auto grid max-w-5xl items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
+      <section className="bg-primary-container px-6 py-16 medium:py-20">
+        <div className="mx-auto grid max-w-5xl items-center gap-10 large:grid-cols-[1.15fr_1fr]">
           <div>
             {/* Same rule as the footer: tracked and uppercased in English,
                 neither in Thai. See `EYEBROW` in `content/footer.ts`. */}
@@ -129,7 +129,7 @@ export default function CoachingPage() {
               as a mistake. Hidden below `lg` rather than shrunk: on a phone it
               would push the headline and the button below the fold, and the
               button is the entire job of this section. */}
-          <div className="hidden overflow-hidden rounded-large bg-surface-container lg:block">
+          <div className="hidden overflow-hidden rounded-large bg-surface-container large:block">
             <Image
               src="/mascot-stepping.png"
               alt={pick(MASCOT_ALT)}
@@ -147,7 +147,7 @@ export default function CoachingPage() {
             off in their head reads the rest of the page differently. */}
         <section className="mt-20">
           <h2 className="text-headline-small">{pick(PAIN_HEADING)}</h2>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div className="mt-6 grid gap-3 medium:grid-cols-2">
             {PAINS.map((p, i) => (
               <p key={i} className="card-outlined rounded-large px-6 py-5 text-body-large text-on-surface">
                 {pick(p)}
@@ -163,7 +163,7 @@ export default function CoachingPage() {
         <section className="mt-20">
           <h2 className="text-headline-small">{pick(METHOD_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(METHOD_INTRO)}</p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid gap-4 medium:grid-cols-2">
             {METHOD.map((step) => (
               <div key={step.n} className="card-outlined rounded-large px-6 py-7">
                 <p className="text-headline-small text-primary">{step.n}</p>
@@ -222,13 +222,13 @@ export default function CoachingPage() {
           contrast reads as the system rather than as an unedited asset. */}
       <section className="ground-fixed bg-brand-orange px-6 py-20">
         <div className="mx-auto w-full max-w-3xl">
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-start">
+          <div className="flex flex-col gap-8 medium:flex-row medium:items-start">
             <Image
               src="/paul-portrait.png"
               alt={pick(PORTRAIT_ALT)}
               width={421}
               height={421}
-              className="size-32 shrink-0 rounded-full bg-secondary-container object-cover sm:size-40"
+              className="size-32 shrink-0 rounded-full bg-secondary-container object-cover medium:size-40"
             />
             <div>
               <h2 className="text-headline-large">{pick(FOUNDER_HEADING)}</h2>

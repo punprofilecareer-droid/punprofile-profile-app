@@ -53,7 +53,7 @@ export default function EnglishSwitchPrompt({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-on-surface/40 px-4 pb-6 sm:items-center sm:pb-0"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-on-surface/40 px-4 pb-6 medium:items-center medium:pb-0"
       role="dialog"
       aria-modal="true"
       aria-labelledby="english-switch-title"

@@ -39,7 +39,7 @@ export default function PostCard({
   return (
     <article
       className={`relative flex flex-col rounded-large border border-outline-variant bg-surface transition-colors hover:border-primary ${
-        lead ? "lg:col-span-2" : ""
+        lead ? "large:col-span-2" : ""
       }`}
     >
       <div className="flex flex-1 flex-col px-6 py-7">

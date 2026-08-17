@@ -90,7 +90,7 @@ function BlogBody() {
           because the blog index carries no brand orange; `design.md` permits one
           fixed high-energy ground per page and no more. Ink text, never white. */}
       <section className="ground-fixed bg-brand-lime">
-        <div className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-20">
+        <div className="mx-auto w-full max-w-5xl px-6 py-16 medium:py-20">
           <h1 className="max-w-3xl text-display-small">{pick(BLOG_HEADING)}</h1>
           <p className="mt-5 max-w-2xl text-body-large text-on-surface-variant">{pick(BLOG_INTRO)}</p>
           {/* Renders nothing until Paul has read the Thai. `SignupForm` owns
@@ -112,7 +112,7 @@ function BlogBody() {
           <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
             {pick(PLAYBOOKS_INTRO)}
           </p>
-          <div className="mt-10 grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid items-start gap-6 medium:grid-cols-2 large:grid-cols-3">
             {playbooks().map((p) => (
               <PostCard key={p.slug} post={p} />
             ))}
@@ -151,7 +151,7 @@ function BlogBody() {
           // `items-start` so a short card keeps its own height rather than
           // stretching to the tallest in its row, the same call the services
           // grid makes and for the same reason.
-          <div className="mt-10 grid items-start gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid items-start gap-6 medium:grid-cols-2 large:grid-cols-3">
             {posts.map((p, i) => (
               <PostCard key={p.slug} post={p} size={i === 0 ? "lead" : "normal"} />
             ))}

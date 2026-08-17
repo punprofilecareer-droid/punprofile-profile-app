@@ -147,7 +147,7 @@ export default function SiteShell({
                 The burger disappears at `expanded`, where the drawer beside it
                 is already showing every destination. Two navigations offering
                 the same six links is one of them being ignored. */}
-            <header className="sticky top-0 z-40 grid h-[72px] shrink-0 grid-cols-[3rem_1fr_3rem] items-center gap-2 border-b border-outline-variant bg-surface px-4 sm:px-6">
+            <header className="sticky top-0 z-40 grid h-[72px] shrink-0 grid-cols-[3rem_1fr_3rem] items-center gap-2 border-b border-outline-variant bg-surface px-4 medium:px-6">
               <div className="flex justify-start expanded:invisible">
                 <SiteMenu />
               </div>

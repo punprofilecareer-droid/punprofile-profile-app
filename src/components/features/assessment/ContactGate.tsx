@@ -204,9 +204,9 @@ export default function ContactGate({
     <form
       onSubmit={submit}
       noValidate
-      className="mx-auto w-full max-w-md px-6 py-10 lg:max-w-4xl lg:px-8 lg:py-14"
+      className="mx-auto w-full max-w-md px-6 py-10 large:max-w-4xl large:px-8 large:py-14"
     >
-      <div className="card-outlined rounded-large px-5 py-6 lg:px-8 lg:py-9">
+      <div className="card-outlined rounded-large px-5 py-6 large:px-8 large:py-9">
       <p className="mb-1 text-body-medium text-on-surface-variant">
         {t("assess.progress", { step: totalSteps, total: totalSteps })}
       </p>
@@ -223,7 +223,7 @@ export default function ContactGate({
 
           It collapses to the phone order precisely: heading, why, then fields.
           Nothing is reordered, only placed. */}
-      <div className="lg:grid lg:grid-cols-2 lg:gap-10">
+      <div className="large:grid large:grid-cols-2 large:gap-10">
       <div>
       <h1 className="text-headline-small">{t("gate.heading")}</h1>
       <p className="mt-2 text-body-large text-on-surface-variant">{t("gate.body")}</p>
@@ -244,7 +244,7 @@ export default function ContactGate({
       </div>
 
       <div>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:mt-0">
+      <div className="mt-6 grid gap-4 medium:grid-cols-2 large:mt-0">
         <label className={labelText}>
           {t("gate.firstName")}
           <input

@@ -127,7 +127,7 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
           it would not be for the narrative above, where the order is an
           argument. Each is `h-full` so a short card does not leave the row
           ragged. */}
-      <div className="mt-3 flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:items-stretch lg:gap-6">
+      <div className="mt-3 flex flex-col gap-4 large:grid large:grid-cols-3 large:items-stretch large:gap-6">
         {stats.topCountries && (
           <div className="card-outlined h-full rounded-large px-5 py-5">
             <p className="text-label-large text-on-tertiary-container">{t("stats.countries.label")}</p>

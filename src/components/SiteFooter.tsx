@@ -46,7 +46,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
   return (
     <footer className="mt-auto bg-inverse-surface px-6 py-14 text-inverse-on-surface">
       <div className="mx-auto w-full max-w-5xl">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_2fr]">
+        <div className="grid gap-12 large:grid-cols-[1.4fr_2fr]">
           {/* The left block. Where the newsletter capture would be on the page
               this is modelled on, and is not, because there is no newsletter.
               See the note in `footer.ts`. */}
@@ -79,7 +79,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
           </div>
 
           {/* Columns grouped by what a reader came for. */}
-          <nav className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+          <nav className="grid grid-cols-2 gap-8 medium:grid-cols-3">
             {FOOTER_COLUMNS.map((col) => (
               <div key={col.heading.en}>
                 <h2 className={`text-inverse-primary ${EYEBROW(locale)}`}>
