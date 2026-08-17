@@ -19,6 +19,7 @@ import CommunityStats from "@/components/features/assessment/CommunityStats";
 import MarketProof from "@/components/features/assessment/MarketProof";
 import Link from "next/link";
 import { setNavLocked } from "@/lib/navLock";
+import { setLocaleSwitchInPlace } from "@/lib/localeInPlace";
 import { buildTeaserSummary } from "@/lib/views";
 import { toScoringInput } from "@/lib/content/mapping";
 
@@ -210,6 +211,23 @@ export default function AssessPage() {
     setNavLocked(navLocked);
     return () => setNavLocked(false);
   }, [navLocked]);
+
+  /**
+   * Make the language toggle switch in place rather than navigate, 17/08/2026.
+   *
+   * For the whole time this page is mounted, and not on `navLocked`'s
+   * condition. That one releases at the contact step, because after it the lead
+   * is saved and leaving costs nothing. This is about a different loss: the
+   * candidate's view of their own result, which is held in this component's
+   * state and is unrecoverable from the browser, since resume needs a magic
+   * link. Switching language on the result screen pushed to the other tree,
+   * unmounted this, and started a new session at question one. That is the bug
+   * this fixes; `localeInPlace.ts` carries the rest of the reasoning.
+   */
+  useEffect(() => {
+    setLocaleSwitchInPlace(true);
+    return () => setLocaleSwitchInPlace(false);
+  }, []);
 
   const scores = useMemo(() => session?.scores ?? {}, [session]);
 

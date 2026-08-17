@@ -157,6 +157,62 @@ const BANNER = (file: string) => `/*
 
 // ---------------------------------------------------------------- CSS
 
+/** M3's own token names, aliased onto ours. Values live once, under Tailwind. */
+function mdSys(): string {
+  const SHAPE: Record<string, string> = {
+    none: "none", "extra-small": "extra-small", small: "small",
+    medium: "medium", large: "large", "extra-large": "extra-large", full: "full",
+  };
+  const MOTION: Record<string, string> = {
+    emphasized: "easing-emphasized",
+    "emphasized-decelerate": "easing-emphasized-decelerate",
+    "emphasized-accelerate": "easing-emphasized-accelerate",
+    standard: "easing-standard",
+    "duration-short": "duration-short2",
+    "duration-medium": "duration-medium2",
+    "duration-long": "duration-long2",
+  };
+  const OURS_ONLY = new Set([
+    "action", "on-action", "action-container", "on-action-container",
+    "warning", "on-warning", "warning-container", "on-warning-container",
+    "brand-orange", "on-brand-orange", "brand-lime", "on-brand-lime",
+  ]);
+  const colours = Object.keys(d.colors)
+    .filter((k) => !OURS_ONLY.has(k))
+    .map((k) => `    --md-sys-color-${k}: var(--color-${k});`)
+    .join("\n");
+  const shape = Object.entries(SHAPE)
+    .map(([ours, theirs]) => `    --md-sys-shape-corner-${theirs}: var(--radius-${ours});`)
+    .join("\n");
+  const elevation = Object.keys(d.elevation)
+    .map((k, i) => `    --md-sys-elevation-level${i}: var(--shadow-${k});`)
+    .join("\n");
+  const motion = Object.entries(MOTION)
+    .filter(([ours]) => ours in d.motion)
+    .map(([ours, theirs]) =>
+      `    --md-sys-motion-${theirs}: var(--${ours.startsWith("duration") ? "animate" : "ease"}-${ours});`)
+    .join("\n");
+  const type = Object.keys(d.typography)
+    .filter((k) => !k.startsWith("thai-"))
+    .flatMap((k) => [
+      `    --md-sys-typescale-${k}-size: var(--text-${k});`,
+      `    --md-sys-typescale-${k}-line-height: var(--text-${k}--line-height);`,
+      `    --md-sys-typescale-${k}-weight: var(--text-${k}--font-weight);`,
+    ])
+    .join("\n");
+  return `:root {
+${colours}
+
+${shape}
+
+${elevation}
+
+${motion}
+
+${type}
+  }`;
+}
+
 function css(): string {
   const colours = Object.entries(d.colors)
     .map(([k, v]) => `  --color-${k}: ${v.toLowerCase()};`)
@@ -208,6 +264,8 @@ function css(): string {
         : `  --ease-${k}: ${v};`,
     )
     .join("\n");
+
+  const MD_SYS = mdSys();
 
   const state = Object.entries(d["state-layers"])
     .map(([k, v]) => `  --state-${k}: ${v};`)
@@ -265,6 +323,25 @@ ${state}
 ${darkVars}
   }
 }
+
+/*
+ * The spec's own names, as aliases.
+ *
+ * Every role lives under Tailwind's namespace, because that is what generates
+ * the utilities, and an MD3 compliance check greps for \`--md-sys-color-*\` and
+ * finds a system with all the roles and none of the names. Anything that speaks
+ * M3 reads these: a devtools inspection, a design tool, another generator, a
+ * future migration off Tailwind.
+ *
+ * Aliases rather than a second set of values, so there is nothing to keep in
+ * step. They resolve through the same variables and follow the dark scheme and
+ * the contrast block automatically.
+ *
+ * Only the roles the spec actually names are aliased. \`action\`, \`warning\`,
+ * \`brand-orange\` and \`brand-lime\` are this brand's own and have no M3 name,
+ * which is the point of them.
+ */
+${MD_SYS}
 
 /*
  * High contrast. M3 defines three contrast levels and this app ships the

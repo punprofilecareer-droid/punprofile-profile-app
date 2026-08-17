@@ -144,6 +144,9 @@ GENERATED, and that is the thing to know before touching styling:
   `.card-outlined` and `.card-tonal`. Do not reintroduce a backdrop filter.
 - **`--ease-settle` is retired**; motion is M3's four curves. Mixing a fifth in
   from outside breaks the relationship between them.
+- **Write `--color-*`, not `--md-sys-*`.** Both exist; the M3 names are aliases
+  emitted for anything that speaks the spec, and Tailwind generates its utilities
+  from its own namespace. Reading either is fine, writing the M3 one is not.
 - **Elevation is a tone, not a shadow.** Level 1 is `surface-container-low`, 2 is
   `surface-container`, 3 is `surface-container-high`, 4 and 5 are
   `surface-container-highest`. A `shadow-level-*` is earned only when the element

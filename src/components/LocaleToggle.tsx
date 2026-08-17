@@ -30,6 +30,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LOCALES, localePath, stripLocale, type Locale } from "@/lib/locale";
+import { getLocaleSwitchInPlace } from "@/lib/localeInPlace";
 import { useCopy } from "./LocaleProvider";
 
 /**
@@ -134,10 +135,20 @@ export default function LocaleToggle() {
    * `/admin` and `/login` are outside both trees, so `localePath` leaves their
    * paths alone and the toggle there behaves exactly as it always did: the
    * cookie changes and nothing navigates.
+   *
+   * **And a page may refuse the navigation.** 17/08/2026, after switching
+   * language on the assessment's result screen restarted the assessment. The
+   * two trees are separate routes under separate root layouts, so a push
+   * between them unmounts the page, and a page holding unrecoverable state in
+   * memory cannot survive that. `localeInPlace.ts` carries the reasoning and
+   * the cost. Everything else about the switch is unchanged, including the
+   * cookie, which is what matters for the next visit.
    */
   const choose = (next: Locale) => {
     setLocale(next);
     setOpen(false);
+
+    if (getLocaleSwitchInPlace()) return;
 
     const query = params.toString();
     const target = localePath(stripLocale(pathname), next);
