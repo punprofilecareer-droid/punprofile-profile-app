@@ -267,6 +267,18 @@ function scoreSalaryStated(s: SalaryShape | null | undefined): number | null {
 /** Everything the scorer needs beyond the canonical response. */
 export interface ScoringInput extends SurveyResponse {
   salary?: SalaryShape | null;
+  /**
+   * Whether anyone replied to their applications. Asked by this app since
+   * 19/08/2026 and never by the survey, which is why it sits here rather than
+   * in `SurveyResponse`.
+   *
+   * **Nothing in this file reads it.** It exists for `temperature.ts`, whose
+   * weights were written against exactly this question, and it deliberately
+   * scores no competency: response rate is market feedback about a CV, not a
+   * self-reported capability, and the item it looks like (Search
+   * Follow-through) is already measured by `applicationCount`.
+   */
+  applicationResponse?: "not_applied" | "no_replies" | "some_replies" | null;
 }
 
 const SCORERS: Record<string, (r: ScoringInput) => number | null> = {

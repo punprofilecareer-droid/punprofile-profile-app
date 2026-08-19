@@ -400,6 +400,47 @@ export const STAGE1: Question[] = [
     ],
   },
   {
+    // SLOT: none. This question scores nothing and is the only one that does
+    // not, added 19/08/2026 for Temperature alone (TASK-055 follow-up).
+    //
+    // It is the retired Europe Readiness Check's Q4, which is the ONLY input of
+    // the five Temperature weights that this app could not measure. That quiz
+    // asked how many roles and whether anyone replied in one breath; the count
+    // half is already `applications` above, so only the reply half is asked
+    // here. Its two "applied" options are that form's own Thai, quoted from
+    // `europe-readiness-check-quiz.md`, so they are wording candidates have
+    // already seen; the stem is new and reviewed separately.
+    //
+    // **A separate question rather than a follow-up, because the app has no
+    // conditional question display** (see `family` below for the same
+    // constraint solved a different way). So "haven't applied yet" is an option
+    // rather than a reason to skip: it is the quiz's own 0-point answer, and it
+    // keeps the question coherent for the person who has not applied.
+    //
+    // It can contradict `applications`. Someone can answer "None yet" there and
+    // "got some responses" here. Nothing resolves that automatically, on
+    // purpose: this answer is the one Temperature reads, because it is the one
+    // the weights were written against.
+    key: "applicationResponse",
+    stage: 1,
+    select: "one",
+    en: "Have you heard back from any of them?",
+    th: "จากที่สมัครไป มีคนติดต่อกลับมาบ้างไหม",
+    options: [
+      { value: "not_applied", en: "Haven't applied yet", th: "ยังไม่เคยสมัครเลย" },
+      {
+        value: "no_replies",
+        en: "Applied to several, almost no response",
+        th: "สมัครไปหลายที่แล้ว แต่แทบไม่มีใครติดต่อกลับ",
+      },
+      {
+        value: "some_replies",
+        en: "Applied, and got some responses",
+        th: "สมัครไปแล้ว และมีคนติดต่อกลับมาบ้าง",
+      },
+    ],
+  },
+  {
     // SLOT: timeline [proxy: Relocation Timeline].
     key: "timeline",
     stage: 1,

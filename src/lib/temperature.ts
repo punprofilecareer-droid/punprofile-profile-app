@@ -32,21 +32,25 @@
  * - **Q2 Stage** → `stage`. Exact, and this app has the split the quiz's
  *   formula never got: `interviewing` and `negotiating` both score 2 as the
  *   correction intended.
- * - **Q4 Applications** → **cannot be measured.** The quiz asked about the
- *   *response* to applications ("applied, got some responses" is the 2-point
- *   answer). Neither this app nor the Lead Discovery Survey asks that; both
- *   ask how many roles were applied to. So a lead who applied scores 1, the
- *   "applied, almost no response" band, and 2 is unreachable. Inferring a
- *   response from `stage` was considered and rejected: it would score Q2 twice
- *   under two names. This is listed in `unmeasured` on every row that has
- *   applied, and it is the one thing to fix if Temperature is ever wanted at
- *   full resolution: add the response question, do not widen this mapping.
+ * - **Q4 Applications** → `applicationResponse`, since 19/08/2026. The quiz
+ *   asked about the *response* to applications, and for one day this app could
+ *   not answer that: it asks how many roles were applied to, not who replied,
+ *   so the input capped at 1 of 2 and nobody in the base could reach the top
+ *   band. Paul's call was to add the question rather than move the line, so
+ *   `questions.ts` now asks the quiz's own Q4 and this reads it directly.
+ *
+ *   The fallback is `applicationCount`, and it is exactly the old capped
+ *   behaviour: the 90 imported survey leads were never asked about replies and
+ *   never will be, so "applied, response unknown" scores 1 and says so in
+ *   `unmeasured`. Inferring a response from `stage` was considered and
+ *   rejected for both paths: it would score Q2 twice under two names.
  * - **Q5 Visa** → `workAuth`. Exact. Both sponsorship answers are the
  *   "understand I'll need sponsorship" band; `no_awareness` joins `unsure`.
  * - **Q6 Timeline** → `timeline`. Exact.
  *
- * So the reachable maximum is 9, not 10, and `measuredMax` says so per lead
- * rather than leaving a reader to discover it.
+ * So a lead who answered the app's questions reaches 10, and one imported from
+ * the survey reaches 9. `measuredMax` says which per lead, rather than leaving
+ * a reader to discover it.
  *
  * ## Unanswered questions do not score zero
  *
@@ -157,19 +161,34 @@ function stage(input: ScoringInput): TemperatureInput {
 }
 
 /**
- * Q4. Capped at 1 by construction. See the module note: the 2-point answer is
- * about responses received, and nothing in this system asks that.
+ * Q4, the input that needed a question adding to reach full resolution.
+ *
+ * Two paths, and `max` differs between them, which is the point: a lead who
+ * answered `applicationResponse` can score 2, and one who only has a count
+ * cannot score more than 1 no matter how many roles they applied to. Reporting
+ * `max: 1` on the fallback is what keeps the tier arithmetic honest, because
+ * the tier is decided by what the outstanding answers could still add.
  */
 function applications(input: ScoringInput): TemperatureInput {
+  const reply = input.applicationResponse;
+  if (reply) {
+    const points = reply === "some_replies" ? 2 : reply === "no_replies" ? 1 : 0;
+    return { key: "applications", points, max: 2, basis: reply };
+  }
+
+  // Neither answer present: the lead has reached neither question. Bounded at 2
+  // rather than 1, because the reply question is the one they would reach next
+  // and it can still score 2. An imported record with no application count is
+  // bounded optimistically for one run and settles the moment either lands.
   if (input.applicationCount === undefined || input.applicationCount === null) {
-    return NOT_REACHED("applications", 1);
+    return NOT_REACHED("applications", 2);
   }
   const applied = input.applicationCount > 0;
   return {
     key: "applications",
     points: applied ? 1 : 0,
     max: 1,
-    basis: applied ? "has applied, response rate not asked" : "has not applied",
+    basis: applied ? "has applied, replies not asked" : "has not applied",
   };
 }
 
@@ -205,11 +224,12 @@ export function temperatureFor(input: ScoringInput): Temperature {
     .filter((i) => i.points === null)
     .map((i) => `${UNMEASURED_LABELS[i.key]} not answered`);
 
-  // The response-rate gap is not a missing answer, it is a question the system
-  // does not ask, so it is named separately and only when it actually bit.
+  // Not a missing answer: the question was never put to this lead, which is
+  // true of every imported survey record and of nobody who answers the app
+  // today. Named separately, and only when it actually bit.
   const apps = inputs.find((i) => i.key === "applications");
-  if (apps?.points === 1) {
-    unmeasured.push("Application response rate (never asked; caps this input at 1 of 2)");
+  if (apps?.points === 1 && apps.max === 1) {
+    unmeasured.push("Whether anyone replied (not asked of this lead; caps the input at 1 of 2)");
   }
 
   if (measured.length === 0) {

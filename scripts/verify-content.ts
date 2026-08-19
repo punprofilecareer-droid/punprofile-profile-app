@@ -103,6 +103,12 @@ const UNSCORED_BY_DESIGN = new Set([
   // selection currently scores nothing at all. Named here rather than left as a
   // red check, because a red check nobody can fix stops being read.
   "targetCountries",
+  // `applicationResponse`, added 19/08/2026, and the only question here that
+  // was never meant to score. It exists for Temperature, whose weights are
+  // owned by `08_Coaching_Business.md` and read market feedback rather than a
+  // competency. Scoring it would double-count Search Follow-through, which
+  // `applications` already measures.
+  "applicationResponse",
 ]);
 for (const q of STAGE1) {
   if (UNSCORED_BY_DESIGN.has(q.key)) continue;
@@ -145,6 +151,7 @@ const full: Record<string, string | string[]> = {
   portfolio: "partial",
   aiTools: ["ai_weekly"],
   applications: "1-4",
+  applicationResponse: "no_replies",
   family: ["none"],
   salary: "2500_3500",
 };

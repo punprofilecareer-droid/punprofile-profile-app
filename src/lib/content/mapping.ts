@@ -119,6 +119,14 @@ export function toScoringInput(responses: Responses): ScoringInput {
   const apps = str(responses.applications);
   if (apps && apps in APPLICATIONS) input.applicationCount = APPLICATIONS[apps];
 
+  // Temperature's Q4, and nothing else reads it. Mapped here rather than left
+  // for `temperature.ts` to dig out of raw responses, so that file keeps
+  // taking a ScoringInput like every other consumer of an answer.
+  const reply = str(responses.applicationResponse);
+  if (reply === "not_applied" || reply === "no_replies" || reply === "some_replies") {
+    input.applicationResponse = reply;
+  }
+
   /**
    * AI fluency: count and flags, in the framework's own indicator order.
    *
