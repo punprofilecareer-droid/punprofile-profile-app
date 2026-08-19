@@ -49,7 +49,7 @@ async function movePersonalRecords(
   ctx: MutationCtx,
   keepId: Id<"leads">,
   dropId: Id<"leads">,
-): Promise<void> {
+): Promise<{ consentCopied: number }> {
   const assessments = await ctx.db
     .query("assessments")
     .withIndex("by_lead_time", (q) => q.eq("leadId", dropId))
@@ -107,6 +107,8 @@ async function movePersonalRecords(
       ...(e.by ? { by: e.by } : {}),
     });
   }
+
+  return { consentCopied: consents.length };
 }
 
 /**
@@ -206,14 +208,37 @@ export async function mergeLeads(
   const patch = mergedFields(keep, drop);
   if (Object.keys(patch).length) await ctx.db.patch(keepId, patch);
 
-  await movePersonalRecords(ctx, keepId, dropId);
+  const { consentCopied } = await movePersonalRecords(ctx, keepId, dropId);
 
   const counts = await eraseLead(ctx, dropId);
-  const orphaned = Object.entries(counts).filter(([table, n]) => table !== "leads" && n > 0);
+
+  /**
+   * The net, and the two tables it must not fire on.
+   *
+   * `leads` is the dropped row itself, which is the point of the call.
+   * `consentEvents` are copied rather than re-pointed, so the originals are
+   * still attached and `eraseLead` is supposed to take them: the copies now
+   * carry the same facts against the surviving row. That distinction cost a
+   * rolled-back production run on 19/08/2026, which is the net working, on the
+   * wrong table.
+   *
+   * Anything else still attached means a table exists that this file does not
+   * know about, and `eraseLead` has just deleted real records rather than
+   * moving them. Throwing rolls the whole mutation back.
+   */
+  const orphaned = Object.entries(counts).filter(
+    ([table, n]) => table !== "leads" && table !== "consentEvents" && n > 0,
+  );
   if (orphaned.length) {
     throw new ConvexError(
       `merge: ${orphaned.map(([t, n]) => `${n} ${t}`).join(", ")} still pointed at the dropped row. ` +
         `Add the table to movePersonalRecords in merge.ts. Nothing was changed.`,
+    );
+  }
+  if (counts.consentEvents !== consentCopied) {
+    throw new ConvexError(
+      `merge: copied ${consentCopied} consent events but erased ${counts.consentEvents}. ` +
+        `A grant would have been lost. Nothing was changed.`,
     );
   }
 }
