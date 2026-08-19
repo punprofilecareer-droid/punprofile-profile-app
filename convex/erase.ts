@@ -7,7 +7,10 @@
  * deletion that silently leaves a person's answers behind. There is one
  * implementation and both callers use it.
  *
- * **Adding a table keyed to `leads` means adding it here.** Nowhere else.
+ * **Adding a table keyed to `leads` means adding it here, and to
+ * `movePersonalRecords` in `merge.ts`.** Those two and nowhere else. A table
+ * added here but not there would be deleted by a merge instead of moved, which
+ * is why that function checks this one's counts and rolls the merge back.
  */
 
 import type { MutationCtx } from "./_generated/server";

@@ -15,6 +15,8 @@ import { resolveAll, ynGrid } from "../src/lib/consent";
 import { meetsBookingGate } from "../src/lib/lifecycle";
 import { parseAttribution, attributionFromLegacySource } from "../src/lib/attribution";
 import { eraseLead } from "./erase";
+import type { EraseCounts } from "./erase";
+import { mergeLeads, duplicatesOf } from "./merge";
 import { CONSENT_COPY } from "../src/lib/consent-copy";
 
 /**
@@ -238,62 +240,26 @@ export const captureContact = mutation({
     const now = Date.now();
 
     /**
-     * Fold in a blog subscriber who turns out to be this person. 16/08/2026.
+     * Fold in every other row that turns out to be this person. 16/08/2026,
+     * widened to all duplicates 19/08/2026.
      *
      * `subscribe` writes a lead row keyed only by email. `startSession` writes
-     * one before any email is known. So somebody who subscribed on the blog in
-     * March and takes the check in August arrives here with two rows, and
-     * nothing before this joined them: a subject-access request would have
-     * answered from one and missed the other, and a digest send would have
-     * emailed one person twice.
+     * one before any email is known, and writes a NEW one on every page load,
+     * because the app has stored no session id since 10/08/2026. So one person
+     * arrives here with a blog signup from March, a session they abandoned on
+     * their phone last week, and the one they are finishing now.
+     *
+     * Until 19/08/2026 only the blog subscriber was folded in. The rest were
+     * left standing, which is how a production lead came to have four rows and
+     * how deleting one of them looked like a delete that did not work. Paul's
+     * call: replace the duplicate with the fuller record.
      *
      * **The session row survives**, because the client is holding its id and is
-     * about to keep using it, and because it carries the answers. What moves is
-     * everything the subscriber row knows that this one does not.
-     *
-     * **The consent events are copied, then the duplicate is erased.** They are
-     * not re-pointed: `schema.ts` says nothing in that table is ever patched,
-     * and the reason is that an amended consent record is not evidence. A copy
-     * carrying the original `at`, `basis` and `evidence` is not an amendment, it
-     * is the same fact recorded against the record that is actually this person.
-     * The duplicate then goes through `eraseLead`, which is the same cascade a
-     * deletion request uses, so nothing is orphaned.
-     *
-     * **First touch wins on attribution**, which is the rule the schema states
-     * for itself. If the blog signup came first, its landing is the one kept,
-     * and the `raw` marker goes with it, which is also what takes them out of
-     * `isBlogOnlySubscriber` from here on: they have answers now.
+     * about to keep using it. It is not "the winner": `mergeLeads` unions the
+     * answers, so what survives is at least as full as anything it absorbed.
      */
-    const duplicate = await ctx.db
-      .query("leads")
-      .withIndex("by_email", (q) => q.eq("email", email))
-      .filter((q) => q.neq(q.field("_id"), args.leadId))
-      .first();
-
-    if (duplicate && isBlogOnlySubscriber(duplicate)) {
-      const carried = await ctx.db
-        .query("consentEvents")
-        .withIndex("by_lead", (q) => q.eq("leadId", duplicate._id))
-        .collect();
-      for (const e of carried) {
-        await ctx.db.insert("consentEvents", {
-          leadId: args.leadId,
-          channel: e.channel,
-          purpose: e.purpose,
-          action: e.action,
-          at: e.at,
-          basis: e.basis,
-          ...(e.evidence ? { evidence: e.evidence } : {}),
-          ...(e.by ? { by: e.by } : {}),
-        });
-      }
-      // Keep the earlier landing. `lead` is this session's row, read above.
-      const theirs = duplicate.attribution;
-      const ours = lead.attribution;
-      if (theirs && (!ours || theirs.landedAt < ours.landedAt)) {
-        await ctx.db.patch(args.leadId, { attribution: theirs });
-      }
-      await eraseLead(ctx, duplicate._id);
+    for (const duplicate of await duplicatesOf(ctx, { ...lead, email })) {
+      await mergeLeads(ctx, args.leadId, duplicate._id);
     }
 
     await ctx.db.patch(args.leadId, {
@@ -784,6 +750,25 @@ export const deleteLeadOnRequest = mutation({
     const lead = await ctx.db.get(args.leadId);
     if (!lead) throw new ConvexError("Lead not found.");
 
+    /**
+     * **Every row this person has, not the one that was open.** Widened
+     * 19/08/2026, after a deletion appeared not to work: the person had four
+     * rows in production, one was erased, and their name stayed in the list.
+     * The button has always said "Delete this person permanently" and this is
+     * what makes that sentence true.
+     *
+     * Duplicates are matched on email and nothing else. Rows with no email
+     * cannot be attributed to a person at all, and matching on a name or a
+     * device would risk erasing somebody else, which is the one mistake this
+     * screen must never make.
+     *
+     * `captureContact` now merges duplicates as they arrive, so this should
+     * find one row for anyone who signed up after 19/08/2026. It stays because
+     * the rows that predate that merge exist, and because a second row can
+     * still be created by a session that never reaches the contact gate.
+     */
+    const rows = [lead, ...(await duplicatesOf(ctx, lead))];
+
     // The cascade lives in `erase.ts` and is shared with the retention sweep.
     // Two copies is how a table gets added to one and not the other, and the
     // failure mode is a deletion that leaves a person's answers behind.
@@ -792,16 +777,34 @@ export const deleteLeadOnRequest = mutation({
     // engagement stops the clock from erasing someone; it does not stop the
     // person themselves from asking. Someone requesting erasure is not refused
     // because they are mid-engagement.
-    const counts = await eraseLead(ctx, args.leadId);
+    //
+    // One log row per lead row erased, rather than one per request. The log is
+    // the count of what was destroyed and it should not start summing rows
+    // together, but the note ties them: they carry the same one.
+    const total: EraseCounts = {
+      leads: 0,
+      assessments: 0,
+      magicLinks: 0,
+      consultations: 0,
+      consentEvents: 0,
+      engagements: 0,
+      deliverables: 0,
+      applications: 0,
+      placements: 0,
+    };
+    const at = Date.now();
+    for (const row of rows) {
+      const counts = await eraseLead(ctx, row._id);
+      await ctx.db.insert("deletionLog", {
+        deletedAt: at,
+        performedBy: adminEmail,
+        note: args.note,
+        counts,
+      });
+      for (const key of Object.keys(total) as (keyof EraseCounts)[]) total[key] += counts[key];
+    }
 
-    await ctx.db.insert("deletionLog", {
-      deletedAt: Date.now(),
-      performedBy: adminEmail,
-      note: args.note,
-      counts,
-    });
-
-    return counts;
+    return total;
   },
 });
 

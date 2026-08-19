@@ -509,6 +509,11 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
           that <em>a</em> deletion happened is kept, holding nothing about who
           it was.
         </p>
+        <p className="mt-2 text-body-large text-on-surface-variant">
+          <strong>Every session this email has</strong>, not only the one open
+          here. One person can hold several rows, because each visit starts a
+          new one, and deleting a single row used to leave the rest behind.
+        </p>
         <label className="mt-4 block text-label-large text-on-surface-variant">
           Your reference for this request
           <input
