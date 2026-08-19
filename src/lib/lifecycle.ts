@@ -106,6 +106,23 @@ export function meetsBookingGate(responses: Record<string, unknown> | undefined)
   );
 }
 
+/**
+ * Reachable, in the sense the contact gate means it.
+ *
+ * The rule is enforced at write time in `leads.captureContact` (an email AND at
+ * least one of LINE or phone, decided 08/08/2026 because Thai candidates
+ * largely do not read email). This reads the same condition off a stored row,
+ * which the mutation cannot do for the 90 leads imported before it existed.
+ * If the two ever disagree, the mutation wins: it is what actually gates.
+ */
+export function hasContact(lead: {
+  email?: string;
+  phone?: string;
+  lineId?: string;
+}): boolean {
+  return Boolean(lead.email) && Boolean(lead.phone || lead.lineId);
+}
+
 /** Ops-facing labels. Never candidate-facing; see the module note. */
 export const LIFECYCLE_LABELS: Record<LifecycleState, string> = {
   visitor: "Started, no contact",

@@ -22,3 +22,32 @@ a score, no coverage outside 0–1.
 
 These scripts import from `src/lib/`, the same modules the app uses. There is one
 scoring implementation, not two.
+
+## The lead snapshot, for an agent
+
+```bash
+npm run snapshot:leads                 # export both deployments, then build
+npm run snapshot:leads -- --offline    # rebuild from the last raw export
+```
+
+`export-leads-snapshot.ts` writes `data/agent/leads-snapshot.json`: every lead
+from **both** Convex deployments in one file, with lifecycle state, fit grade,
+temperature, dimension scores and the consent grid already computed. It exists so
+an agent can answer questions about the pipeline from a file instead of a query.
+
+It decides nothing. Every derived value comes from the module that owns it,
+imported and called: `lifecycle.ts`, `leadGrade.ts`, `temperature.ts`,
+`convex/scoring.ts`, `consent.ts`. Re-run it after a rule changes; never edit the
+output.
+
+Three things it is careful about, and the reasons are in its own header:
+
+- **Both deployments, tagged per row**, because the 90 imported survey leads live
+  in dev and a production-only file quietly loses them. Each run reports each
+  deployment's freshest activity, which is the empirical check on whether Vercel
+  is writing where it should be.
+- **`personId`**, a hash of the email, because the same person exists in both
+  stores. Group on it before counting people.
+- **It holds real contact details.** `data/` is gitignored for that reason and
+  `data/agent/README.md`, which is not in git either, is the note to whoever
+  opens the folder. See `data-inventory.md` in the coaching repo.

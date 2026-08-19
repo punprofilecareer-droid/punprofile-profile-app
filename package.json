@@ -22,7 +22,8 @@
     "design:html": "tsx scripts/build-design-html.ts",
     "tokens": "tsx scripts/build-tokens.ts",
     "review:thai": "tsx scripts/export-thai-review.ts",
-    "blog:cards": "tsx scripts/build-share-cards.ts"
+    "blog:cards": "tsx scripts/build-share-cards.ts",
+    "snapshot:leads": "tsx scripts/export-leads-snapshot.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",
