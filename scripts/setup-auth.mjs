@@ -24,6 +24,14 @@
 import { exportJWK, exportPKCS8, generateKeyPair } from "jose";
 import { execFileSync } from "node:child_process";
 
+// The allowlist, comma-separated. Everyone here may create an account and open
+// /admin; see `convex/adminEmails.ts`. Override for a one-off run with
+// `ADMIN_EMAILS="a@x.com,b@y.com" node scripts/setup-auth.mjs`.
+const ADMIN_EMAILS =
+  process.env.ADMIN_EMAILS ??
+  "paul.bussabong@gmail.com,tatiyadoyle9@gmail.com";
+// Separate on purpose: this one address receives the new-lead alert from
+// `convex/notify.ts`. Adding an admin does not change who gets emailed.
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "paul.bussabong@gmail.com";
 // Changed 14/08/2026 when punprofile.vercel.app was claimed. This must match
 // the address candidates actually visit: Convex Auth builds its redirects from
@@ -63,6 +71,7 @@ async function configure(prod) {
 
   setEnv("JWT_PRIVATE_KEY", pkcs8, prod);
   setEnv("JWKS", jwks, prod);
+  setEnv("ADMIN_EMAILS", ADMIN_EMAILS, prod);
   setEnv("ADMIN_EMAIL", ADMIN_EMAIL, prod);
   setEnv("SITE_URL", prod ? PROD_SITE_URL : DEV_SITE_URL, prod);
   console.log(`[${label}] auth environment configured.`);

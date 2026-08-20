@@ -42,6 +42,11 @@ export const newLead = internalAction({
   },
   handler: async (_ctx, args) => {
     const key = process.env.RESEND_API_KEY;
+    // `ADMIN_EMAIL`, deliberately, and NOT the `ADMIN_EMAILS` allowlist that
+    // `adminEmails.ts` reads. Who may open the dashboard and who gets pinged
+    // when a lead lands are separate questions, decided 20/08/2026 when the
+    // second admin was added: alerts stay with Paul, and adding a third coach
+    // will not silently start emailing them either.
     const to = process.env.ADMIN_EMAIL;
     if (!key || !to) {
       // Silent to the candidate, never silent to the logs. Failing quietly is

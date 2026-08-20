@@ -12,8 +12,9 @@ import { authTables } from "@convex-dev/auth/server";
  * is no longer written or read; see its own note below.
  */
 export default defineSchema({
-  // Convex Auth's own tables (users, sessions, accounts...). Only the single
-  // admin account ever lands here; candidates are leads, not users.
+  // Convex Auth's own tables (users, sessions, accounts...). Only coach
+  // accounts on the `ADMIN_EMAILS` allowlist ever land here (two as of
+  // 20/08/2026); candidates are leads, not users.
   ...authTables,
 
   // One row per candidate session, from first partial answer onward.

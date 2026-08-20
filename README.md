@@ -31,7 +31,8 @@ Copy `.env.example` to `.env.local` and fill in real values. See
 | `NEXT_PUBLIC_POSTHOG_KEY` / `NEXT_PUBLIC_POSTHOG_HOST` | Next.js client | Analytics; must be configured to exclude PII (see PRD § 2 Security). |
 | `NEXT_PUBLIC_SENTRY_DSN` | Next.js client/server/edge | Error tracking. |
 | `SENTRY_AUTH_TOKEN` | Build time only | Source map upload; not needed at runtime. |
-| `ADMIN_EMAIL` | Convex Auth config | Restricts the single admin account (Paul) — no public sign-up path. |
+| `ADMIN_EMAILS` | Convex Auth config | Comma-separated allowlist of coach accounts — no public sign-up path. Read via `convex/adminEmails.ts`. |
+| `ADMIN_EMAIL` | Convex environment | Recipient of the new-lead alert (`convex/notify.ts`), and a fallback allowlist entry. |
 
 ## Stack
 

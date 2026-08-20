@@ -18,6 +18,7 @@ import { eraseLead } from "./erase";
 import type { EraseCounts } from "./erase";
 import { mergeLeads, duplicatesOf } from "./merge";
 import { CONSENT_COPY } from "../src/lib/consent-copy";
+import { adminEmails, isAdminEmail } from "./adminEmails";
 
 /**
  * TASK-012/013/015/016: the candidate session lifecycle, per PRD § 4.
@@ -427,7 +428,10 @@ function devBypassEmail(): string | null {
   const here = url.replace(/^https?:\/\//, "").split(".")[0];
   if (!here || here !== allowedOn) return null;
 
-  return (process.env.ADMIN_EMAIL ?? "dev-bypass@localhost").trim().toLowerCase();
+  // The first name on the allowlist, so a bypassed local session still records
+  // a real address on anything it writes rather than a placeholder that would
+  // then have to be explained in the audit trail.
+  return adminEmails()[0] ?? "dev-bypass@localhost";
 }
 
 export async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string> {
@@ -443,9 +447,11 @@ export async function requireAdmin(ctx: QueryCtx | MutationCtx): Promise<string>
   if (!userId) throw new ConvexError("Not authorised.");
 
   const user = await ctx.db.get(userId);
-  const admin = (process.env.ADMIN_EMAIL ?? "").trim().toLowerCase();
   const email = String(user?.email ?? "").trim().toLowerCase();
-  if (!admin || email !== admin) throw new ConvexError("Not authorised.");
+  // Checked against the allowlist on every call, not at sign-up. Removing an
+  // address from `ADMIN_EMAILS` therefore revokes access immediately, even
+  // though the user row and its live sessions still exist.
+  if (!isAdminEmail(email)) throw new ConvexError("Not authorised.");
   // Returned so a write path can record who acted without re-reading the user.
   return email;
 }

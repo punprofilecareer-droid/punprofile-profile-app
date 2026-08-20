@@ -42,10 +42,10 @@ export default function LoginPage() {
       return "That password is too short. It needs at least 8 characters.";
     }
     if (raw.includes("admin_email_unset")) {
-      return "No admin email is configured on this deployment, so no account can be created. Set ADMIN_EMAIL in the Convex environment first.";
+      return "No admin email is configured on this deployment, so no account can be created. Set ADMIN_EMAILS in the Convex environment first.";
     }
     if (raw.includes("not_admin_email")) {
-      return "That is not the configured admin address. Only one email can register.";
+      return "That address is not on the admin allowlist, so it cannot register.";
     }
     if (raw.includes("InvalidAccountId") || raw.includes("already")) {
       return "That account already exists. Use Sign in rather than the first-time button.";

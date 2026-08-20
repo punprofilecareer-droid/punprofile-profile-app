@@ -77,12 +77,13 @@ git -c user.name=punprofile -c user.email=punprofile.career@gmail.com \
 # ---------------------------------------------------------------------------
 # 3. Generate the auth keys and set the admin address on production
 # ---------------------------------------------------------------------------
-# Fresh RS256 keypair for prod, plus ADMIN_EMAIL and SITE_URL. Dev keys are
-# rotated at the same time, which signs you out of localhost until you log in
-# again. Private keys never leave the Mac.
-ADMIN_EMAIL=paul.bussabong@gmail.com node scripts/setup-auth.mjs
+# Fresh RS256 keypair for prod, plus ADMIN_EMAILS, ADMIN_EMAIL and SITE_URL.
+# Dev keys are rotated at the same time, which signs you out of localhost until
+# you log in again. Private keys never leave the Mac. The defaults inside the
+# script are the current allowlist, so neither variable needs setting here.
+node scripts/setup-auth.mjs
 
-# Confirm all four landed on prod, BY NAME ONLY. Plain `convex env list`
+# Confirm they landed on prod, BY NAME ONLY. Plain `convex env list`
 # prints every value in full, JWT_PRIVATE_KEY included, which puts the
 # deployment's signing key into your scrollback. Learned on 14/08/2026 by
 # doing it.
@@ -160,7 +161,8 @@ open "https://vercel.com/pun-profile/punprofile-profile-app/deployments"
 # 7. BROWSER STEP. Create the admin account on production
 # ---------------------------------------------------------------------------
 # The prod database is empty, including your user. There is no public sign-up,
-# only the ADMIN_EMAIL gate, so this creates the one account that will exist.
+# only the ADMIN_EMAILS allowlist, so this creates the first of the accounts on
+# it. Each coach signs up once, from their own address.
 #
 #   open $SITE/login
 #   sign up with paul.bussabong@gmail.com and a password you keep
