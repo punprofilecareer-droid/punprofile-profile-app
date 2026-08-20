@@ -9,6 +9,13 @@
  * an external legal opinion; a lawyer's wording would replace these strings
  * wholesale rather than being merged into them.
  *
+ * **"Who holds your data" was rewritten 20/08/2026, on Paul's wording**, when
+ * a second coach was added to the admin allowlist. The old paragraph said one
+ * person, no team, nobody else can sign in, which was true when it was signed
+ * off and false the moment `ADMIN_EMAILS` carried two addresses. A head count
+ * in a privacy notice is a claim with a maintenance cost; see the note at the
+ * paragraph itself.
+ *
  * **The contact address was corrected 17/08/2026 to
  * `punprofile.career@gmail.com`**, on Paul's instruction. It had been an
  * address at a domain belonging to a different business of his, repeated here
@@ -46,7 +53,7 @@ import { MARKETING_CONSENT_COPY_REVIEWED } from "@/lib/consent-copy";
 export const PRIVACY_REVIEWED = true;
 
 /** Last substantive change to the text, DD/MM/YYYY. Shown to the reader. */
-export const PRIVACY_LAST_UPDATED = "16/08/2026";
+export const PRIVACY_LAST_UPDATED = "20/08/2026";
 
 /**
  * The marketing opt-in, 16/08/2026.
@@ -104,9 +111,21 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
       th: "ใครเป็นผู้เก็บข้อมูลของคุณ",
     },
     body: [
+      /**
+       * **The head count in this paragraph is a live claim, 20/08/2026.** It
+       * used to say one person and no team, which stopped being true the day a
+       * second coach was added to `ADMIN_EMAILS`. If that variable changes on
+       * production, this sentence and `PRIVACY_LAST_UPDATED` change with it, in
+       * both languages. Nothing enforces that but this comment: the allowlist
+       * lives in the Convex environment and no build step can read it.
+       *
+       * Wording is Paul's, 20/08/2026. `PunProfile Team` and
+       * `ทีมงานปั้นโปรไฟล์`, not "the coaching team". The controller keeps its
+       * Latin legal name at the head of the sentence, per LR-01.
+       */
       {
-        en: "PunProfile Career Coaching. One person has access to it: the account holder who runs the coaching practice. There is no team, and no one else can sign in.",
-        th: "PunProfile Career Coaching มีเพียงคนเดียวที่เข้าถึงข้อมูลได้ คือเจ้าของบัญชีที่ดูแลบริการแนะแนวอาชีพนี้ ไม่มีทีมงานอื่น และไม่มีใครอื่นเข้าสู่ระบบได้",
+        en: "PunProfile Career Coaching. Only the PunProfile Team can reach your data, two people today, each signing in with their own account. No one else can sign in.",
+        th: "PunProfile Career Coaching ผู้ที่เข้าถึงข้อมูลของคุณคือทีมงานปั้นโปรไฟล์เท่านั้น ตอนนี้มี 2 คน แต่ละคนเข้าสู่ระบบด้วยบัญชีของตัวเอง และไม่มีใครอื่นเข้าสู่ระบบได้",
       },
     ],
   },
