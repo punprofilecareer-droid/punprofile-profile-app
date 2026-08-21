@@ -346,24 +346,27 @@ export const COPY = {
      * result, because it ends on our capacity instead of on their position, which
      * is the opposite of move 6 in `03_Content_System.md`.
      *
-     * **The queue is still named.** It is true, it is the reason a reply may take
-     * time, and deleting it would put back the silence the 14/08 line was written
-     * to explain. What changes is what follows it: the wait is stated and then
-     * handed back as a condition the reader can act on. Someone who needs to be
-     * in Europe inside three months is told to say so.
+     * **The queue was still named, and on 20/08/2026 it stopped being.** That
+     * paragraph read: the queue is true, it is the reason a reply may take time,
+     * and deleting it would put back the silence the 14/08 line was written to
+     * explain. Paul's own rewrite drops it. Kept here rather than deleted,
+     * because the argument for naming the queue is the thing to weigh again if
+     * candidates start reading the silence as rejection.
      *
-     * That condition is not invented for the copy. `stats.timing` on this same
-     * screen reports the share of this pool who want to be in Europe within three
-     * months, so the reader has just been shown that they are not unusual in
-     * being in a hurry.
+     * What survives the rewrite is the mechanic: the last word is a condition
+     * the reader can act on. `stats.timing` on this same screen reports the
+     * share of this pool who want to be in Europe within three months, so the
+     * reader has just been shown that they are not unusual in being in a hurry.
      *
      * The card it sits in gains a `Talk to me` button, which is why this string
      * no longer has to do the asking on its own.
      */
-    en: "The queue is genuinely long at the moment. If you are serious about landing a role within three months, tell us and we will look at yours first.",
-    // TH-UNREVIEWED: composed 17/08/2026 from Paul's English brief, not yet read
-    // back by him. `คิว` is his own word from the line this replaces.
-    th: "ตอนนี้คิวค่อนข้างยาว แต่ถ้าคุณตั้งใจจริงว่าจะให้ได้งานภายใน 3 เดือน บอกเราได้เลย เราจะดูเคสของคุณก่อน",
+    // Paul's wording, 20/08/2026, read back and shipped as written apart from
+    // หา → หาก, which was a typing slip. His line drops the queue sentence the
+    // 17/08 rewrite kept: what replaces it is a condition rather than an
+    // explanation, so the last word is the reader's move and not our capacity.
+    en: "If your goal is clear, a job in Europe within three months, and you are ready to act on it, contact us now.",
+    th: "หากคุณตั้งเป้าหมายชัดเจนว่าต้องการได้งานในยุโรปภายใน 3 เดือน และพร้อมลงมือจริง ติดต่อเราด่วน",
   },
   "teaser.revise": {
     screen: "Teaser, the link back to the last question",
