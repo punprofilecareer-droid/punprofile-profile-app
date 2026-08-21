@@ -908,11 +908,18 @@ export const COPY = {
   },
 
   // -------------------------------------------------------- competency names
-  // The 15 scoreable competencies. `model.ts` names them in English for the
-  // coach report; these are the candidate-facing names, used wherever one is
-  // shown by name ("your strongest area is X"). Only scoreable items are here:
-  // a coach-tier competency is never named to a candidate, because it has no
-  // score to show.
+  // `model.ts` names them in English for the coach report; these are the
+  // candidate-facing names, used wherever one is shown by name ("your strongest
+  // area is X").
+  //
+  // **The 15 scoreable ones came first, and on 21/08/2026 the 8 coach-tier
+  // Professional Capability items joined them.** The old rule here was that a
+  // coach-tier competency is never named to a candidate because it has no score
+  // to show. Paul reversed it deliberately for the depth chart: the 11-axis view
+  // is a sneak peek, and the coach-tier axes render named and explicitly
+  // unscored rather than being hidden. Naming is not scoring, and the "never
+  // score a coach-tier competency" rule is untouched. A label here is not
+  // permission to put a number beside it.
   //
   // The "(self-declared)" suffix `model.ts` carries is deliberately dropped:
   // the whole result page already says the assessment is self-reported, and
@@ -1000,6 +1007,79 @@ export const COPY = {
     screen: "Named when this is the candidate's strongest area",
     en: "Salary Expectation Stated",
     th: "ความชัดเจนเรื่องเงินเดือนที่คาดหวัง",
+  },
+
+  // ------------------------------- the 8 coach-tier Professional Capability
+  // items, named for the depth chart, 21/08/2026.
+  //
+  // These render on the sneak-peek axis view WITHOUT a score, which is the whole
+  // point of them: the candidate sees what the full picture contains and that
+  // this instrument cannot fill it in. `model.ts` carries the coach-facing
+  // English and the note on what each one actually needs.
+  //
+  // Register: Paul rewrote `item.learningAgility` from การปรับตัวกับสิ่งใหม่ to
+  // การปรับตัวกับสิ่งแวดล้อม, trading an abstract noun for a situated one, and the
+  // other seven are matched to that. `เฉพาะทาง`, `ภาวะผู้นำ` and `เชิงกลยุทธ์` were
+  // all dropped as too formal for this register.
+  //
+  // He has not read these back yet, so all eight are marked.
+  "item.technicalExpertise": {
+    screen: "Depth chart, an unscored axis",
+    en: "Technical Expertise",
+    // TH-UNREVIEWED: drafted 21/08/2026. `ในงานที่ทำ` rather than `เฉพาะทาง`, and
+    // distinct from item.experienceDepth, which is how long rather than how deep.
+    th: "ความเชี่ยวชาญในงานที่ทำ",
+  },
+  "item.problemSolving": {
+    screen: "Depth chart, an unscored axis",
+    en: "Problem Solving",
+    // TH-UNREVIEWED: drafted 21/08/2026. `หน้างาน` situates it in real work.
+    th: "การแก้ปัญหาหน้างาน",
+  },
+  "item.communication": {
+    screen: "Depth chart, an unscored axis",
+    en: "Communication",
+    // TH-UNREVIEWED: drafted 21/08/2026.
+    th: "การสื่อสารในที่ทำงาน",
+  },
+  "item.collaboration": {
+    screen: "Depth chart, an unscored axis",
+    en: "Collaboration",
+    // TH-UNREVIEWED: drafted 21/08/2026. `คนอื่น` rather than `ผู้อื่น`, which is
+    // the register the rest of the candidate-facing copy uses.
+    th: "การทำงานร่วมกับคนอื่น",
+  },
+  "item.leadershipOwnership": {
+    screen: "Depth chart, an unscored axis",
+    en: "Leadership & Ownership",
+    // TH-UNREVIEWED: drafted 21/08/2026. `การนำทีม` rather than `ภาวะผู้นำ`: a thing
+    // done rather than a quality possessed.
+    th: "การนำทีมและรับผิดชอบงาน",
+  },
+  "item.strategicThinking": {
+    screen: "Depth chart, an unscored axis",
+    en: "Strategic Thinking",
+    // TH-UNREVIEWED: drafted 21/08/2026. `ระยะยาว` rather than `เชิงกลยุทธ์`, and it
+    // matches what model.ts says the item needs: a decision traced to a
+    // longer-term goal.
+    th: "การคิดและวางแผนระยะยาว",
+  },
+  "item.execution": {
+    screen: "Depth chart, an unscored axis",
+    en: "Execution",
+    // TH-UNREVIEWED: drafted 21/08/2026. Deliberately avoids `ลงมือ`, which already
+    // carries item.applicationActivity, item.searchFollowThrough and
+    // teaser.nextStep. A third use would make it the house reflex.
+    th: "การผลักดันงานให้สำเร็จ",
+  },
+  "item.learningAgility": {
+    screen: "Depth chart, an unscored axis",
+    en: "Learning Agility",
+    // TH-UNREVIEWED: Paul's wording, 21/08/2026, and the one the other seven are
+    // matched to. Flagged once and left as he wrote it: `สิ่งแวดล้อม` reads closer
+    // to adapting to surroundings than to the ECRA indicators, which are about
+    // picking up new things quickly. His call for this audience.
+    th: "การปรับตัวกับสิ่งแวดล้อม",
   },
 } as const satisfies Record<string, CopyEntry>;
 
