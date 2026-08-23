@@ -48,7 +48,7 @@ export const FAQ: readonly FaqItem[] = [
     a: [
       {
         en: "The EU Fit Check is a short assessment about your work experience, your English level, your target countries, and where you are right now on the road to working in Europe.",
-        th: "EU Fit Check เป็นแบบประเมินสั้น ๆ เกี่ยวกับประสบการณ์ทำงาน ระดับภาษาอังกฤษ ประเทศเป้าหมาย และตอนนี้คุณอยู่ตรงไหนบนเส้นทางไปทำงานยุโรป",
+        th: "EU Fit Check เป็นแบบประเมินสั้น ๆ เกี่ยวกับประสบการณ์ทำงาน ระดับภาษาอังกฤษ ประเทศเป้าหมาย และตอนนี้คุณอยู่ขั้นไหนบนเส้นทางไปทำงานในยุโรป",
       },
       {
         en: "It takes about two minutes. As soon as you finish, you see your first read and your own chart straight away.",
@@ -61,7 +61,7 @@ export const FAQ: readonly FaqItem[] = [
     a: [
       {
         en: "No. The EU Fit Check is free, and there is no payment step in it.",
-        th: "ไม่มี EU Fit Check ทำได้ฟรี และไม่มีขั้นตอนชำระเงิน",
+        th: "ไม่มีค่าใช้จ่าย คุณทำ EU Fit Check ได้ฟรี และไม่มีขั้นตอนการชำระเงิน",
       },
     ],
   },
@@ -87,7 +87,7 @@ export const FAQ: readonly FaqItem[] = [
     a: [
       {
         en: "This first read is based on the answers you gave yourself, so it is exactly as accurate as the information you put in. We say so clearly on the result screen.",
-        th: "ผลเบื้องต้นนี้อ้างอิงจากคำตอบที่คุณให้เอง จึงแม่นยำเท่ากับข้อมูลที่คุณกรอกมา เราระบุเรื่องนี้ไว้ชัดเจนบนหน้าผลลัพธ์",
+        th: "ผลเบื้องต้นอ้างอิงจากคำตอบที่คุณให้เอง ความแม่นยำจึงขึ้นอยู่กับข้อมูลที่คุณกรอก เราระบุเรื่องนี้ไว้อย่างชัดเจนบนหน้าผลลัพธ์",
       },
       {
         en: "It is meant as a starting point for a conversation, not a verdict on whether you are good at your job.",
@@ -131,20 +131,22 @@ export const FAQ: readonly FaqItem[] = [
       },
     ],
     link: {
-      href: "/services",
+      href: "/coaching",
       label: { en: "See what PunProfile does", th: "ดูบริการของ PunProfile" },
     },
   },
   {
-    q: { en: "What does the career coaching cost?", th: "ค่าบริการแคเรียร์โค้ชชิ่งเท่าไร" },
+    // Paul's rewrite, 23/08/2026, from the pricing review sheet. Applied here
+    // too so one question is not answered two ways on two pages.
+    q: { en: "What does Career Coaching cost?", th: "บริการ Career Coaching ราคาเท่าไร" },
     a: [
       {
-        en: "It depends which parts you want help with, and how much. We go through the details and the cost clearly in the first conversation, and then you decide.",
-        th: "ขึ้นอยู่กับว่าคุณต้องการให้เราช่วยเรื่องไหนและมากน้อยแค่ไหน เราจะคุยรายละเอียดและค่าใช้จ่ายให้ชัดตั้งแต่ครั้งแรก แล้วคุณค่อยตัดสินใจ",
+        en: "It depends what you want help with and how far that help goes. We go through the details and tell you the cost clearly the first time we talk, and then you decide whether to go ahead.",
+        th: "ค่าบริการขึ้นอยู่กับเรื่องที่คุณอยากให้เราช่วยและขอบเขตความช่วยเหลือที่ต้องการ เราจะคุยรายละเอียดพร้อมแจ้งค่าใช้จ่ายให้ชัดเจนตั้งแต่ครั้งแรก แล้วคุณค่อยตัดสินใจว่าจะใช้บริการหรือไม่",
       },
       {
         en: "Both the EU Fit Check and that first conversation are free.",
-        th: "ทั้ง EU Fit Check และการคุยครั้งแรกไม่มีค่าใช้จ่าย",
+        th: "ทำ EU Fit Check พร้อมดูผลเบื้องต้น และคุยกับเราครั้งแรกได้ฟรี",
       },
     ],
   },
@@ -160,7 +162,7 @@ export const FAQ: readonly FaqItem[] = [
       },
       {
         en: "Speaking plainly: European employers outside the multinationals usually expect at least B2, in English or in the local language. Knowing how far you are from that right now is more useful than not knowing at all.",
-        th: "พูดกันตรง ๆ นายจ้างยุโรปที่ไม่ใช่บริษัทข้ามชาติมักคาดหวังภาษาอังกฤษหรือภาษาท้องถิ่นอย่างน้อยระดับ B2 การรู้ว่าตอนนี้คุณห่างจากจุดนั้นแค่ไหน มีประโยชน์กว่าการไม่รู้เลย",
+        th: "พูดกันตรง ๆ หลายตำแหน่งในยุโรปต้องการภาษาอังกฤษหรือภาษาท้องถิ่นอย่างน้อยระดับ B2 การรู้ว่าตอนนี้คุณห่างจากจุดนั้นแค่ไหน มีประโยชน์กว่าการไม่รู้เลย",
       },
     ],
   },

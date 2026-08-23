@@ -89,7 +89,7 @@ export const SERVICES: readonly Service[] = [
       },
       {
         en: "A realistic look at where you stand right now against what the European market is asking for",
-        th: "ดูตามความเป็นจริงว่าตอนนี้คุณอยู่ตรงไหน เมื่อเทียบกับสิ่งที่ตลาดงานยุโรปต้องการ",
+        th: "ประเมินตามความเป็นจริงว่าตอนนี้คุณอยู่ตรงไหน เมื่อเทียบกับสิ่งที่ตลาดงานยุโรปต้องการ",
       },
       {
         en: "Thinking through and deciding on a career change and a move abroad",
@@ -97,7 +97,7 @@ export const SERVICES: readonly Service[] = [
       },
       {
         en: "Finding the right position to stand in: what makes you worth hiring, and which employers are looking for someone like you",
-        th: "หาจุดยืนที่ใช่ ว่าอะไรทำให้คุณน่าจ้าง และนายจ้างแบบไหนกำลังมองหาคนอย่างคุณ",
+        th: "หาจุดยืนที่ใช่: อะไรทำให้คุณน่าจ้าง และนายจ้างแบบไหนกำลังมองหาคนอย่างคุณ",
       },
       // Added 17/08/2026 (Paul). The sessions were always in English; saying so
       // turns a fact about how the service runs into a reason to buy it, since
@@ -137,7 +137,7 @@ export const SERVICES: readonly Service[] = [
     },
     summary: {
       en: "This service builds the core set of documents you reuse for every application. We get the base versions ready; tailoring them to a specific role is the next service.",
-      th: "บริการนี้จะช่วยสร้างชุดเอกสารหลักที่คุณนำไปใช้ต่อได้ในการสมัครทุกครั้ง เราจะทำเวอร์ชันตั้งต้นให้พร้อม ส่วนการปรับให้ตรงกับแต่ละตำแหน่งจะอยู่ในบริการถัดไป",
+      th: "บริการนี้จะช่วยสร้างชุดเอกสารหลักที่คุณนำกลับมาใช้เป็นพื้นฐานในการสมัครแต่ละครั้งได้ เราจะทำเวอร์ชันตั้งต้นให้พร้อม ส่วนการปรับให้ตรงกับแต่ละตำแหน่งจะอยู่ในบริการถัดไป",
     },
     includes: [
       {
@@ -146,11 +146,11 @@ export const SERVICES: readonly Service[] = [
       },
       {
         en: "Your LinkedIn profile, from the headline, summary and experience through to the keywords recruiters actually search",
-        th: "โปรไฟล์ LinkedIn ตั้งแต่พาดหัว บทสรุป และประสบการณ์ ไปจนถึงคีย์เวิร์ดที่รีครูตเตอร์ค้นหาจริง",
+        th: "โปรไฟล์ LinkedIn ตั้งแต่พาดหัว บทสรุป และประสบการณ์ ไปจนถึงคีย์เวิร์ดที่รีครูตเตอร์ใช้ค้นหาผู้สมัคร",
       },
       {
         en: "A portfolio site for non-IT fields, built from your real results and cases, not just a project list like a developer's portfolio",
-        th: "เว็บพอร์ตโฟลิโอสำหรับสายงานที่ไม่ใช่ไอที สร้างจากผลงานและเคสจริงของคุณ ไม่ใช่แค่ลิสต์โปรเจกต์แบบพอร์ตสายพัฒนา",
+        th: "เว็บไซต์ Portfolio สำหรับสายงานนอกไอที สร้างจากผลงานและกรณีศึกษาจริงของคุณ ไม่ใช่เพียงรายการโปรเจกต์",
       },
     ],
     image: {
@@ -175,7 +175,7 @@ export const SERVICES: readonly Service[] = [
     },
     summary: {
       en: "We handle applications one role at a time, from finding the job through to signing the contract. The roles we shortlist are searched specifically against your profile and your goals, not one list sent to everybody.",
-      th: "เราดูแลการสมัครทีละตำแหน่ง ตั้งแต่ช่วยหางานไปจนถึงเซ็นสัญญา งานที่คัดให้จะค้นหาตามโปรไฟล์และเป้าหมายของคุณโดยเฉพาะ ไม่ใช่ลิสต์เดียวที่ส่งให้ทุกคน",
+      th: "เราทำงานร่วมกับคุณในการสมัครทีละตำแหน่ง ตั้งแต่ค้นหางานจนถึงขั้นเซ็นสัญญา ตำแหน่งที่คัดให้จะค้นหาตามโปรไฟล์และเป้าหมายของคุณโดยเฉพาะ ไม่ใช่รายการเดียวที่ส่งให้ทุกคน",
     },
     includes: [
       {
@@ -192,7 +192,7 @@ export const SERVICES: readonly Service[] = [
       },
       {
         en: "Evaluating the offer, helping you negotiate, and checking the contract",
-        th: "ประเมินข้อเสนอ ช่วยเจรจาต่อรอง และตรวจสัญญา",
+        th: "ช่วยประเมินข้อเสนอ เตรียมการเจรจาต่อรอง และชี้ประเด็นในสัญญาที่ควรสอบถามเพิ่มเติม",
       },
     ],
     image: {
@@ -209,7 +209,7 @@ export const SERVICES: readonly Service[] = [
 /** AI runs through all three rather than being a fourth product. */
 export const AI_NOTE: Copy = {
   en: "AI is part of all three services. You learn to use it yourself, for drafting, preparing and researching, and PunProfile uses it behind the scenes to work faster without lowering the quality of the thinking.",
-  th: "AI เป็นส่วนหนึ่งของทั้งสามบริการ คุณจะได้เรียนรู้วิธีใช้ AI ด้วยตัวเอง ทั้งเพื่อร่างงาน เตรียมตัว และหาข้อมูล ส่วน PunProfile ก็ใช้ AI ช่วยทำงานเบื้องหลังให้เร็วขึ้น โดยไม่ลดคุณภาพของการคิด",
+  th: "AI เป็นส่วนหนึ่งของทั้ง 3 บริการ คุณจะได้เรียนรู้วิธีใช้ AI ด้วยตัวเองเพื่อช่วยร่าง เตรียมตัว และค้นคว้าข้อมูล ส่วน PunProfile ใช้ AI ช่วยงานเบื้องหลังให้รวดเร็วขึ้น โดยยังใช้การคิดและการตัดสินใจของคนเป็นหลัก",
 };
 
 export const CORE_BADGE: Copy = { en: "Core service", th: "บริการหลัก" };

@@ -27,6 +27,7 @@ import { api } from "../../../../convex/_generated/api";
 import { useCopy } from "@/components/LocaleProvider";
 import { EYEBROW } from "@/lib/content/footer";
 import CallToAction from "@/components/CallToAction";
+import ServiceCards from "@/components/features/services/ServiceCards";
 import {
   CLOSE_LEAD,
   FOUNDER_AFTER,
@@ -255,6 +256,17 @@ export default function CoachingPage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* The three services, folded in from `/services` on 23/08/2026. They sit
+          after the case for coaching and before the close, which is where "and
+          here is what that actually is" belongs: a reader who has got this far
+          has agreed there is a problem and now wants the shape of the work.
+
+          It carries the `?focus=` contract the result screen depends on. See the
+          note at the top of `ServiceCards`. */}
+      <section className="py-16">
+        <ServiceCards />
       </section>
 
       <section className="mx-auto w-full max-w-3xl px-6 py-16 text-center">

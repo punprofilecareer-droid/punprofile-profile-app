@@ -66,12 +66,12 @@ export function GET() {
     route(
       "/coaching",
       "Coaching 1:1",
-      "How the coaching works, the method, and who it is not for",
+      "How the coaching works, the method, who it is not for, and the three ways of working together with what each covers. The /services route folded in here on 23/08/2026 and redirects",
     ),
     route(
-      "/services",
-      "Services",
-      "The three ways of working together and what each covers",
+      "/pricing",
+      "Pricing",
+      "What is free and what costs. Token packs, what one token buys, and a calculator that works from numbers the reader supplies",
     ),
     route("/faq", "FAQ", "Common questions about the check, the coaching and the data"),
     route("/contact", "Contact", "Email and LINE. LINE is the faster reply"),

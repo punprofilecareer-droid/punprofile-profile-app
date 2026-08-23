@@ -67,8 +67,10 @@ import { isCopy, walkCopy, type Copy } from "./lib/copy-walk.js";
 import * as home from "../src/lib/content/home.js";
 import * as blog from "../src/lib/content/blog.js";
 import * as contact from "../src/lib/content/contact.js";
+import * as pricing from "../src/lib/content/pricing.js";
+import * as products from "../src/lib/content/products.js";
 
-const MODULES: Record<string, Record<string, unknown>> = { home, blog, contact };
+const MODULES: Record<string, Record<string, unknown>> = { home, blog, contact, pricing, products };
 
 /**
  * Reading order and human labels, per module.

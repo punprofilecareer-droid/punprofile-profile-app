@@ -50,3 +50,7 @@ next-env.d.ts
 
 # Candidate exports. Real contact details: never commit these.
 /data
+
+# Routes retired rather than deleted, because the desktop bridge cannot delete.
+# Kept out of git: the redirect in next.config.ts is the real record of the fold.
+.retired/

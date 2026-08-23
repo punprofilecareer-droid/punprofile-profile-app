@@ -122,10 +122,21 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     ],
   },
   {
-    heading: { en: "Coaching", th: "โค้ชด้านอาชีพ" },
+    heading: { en: "Coaching", th: "แคเรียร์โค้ชชิ่ง" },
     links: [
       { href: "/coaching", label: { en: "Coaching 1:1", th: "Coaching 1:1" } },
-      { href: "/services", label: { en: "Our Services", th: "บริการของเรา" } },
+      /*
+       * "Our Services" pointed at `/services` until 23/08/2026 and was retargeted
+       * with everything else when that route folded into `/coaching`. That made
+       * it the second link in this column to the same page, which React caught
+       * as a duplicate key before anyone read the column.
+       *
+       * Removed rather than deduplicated by giving it a different key. Two
+       * labels for one destination in one footer column is a reader being told
+       * there are two things behind them, and the fold means there is one.
+       * `/pricing` takes the slot, which is the page the column was missing.
+       */
+      { href: "/pricing", label: { en: "Pricing", th: "แพ็กเกจและราคา" } },
       // The blog, added 16/08/2026, and this column rather than a fourth one.
       //
       // The grid beside this is three columns wide and a fourth would rebuild
@@ -153,7 +164,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     heading: { en: "Contact", th: "ติดต่อ" },
     links: [
       { href: "/contact", label: { en: "Contact us", th: "ติดต่อเรา" } },
-      { href: DESTINATIONS.line.href, label: { en: "LINE", th: "Line" }, external: true },
+      { href: DESTINATIONS.line.href, label: { en: "LINE", th: "LINE" }, external: true },
       {
         href: DESTINATIONS.email.href,
         label: { en: "Email", th: "อีเมล" },

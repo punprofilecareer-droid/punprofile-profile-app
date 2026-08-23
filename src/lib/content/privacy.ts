@@ -141,7 +141,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
       },
       {
         en: "Your contact details at the final step: first name, last name, email address, and a LINE ID or phone number.",
-        th: "ข้อมูลติดต่อของคุณในขั้นตอนสุดท้าย ได้แก่ ชื่อ นามสกุล อีเมล และ Line ID หรือหมายเลขโทรศัพท์",
+        th: "ข้อมูลติดต่อของคุณในขั้นตอนสุดท้าย ได้แก่ ชื่อ นามสกุล อีเมล และ LINE ID หรือหมายเลขโทรศัพท์",
       },
       {
         en: "One of those questions asks about your visa and right-to-work status, which says something about your immigration position. We hold it because it changes what advice is honest, and for no other reason.",
@@ -221,7 +221,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
             },
             {
               en: "If you tick it, we send news and practical advice by email. We do not send them on Line or by phone, whatever you consented to for those channels: they are for talking to you about your own result and your coaching.",
-              th: "หากคุณติ๊ก เราจะส่งข่าวสารและคำแนะนำทางอีเมล เราจะไม่ส่งทาง Line หรือโทรศัพท์ ไม่ว่าคุณจะให้ความยินยอมช่องทางเหล่านั้นไว้หรือไม่ เพราะช่องทางเหล่านั้นมีไว้พูดคุยเรื่องผลการประเมินและการโค้ชของคุณ",
+              th: "หากคุณติ๊ก เราจะส่งข่าวสารและคำแนะนำทางอีเมล เราจะไม่ส่งทาง LINE หรือโทรศัพท์ ไม่ว่าคุณจะให้ความยินยอมช่องทางเหล่านั้นไว้หรือไม่ เพราะช่องทางเหล่านั้นมีไว้พูดคุยเรื่องผลการประเมินและการโค้ชของคุณ",
             },
             {
               en: "You can stop at any time by writing to the address at the end of this notice. We record the date you asked. Stopping does not delete your record and does not stop us answering you about your own result.",

@@ -28,12 +28,19 @@
 import { lintThai, type LintTarget } from "./lint-thai.js";
 import { walkCopy } from "./lib/copy-walk.js";
 import * as home from "../src/lib/content/home.js";
+// Added 23/08/2026. Both shipped that day and neither was reachable by any
+// check: this list is hardcoded, so 44 product strings and 39 pricing strings
+// passed a green run without being looked at once.
+import * as pricing from "../src/lib/content/pricing.js";
+import * as products from "../src/lib/content/products.js";
 import * as coaching from "../src/lib/content/coaching.js";
 import * as services from "../src/lib/content/services.js";
 import * as faq from "../src/lib/content/faq.js";
 import * as footer from "../src/lib/content/footer.js";
 
 const MODULES: Record<string, Record<string, unknown>> = {
+  pricing,
+  products,
   home,
   coaching,
   services,

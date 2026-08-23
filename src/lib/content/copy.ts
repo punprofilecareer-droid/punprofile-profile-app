@@ -2,7 +2,7 @@
  * **Thai wording passed by Paul, 15/08/2026.** Fifty-one strings rewritten in
  * his own words during the review of all shipped Thai, forty-six applied
  * directly. Five navigation items are held rather than applied: his edit put
- * English in the Thai column for `nav.menu`, `nav.menuClose`, `nav.services`,
+ * English in the Thai column for `nav.menu`, `nav.menuClose`,
  * `nav.faq` and `nav.contact`, and one of those, `บริการของเรา`, is a fixed
  * termbase term. Whether Thai navigation should be in English is a decision
  * and not a typo, so it waits for one.
@@ -32,11 +32,16 @@
  *   npx tsx scripts/import-copy-worksheet.ts   # worksheet -> code
  *
  * ---------------------------------------------------------------------------
- * EVERY STRING IN THIS FILE HAS NOW BEEN READ BACK, 17/08/2026
+ * EVERY STRING IN THIS FILE HAS NOW BEEN READ BACK, 17/08 AND 23/08/2026
  * ---------------------------------------------------------------------------
  *
  * There are no `TH-UNREVIEWED` markers left here. Paul worked through
- * `thai-review-queue.md` in two passes on 17/08/2026 and closed all twenty-seven.
+ * `thai-review-queue.md` in two passes on 17/08/2026 and closed all twenty-seven,
+ * then closed the eight depth-chart axis labels the same way on 23/08/2026, six
+ * rewritten and two approved as drafted. Their block carries the detail.
+ *
+ * `services.cta.heading` was rewritten and read back the same day; its own note
+ * says why it stopped promising contact.
  *
  * Twelve he rewrote, and each of those carries its own note saying what changed
  * and why. **The remaining sixteen he read and left exactly as they were**, which
@@ -101,14 +106,6 @@ export const COPY = {
     en: "EU Fit Check",
     th: "EU Fit Check",
   },
-  "nav.services": {
-    screen: "Site menu",
-    // "Our Services", not "Services". The possessive is doing work in Thai:
-    // บริการ alone reads as a section label on any website, บริการของเรา reads
-    // as this business telling you what it offers.
-    en: "Our Services",
-    th: "Our Services",
-  },
   "nav.coaching": {
     screen: "Site menu",
     // Not "About". The page sells the coaching and introduces Paul at the end,
@@ -135,6 +132,67 @@ export const COPY = {
     // that can tell those apart.
     en: "Blog",
     th: "Blog",
+  },
+  /*
+   * Added 23/08/2026. THAI, not the English passthrough every other entry uses.
+   *
+   * Paul's call on the review sheet, and it is a deliberate departure from the
+   * rule recorded on `nav.blog` below: the menu has been English in both columns
+   * since 15 and 16/08/2026, on the reasoning that a menu which is English
+   * except for one word reads as an oversight rather than a choice.
+   *
+   * With these two in Thai the menu now reads Menu, Our Services, Coaching 1:1,
+   * Blog, FAQ, Contact, แพ็กเกจและราคา. That is the same objection pointing the
+   * other way, and it is flagged for him rather than resolved here: either the
+   * whole menu goes Thai or these go back to English.
+   */
+  "nav.pricing": {
+    screen: "Site menu",
+    en: "Pricing",
+    // Paul's wording, 23/08/2026.
+    th: "แพ็กเกจและราคา",
+  },
+  /**
+   * The Products group label. Not yet in `NAV`: the group needs the submenu the
+   * top bar introduces, and the top bar is a separate pass.
+   *
+   * Note it is `บริการของเรา`, which is the Thai reasoning behind the English
+   * label on `/services`, the page that is retiring into `/coaching`. Worth a
+   * second look before the group ships.
+   */
+  "nav.products": {
+    screen: "Site menu, the Products group",
+    en: "Products",
+    // Paul's wording, 23/08/2026.
+    th: "บริการของเรา",
+  },
+  /*
+   * The four product names, added 23/08/2026 with the product pages.
+   *
+   * English in both columns, which is the menu's own rule and here it is also
+   * simply what they are called: these are product names, and LR-01 passes a
+   * product name through rather than translating it. `nav.assess` above already
+   * does the same for EU Fit Check.
+   */
+  "nav.cvCheck": {
+    screen: "Site menu, the Products group",
+    en: "CV Check",
+    th: "CV Check",
+  },
+  "nav.fitReport": {
+    screen: "Site menu, the Products group",
+    en: "Fit Report",
+    th: "Fit Report",
+  },
+  "nav.matchedJobs": {
+    screen: "Site menu, the Products group",
+    en: "Matched Jobs",
+    th: "Matched Jobs",
+  },
+  "nav.guidedJobHunt": {
+    screen: "Site menu, the Products group",
+    en: "Guided Job Hunt",
+    th: "Guided Job Hunt",
   },
   "nav.faq": {
     screen: "Site menu",
@@ -206,7 +264,7 @@ export const COPY = {
     // `แคเรียร์` off the front: `โค้ชชิ่งด้านอาชีพ` reads as the category, and
     // `แคเรียร์โค้ชชิ่ง` is the service name, which belongs on the card in
     // section 3 rather than in the line that says who this site is for.
-    th: "โค้ชชิ่งด้านอาชีพสำหรับคนไทยที่มุ่งสู่การทำงานในยุโรป",
+    th: "โค้ชชิ่งด้านอาชีพสำหรับคนไทยที่ตั้งเป้าไปทำงานในยุโรป",
   },
   "landing.headline": {
     screen: "Landing, and the site's default page title",
@@ -238,7 +296,7 @@ export const COPY = {
     // has made is about a job market, not about a continent. And
     // `การสมัครงานทีละตำแหน่ง` rather than `การลงมือสมัครแต่ละตำแหน่ง`, which
     // says the same thing in three fewer syllables.
-    th: "ปั้นโปรไฟล์ (PunProfile) ทำงานร่วมกับคนไทยที่ตัดสินใจแล้วว่าจะมุ่งสู่ตลาดงานยุโรป ตั้งแต่การวางทิศทางอาชีพและปรับโปรไฟล์ ไปจนถึงการสมัครงานทีละตำแหน่ง",
+    th: "PunProfile ทำงานร่วมกับคนไทยที่ตัดสินใจแล้วว่าจะมุ่งสู่ตลาดงานยุโรป ตั้งแต่การวางทิศทางอาชีพและปรับโปรไฟล์ ไปจนถึงการสมัครงานทีละตำแหน่ง",
   },
   // No `landing.cta` here. The landing button's label comes from the table in
   // `cta.ts`, which owns every action on every page. A second definition of the
@@ -293,12 +351,12 @@ export const COPY = {
   "lang.heading": {
     screen: "Stage 2, language grid",
     en: "Do you speak any other European languages?",
-    th: "นอกจากภาษาอังกฤษแล้ว คุณใช้ภาษายุโรปภาษาอื่นได้ไหม",
+    th: "นอกจากภาษาอังกฤษ คุณใช้ภาษายุโรปอื่นได้อีกไหม?",
   },
   "lang.body": {
     screen: "Stage 2, language grid",
     en: "This changes which countries are genuinely open to you.",
-    th: "คำตอบนี้มีผลต่อประเทศและตำแหน่งงานที่เปิดรับคุณ",
+    th: "คำตอบนี้มีผลต่อประเทศและตำแหน่งที่คุณมีโอกาสสมัครได้จริง",
   },
   "lang.levelLabel": {
     screen: "Stage 2, language grid",
@@ -366,7 +424,7 @@ export const COPY = {
     // 17/08 rewrite kept: what replaces it is a condition rather than an
     // explanation, so the last word is the reader's move and not our capacity.
     en: "If your goal is clear, a job in Europe within three months, and you are ready to act on it, contact us now.",
-    th: "หากคุณตั้งเป้าหมายชัดเจนว่าต้องการได้งานในยุโรปภายใน 3 เดือน และพร้อมลงมือจริง ติดต่อเราด่วน",
+    th: "หากเป้าหมายของคุณคือการได้งานในยุโรปภายใน 3 เดือน และพร้อมลงมืออย่างจริงจัง ทักมาคุยกับเราได้เลย",
   },
   "teaser.revise": {
     screen: "Teaser, the link back to the last question",
@@ -385,7 +443,7 @@ export const COPY = {
     en: "Let's finish this in English!",
     // Paul's wording, 17/08/2026. `เลยดีกว่า` rather than `กันเลย`: the panel
     // is proposing something, and `ดีกว่า` is how a Thai speaker proposes it.
-    th: "ทำแบบประเมินต่อเป็นภาษาอังกฤษเลยดีกว่า",
+    th: "ลองทำแบบประเมินต่อเป็นภาษาอังกฤษไหม?",
   },
   "english.switch.body": {
     screen: "Assessment, the English switch panel",
@@ -394,7 +452,7 @@ export const COPY = {
     // give: the switch is practice, not administration. It now says the same
     // thing `SERVICES[0].includes[4]` says about the coaching sessions, which
     // he wrote the same day.
-    th: "คุณระบุว่าภาษาอังกฤษของคุณอยู่ในระดับ B1 ขึ้นไป เราจึงเปลี่ยนคำถามเป็นภาษาอังกฤษให้คุณได้ฝึกฝน สามารถเปลี่ยนกลับเป็นภาษาไทยได้ทุกเมื่อ",
+    th: "คุณระบุว่าภาษาอังกฤษของคุณอยู่ในระดับ B1 ขึ้นไป จึงเลือกทำคำถามที่เหลือเป็นภาษาอังกฤษเพื่อฝึกได้ และเปลี่ยนกลับเป็นภาษาไทยได้ทุกเมื่อ",
   },
   "english.switch.stay": {
     screen: "Assessment, the English switch panel, the primary button",
@@ -448,7 +506,7 @@ export const COPY = {
     // hiring manager, and a recruiter is often neither. LR-05's principle,
     // which is to reach for the loanword the audience already uses rather than
     // translate into a vaguer Thai noun. `ผู้จ้างงาน` was that vaguer noun.
-    th: "ความพร้อม 3 อย่างแรกที่ Hiring Manager ดู",
+    th: "ความพร้อม 3 ด้านแรกที่ผู้จัดการฝ่ายสรรหามองหา",
   },
   "stats.readiness.cv": {
     screen: "First read, readiness bar 1",
@@ -461,7 +519,7 @@ export const COPY = {
     // Paul's wording, 17/08/2026. `portfolio` rather than `ผลงาน`, matching
     // `item.portfolioEvidence` below, and the audience is dropped: on a bar in
     // a readiness stack, who would look at it is not the point.
-    th: "ยังไม่มี portfolio ให้ดู",
+    th: "ยังไม่มี Portfolio ที่แสดงผลงาน",
   },
   "stats.readiness.linkedin": {
     screen: "First read, readiness bar 3",
@@ -494,7 +552,7 @@ export const COPY = {
     // Paul's wording, 17/08/2026. `มาแชร์ใน` rather than `ให้`, which read as
     // screened FOR this group as a service. They are screened and then shared,
     // and the group is where they are shared rather than the client.
-    th: "งานที่เราคัดกรองมาแชร์ในกลุ่มนี้",
+    th: "ตำแหน่งที่เราคัดมาแชร์ในกลุ่ม",
   },
   /*
    * The three figure labels, and they are shared.
@@ -524,7 +582,7 @@ export const COPY = {
   "stats.market.published": {
     screen: "First read and the home page, the label under the count that cleared the sponsorship bar",
     en: "roles where the employer sponsors a visa",
-    th: "ตำแหน่งงานที่บริษัทสปอนเซอร์วีซ่า",
+    th: "ตำแหน่งที่บริษัทระบุว่าสปอนเซอร์วีซ่า",
   },
   "stats.market.employers": {
     // Not shown on the first read, which prints only the two counts and the
@@ -602,26 +660,49 @@ export const COPY = {
   "stats.percentile.foot": {
     screen: "First read, under the percentile line",
     en: "Compared on self-reported answers, the same as yours.",
-    th: "อ้างอิงจากข้อมูลที่ผู้ทำแบบประเมินทั้งหมด",
+    th: "อ้างอิงจากคำตอบที่ผู้ทำแบบประเมินให้ไว้",
   },
 
-  // ------------------------------------------------------------- services CTA
+  // ------------------------------------------------------------- coaching CTA
+  //
+  // The key is still `services.*` because the string keys are what the copy
+  // worksheet round-trips on and renaming them breaks that trip for no gain.
+  // The destination moved to `/coaching` on 23/08/2026 when `/services` retired.
   "services.cta.heading": {
-    screen: "First read, the secondary CTA to /services",
-    en: "While you wait",
-    th: "ในระหว่างรอการติดต่อกลับจากเรา",
+    screen: "First read, the secondary CTA to /coaching",
+    /*
+     * **Rewritten 23/08/2026, Paul's call, and it is the same cut he made on
+     * `/pricing` the same day.**
+     *
+     * It read "While you wait" / `ในระหว่างรอการติดต่อกลับจากเรา`, which told every
+     * finisher, in the heading of a card on the result screen, that contact was
+     * coming. His rule: outbound contact has not stopped, the public promise of
+     * it has, because to a lead who is not ready that is a promise nobody
+     * intends to keep.
+     *
+     * It was also stale twice over. The wait framing was written when
+     * `teaser.nextStep` named a queue on this same screen, and his rewrite of
+     * 20/08/2026 dropped the queue. So the card was the last thing on the page
+     * still describing a wait that nothing else mentioned.
+     *
+     * **What replaces it hands the move back to the reader**, which is the
+     * mechanic `teaser.nextStep` already uses on this screen: a condition they
+     * can act on rather than a report on our capacity.
+     */
+    en: "What you can do with this now",
+    // Paul's wording, 23/08/2026.
+    th: "นำผลนี้ไปทำอะไรต่อได้บ้าง",
   },
   "services.cta.body": {
-    screen: "First read, the secondary CTA to /services",
-    // Pitched at the wait, not at the sale. The candidate has just been told
-    // there is a queue; the honest offer is something to read, and a page that
-    // explains what the coaching actually is does more for a later call than a
-    // second booking button on the same screen.
+    screen: "First read, the secondary CTA to /coaching",
+    // Pitched at the reading, not at the sale, and deliberately not a second
+    // booking button on a screen that already has one. A page explaining what
+    // the coaching actually is does more for a later call.
     en: "Here is what working with PunProfile actually involves, and which part of it your result points at.",
     th: "ทำความรู้จักแนวทางการทำงานของปั้นโปรไฟล์ และดูว่าบริการไหนเหมาะกับเป้าหมายของคุณ",
   },
   "services.cta.button": {
-    screen: "First read, the secondary CTA to /services",
+    screen: "First read, the secondary CTA to /coaching",
     en: "See what PunProfile does",
     th: "ดูบริการของ PunProfile",
   },
@@ -661,7 +742,7 @@ export const COPY = {
   "gate.body": {
     screen: "Contact step, under the heading. Says what happens next",
     en: "Your name, and whichever channel suits you for us to get back to you.",
-    th: "กรอกชื่อและช่องทางที่คุณสะดวกให้เราติดต่อกลับ",
+    th: "กรอกชื่อและเลือกช่องทางที่สะดวกให้เราติดต่อกลับ",
   },
   "gate.firstName": {
     screen: "Contact step, first name field label",
@@ -686,7 +767,7 @@ export const COPY = {
   "gate.lineId": {
     screen: "Contact gate, LINE ID field label",
     en: "LINE ID",
-    th: "Line ID",
+    th: "LINE ID",
   },
   "gate.phone": {
     screen: "Contact gate, phone field label",
@@ -724,22 +805,22 @@ export const COPY = {
   "gate.error.channel_required": {
     screen: "Contact gate, when neither LINE nor phone was given",
     en: "Please add a LINE ID or a phone number.",
-    th: "กรอก Line ID หรือหมายเลขโทรศัพท์อย่างน้อย 1 ช่องทาง",
+    th: "กรอก LINE ID หรือหมายเลขโทรศัพท์อย่างน้อย 1 ช่องทาง",
   },
   "gate.error.consent_email": {
     screen: "Contact gate, when email consent is unticked",
     en: "We need your permission before we can send anything.",
-    th: "ติ๊กยินยอมให้ส่งผลทางอีเมลก่อน",
+    th: "โปรดยินยอมให้เราส่งผลทางอีเมลก่อน",
   },
   "gate.error.consent_phone": {
     screen: "Contact gate, when a phone was given without consent",
     en: "Tick the consent for phone, or clear the number.",
-    th: "ติ๊กยินยอมให้โทรหาคุณ",
+    th: "โปรดยินยอมให้เราติดต่อทางโทรศัพท์ หรือลบหมายเลขโทรศัพท์ออก",
   },
   "gate.error.consent_line": {
     screen: "Contact gate, when a LINE ID was given without consent",
     en: "Tick the consent for LINE, or clear the ID.",
-    th: "ติ๊กยินยอมให้ทัก Line หาคุณ",
+    th: "โปรดยินยอมให้เราติดต่อทาง LINE หรือลบ LINE ID ออก",
   },
   "gate.error.unknown": {
     screen: "Contact gate, any failure with no specific cause. Network, mostly",
@@ -783,7 +864,7 @@ export const COPY = {
   "step.linkedinStatus": {
     screen: "Full result, journey checklist step",
     en: "Make LinkedIn active and findable",
-    th: "อัปเดต LinkedIn ให้เป็นปัจจุบันมีความเคลื่อนไหว และค้นเจอง่าย",
+    th: "อัปเดต LinkedIn ให้เป็นปัจจุบัน มีความเคลื่อนไหว และค้นเจอง่าย",
   },
   "step.visaReadiness": {
     screen: "Full result, journey checklist step",
@@ -798,7 +879,7 @@ export const COPY = {
   "step.portfolioEvidence": {
     screen: "Full result, journey checklist step",
     en: "Show some work you are proud of",
-    th: "เตรียมผลงานที่แสดงทักษะและประสบการณ์ได้",
+    th: "เตรียม Portfolio ที่แสดงทักษะและผลลัพธ์จากการทำงานของคุณ",
   },
   "step.applicationActivity": {
     screen: "Full result, journey checklist step",
@@ -867,7 +948,7 @@ export const COPY = {
     // controller, and a report footing says who prepared a document rather
     // than who controls the data. `footer.brand`, which does name the
     // controller, is a `fixed` termbase string and is untouched.
-    th: "ผลประเมินนี้จัดทำโดย PunProfile แคเรียร์โค้ชชิ่ง จากคำตอบใน EU Fit Check นัดคุยกัน 30 นาที เพื่อประเมินส่วนที่แบบฟอร์มยังสะท้อนได้ไม่ครบ",
+    th: "ผลประเมินนี้จัดทำโดย PunProfile จากคำตอบใน EU Fit Check นัดคุยกัน 30 นาทีเพื่อประเมินส่วนที่แบบฟอร์มยังสะท้อนได้ไม่ครบ",
   },
   "report.savePdf": {
     screen: "Candidate PDF, the button that reopens the print dialog. Screen only, never printed",
@@ -895,7 +976,7 @@ export const COPY = {
   "band.limited": {
     screen: "Candidate PDF, under a dimension score, when coverage is 25% to 45%",
     en: "a partial read, several areas are still unmeasured",
-    th: "ประเมินได้บางส่วน ยังมีอีกหลายหัวข้อที่ยังประเมินไม่ได้",
+    th: "ประเมินได้บางส่วน และยังมีหลายหัวข้อที่ต้องพูดคุยเพิ่มเติม",
   },
   "band.indicative": {
     screen: "Candidate PDF, under a dimension score, when coverage is under 25%",
@@ -942,7 +1023,7 @@ export const COPY = {
   "item.aiDigitalFluency": {
     screen: "Named when this is the candidate's strongest area",
     en: "AI & Digital Fluency",
-    th: "ทักษะการใช้ AI และเครื่องมือ Digital",
+    th: "ทักษะการใช้ AI และเครื่องมือดิจิทัล",
   },
   "item.cvStatus": {
     screen: "Named when this is the candidate's strongest area",
@@ -977,7 +1058,7 @@ export const COPY = {
   "item.familyReadiness": {
     screen: "Named when this is the candidate's strongest area",
     en: "Family Readiness",
-    th: "ครอบครัวพร้อมย้าย",
+    th: "ความพร้อมของครอบครัวในการย้ายประเทศ",
   },
   "item.relocationTimeline": {
     screen: "Named when this is the candidate's strongest area",
@@ -1001,12 +1082,12 @@ export const COPY = {
     // in", rather than a literal rendering of "reach", which has no natural Thai
     // noun here. Deliberately says ทำงาน rather than ไป: the item is about being
     // employable there, not about being able to travel there.
-    th: "ประเทศเป้าหมายที่ทำงานได้จริง",
+    th: "ประเทศเป้าหมายที่คุณมีโอกาสไปทำงานได้จริง",
   },
   "item.salaryStated": {
     screen: "Named when this is the candidate's strongest area",
     en: "Salary Expectation Stated",
-    th: "ความชัดเจนเรื่องเงินเดือนที่คาดหวัง",
+    th: "ความชัดเจนของเงินเดือนที่คาดหวัง",
   },
 
   // ------------------------------- the 8 coach-tier Professional Capability
@@ -1017,69 +1098,75 @@ export const COPY = {
   // this instrument cannot fill it in. `model.ts` carries the coach-facing
   // English and the note on what each one actually needs.
   //
-  // Register: Paul rewrote `item.learningAgility` from การปรับตัวกับสิ่งใหม่ to
-  // การปรับตัวกับสิ่งแวดล้อม, trading an abstract noun for a situated one, and the
-  // other seven are matched to that. `เฉพาะทาง`, `ภาวะผู้นำ` and `เชิงกลยุทธ์` were
-  // all dropped as too formal for this register.
+  // READ BACK BY PAUL, 23/08/2026, through `thai-review-queue.md`. Six rewritten,
+  // two (`communication`, `execution`) returned with an empty correction line,
+  // which is approval rather than a skip.
   //
-  // He has not read these back yet, so all eight are marked.
+  // His pass reversed the register call these eight were drafted under. The
+  // drafts avoided `เฉพาะทาง`, `ภาวะผู้นำ`, `เชิงกลยุทธ์` and `ผู้อื่น` as too formal,
+  // and he put three of the four back. What he did NOT do is verb them: where a
+  // draft turned an activity into something done (`การนำทีม`, `การแก้ปัญหาหน้างาน`),
+  // he named the activity itself (`ภาวะผู้นำ`, `การวิเคราะห์และแก้ปัญหา`). These are
+  // axis labels on a chart, not instructions, and they read as nouns.
   "item.technicalExpertise": {
     screen: "Depth chart, an unscored axis",
     en: "Technical Expertise",
-    // TH-UNREVIEWED: drafted 21/08/2026. `ในงานที่ทำ` rather than `เฉพาะทาง`, and
-    // distinct from item.experienceDepth, which is how long rather than how deep.
-    th: "ความเชี่ยวชาญในงานที่ทำ",
+    // Paul, 23/08/2026, from `ความเชี่ยวชาญในงานที่ทำ`. `สายงาน` is the field, which
+    // is what an axis label wants; `งานที่ทำ` was the current job. Still distinct
+    // from item.experienceDepth, which is how long rather than how deep.
+    th: "ความเชี่ยวชาญในสายงาน",
   },
   "item.problemSolving": {
     screen: "Depth chart, an unscored axis",
     en: "Problem Solving",
-    // TH-UNREVIEWED: drafted 21/08/2026. `หน้างาน` situates it in real work.
-    th: "การแก้ปัญหาหน้างาน",
+    // Paul, 23/08/2026, from `การแก้ปัญหาหน้างาน`. Adds the analysis half and drops
+    // `หน้างาน`, which had narrowed it to problems that arrive at your desk.
+    th: "การวิเคราะห์และแก้ปัญหา",
   },
   "item.communication": {
     screen: "Depth chart, an unscored axis",
     en: "Communication",
-    // TH-UNREVIEWED: drafted 21/08/2026.
+    // Drafted 21/08/2026, read back and approved unchanged 23/08/2026.
     th: "การสื่อสารในที่ทำงาน",
   },
   "item.collaboration": {
     screen: "Depth chart, an unscored axis",
     en: "Collaboration",
-    // TH-UNREVIEWED: drafted 21/08/2026. `คนอื่น` rather than `ผู้อื่น`, which is
-    // the register the rest of the candidate-facing copy uses.
-    th: "การทำงานร่วมกับคนอื่น",
+    // Paul, 23/08/2026: `ผู้อื่น` over the draft's `คนอื่น`. The formal form on an
+    // axis label, against the register note above.
+    th: "การทำงานร่วมกับผู้อื่น",
   },
   "item.leadershipOwnership": {
     screen: "Depth chart, an unscored axis",
     en: "Leadership & Ownership",
-    // TH-UNREVIEWED: drafted 21/08/2026. `การนำทีม` rather than `ภาวะผู้นำ`: a thing
-    // done rather than a quality possessed.
-    th: "การนำทีมและรับผิดชอบงาน",
+    // Paul, 23/08/2026, from `การนำทีมและรับผิดชอบงาน`. `ภาวะผู้นำ` restored, and
+    // `ความรับผิดชอบต่องาน` is ownership of the work rather than of a team, which
+    // is what the item measures for candidates who lead nobody.
+    th: "ภาวะผู้นำและความรับผิดชอบต่องาน",
   },
   "item.strategicThinking": {
     screen: "Depth chart, an unscored axis",
     en: "Strategic Thinking",
-    // TH-UNREVIEWED: drafted 21/08/2026. `ระยะยาว` rather than `เชิงกลยุทธ์`, and it
-    // matches what model.ts says the item needs: a decision traced to a
-    // longer-term goal.
-    th: "การคิดและวางแผนระยะยาว",
+    // Paul, 23/08/2026, from `การคิดและวางแผนระยะยาว`. The direct term, matching
+    // the English label rather than paraphrasing it.
+    th: "การคิดเชิงกลยุทธ์",
   },
   "item.execution": {
     screen: "Depth chart, an unscored axis",
     en: "Execution",
-    // TH-UNREVIEWED: drafted 21/08/2026. Deliberately avoids `ลงมือ`, which already
-    // carries item.applicationActivity, item.searchFollowThrough and
-    // teaser.nextStep. A third use would make it the house reflex.
+    // Drafted 21/08/2026, read back and approved unchanged 23/08/2026. Avoids
+    // `ลงมือ`, which already carries item.applicationActivity,
+    // item.searchFollowThrough and teaser.nextStep.
     th: "การผลักดันงานให้สำเร็จ",
   },
   "item.learningAgility": {
     screen: "Depth chart, an unscored axis",
     en: "Learning Agility",
-    // TH-UNREVIEWED: Paul's wording, 21/08/2026, and the one the other seven are
-    // matched to. Flagged once and left as he wrote it: `สิ่งแวดล้อม` reads closer
-    // to adapting to surroundings than to the ECRA indicators, which are about
-    // picking up new things quickly. His call for this audience.
-    th: "การปรับตัวกับสิ่งแวดล้อม",
+    // Paul, 23/08/2026, from his own `การปรับตัวกับสิ่งแวดล้อม` of 21/08. This closes
+    // the flag that stood on it: `สิ่งแวดล้อม` read as adapting to surroundings,
+    // where the ECRA indicators are about picking things up quickly. The new
+    // wording names both halves, learning and adapting fast.
+    th: "การเรียนรู้และปรับตัวได้เร็ว",
   },
 } as const satisfies Record<string, CopyEntry>;
 

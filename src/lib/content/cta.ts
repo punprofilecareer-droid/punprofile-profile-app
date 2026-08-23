@@ -131,9 +131,21 @@ export const DESTINATIONS = {
     label: { en: "How the coaching works", th: "ดูว่าการโค้ชของเราเป็นอย่างไร" },
   },
   services: {
-    href: "/services",
+    // Retargeted 23/08/2026 when `/services` folded into `/coaching`. The label
+    // still promises the same thing and now points at the section that keeps it.
+    href: "/coaching",
     cost: COST.read,
     label: { en: "See how we work together", th: "ดูขั้นตอนการทำงานร่วมกัน" },
+  },
+  /**
+   * Added 23/08/2026 with `/pricing`. The label says what the page is rather
+   * than what it costs, because the packs are the only prices on the site and a
+   * button that quotes one would be a second place for it to drift.
+   */
+  pricing: {
+    href: "/pricing",
+    cost: COST.read,
+    label: { en: "See the prices", th: "ดูแพ็กเกจและราคา" },
   },
   contact: {
     href: "/contact",
@@ -152,7 +164,7 @@ export const DESTINATIONS = {
      * rather than staying on "Contact me", or the two languages would be
      * offering different things.
      */
-    label: { en: "Talk to me", th: "คุยกับผม" },
+    label: { en: "Talk to me", th: "ทักมาคุยกัน" },
   },
   email: {
     href: `mailto:${CONTACT_EMAIL}`,
@@ -182,7 +194,7 @@ export const DESTINATIONS = {
     brand: "line",
     // Short, because the mark beside it already says LINE. "Message us on LINE"
     // next to the LINE logo says LINE twice.
-    label: { en: "Chat on LINE", th: "ทักทาง Line" },
+    label: { en: "Chat on LINE", th: "ทักทาง LINE" },
   },
   // `satisfies` without `as const`, deliberately. `as const` froze every href
   // to its own literal type, which made the empty-href guard in the contact
@@ -228,16 +240,54 @@ export const PAGE_ACTIONS: Record<string, PageActions> = {
       "They have just finished the check and been told there is a queue. The useful thing to do while waiting is read what the work actually is.",
   },
   "/coaching": {
-    primary: "services",
-    secondary: "contact",
+    primary: "contact",
+    secondary: "pricing",
     because:
-      "This page sells the person and the method. A reader who reached the bottom is deciding whether it is worth paying for, which is the services page's question, not the assessment's.",
+      "Rewritten 23/08/2026, when `/services` folded in here and this page's old primary became a link to itself. The three offerings are now on this page, so the question left at the bottom is the one the services page used to ask: what it costs, which is settled in conversation. The secondary goes to the prices for a reader who would rather see a number before speaking to anyone.",
   },
-  "/services": {
+  /*
+   * One entry per product page, added 23/08/2026.
+   *
+   * **The live one asks for the thing itself; the four unbuilt ones ask for a
+   * conversation.** A button that starts a product which does not exist is the
+   * one thing a `soon` page must not do, and a conversation is the real flow
+   * anyway while payment is a bank transfer arranged by hand.
+   */
+  "/products/eu-fit-check": {
+    primary: "assess",
+    secondary: "pricing",
+    because:
+      "The product is free and it is one tap away, so the page asks for the thing itself rather than for a conversation about it.",
+  },
+  "/products/cv-check": {
     primary: "contact",
     secondary: "assess",
     because:
-      "They know what the three offerings are and what is left is the price, which is settled in conversation. The secondary goes back to the check for anyone who arrived here cold.",
+      "It is not built. The honest ask is to be told when it opens, and the secondary sends a reader who wants something now to the check that already exists.",
+  },
+  "/products/fit-report": {
+    primary: "contact",
+    secondary: "assess",
+    because:
+      "It is not built, and it is built ON the check, so anyone interested in the full result needs the free one first.",
+  },
+  "/products/matched-jobs": {
+    primary: "contact",
+    secondary: "pricing",
+    because:
+      "It is not built. The secondary goes to the prices because this is the product the tokens exist for, and a reader here is usually asking what it costs.",
+  },
+  "/products/guided-job-hunt": {
+    primary: "contact",
+    secondary: "pricing",
+    because:
+      "It is not built, and it is the surface matched roles land on, so the prices are the page that explains what fills it.",
+  },
+  "/pricing": {
+    primary: "contact",
+    secondary: "assess",
+    because:
+      "The prices are on the screen and the next step is a bank transfer arranged one to one, so the ask is a conversation. The secondary goes back to the check for anyone who arrived at the prices before doing anything else.",
   },
   "/blog": {
     primary: "assess",

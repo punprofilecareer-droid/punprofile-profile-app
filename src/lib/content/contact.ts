@@ -48,7 +48,7 @@ export const CONTACT_CHANNELS: Copy = {
   // rather than a preference and `lint-thai` fails the build on it. If the
   // decision should change, it changes in the termbase and everywhere at
   // once.
-  th: "ปกติเราตอบทาง Line ได้เร็วกว่า ส่วนอีเมลเหมาะกับคำถามที่มีรายละเอียดเยอะหรือเมื่อต้องการแนบ CV มาด้วย",
+  th: "ปกติเราตอบทาง LINE ได้เร็วกว่า ส่วนอีเมลเหมาะกับคำถามที่มีรายละเอียดเยอะหรือเมื่อต้องการแนบ CV มาด้วย",
 };
 
 /** For the person who already left their details and is about to do it twice. */

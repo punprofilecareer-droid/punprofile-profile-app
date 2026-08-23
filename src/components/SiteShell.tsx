@@ -9,7 +9,7 @@ import SiteFooter from "@/components/SiteFooter";
 import NavLockGate from "@/components/NavLockGate";
 import BrandLockup from "@/components/BrandLockup";
 import BrandScope from "@/components/BrandScope";
-import SideNav from "@/components/SideNav";
+import TopNav from "@/components/TopNav";
 import { DEFAULT_LOCALE } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
 import { DISCLAIMER, FACEBOOK_PAGE } from "@/lib/content/footer";
@@ -133,9 +133,6 @@ export default function SiteShell({
               answers.
             */}
             <div className="flex min-h-dvh flex-1">
-              <NavLockGate>
-                <SideNav />
-              </NavLockGate>
 
               {/* The content column, and EU Fit Check's colour scope when the
                   route is the assessment. The drawer above stays outside it and
@@ -151,10 +148,28 @@ export default function SiteShell({
                 The burger disappears at `expanded`, where the drawer beside it
                 is already showing every destination. Two navigations offering
                 the same six links is one of them being ignored. */}
-            <header className="sticky top-0 z-40 grid h-[72px] shrink-0 grid-cols-[3rem_1fr_3rem] items-center gap-2 border-b border-outline-variant bg-surface px-4 medium:px-6">
-              <div className="flex justify-start expanded:invisible">
-                <SiteMenu />
-              </div>
+            {/*
+              A horizontal top bar, 23/08/2026, replacing the standard drawer.
+
+              **The lockup is left-aligned now and no longer centred.** The
+              centring existed for one reason, recorded here before: a flex row
+              would have centred the wordmark on whatever space the two controls
+              left over, so it shifted sideways whenever the burger hid itself
+              during an assessment. Left-aligning removes that problem at the
+              source rather than working around it, and a logo at the left with
+              navigation to its right is what a top bar is.
+
+              **The burger is on the right**, Paul's call the same day: easier to
+              reach with a thumb. It still disappears at `expanded`, where the
+              bar beside it is already showing every destination, because two
+              navigations offering the same links is one of them being ignored.
+
+              `NavLockGate` wraps both, for the reason `SiteMenu` states about
+              itself: mid-assessment every link out costs the candidate their
+              answers, and absence beats a disabled control that still says there
+              is a way out of here.
+            */}
+            <header className="sticky top-0 z-40 flex h-[72px] shrink-0 items-center justify-between gap-2 border-b border-outline-variant bg-surface px-4 medium:px-6">
               {/* The lockup, not the word. Still deliberately not a link, and
                   more deliberately now that it is centred and looks like one:
                   the header sits above a running assessment, and a logo that
@@ -167,11 +182,17 @@ export default function SiteShell({
                   the old one at `h-9` because this lockup carries the COACHING
                   descriptor under the wordmark, so the same optical size needs
                   more box. */}
-              <div className="flex justify-center">
+              <div className="flex min-w-0 justify-start">
                 <BrandLockup />
               </div>
-              <div className="flex justify-end">
+              <div className="flex items-center gap-1">
+                <NavLockGate>
+                  <TopNav />
+                </NavLockGate>
                 <LocaleToggle />
+                <div className="expanded:hidden">
+                  <SiteMenu />
+                </div>
               </div>
             </header>
             <ConvexClientProvider>

@@ -55,12 +55,12 @@ export const NARRATIVE_COPY = {
   "narrative.opener.study_first": {
     screen: "Result summary, opening line when the route is study-first",
     en: "You're planning to study first, then work. That buys you time in-country, and it changes which parts of this matter most right now.",
-    th: "คุณวางแผนไปเรียนก่อนแล้วค่อยเริ่มทำงาน แบบนี้จะมีเวลาอยู่ในประเทศเป้าหมายมากขึ้น โอกาสในการฝึกงาน เรื่องที่ควรเตรียมตอนนี้จึงต่างจากคนที่กำลังสมัครงานจากไทย",
+    th: "คุณวางแผนไปเรียนก่อนแล้วค่อยเริ่มทำงาน เส้นทางนี้ทำให้คุณมีเวลาอยู่ในประเทศเป้าหมายมากขึ้น และอาจเปิดโอกาสให้ได้ฝึกงาน สิ่งที่ควรเตรียมตอนนี้จึงต่างจากคนที่กำลังสมัครงานจากไทย",
   },
   "narrative.opener.family": {
     screen: "Result summary, opening line when the route is family or partner",
     en: "You're moving through a family or partner route. Your right to work is likely the settled part, so the work goes into the profile itself.",
-    th: "คุณวางแผนย้ายไปยุโรปกับครอบครัวหรือคู่ครอง เรื่องสิทธิในการทำงานจึงน่าจะชัดขึ้นแล้ว จากนี้ควรหันมาเตรียมโปรไฟล์ให้พร้อมสำหรับตลาดงาน",
+    th: "คุณวางแผนย้ายไปยุโรปกับครอบครัวหรือคู่ครอง เส้นทางด้านสิทธิ์การทำงานจึงน่าจะชัดเจนขึ้น จากนี้ควรหันมาเตรียมโปรไฟล์ให้พร้อมสำหรับตลาดงาน",
   },
   "narrative.opener.not_sure": {
     screen: "Result summary, opening line when the route is not chosen yet. Must not read as a worse answer",
@@ -121,7 +121,7 @@ export const NARRATIVE_COPY = {
   "narrative.cta.body": {
     screen: "Result summary, under the heading. Sells measurement, never a verdict",
     en: "A 30-minute consultation with PunProfile goes through your answers in detail and turns this into a plan you can act on.",
-    th: "มาคุยกัน 30 นาทีกับ PunProfile เราจะช่วยดูคำตอบของคุณให้ละเอียดขึ้น แล้วเรียบเรียงออกมาเป็นแผนที่รู้ว่าควรทำอะไรต่อ",
+    th: "มาคุยกัน 30 นาทีกับ PunProfile เราจะช่วยดูคำตอบของคุณให้ละเอียดขึ้น แล้วสรุปออกมาเป็นแผนที่บอกชัดว่าควรทำอะไรต่อ",
   },
   "narrative.cta.button": {
     screen: "Result summary, the consultation button itself",

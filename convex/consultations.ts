@@ -189,3 +189,192 @@ export const remove = mutation({
     await ctx.db.delete(args.consultationId);
   },
 });
+
+/**
+ * The four queues, across every lead. `booking-tracking.md`, 22/08/2026.
+ *
+ * The invitation half of that spec shipped on 15/08 as fields on a row, which
+ * made every step recordable and none of them findable. The reason the fields
+ * exist is that the free Calendly tier sends nothing: the day-before reminder
+ * and the same-day follow-up are messages a person has to remember to write,
+ * and the spec is explicit that the reminder is the step that breaks first and
+ * the only one whose failure costs a booked call rather than a data field.
+ * Remembering was the part that had no home. A per-lead badge cannot be the
+ * trigger list, because reading it means already knowing whose page to open.
+ *
+ * **Absence is the queue, in three of the four.** No `reminderSentAt` on a slot
+ * inside the window, no `followUpSentAt` on a held call, no outcome on a slot
+ * that has passed. That is why none of these are a status field: a status has
+ * to be set to be true, and the whole failure mode here is the step nobody got
+ * to.
+ *
+ * **A full scan, deliberately.** At roughly one consultation a fortnight the
+ * machinery to avoid it would cost more than it saves, and every bucket except
+ * the reminder spans an open-ended stretch of the past, so a time window would
+ * have to be wide enough to be a scan anyway. Revisit at a few thousand rows,
+ * where the fix is a `by_outcome` index rather than a narrower window.
+ *
+ * Nothing here reads or moves a score, per the rule this table has carried
+ * since it shipped. It reports what has not been done yet, which is a fact
+ * about the coach, never about the candidate.
+ */
+export const queues = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+
+    const now = Date.now();
+    /** The day-before message, with enough slack for a call booked tomorrow
+     *  morning to appear tonight rather than after it has started. */
+    const REMINDER_WINDOW_MS = 48 * 60 * 60 * 1000;
+    /** How long an unbooked invitation waits before it is worth chasing or
+     *  marking `expired`. Two weeks: shorter nags someone still deciding. */
+    const STALE_INVITE_MS = 14 * 24 * 60 * 60 * 1000;
+
+    const rows = await ctx.db.query("consultations").withIndex("by_time").collect();
+
+    const leads = new Map<string, { name: string; lineId?: string; email?: string }>();
+    for (const row of rows) {
+      if (leads.has(row.leadId)) continue;
+      const lead = await ctx.db.get(row.leadId);
+      leads.set(row.leadId, {
+        name:
+          lead?.fullName ||
+          [lead?.firstName, lead?.lastName].filter(Boolean).join(" ") ||
+          lead?.email ||
+          "Unnamed lead",
+        lineId: lead?.lineId,
+        email: lead?.email,
+      });
+    }
+
+    const entry = (row: (typeof rows)[number]) => ({
+      consultationId: row._id,
+      leadId: row.leadId,
+      ...leads.get(row.leadId)!,
+      type: row.type,
+      outcome: row.outcome,
+      heldAt: row.heldAt,
+      sentAt: row.sentAt,
+      trigger: row.trigger,
+    });
+
+    return {
+      /** Booked, inside the window, no reminder written. Soonest first: this is
+       *  the one bucket where the order is what to do next, not how late. */
+      reminder: rows
+        .filter(
+          (r) =>
+            r.outcome === "scheduled" &&
+            r.reminderSentAt === undefined &&
+            r.heldAt > now &&
+            r.heldAt <= now + REMINDER_WINDOW_MS,
+        )
+        .sort((a, b) => a.heldAt - b.heldAt)
+        .map(entry),
+
+      /** Held, no same-day message. The follow-up is manual and is the step the
+       *  spec names as most likely to be missed after the reminder. */
+      followUp: rows
+        .filter((r) => r.outcome === "held" && r.followUpSentAt === undefined)
+        .sort((a, b) => a.heldAt - b.heldAt)
+        .map(entry),
+
+      /** The slot has passed and the row still says `scheduled`, so nobody has
+       *  said whether they turned up. Until that is answered the wave 1 cut
+       *  cannot be judged, because a trigger with no outcome measures nothing. */
+      outcomeMissing: rows
+        .filter((r) => r.outcome === "scheduled" && r.heldAt <= now)
+        .sort((a, b) => a.heldAt - b.heldAt)
+        .map(entry),
+
+      /** Invited a fortnight ago and never booked. Chase it or mark it
+       *  `expired`; leaving it as `invited` reads as still live. */
+      staleInvite: rows
+        .filter(
+          (r) =>
+            r.outcome === "invited" &&
+            r.bookedAt === undefined &&
+            r.sentAt !== undefined &&
+            r.sentAt <= now - STALE_INVITE_MS,
+        )
+        .sort((a, b) => (a.sentAt ?? 0) - (b.sentAt ?? 0))
+        .map(entry),
+    };
+  },
+});
+
+/**
+ * The wave 1 cut, read back: which trigger produced what. pp-19, 22/08/2026.
+ *
+ * `trigger` was put on this table so that the rule which fired could be judged
+ * against what happened, and until now nothing read it. `08_Coaching_Business.md`
+ * says survey stage = interviewing or negotiating is the cut that earns a
+ * booking link. Whether that is the right cut is an empirical question, and the
+ * answer is here or nowhere.
+ *
+ * **Counts, never rates.** At the volume this runs at, "67% booked" means two
+ * out of three and reads as a finding. Every number below is returned with the
+ * denominator it came from, and the client prints both. The one derived figure,
+ * the median wait between the link going out and a slot being chosen, is
+ * withheld below three bookings rather than shown with a caveat: a median of
+ * two numbers is not a median, it is the two numbers.
+ *
+ * **The denominator is rows with `sentAt`, not every row.** A consultation
+ * logged with no invitation recorded was never produced by a rule, so counting
+ * it would dilute exactly the thing being measured. Those rows are returned
+ * separately as `noInvitation` rather than dropped, because a large number
+ * there means the log, not the cut, is what needs attention.
+ */
+export const cut = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+
+    /** Below this a median is two numbers wearing a statistic's clothes. */
+    const MIN_FOR_MEDIAN = 3;
+
+    const rows = await ctx.db.query("consultations").withIndex("by_time").collect();
+    const invitations = rows.filter((r) => r.sentAt !== undefined);
+
+    /** Rows whose trigger was never recorded still happened. They group under
+     *  their own key rather than being folded into `manual`, which is a real
+     *  answer meaning "coach judgement" and not a stand-in for "unknown". */
+    const KEYS = ["survey_stage_wave1", "survey_urgent_wave2", "manual", "unrecorded"] as const;
+
+    const byTrigger = KEYS.map((key) => {
+      const group = invitations.filter((r) => (r.trigger ?? "unrecorded") === key);
+      const waits = group
+        .filter((r) => r.bookedAt !== undefined)
+        .map((r) => r.bookedAt! - r.sentAt!)
+        .sort((a, b) => a - b);
+
+      return {
+        trigger: key,
+        sent: group.length,
+        booked: group.filter((r) => r.bookedAt !== undefined).length,
+        held: group.filter((r) => r.outcome === "held").length,
+        noShow: group.filter((r) => r.outcome === "no_show").length,
+        cancelled: group.filter((r) => r.outcome === "cancelled").length,
+        /** Still `invited` or `expired`: sent, and no slot ever chosen. */
+        neverBooked: group.filter((r) => r.outcome === "invited" || r.outcome === "expired").length,
+        /** Milliseconds from link to slot chosen, or null while the sample is
+         *  too small to have a middle. */
+        medianWaitMs:
+          waits.length >= MIN_FOR_MEDIAN
+            ? waits.length % 2
+              ? waits[(waits.length - 1) / 2]
+              : Math.round((waits[waits.length / 2 - 1] + waits[waits.length / 2]) / 2)
+            : null,
+      };
+    }).filter((row) => row.sent > 0);
+
+    return {
+      byTrigger,
+      totalInvitations: invitations.length,
+      /** Calls logged with no invitation recorded. Not a cut result. */
+      noInvitation: rows.length - invitations.length,
+      minForMedian: MIN_FOR_MEDIAN,
+    };
+  },
+});

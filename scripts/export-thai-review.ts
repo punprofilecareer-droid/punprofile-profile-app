@@ -37,6 +37,8 @@ import * as services from "../src/lib/content/services.js";
 import * as faq from "../src/lib/content/faq.js";
 import * as footer from "../src/lib/content/footer.js";
 import * as home from "../src/lib/content/home.js";
+import * as pricing from "../src/lib/content/pricing.js";
+import * as products from "../src/lib/content/products.js";
 
 interface Row {
   /** Dotted path, e.g. `copy.ts › report.footer` or `services.ts › SERVICES[0].includes[4]`. */
@@ -101,6 +103,11 @@ const ALL: Row[] = [
   ...harvest(faq as unknown as Record<string, unknown>, "faq.ts", false),
   ...harvest(footer as unknown as Record<string, unknown>, "footer.ts", false),
   ...harvest(home as unknown as Record<string, unknown>, "home.ts", false),
+  // Added 23/08/2026 with the pages themselves. This queue is the single place
+  // unreviewed Thai is meant to surface, and the 32 strings these two modules
+  // carry were invisible to it until they were listed here.
+  ...harvest(pricing as unknown as Record<string, unknown>, "pricing.ts", false),
+  ...harvest(products as unknown as Record<string, unknown>, "products.ts", false),
 ];
 
 /**
@@ -128,6 +135,12 @@ const SOURCES = [
   "src/lib/content/faq.ts",
   "src/lib/content/footer.ts",
   "src/lib/content/home.ts",
+  // Added 23/08/2026, alongside the ALL entries above. The harvest list and this
+  // list have to move together: a module in one and not the other is a module
+  // whose markers are silently dropped, which is the exact failure this file's
+  // header warns about.
+  "src/lib/content/pricing.ts",
+  "src/lib/content/products.ts",
 ];
 
 const unreviewedThai = new Set<string>();

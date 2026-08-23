@@ -719,15 +719,18 @@ export default function AssessPage() {
         <MarketProof />
 
         {/* TASK-084. The second action on this screen, and deliberately not a
-            second booking button: the candidate has just been told there is a
-            queue, so what they can usefully do now is read what the work is.
-            Secondary treatment throughout, because when TASK-046 turns the
-            booking CTA on below, that one is the revenue step. */}
+            second booking button: what the candidate can usefully do now is read
+            what the work is. Secondary treatment throughout, because when
+            TASK-046 turns the booking CTA on below, that one is the revenue step.
+
+            The card said "while you wait" until 23/08/2026. It stopped, because
+            nothing on this screen promises contact any more. See the note on
+            `services.cta.heading`. */}
         <div className="card-outlined mt-4 flex flex-col rounded-large px-5 py-6 text-left large:mt-4">
           <h2 className="text-title-large">{t("services.cta.heading")}</h2>
           <p className="mt-2 text-body-large text-on-surface-variant">{t("services.cta.body")}</p>
           {/* Still hand-rolled, and the one deliberate exception to the table:
-              this link carries `?focus=` so the services page opens on the axis
+              this link carries `?focus=` so the coaching page opens on the axis
               the candidate scored lowest, which no shared component can know.
               It is the table's `/efc-assessment-result` primary in every other respect,
               including its destination.
@@ -738,7 +741,7 @@ export default function AssessPage() {
               stat block is the one he wants loud. `mt-auto` keeps the button on
               the card's floor so it lines up with the card beside it. */}
           <Link
-            href={path(weakest ? `/services?focus=${weakest}` : "/services")}
+            href={path(weakest ? `/coaching?focus=${weakest}` : "/coaching")}
             className="btn-tonal mt-5 inline-flex min-h-14 items-center justify-center gap-2 px-7 py-4 text-body-large font-semibold large:mt-auto large:self-start"
           >
             {t("services.cta.button")}

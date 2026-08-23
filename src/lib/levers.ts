@@ -84,7 +84,7 @@ export const MOVES: Move[] = [
     // about the ROLE only. Sequencing advice, start with one country, belongs
     // in the narrative, not in a lever that re-scores them for breadth.
     coach: "Fix the target role. AI-assisted role research makes this a session, not a month.",
-    candidate: { en: "Name the one role you are aiming at. Everything after this step gets easier once it is specific.", th: "เลือกตำแหน่งงานที่อยากสมัครให้ชัดก่อน พอรู้ว่ากำลังมองหางานแบบไหน ขั้นตอนต่อจากนี้จะตัดสินใจได้ง่ายขึ้นมาก" },
+    candidate: { en: "Name the one role you are aiming at. Everything after this step gets easier once it is specific.", th: "กำหนดตำแหน่งงานเป้าหมายให้ชัดก่อน เมื่อรู้ว่ากำลังมองหางานแบบไหน การตัดสินใจในขั้นตอนต่อจากนี้จะง่ายขึ้นมาก" },
     applies: (r) => !r.targetRole?.trim() || r.targetRole.trim() === "not_sure",
     apply: (r) => ({
       ...r,
@@ -118,7 +118,7 @@ export const MOVES: Move[] = [
     horizon: "days",
     ai: true,
     coach: "Have them name the specific visa route (Blue Card, Chancenkarte, zoekjaar...). Research prompts provided; verification stays coach-side.",
-    candidate: { en: "Find and name the specific visa route you would use. Knowing the route changes which employers are even worth applying to.", th: "เช็กให้ชัดว่าคุณสามารถใช้วีซ่าประเภทใดได้บ้าง ข้อมูลนี้จะช่วยคัดกรองว่าบริษัทไหนมีโอกาสรับคุณเข้าทำงาน และงานใดควรสมัคร" },
+    candidate: { en: "Find and name the specific visa route you would use. Knowing the route changes which employers are even worth applying to.", th: "ศึกษาจากแหล่งข้อมูลทางการว่ามีเส้นทางวีซ่าใดที่อาจเหมาะกับคุณ ข้อมูลนี้จะช่วยคัดกรองว่าบริษัทใดมีโอกาสรับคุณเข้าทำงาน และตำแหน่งใดควรสมัคร" },
     applies: (r) => r.workAuth === "sponsor_no_route",
     apply: (r) => ({ ...r, workAuth: "sponsor_route_named" }),
   },
@@ -160,7 +160,7 @@ export const MOVES: Move[] = [
     module: "Job Application Lifecycle",
     horizon: "weeks",
     coach: "First five targeted applications, tracked. Volume without targeting is noise; five tracked beats fifty sprayed.",
-    candidate: { en: "Send your first five targeted applications and track each one. Nothing downstream starts until these go out.", th: "เลือกงานที่ตรงกับเป้าหมาย 5 ตำแหน่งแรก ส่งใบสมัคร แล้วบันทึกสถานะไว้ทุกตำแหน่ง เพราะบางอย่างจะเริ่มเรียนรู้ได้ก็ต่อเมื่อคุณได้ลองสมัครจริง" },
+    candidate: { en: "Send your first five targeted applications and track each one. Nothing downstream starts until these go out.", th: "เลือก 5 ตำแหน่งแรกที่ตรงกับเป้าหมาย ส่งใบสมัคร แล้วบันทึกสถานะไว้ทุกตำแหน่ง เพราะบางอย่างจะเริ่มเรียนรู้ได้ก็ต่อเมื่อคุณได้ลองสมัครจริง" },
     applies: (r) => r.applicationCount === 0,
     apply: (r) => ({ ...r, applicationCount: 5 }),
   },
@@ -183,7 +183,7 @@ export const MOVES: Move[] = [
     horizon: "weeks",
     ai: true,
     coach: "Q32 unanswered: onboard the full AI toolstack (weekly AI research, EU workplace tools, AI-tailored materials, one self-adopted tool) and capture the answers.",
-    candidate: { en: "Set up your AI job-search toolkit: weekly AI research, the workplace tools European teams use, AI-tailored applications, and one tracker you pick yourself.", th: "จัดชุดเครื่องมือ AI สำหรับการหางานให้ตัวเอง ทั้งสำหรับค้นคว้าข้อมูล ปรับใบสมัครให้เข้ากับแต่ละงาน ฝึกใช้เครื่องมือที่ทีมในยุโรปคุ้นเคย และติดตามสถานะการสมัคร" },
+    candidate: { en: "Set up your AI job-search toolkit: weekly AI research, the workplace tools European teams use, AI-tailored applications, and one tracker you pick yourself.", th: "จัดชุดเครื่องมือสำหรับการหางานให้ตัวเอง ทั้ง AI สำหรับค้นคว้าและปรับใบสมัคร เครื่องมือที่ทีมในยุโรปคุ้นเคย และเครื่องมือติดตามสถานะการสมัคร" },
     applies: (r) => r.aiIndicatorFlags === null || r.aiIndicatorFlags === undefined,
     apply: (r) => ({ ...r, aiIndicatorFlags: [true, true, true, true], aiIndicators: 4 }),
   },

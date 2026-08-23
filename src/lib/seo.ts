@@ -67,7 +67,20 @@ export const PUBLIC_ROUTES: readonly { path: string; priority: number }[] = [
   { path: "/", priority: 1 },
   { path: "/efc-assessment", priority: 0.9 },
   { path: "/coaching", priority: 0.8 },
-  { path: "/services", priority: 0.8 },
+  { path: "/pricing", priority: 0.8 },
+  /**
+   * The product pages, 23/08/2026. Listed rather than derived from `PRODUCTS`
+   * to keep this file free of a content import, and 0.7 rather than 0.8 because
+   * they sit one level below the pages that route into them.
+   *
+   * **Only the built one is here.** CV Check, Fit Report, Matched Jobs and
+   * Guided Job Hunt have pages and those pages say, above the fold, that the
+   * product is not open yet. That is honest on the page and thin content in an
+   * index: a crawler would file four "coming soon" pages against a site whose
+   * whole argument is that it does not overstate what it can do. Each joins this
+   * list on the day its product ships.
+   */
+  { path: "/products/eu-fit-check", priority: 0.7 },
   ...(POSTS.length > 0 ? [{ path: "/blog", priority: 0.7 }] : []),
   { path: "/faq", priority: 0.6 },
   { path: "/contact", priority: 0.5 },
@@ -178,6 +191,31 @@ export function shareCard(post: { slug: string; image?: { src: string } }): stri
  */
 export const NOT_INDEXED: Metadata = {
   robots: { index: false, follow: false, nocache: true },
+};
+
+/**
+ * A page that exists, says something true, and has nothing to sell yet. Used by
+ * every product whose `status` is `soon`. Added 23/08/2026, Paul's call.
+ *
+ * **Why a second constant rather than `NOT_INDEXED`.** `follow` is the whole
+ * difference. `/admin` and `/login` should pass authority nowhere, because
+ * everything behind them is private. A coming-soon product page is the opposite:
+ * its only job is to send the reader to `/pricing` or `/contact`, and those
+ * links should still count. `index: false, follow: true` is exactly that, a page
+ * a crawler reads and does not list.
+ *
+ * **Why it is needed at all, given `PUBLIC_ROUTES` omits them.** A sitemap is a
+ * suggestion. These four are linked from the Products menu on every page of the
+ * site, and a crawler that follows a link does not consult the sitemap first to
+ * ask whether it was invited. Without this tag the site's four thinnest pages
+ * are the four most linked-to, which is the shape Google reads as a thin site.
+ *
+ * **Remove it per product on the day that product opens**, at the same time as
+ * `status` flips to `live` and the route joins `PUBLIC_ROUTES`. All three are
+ * the same decision and drift apart if they are made on different days.
+ */
+export const NOT_YET_INDEXED: Metadata = {
+  robots: { index: false, follow: true },
 };
 
 /**

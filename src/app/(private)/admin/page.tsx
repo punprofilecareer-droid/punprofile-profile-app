@@ -3,6 +3,8 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import AdminGate, { DEV_ADMIN_BYPASS } from "@/components/AdminGate";
 import LeadList from "@/components/features/dashboard/LeadList";
+import ConsultationQueues from "@/components/features/dashboard/ConsultationQueues";
+import BookingCutReadout from "@/components/features/dashboard/BookingCutReadout";
 
 /**
  * TASK-004/034: the authenticated admin shell and the lead list.
@@ -29,6 +31,19 @@ export default function AdminPage() {
                 Sign out
               </button>
             )}
+          </div>
+          {/* Above the list on purpose. The list answers "who is worth a call",
+              which is a question the coach chooses to ask; these four buckets
+              are things already promised to someone and not yet done, and the
+              reminder among them expires whether or not anyone scrolls. */}
+          <div className="mt-8">
+            <ConsultationQueues />
+          </div>
+          {/* Below the queues and above the list: it is a thing to read
+              occasionally, not a thing to act on today, and it belongs next to
+              the rows it is computed from rather than on a page of its own. */}
+          <div className="mt-4">
+            <BookingCutReadout />
           </div>
           <div className="mt-8">
             <LeadList />

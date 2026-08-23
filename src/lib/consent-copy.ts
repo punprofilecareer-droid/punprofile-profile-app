@@ -118,7 +118,7 @@ export const CONSENT_COPY = {
   "consent.statement": {
     screen: "Contact gate, beside the email field",
     en: "I agree that PunProfile may contact me about my result and career coaching by email, LINE or phone.",
-    th: "ยินยอมให้ PunProfile ติดต่อกลับเกี่ยวกับผลประเมินและบริการแนะแนวอาชีพทางอีเมล Line หรือ โทรศัพท์",
+    th: "ยินยอมให้ PunProfile ติดต่อกลับเกี่ยวกับผลประเมินและบริการแนะแนวอาชีพทางอีเมล LINE หรือ โทรศัพท์",
   },
   "consent.channel.phone": {
     screen: "Contact gate, beside the phone field",
@@ -128,12 +128,12 @@ export const CONSENT_COPY = {
   "consent.channel.line": {
     screen: "Contact gate, beside the LINE ID field",
     en: "LINE",
-    th: "Line",
+    th: "LINE",
   },
   "consent.purpose": {
     screen: "Contact gate, above the fields: what the data is for",
     en: "We use your email to send your result. If you would like us to contact you by phone or on LINE, fill in that channel and tick the consent box. We keep your information for twelve months from the last time you were in touch, and we do not pass it to anyone else. Change your mind at any point and tell us at punprofile.career@gmail.com.",
-    th: "เราจะใช้อีเมลของคุณเพื่อส่งผลประเมิน หากต้องการให้เราติดต่อทางโทรศัพท์หรือ Line ให้กรอกช่องทางนั้นและติ๊กช่องยินยอม เราจะเก็บข้อมูลของคุณไว้สิบสองเดือนนับจากการติดต่อครั้งล่าสุด และจะไม่ส่งต่อข้อมูลให้บุคคลอื่น หากคุณเปลี่ยนใจ แจ้งเราได้ทุกเมื่อที่ punprofile.career@gmail.com",
+    th: "เราจะใช้อีเมลของคุณเพื่อส่งผลประเมิน หากต้องการให้เราติดต่อทางโทรศัพท์หรือ LINE ให้กรอกช่องทางนั้นและติ๊กช่องยินยอม เราจะเก็บข้อมูลของคุณไว้สิบสองเดือนนับจากการติดต่อครั้งล่าสุด และจะไม่ส่งต่อข้อมูลให้บุคคลอื่น หากคุณเปลี่ยนใจ แจ้งเราได้ทุกเมื่อที่ punprofile.career@gmail.com",
   },
   /**
    * Rendered as a link to `/privacy`, which is why it is its own key: an

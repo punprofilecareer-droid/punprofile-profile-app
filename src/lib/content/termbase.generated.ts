@@ -66,34 +66,36 @@ export const TERMBASE: Termbase = {
       "id": "channel-line",
       "en": "LINE",
       "th": [
-        "Line"
+        "LINE"
       ],
       "banned": [
         "ไลน์",
-        "LINE"
+        "Line"
       ],
       "surfaces": [
         "all"
       ],
       "fixed": true,
       "rule": "LR-01",
-      "decided": "15/08/2026",
-      "why": "A brand name, in Latin script rather than transliterated. Paul's call, 15/08/2026, after the lint found consent.statement writing the transliteration while every other string wrote it in Latin. It is the PDPA string naming the channel consented to, which is the last place two spellings of one channel belong.\nTitle case, revised the same day. The company styles itself LINE in caps and Paul decided PunProfile writes Line, which is the form that sits in a Thai sentence without shouting. Both the transliteration and the all-caps form are banned, so the one remaining form is the one that ships.\nThis is about the chat application, which is a different word from ออนไลน์. A term check must not match inside it.\n"
+      "decided": "23/08/2026",
+      "why": "**Reversed 23/08/2026 (Paul). The shipped form is now LINE, in caps, and Line is banned alongside the transliteration.** It was Line from 15/08 to 23/08 on the reasoning quoted below, and a copy review put the caps form back across five strings, which forced the question rather than answering it. Caps is how the company styles itself and it is what the review argued for; the earlier call was about how the word sits in a Thai sentence.\nEverything above the reversal still holds: it is a brand name in Latin script rather than a transliteration, and ไลน์ stays banned. What changed is only the case.\nThe original reasoning, kept because it is the argument the reversal overrides rather than refutes: a brand name, in Latin script rather than transliterated. Paul's call, 15/08/2026, after the lint found consent.statement writing the transliteration while every other string wrote it in Latin. It is the PDPA string naming the channel consented to, which is the last place two spellings of one channel belong.\nTitle case, revised the same day. The company styles itself LINE in caps and Paul decided PunProfile writes Line, which is the form that sits in a Thai sentence without shouting. Both the transliteration and the all-caps form are banned, so the one remaining form is the one that ships.\nThis is about the chat application, which is a different word from ออนไลน์. A term check must not match inside it.\n"
     },
     {
       "id": "field-line-id",
       "en": "LINE ID",
       "th": [
+        "LINE ID"
+      ],
+      "banned": [
         "Line ID"
       ],
-      "banned": [],
       "surfaces": [
         "app"
       ],
       "fixed": true,
       "rule": "LR-01",
-      "decided": "15/08/2026",
-      "why": "The field label. Same reasoning as `channel-line`, and it is the label users see in LINE itself."
+      "decided": "23/08/2026",
+      "why": "The field label, and it follows `channel-line`. Reversed with it on 23/08/2026: it was Line ID from 15/08. It is the label users see in LINE itself, which is now an argument for the caps rather than against it.\n"
     },
     {
       "id": "official-website",
@@ -355,6 +357,66 @@ export const TERMBASE: Termbase = {
       "why": "Site navigation is English. See `our-services`.\n"
     },
     {
+      "id": "product-cv-check",
+      "en": "CV Check",
+      "th": [
+        "CV Check"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "23/08/2026",
+      "why": "A product name, passed through rather than translated. See `nav-blog`."
+    },
+    {
+      "id": "product-fit-report",
+      "en": "Fit Report",
+      "th": [
+        "Fit Report"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "23/08/2026",
+      "why": "A product name, passed through rather than translated. See `nav-blog`."
+    },
+    {
+      "id": "product-matched-jobs",
+      "en": "Matched Jobs",
+      "th": [
+        "Matched Jobs"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "23/08/2026",
+      "why": "A product name, passed through rather than translated. See `nav-blog`."
+    },
+    {
+      "id": "product-guided-job-hunt",
+      "en": "Guided Job Hunt",
+      "th": [
+        "Guided Job Hunt"
+      ],
+      "banned": [],
+      "surfaces": [
+        "app"
+      ],
+      "fixed": true,
+      "rule": "LR-01",
+      "decided": "23/08/2026",
+      "why": "A product name, passed through rather than translated. See `nav-blog`."
+    },
+    {
       "id": "nav-blog",
       "en": "Blog",
       "th": [
@@ -388,18 +450,19 @@ export const TERMBASE: Termbase = {
       "id": "contact-talk-to-me",
       "en": "Talk to me",
       "th": [
-        "คุยกับผม"
+        "ทักมาคุยกัน"
       ],
       "banned": [
-        "ติดต่อผม"
+        "ติดต่อผม",
+        "คุยฟรี"
       ],
       "surfaces": [
         "app"
       ],
       "fixed": true,
       "rule": "LR-08",
-      "decided": "14/08/2026",
-      "why": "Paul's revision. ติดต่อ is what you do to a company, through a form. คุย is what two people do, and it is the promise the page makes: the next step is a conversation, not a ticket. First person because every service is delivered by him. ติดต่อเรา stays on the menu item deliberately, same reasoning inverted.\n"
+      "decided": "23/08/2026",
+      "why": "Was คุยกับผม from 14/08/2026 to 23/08/2026. Paul changed it on the pricing review sheet, and the reasoning that survives the change is the half that was never about person: ติดต่อ is what you do to a company, through a form. คุย is what two people do, and it is the promise the page makes, a conversation rather than a ticket. ติดต่อเรา stays on the menu item deliberately, same reasoning inverted.\nWhat changed is ผม. The label no longer names who is on the other side, and that follows the site: the app now sells self-serve products with prices on them, so a button that promises one named person is promising something the packs do not. ทักมาคุยกัน also restores Paul's own collocation, which takes มา and กัน; ชวนคุย and คุยฟรี are the clipped forms that keep going wrong.\n"
     }
   ],
   "person": {
@@ -409,7 +472,7 @@ export const TERMBASE: Termbase = {
     "reader": "คุณ",
     "why": "เรา for the brand in broadcast copy, ผม in 1:1 messages where a brand plural reads evasive, คุณ for the reader always and stated rather than implied. The contact button คุยกับผม is first person on an app surface on purpose: it is the one string that opens a 1:1, so it speaks in the register of what it starts. Listed in `terms` above rather than treated as a person violation.\n"
   },
-  "sourceHash": "d524677d037b6234"
+  "sourceHash": "196dd07ea414e714"
 } as const;
 
 export const TERMS = TERMBASE.terms;

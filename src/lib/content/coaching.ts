@@ -31,7 +31,7 @@ import type { Copy } from "./copy";
 
 export const HOOK_EYEBROW: Copy = {
   en: "1-1 career coaching for Thai professionals heading to Europe",
-  th: "แคเรียร์โค้ชชิ่งแบบตัวต่อตัว สำหรับคนไทยที่มุ่งสู่ยุโรป",
+  th: "แคเรียร์โค้ชชิ่งแบบตัวต่อตัว สำหรับคนไทยที่ตั้งเป้าไปทำงานในยุโรป",
 };
 
 /**
@@ -55,24 +55,24 @@ export const HOOK_LINE_2: Copy = {
 export const HOOK_BODY: readonly Copy[] = [
   {
     en: "A hiring manager in Amsterdam opens your CV. They do not know your last company, they cannot tell how big the job you were responsible for actually was, and the visa question has no answer yet. They are not deciding that you are not good. They simply have not been given enough reason to keep reading.",
-    th: "ผู้จัดการฝ่ายสรรหาในอัมสเตอร์ดัมเปิด CV ของคุณขึ้นมา เขาไม่รู้จักบริษัทเดิมของคุณ ไม่รู้ว่างานล่าสุดที่คุณรับผิดชอบมีขนาดแค่ไหน และยังไม่มีคำตอบเรื่องวีซ่า เขาไม่ได้ตัดสินว่าคุณไม่เก่ง เพียงแต่ยังไม่เห็นเหตุผลมากพอที่จะอ่านต่อ",
+    th: "ลองนึกภาพว่าผู้จัดการฝ่ายสรรหาในอัมสเตอร์ดัมเปิด CV ของคุณขึ้นมา เขาไม่รู้จักบริษัทเดิมของคุณ ไม่รู้ว่างานล่าสุดที่คุณรับผิดชอบใหญ่หรือซับซ้อนแค่ไหน และยังไม่รู้ว่าคุณมีสิทธิ์ทำงานอยู่แล้วหรือต้องขอวีซ่า เขาอาจไม่ได้คิดว่าคุณไม่เก่ง เพียงแต่ยังไม่เห็นเหตุผลมากพอที่จะอ่านต่อ",
   },
   {
     en: "The problem is getting your experience across to another market, not your ability, and sending more applications does not solve it.",
-    th: "ปัญหาอยู่ที่การถ่ายทอดประสบการณ์ให้คนอีกตลาดเข้าใจ ไม่ใช่ความสามารถของคุณ และการส่งใบสมัครให้มากขึ้นก็แก้ปัญหานี้ไม่ได้",
+    th: "ปัญหาอยู่ที่การถ่ายทอดประสบการณ์ให้คนในอีกตลาดเข้าใจ ไม่ใช่ความสามารถของคุณ และการส่งใบสมัครเพิ่มขึ้นก็ไม่ได้แก้ปัญหานี้เสมอไป",
   },
 ];
 
 export const HOOK_CTA_SUB: Copy = {
   en: "The three ways of working together, and what each one does for you.",
-  th: "ดูรูปแบบการทำงานทั้งสามแบบ และแต่ละแบบช่วยอะไรคุณบ้าง",
+  th: "ดูบริการทั้ง 3 รูปแบบ และแต่ละแบบจะช่วยคุณได้อย่างไร",
 };
 
 // --------------------------------------------------------- does this sound like you
 
 export const PAIN_HEADING: Copy = {
   en: "Does any of this sound like you?",
-  th: "มีข้อไหนที่ฟังดูเหมือนคุณบ้าง",
+  th: "มีข้อไหนตรงกับคุณบ้าง?",
 };
 
 export const PAINS: readonly Copy[] = [
@@ -106,7 +106,7 @@ export const PAINS: readonly Copy[] = [
 
 export const PROOF_HEADING: Copy = {
   en: "It is not that people are not trying.",
-  th: "ปัญหาไม่ใช่ว่าพวกเขาพยายามไม่พอ",
+  th: "ปัญหาไม่ใช่ว่าคุณพยายามไม่พอ",
 };
 
 export interface ProofLine {
@@ -131,7 +131,7 @@ export const PROOF_LINES: readonly ProofLine[] = [
     share: "englishB2",
     label: {
       en: "already have English at the level European job adverts ask for",
-      th: "มีภาษาอังกฤษถึงระดับที่ประกาศงานในยุโรปเรียกหาอยู่แล้ว",
+      th: "มีทักษะภาษาอังกฤษอยู่ในระดับที่ประกาศงานในยุโรปต้องการ",
     },
   },
   {
@@ -160,7 +160,7 @@ export const PROOF_CONCLUSION: Copy = {
 
 export const METHOD_HEADING: Copy = {
   en: "Before I give you advice, I show you what the assessment is based on.",
-  th: "ก่อนให้คำแนะนำ ผมจะให้คุณเห็นก่อนว่าเราประเมินจากอะไร",
+  th: "ก่อนให้คำแนะนำ ผมอยากให้คุณเห็นว่าเราใช้เกณฑ์อะไรในการประเมิน",
 };
 
 export const METHOD_INTRO: Copy = {
@@ -178,17 +178,17 @@ export interface MethodStep {
 export const METHOD: readonly MethodStep[] = [
   {
     n: "01",
-    heading: { en: "Thirty-four assessed items", th: "หัวข้อประเมิน 34 ข้อ" },
+    heading: { en: "Thirty-four assessed items", th: "กรอบประเมิน 34 ข้อ" },
     body: [
       {
         en: "Hiring decisions in Europe come from a number of factors that can be named and assessed. The framework behind the EU Fit Check divides them into thirty-four items, covering professional capability, readiness to apply, readiness to move country, and fit with the European market you are aiming at.",
-        th: "การตัดสินใจจ้างงานในยุโรปเกิดจากหลายปัจจัยที่ระบุและประเมินได้ กรอบเบื้องหลัง EU Fit Check แบ่งออกเป็น 34 ข้อ ครอบคลุมความสามารถทางวิชาชีพ การสมัครงาน การย้ายประเทศ และความเหมาะสมกับตลาดยุโรปที่คุณตั้งเป้าไว้",
+        th: "การตัดสินใจจ้างงานในยุโรปขึ้นอยู่กับหลายปัจจัยที่สามารถระบุและประเมินได้ กรอบเบื้องหลัง EU Fit Check แบ่งออกเป็น 34 ข้อ ครอบคลุมทั้งทักษะในสายงาน การสมัครงาน ความพร้อมในการย้ายประเทศ และความเหมาะสมกับตลาดยุโรปที่คุณตั้งเป้าไว้",
       },
     ],
   },
   {
     n: "02",
-    heading: { en: "Five a form can really assess", th: "แบบฟอร์มประเมินได้จริง 5 ข้อ" },
+    heading: { en: "Five a form can really assess", th: "มีเพียง 5 ข้อที่แบบฟอร์มประเมินได้อย่างน่าเชื่อถือ" },
     body: [
       {
         en: "Of those thirty-four, only five can be assessed reliably from answers on a form. So we score those five, and show the rest as a hollow circle meaning “not assessed yet”, not a score of zero.",
@@ -196,7 +196,7 @@ export const METHOD: readonly MethodStep[] = [
       },
       {
         en: "Most tools fill in all thirty-four and then let you plan around numbers nobody can stand behind.",
-        th: "เครื่องมือส่วนใหญ่มักใส่คะแนนให้ครบทั้ง 34 ข้อ แล้วให้คุณนำตัวเลขที่ไม่มีใครยืนยันได้ไปวางแผนต่อ",
+        th: "เราไม่เติมคะแนนให้ครบเพียงเพื่อให้กราฟดูสมบูรณ์ เพราะตัวเลขที่ยืนยันไม่ได้ไม่ควรถูกนำไปใช้วางแผนชีวิตของคุณ",
       },
     ],
   },
@@ -206,7 +206,7 @@ export const METHOD: readonly MethodStep[] = [
     body: [
       {
         en: "Before anyone contacts you, a person actually reads your answers. The things a form cannot answer are what the first conversation is for: the CV you are using, the roles you are applying to, and the reason your last application went unanswered.",
-        th: "ก่อนติดต่อกลับ จะมีคนอ่านคำตอบของคุณจริง ๆ ส่วนเรื่องที่แบบฟอร์มตอบไม่ได้ เราจะคุยกันในการสนทนาครั้งแรก ทั้ง CV ที่คุณใช้อยู่ ตำแหน่งที่กำลังสมัคร และเหตุผลที่ใบสมัครล่าสุดไม่ได้รับการตอบกลับ",
+        th: "ก่อนติดต่อกลับ เราจะอ่านคำตอบของคุณจริง ๆ ส่วนที่แบบฟอร์มประเมินไม่ได้ เราจะคุยกันในการพูดคุยครั้งแรก ไม่ว่าจะเป็น CV ที่คุณใช้อยู่ ตำแหน่งที่กำลังสมัคร หรือเหตุผลที่ใบสมัครล่าสุดไม่ได้รับการตอบกลับ",
       },
     ],
   },
@@ -214,16 +214,16 @@ export const METHOD: readonly MethodStep[] = [
     n: "04",
     heading: {
       en: "Measurable again, so you can see it change",
-      th: "วัดซ้ำได้ และเห็นความเปลี่ยนแปลงได้จริง",
+      th: "ทำซ้ำได้ และเห็นความเปลี่ยนแปลงจริง",
     },
     body: [
       {
         en: "We keep your answers as evidence, not just a score, so you can take the assessment again later and compare the charts.",
-        th: "เราเก็บคำตอบของคุณไว้เป็นหลักฐาน ไม่ได้เก็บแค่คะแนน คุณจึงทำแบบประเมินซ้ำในภายหลังแล้วนำกราฟมาเทียบกันได้",
+        th: "เราเก็บคำตอบของคุณไว้ ไม่ได้เก็บเพียงคะแนน คุณจึงกลับมาทำแบบประเมินอีกครั้งในภายหลังและเปรียบเทียบกราฟได้",
       },
       {
         en: "Work you cannot measure means taking it on faith that it is getting better, and in this market you have been asked to take enough on faith without evidence already.",
-        th: "งานที่วัดผลไม่ได้ทำให้คุณต้องเชื่อไปก่อนว่ามันดีขึ้น และในตลาดนี้ คุณถูกขอให้เชื่ออะไรโดยไม่มีหลักฐานมามากพอแล้ว",
+        th: "งานที่วัดผลไม่ได้ทำให้คุณต้องเชื่อไปก่อนว่าทุกอย่างกำลังดีขึ้น และในตลาดนี้ คุณถูกขอให้เชื่อคำพูดที่ไม่มีหลักฐานมามากพอแล้ว",
       },
     ],
   },
@@ -247,7 +247,7 @@ export const PERSONAS: readonly Copy[] = [
   },
   {
     en: "People weighing up whether to move at all, who want to decide on real information rather than on the mood of a good week or a bad one.",
-    th: "คนที่กำลังชั่งใจว่าจะย้ายดีไหม และอยากตัดสินใจจากข้อมูลจริง ไม่ใช่อารมณ์ของสัปดาห์ที่ดีหรือแย่",
+    th: "คนที่กำลังชั่งใจว่าจะย้ายดีไหม และอยากตัดสินใจจากข้อมูลจริง ไม่ใช่อารมณ์ในวันที่รู้สึกมีหวังหรือหมดหวัง",
   },
   {
     en: "People planning to move with a partner or children, because this decision has never been only about a job.",
@@ -257,7 +257,7 @@ export const PERSONAS: readonly Copy[] = [
 
 export const NOT_FOR_HEADING: Copy = {
   en: "And who it is not for",
-  th: "และไม่เหมาะกับใคร",
+  th: "และอาจไม่เหมาะกับคุณ ถ้า…",
 };
 
 export const NOT_FOR: readonly Copy[] = [
@@ -267,7 +267,7 @@ export const NOT_FOR: readonly Copy[] = [
   },
   {
     en: "People who want a guarantee of a job or a visa. Nobody can guarantee that honestly, and anyone who makes you feel they can is selling you something else.",
-    th: "คนที่ต้องการคำรับประกันว่าจะได้งานหรือวีซ่า ไม่มีใครรับประกันเรื่องนี้ได้อย่างซื่อสัตย์ และคนที่ทำให้คุณรู้สึกว่ารับประกันได้ก็กำลังขายสิ่งอื่นให้คุณ",
+    th: "คนที่ต้องการคำรับประกันว่าจะได้งานหรือวีซ่า ไม่มีใครรับประกันเรื่องนี้ได้อย่างซื่อสัตย์ ใครที่ทำให้คุณรู้สึกว่ารับประกันได้ อาจกำลังขายความหวังมากกว่าความจริง",
   },
   {
     en: "People who want it all done for them. The CV goes out under your name, and when the interview comes, the person sitting there is you.",
@@ -290,7 +290,7 @@ export const FOUNDER_BEFORE: readonly Copy[] = [
   },
   {
     en: "The longer I work here, the clearer one thing becomes: good people are not always seen, especially when their experience comes from another country.",
-    th: "ยิ่งทำงานอยู่ที่นี่ ผมยิ่งเห็นเรื่องหนึ่งชัดขึ้นเรื่อย ๆ ว่า คนเก่งไม่ได้ถูกมองเห็นเสมอไป โดยเฉพาะเมื่อประสบการณ์ของเขามาจากอีกประเทศ",
+    th: "การทำงานอยู่ในยุโรปทำให้ผมเห็นเรื่องหนึ่งชัดขึ้นเรื่อย ๆ ว่า คนเก่งไม่ได้ถูกมองเห็นเสมอไป โดยเฉพาะเมื่อประสบการณ์ของเขามาจากอีกประเทศ",
   },
   {
     en: "A company name every Thai person knows may be a name a European hiring manager has never heard. Work we know was large and difficult can become one unremarkable line on a CV. And years of accumulated experience can be passed over, not because it has no value, but because the person reading it does not have enough context to see that value.",
@@ -298,7 +298,7 @@ export const FOUNDER_BEFORE: readonly Copy[] = [
   },
   {
     en: "I have watched this happen again and again to Thai people in the group. When applications go unanswered, many of them try harder: send more, revise the CV again, read more advice. But in a cross-border job market, effort does not automatically turn into opportunity. If the market still cannot read you, applying more is just sending the same unclear story out over and over.",
-    th: "ผมเห็นเรื่องนี้เกิดขึ้นซ้ำ ๆ กับคนไทยในกลุ่ม เมื่อส่งใบสมัครไปแล้วไม่มีคำตอบ หลายคนจึงพยายามให้มากขึ้น ส่งให้มากขึ้น แก้ CV อีกรอบ และอ่านคำแนะนำเพิ่มอีก แต่ในตลาดงานข้ามประเทศ ความพยายามไม่ได้กลายเป็นโอกาสโดยอัตโนมัติ ถ้าตลาดยังอ่านเราไม่ออก การสมัครเพิ่มก็เป็นเพียงการส่งเรื่องเดิมที่ยังไม่ชัดออกไปซ้ำ ๆ",
+    th: "ผมเห็นเรื่องนี้เกิดขึ้นซ้ำ ๆ กับคนไทยในกลุ่ม เมื่อสมัครงานแล้วไม่ได้รับคำตอบ หลายคนจึงพยายามมากขึ้น สมัครมากขึ้น แก้ CV อีกรอบ และอ่านคำแนะนำเพิ่มอีก แต่ในตลาดงานข้ามประเทศ ความพยายามไม่ได้กลายเป็นโอกาสโดยอัตโนมัติ ถ้าตลาดยังอ่านเราไม่ออก การสมัครเพิ่มก็เป็นเพียงการส่งเรื่องเดิมที่ยังไม่ชัดออกไปซ้ำ ๆ",
   },
 ];
 
@@ -324,7 +324,7 @@ export const FOUNDER_AFTER: readonly Copy[] = [
   },
   {
     en: "In the end, you are still the one walking this road. My job is to make sure you are not guessing the whole way: to let you know what you already have in hand, what is still missing, and what the next step should be.",
-    th: "สุดท้ายแล้ว คุณยังเป็นคนเดินเส้นทางนี้เอง งานของผมคือช่วยให้คุณไม่ต้องเดินด้วยการคาดเดาไปตลอดทาง ให้คุณรู้ว่าตอนนี้มีอะไรอยู่ในมือ ยังขาดอะไร และก้าวต่อไปควรเป็นก้าวไหน",
+    th: "สุดท้ายแล้ว คุณยังเป็นคนเดินเส้นทางนี้ด้วยตัวเอง งานของผมคือช่วยให้คุณไม่ต้องเดินด้วยการคาดเดาไปตลอดทาง เพื่อให้คุณรู้ว่าตอนนี้มีอะไรอยู่ในมือ ยังขาดอะไร และก้าวต่อไปควรเป็นก้าวไหน",
   },
 ];
 
@@ -343,5 +343,5 @@ export const MASCOT_ALT: Copy = {
 
 export const PORTRAIT_ALT: Copy = {
   en: "Portrait of Paul Bussabong",
-  th: "ภาพถ่ายของพอล บุษบง",
+  th: "พอล บุษบง ผู้ดูแล PunProfile",
 };

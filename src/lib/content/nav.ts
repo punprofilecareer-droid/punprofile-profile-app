@@ -70,9 +70,35 @@ export interface NavItem {
   label: AnyCopyKey;
 }
 
-export const NAV: readonly NavItem[] = [
-  { href: "/services", label: "nav.services" },
+/**
+ * The Products group, added 23/08/2026 with the top bar.
+ *
+ * **Only what exists gets an entry**, Paul's call: EU Fit Check and the coaching
+ * pages are live, the Fit Report and Matched Jobs are not, and a menu is an
+ * invitation, which is the same reason `/admin` and `/login` are absent below.
+ * They join as they ship.
+ *
+ * `/services` was here for one day and left on 23/08/2026 when it folded into
+ * `/coaching`, which is what that fold was always going to look like: an entry
+ * leaves this array rather than leaving the top level.
+ */
+export const PRODUCTS: readonly NavItem[] = [
+  { href: "/products/eu-fit-check", label: "nav.assess" },
+  { href: "/products/cv-check", label: "nav.cvCheck" },
+  { href: "/products/fit-report", label: "nav.fitReport" },
+  { href: "/products/matched-jobs", label: "nav.matchedJobs" },
+  { href: "/products/guided-job-hunt", label: "nav.guidedJobHunt" },
   { href: "/coaching", label: "nav.coaching" },
+];
+
+/**
+ * The flat entries, which sit beside the Products group rather than inside it.
+ *
+ * `/services` and `/coaching` moved into `PRODUCTS` on 23/08/2026, so what is
+ * left here is the group's peers: the price surface and the three support pages.
+ */
+export const NAV: readonly NavItem[] = [
+  { href: "/pricing", label: "nav.pricing" },
   ...(POSTS.length > 0
     ? [{ href: "/blog", label: "nav.blog" as AnyCopyKey }]
     : []),

@@ -142,7 +142,7 @@ export const MARKET_HEADING: Copy = {
   // Europe/Berlin.
   //
   // `ทุกๆวัน` is his spacing and is left exactly as he typed it.
-  th: "สิ่งที่เราทำจริงในทุกๆวัน",
+  th: "สิ่งที่เราทำจริงในทุกวัน",
 };
 
 export const MARKET_BODY: Copy = {
@@ -156,7 +156,7 @@ export const MARKET_BODY: Copy = {
   // `ไล่ดู` and `คัดมา` rather than `อ่าน` and `ประกาศ`: the first pair
   // describes sifting, the second described reading and republishing, and
   // sifting is what the pipeline does. `สมัครได้จริง` closes on the reader.
-  th: "เราไล่ดูประกาศงานจากทั่วยุโรป เช็กว่าบริษัทไหนสปอนเซอร์วีซ่าจริง แล้วคัดมาเฉพาะตำแหน่งที่คนไทยสมัครได้จริง",
+  th: "เราไล่ดูประกาศงานจากทั่วยุโรป เช็กว่าบริษัทไหนระบุเรื่องสปอนเซอร์วีซ่าไว้อย่างชัดเจน แล้วคัดมาเฉพาะตำแหน่งที่คนไทยมีโอกาสสมัครได้จริง",
 };
 
 /**
@@ -206,7 +206,7 @@ export const MARKET_FOOT: Copy = {
    * is a whole section about what is free, and a footnote about dates is not
    * where a reader looks for it. Removing it removed a duplicate.
    */
-  th: "ข้อมูลระหว่าง {from} ถึง {to} เราประกาศตำแหน่งเหล่านี้ในกลุ่ม Thai Jobs in Europe",
+  th: "ระหว่าง {from} ถึง {to} เราได้ประกาศตำแหน่งเหล่านี้ในกลุ่ม Thai Jobs in Europe",
 };
 
 // ------------------------------------------------- three things we help with
@@ -301,7 +301,23 @@ export const COST_HEADING: Copy = {
   // **Paul's wording, 17/08/2026, and it settles the ฟรี question.** He kept
   // `ส่วนไหน` and put `ฟรี` back where this file had been avoiding it. See the
   // note on `COST_ROWS` above.
-  th: "ส่วนไหนฟรี และส่วนไหนมีค่าใช้จ่าย",
+  /*
+   * `ใช้ได้ฟรี`, not `ใช้ฟรี`, corrected 23/08/2026 against LR-04.
+   *
+   * The quality review replaced Paul's 17/08 `ส่วนไหนฟรี และส่วนไหนมีค่าใช้จ่าย`
+   * with a version built on `ใช้ฟรี`, and the old one passed for a reason the new
+   * one loses: `ส่วนไหนฟรี` is a predicate, ฟรี answering a question, which is
+   * `FREE_PREDICATE_SUBJECTS` in `lint-thai.ts`. `ใช้ฟรี` is a verb with ฟรี
+   * compounded onto it, which is the `คุยฟรี` shape the rule exists to catch.
+   *
+   * Reordered rather than reworded, into the construction the linter already
+   * names as correct: its `POTENTIAL_MARKER` note says in as many words that
+   * `อ่านได้ฟรี` and `ใช้ได้ฟรี` are the same construction and need no exemption,
+   * because ได้ makes ฟรี an adverb on the phrase instead of half a compound.
+   *
+   * The words are the review's; only their order changed.
+   */
+  th: "อะไรใช้ได้ฟรีบ้าง และอะไรมีค่าบริการ?",
 };
 
 export const COST_ROWS: readonly CostRow[] = [
@@ -339,12 +355,34 @@ export const COST_ROWS: readonly CostRow[] = [
       th: "ฟรี",
     },
     body: {
-      en: "Answer on your phone, and the moment you finish you see your first read. After that a real person reads your answers and gets back to you.",
+      en: "Answer on your phone, and get your first read the moment you finish.",
       // Paul's wording, 17/08/2026. `จริง ๆ` goes back onto `จะมีคนอ่าน`, where
       // his own `faq.ts` answer has it. It is the word carrying the claim: the
       // point of the sentence is that a human reads it, not that a reply
       // arrives.
-      th: "ตอบคำถามบนมือถือได้เลย พอทำเสร็จ คุณจะเห็นผลเบื้องต้นทันที จากนั้นจะมีคนอ่านคำตอบของคุณจริง ๆ และติดต่อกลับ",
+      /*
+       * The contact clause is gone, 23/08/2026, and the cut is the point.
+       *
+       * This was Paul's own wording of 17/08/2026 and it ended `จากนั้นจะมีคนอ่าน
+       * คำตอบของคุณจริง ๆ และติดต่อกลับ`. He removed the same clause from the
+       * pricing page on 23/08 with "that's no longer true", and the quality
+       * review's second pass carried the cut here so the two pages stop
+       * disagreeing about what a finisher is promised.
+       *
+       * **Outbound contact has not stopped. The public promise of it has.** He
+       * still contacts the most ready leads; what he will not do is tell every
+       * finisher they will be contacted, because to a lead who is not ready that
+       * is a promise nobody intends to keep. So this is marketing copy, not a
+       * funnel change: the 10/08/2026 decision that a person delivers the full
+       * result stands, and `customer-journey.md` milestone 6 is untouched.
+       *
+       * Three surfaces deliberately keep their contact language, because none of
+       * them is a promise: `consent-copy.ts` asks PERMISSION, which is the legal
+       * basis; `privacy.ts` states factually that a human reads before contact;
+       * and `faq.ts` carries his own hedge that a reply may take a while and its
+       * absence does not mean the result was bad.
+       */
+      th: "ตอบคำถามบนมือถือได้เลย รับผลเบื้องต้นทันทีเมื่อทำเสร็จ",
     },
   },
   {
@@ -371,7 +409,7 @@ export const COST_ROWS: readonly CostRow[] = [
       // `ทำงานร่วมกับโค้ชแบบตัวต่อตัว` names who is on the other side of the
       // table. The first draft said `ทำงานตัวต่อตัวกับ CV`, which puts the CV
       // there instead.
-      th: "ทำงานร่วมกับโค้ชแบบตัวต่อตัว ทั้งเรื่อง CV การสมัครงาน และการเตรียมสัมภาษณ์ เราจะคุยรายละเอียดและค่าบริการให้ชัดตั้งแต่ครั้งแรก แล้วคุณค่อยตัดสินใจ",
+      th: "ทำงานร่วมกับโค้ชแบบตัวต่อตัว ทั้งเรื่อง CV การสมัครงาน และการเตรียมสัมภาษณ์ เราจะคุยรายละเอียดพร้อมแจ้งค่าใช้จ่ายให้ชัดเจนตั้งแต่ครั้งแรก แล้วคุณค่อยตัดสินใจว่าจะใช้บริการหรือไม่",
     },
   },
 ];
@@ -388,5 +426,5 @@ export const CLOSE_LEAD: Copy = {
   // PAUL, from `pinned-post-punprofile-intro.md`, with the timing clause
   // removed, and `ไปทำงาน` restored on his read of 17/08/2026 where this
   // file had drifted to `สู่การทำงาน`.
-  th: "เช็กว่าตอนนี้คุณอยู่ขั้นไหนบนเส้นทางไปทำงานในยุโรป",
+  th: "เช็กว่าตอนนี้คุณอยู่ขั้นไหน และควรทำอะไรต่อเพื่อไปทำงานในยุโรป",
 };

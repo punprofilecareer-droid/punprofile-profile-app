@@ -140,7 +140,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Which route to Europe are you exploring?",
-    th: "คุณกำลังมองเส้นทางไหนในการย้ายไปทำงานยุโรป",
+    th: "คุณกำลังพิจารณาเส้นทางไหนเพื่อไปทำงานในยุโรป?",
     options: PATHWAYS.map((p) => ({ value: p.value, en: p.en, th: p.th })),
   },
   {
@@ -151,7 +151,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "many",
     en: "Target country or countries in Europe (you can choose more than one)",
-    th: "ประเทศในยุโรปที่คุณสนใจไปทำงาน (เลือกได้มากกว่า 1 ข้อ)",
+    th: "คุณสนใจไปทำงานในประเทศใดบ้างในยุโรป? (เลือกได้มากกว่า 1 ข้อ)",
     options: [
       ...COUNTRIES.map((c) => ({ value: c, en: c, th: c })),
       { value: "not_sure", en: "Not sure yet", th: "ยังไม่แน่ใจ" },
@@ -196,11 +196,11 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Do you have an updated CV?",
-    th: "ตอนนี้มี CV/เรซูเม่ที่อัปเดตพร้อมใช้แล้วหรือยัง",
+    th: "ตอนนี้คุณมี CV ที่อัปเดตและพร้อมใช้แล้วหรือยัง?",
     options: [
       { value: "none", en: "Don't have one yet", th: "ยังไม่มี" },
       { value: "untailored", en: "Have one, not tailored for Europe", th: "มีแต่ยังไม่ปรับให้เหมาะกับยุโรป" },
-      { value: "out_dated", en: "Have one, but outdated", th: "มีแล้วแต่ไม่ได้อัพเดทมานาน" },
+      { value: "out_dated", en: "Have one, but outdated", th: "มีแล้ว แต่ไม่ได้อัปเดตมานาน" },
       { value: "europe_ready", en: "Have one, Europe-ready", th: "มีแล้วพร้อมใช้สมัครงานยุโรป" },
     ],
   },
@@ -210,12 +210,12 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Do you have a LinkedIn profile?",
-    th: "มีโปรไฟล์ LinkedIn หรือไม่",
+    th: "ตอนนี้คุณมีโปรไฟล์ LinkedIn แล้วหรือยัง?",
     options: [
       { value: "none", en: "None", th: "ยังไม่มี" },
-      { value: "basic", en: "Have one, rarely updated", th: "มี แต่ไม่ได้อัพเดต" },
-      { value: "active", en: "Active and kept up to date", th: "มีและอัพเดทสม่ำเสมอ" },
-      { value: "utilized", en: "Active and posts regularly", th: "มี อัพเดท และโพสอย่างสม่ำเสมอ" },
+      { value: "basic", en: "Have one, rarely updated", th: "มี แต่ไม่ได้อัปเดต" },
+      { value: "active", en: "Active and kept up to date", th: "มี และอัปเดตสม่ำเสมอ" },
+      { value: "utilized", en: "Active and posts regularly", th: "มี อัปเดต และโพสต์อย่างสม่ำเสมอ" },
     ],
   },
   {
@@ -230,14 +230,14 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Do you have a portfolio or work samples showing your results?",
-    th: "มี portfolio ผลงานหรือตัวอย่างงานที่แสดงผลลัพธ์ของงานไหม",
+    th: "คุณมี Portfolio หรือตัวอย่างผลงานที่แสดงผลลัพธ์จากการทำงานหรือไม่?",
     options: [
       { value: "none", en: "Not yet", th: "ยังไม่มี" },
       { value: "partial", en: "Some pieces, not organised", th: "มีบางส่วน ยังไม่ได้จัดรวม" },
       // `good` is retired from the question and still scores, because ~160
       // existing records hold it. See `scorePortfolio`.
-      { value: "good_physical", en: "Yes, on paper", th: "มีแล้ว ในรูปแบบกระดาษ" },
-      { value: "good_digital", en: "Yes, digital or online", th: "มีแล้ว ในรูปแบบ digital หรือ online" },
+      { value: "good_physical", en: "Yes, on paper", th: "มีแล้ว เป็นเอกสารหรือแฟ้มผลงาน" },
+      { value: "good_digital", en: "Yes, digital or online", th: "มีแล้ว ในรูปแบบดิจิทัลหรือออนไลน์" },
     ],
   },
   {
@@ -256,17 +256,17 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "many",
     en: "Which of these are true about how you work? Choose all that apply.",
-    th: "ข้อไหนตรงกับวิธีการใช้ tool ในการทำงานของคุณ เลือกได้มากกว่า 1 ข้อ",
+    th: "ข้อใดตรงกับวิธีที่คุณใช้เทคโนโลยีและเรียนรู้เครื่องมือใหม่ในการทำงานบ้าง? (เลือกได้มากกว่า 1 ข้อ)",
     options: [
       {
         value: "ai_weekly",
         en: "I use AI tools like ChatGPT for work or job-search tasks most weeks",
-        th: "ใช้ AI เช่น ChatGPT หางาน หรือช่วยทำงาน เกือบทุกสัปดาห์",
+        th: "ใช้ AI เช่น ChatGPT ช่วยทำงานหรือหางานเกือบทุกสัปดาห์",
       },
       {
         value: "eu_tools",
         en: "I am comfortable with the tools European teams run on, for example Slack, Notion, Jira, CRM, PM Tool",
-        th: "ใช้เครื่องมือที่ทีมในยุโรปใช้กันได้ เช่น Slack, Notion, Jira, CRM, PM Tool",
+        th: "ใช้เครื่องมือที่ทีมในยุโรปนิยมได้ เช่น Slack, Notion, Jira, CRM หรือเครื่องมือบริหารโครงการ",
       },
       {
         value: "ai_tailor",
@@ -276,7 +276,7 @@ export const STAGE1: Question[] = [
       {
         value: "self_taught",
         en: "I picked these up on my own, not because a job required it",
-        th: "เรียนรู้เองด้วยตัวเอง ไม่ใช่เพราะงานบังคับให้ทำ",
+        th: "เรียนรู้เครื่องมือเหล่านี้ด้วยตัวเอง ไม่ได้รอให้งานบังคับ",
       },
       { value: "never", en: "None of these yet", th: "ยังไม่มีข้อไหนตรง" },
     ],
@@ -289,7 +289,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Where do you stand on visa and the right to work in Europe?",
-    th: "เรื่องวีซ่า/สิทธิ์ทำงานในยุโรป ตอนนี้คุณอยู่ตรงไหน",
+    th: "เรื่องวีซ่าและสิทธิ์การทำงานในยุโรป ตอนนี้คุณอยู่ขั้นไหน?",
     options: [
       {
         value: "eu_rights",
@@ -304,9 +304,9 @@ export const STAGE1: Question[] = [
       {
         value: "sponsor_no_route",
         en: "Understand I'll need visa sponsorship",
-        th: "เข้าใจว่าต้องหาบริษัทที่ช่วย sponsor วีซ่า",
+        th: "เข้าใจว่าต้องหาบริษัทที่ช่วยสปอนเซอร์วีซ่า",
       },
-      { value: "unsure", en: "Not sure what's needed at all", th: "ยังไม่รู้เลยว่าต้องใช้อะไรบ้าง" },
+      { value: "unsure", en: "Not sure what's needed at all", th: "ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง" },
     ],
   },
   {
@@ -329,10 +329,10 @@ export const STAGE1: Question[] = [
     options: [
       { value: "A1", en: "Beginner (A1)", th: "เริ่มต้น (A1)" },
       { value: "A2", en: "Elementary (A2)", th: "พื้นฐาน (A2)" },
-      { value: "B1", en: "Conversational (B1)", th: "พอสื่อสารได้ (B1)" },
-      { value: "B2", en: "Working proficiency (B2)", th: "ใช้ทำงานได้ / พรีเซนต์งานได้ / ขายสินค้าได้ (B2)" },
-      { value: "C1", en: "Fluent (C1)", th: "ใช้งานได้คล่อง / สื่อสารเชิงอาชีพได้ดี (C1)" },
-      { value: "C2", en: "Native-level (C2)", th: "ใกล้เคียงเจ้าของภาษา / ใช้ได้ระดับมืออาชีพ (C2)" },
+      { value: "B1", en: "Conversational (B1)", th: "สื่อสารเรื่องทั่วไปได้ (B1)" },
+      { value: "B2", en: "Working proficiency (B2)", th: "ใช้ทำงาน พรีเซนต์ และเจรจาได้ (B2)" },
+      { value: "C1", en: "Fluent (C1)", th: "สื่อสารในการทำงานได้อย่างคล่องแคล่ว (C1)" },
+      { value: "C2", en: "Native-level (C2)", th: "เชี่ยวชาญและสื่อสารเรื่องซับซ้อนได้ (C2)" },
     ],
   },
   {
@@ -368,7 +368,7 @@ export const STAGE1: Question[] = [
       {
         value: "interviewing_unsuccessful",
         en: "Interviewing but not getting through",
-        th: "มีนัดสัมภาษณ์แล้ว แต่ยังไม่เข้ารอบ",
+        th: "เคยสัมภาษณ์แล้ว แต่ยังไม่ผ่านเข้ารอบถัดไป",
       },
       { value: "offer", en: "Have an offer", th: "ได้รับข้อเสนองานแล้ว" },
       { value: "negotiating", en: "Negotiating a contract", th: "กำลังเจรจาสัญญา" },
@@ -386,7 +386,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "How many roles in Europe have you applied to so far?",
-    th: "สมัครงานในยุโรปไปแล้วกี่ application",
+    th: "คุณสมัครงานในยุโรปไปแล้วกี่ตำแหน่ง?",
     options: [
       { value: "0", en: "None yet", th: "ยังไม่ได้สมัคร" },
       { value: "1-4", en: "1 to 4", th: "1–4" },
@@ -425,7 +425,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "Have you heard back from any of them?",
-    th: "จากที่สมัครไป มีคนติดต่อกลับมาบ้างไหม",
+    th: "จากตำแหน่งที่สมัครไป มีนายจ้างติดต่อกลับมาบ้างไหม?",
     options: [
       { value: "not_applied", en: "Haven't applied yet", th: "ยังไม่เคยสมัครเลย" },
       {
@@ -446,7 +446,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "When do you want to start working in Europe?",
-    th: "อยากเริ่มงานที่ยุโรปเมื่อไหร่",
+    th: "คุณอยากเริ่มทำงานในยุโรปเมื่อไร?",
     options: [
       { value: "within_3m", en: "Within 3 months", th: "ภายใน 3 เดือน" },
       { value: "3_6m", en: "In 3 to 6 months", th: "3–6 เดือน" },
@@ -476,7 +476,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "many",
     en: "If you moved, who moves with you? Choose all that apply.",
-    th: "ถ้าคุณย้ายไปยุโรป มีใครต้องย้ายตามไปด้วยไหม เลือกได้มากกว่า 1 ข้อ",
+    th: "ถ้าคุณย้ายไปยุโรป ตอนนี้คุณและคนใกล้ชิดวางแผนเรื่องนี้ไปถึงไหนแล้ว? (เลือกได้มากกว่า 1 ข้อ)",
     options: [
       {
         value: "none",
@@ -491,12 +491,12 @@ export const STAGE1: Question[] = [
       {
         value: "no_objection",
         en: "Nobody close to me is against it",
-        th: "คนใกล้ชิดไม่มีใครคัดค้าน",
+        th: "ไม่มีคนใกล้ชิดคัดค้านเรื่องการย้าย",
       },
       {
         value: "dependents_plan",
         en: "We have a plan for school or care for the people who depend on me",
-        th: "วางแผนเรื่องโรงเรียนหรือการดูแลผู้สูงอายุในความรับผิดชอบไว้แล้ว",
+        th: "วางแผนเรื่องโรงเรียนหรือการดูแลผู้สูงอายุที่อยู่ในความรับผิดชอบแล้ว",
       },
       {
         value: "logistics",
@@ -527,7 +527,7 @@ export const STAGE1: Question[] = [
     stage: 1,
     select: "one",
     en: "What monthly salary would you be aiming for in Europe, before tax?",
-    th: "เงินเดือนที่คุณตั้งเป้าในยุโรป ก่อนหักภาษี ประมาณเท่าไหร่",
+    th: "คุณตั้งเป้าเงินเดือนในยุโรปไว้ประมาณเท่าไร ก่อนหักภาษี?",
     options: [
       { value: "under_2500", en: "Under €2,500 a month", th: "ต่ำกว่า 2,500 ยูโรต่อเดือน" },
       { value: "2500_3500", en: "€2,500 to €3,500 a month", th: "2,500–3,500 ยูโรต่อเดือน" },
@@ -571,12 +571,12 @@ export const STAGE1: Question[] = [
       {
         value: "soft_skills",
         en: "Soft skills, for example communication or leadership",
-        th: "ทักษะการทำงาน เช่น การสื่อสาร หรือ ภาวะผู้นำ",
+        th: "ทักษะในการทำงาน เช่น การสื่อสารหรือภาวะผู้นำ",
       },
       {
         value: "technical",
         en: "A technical skill or a programming language",
-        th: "เรียนทักษะเฉพาะทางหรือภาษาโปรแกรมมิ่ง",
+        th: "เรียนทักษะเฉพาะทางหรือการเขียนโปรแกรม",
       },
       {
         value: "certification",
@@ -597,10 +597,10 @@ export const STAGE1: Question[] = [
         // collapses any paid area to the same band. This is for the call.
         value: "profile_docs",
         en: "Having a CV, LinkedIn profile or portfolio written or reviewed",
-        th: "จ้างเขียนหรือรีวิว CV, โปรไฟล์ LinkedIn หรือพอร์ตโฟลิโอ",
+        th: "จ้างผู้เชี่ยวชาญช่วยเขียนหรือรีวิว CV โปรไฟล์ LinkedIn หรือ Portfolio",
       },
       { value: "career_coach", en: "A career coach", th: "ใช้บริการโค้ชชิ่งด้านอาชีพ" },
-      { value: "never", en: "None of these yet", th: "ยังไม่เคยจ่ายเงินกับเรื่องเหล่านี้" },
+      { value: "never", en: "None of these yet", th: "ยังไม่เคยลงทุนกับเรื่องเหล่านี้" },
     ],
   },
 ];

@@ -73,7 +73,35 @@ const span = (f: LintFinding) => (f.at ? f.at[1] - f.at[0] : 0);
  * zone, so its LR-04 section still describes the narrower list. That is a
  * pending edit, not a disagreement.
  */
-const FREE_STEMS = ["ปรึกษา", "ทดลอง", "ตรวจ", "เรียน", "ส่ง", "จัดส่ง", "อบรม", "อ่าน", "เปิด"];
+/*
+ * `ใช้` added 23/08/2026, and it is the same move as `อ่าน` and `เปิด` on 17/08
+ * for the same reason, which is why it is a stem rather than an exemption.
+ *
+ * It surfaced when `pricing.ts` and `products.ts` finally became visible to the
+ * checks and failed four strings at once. One of them is Paul's own headline,
+ * `เริ่มใช้ฟรี จ่ายเฉพาะบริการที่คุณเลือก`, written deliberately on 23/08.
+ *
+ * LR-04's own test admits it. The rule asks whether the verb already reads as
+ * something worth paying for and names `คุย` as the counter-example, because
+ * casual talk is not something anyone expected to pay for. Using a product is:
+ * `ใช้ฟรี` is what Thai software copy says, in the way `คุยฟรี` never was, and
+ * the rule was never aimed at it. As the 17/08 note below puts it, the whitelist
+ * was derived from the `คุยฟรี` error and simply stopped where that error did.
+ *
+ * **This is the widening, so it is the line to delete if Paul disagrees.** The
+ * alternative was normalising four strings to `ใช้ได้ฟรี`, which is already legal
+ * under `POTENTIAL_MARKER` and would have meant editing his own headline. The
+ * third option offered in conversation, keeping the headline bare and rewording
+ * the rest, is not actually implementable: there is no per-string exemption, so
+ * permitting the headline permits them all.
+ *
+ * The termbase ban on `คุยฟรี`, `แชทฟรี`, `ทักฟรี` and `นัดคุยฟรี` is untouched,
+ * and `CASUAL_VERBS` is still checked first, so `คุยได้ฟรี` fails as before.
+ *
+ * `Language_System.md` still describes the narrower list and sits in the
+ * read-mostly zone. Pending edit, not a disagreement, exactly as on 17/08.
+ */
+const FREE_STEMS = ["ปรึกษา", "ทดลอง", "ตรวจ", "เรียน", "ส่ง", "จัดส่ง", "อบรม", "อ่าน", "เปิด", "ใช้"];
 
 /** Casual verbs that must stay separate from ฟรี. LR-04. */
 const CASUAL_VERBS = ["คุย", "แชท", "ทัก", "แอด", "เม้าท์", "ถาม"];
@@ -119,6 +147,12 @@ const POTENTIAL_MARKER = "ได้";
  * 14/08 batch quoted "We do sponsor visas!" twice and the emphasis check called
  * it two exclamation marks of PunProfile's own.
  */
+/**
+ * Longer Thai words that legitimately contain a banned form as a substring.
+ * See the note in the banned-form loop below.
+ */
+const LEGITIMATE_HOSTS = ["ออนไลน์"];
+
 function withoutQuotes(s: string): string {
   return s.replace(/"[^"]*"|"[^"]*"|'[^']*'/g, (m) => " ".repeat(m.length));
 }
@@ -149,6 +183,32 @@ export function lintThai(targets: LintTarget[]): LintFinding[] {
         for (;;) {
           const i = th.indexOf(form, from);
           if (i === -1) break;
+          /*
+           * A banned form is matched as a raw substring, and Thai does not space
+           * its words, so a short banned form can sit inside a longer legitimate
+           * one. `ไลน์` is banned as a transliteration of the brand and it is
+           * also the tail of `ออนไลน์`, ordinary Thai for online and exactly what
+           * LR-01 asks for in place of the English word.
+           *
+           * Found 23/08/2026, when a copy review correctly replaced
+           * `digital หรือ online` with `ดิจิทัลหรือออนไลน์` and this check failed
+           * the improvement.
+           *
+           * A general word boundary is not available: the real errors the ban
+           * exists to catch, `ทางไลน์` and `ผ่านไลน์`, are also preceded by Thai,
+           * so a preceding-character rule would switch the ban off entirely. An
+           * explicit list of longer hosts is narrow enough to be obviously right
+           * and easy to extend when the next one turns up.
+           */
+          if (
+            LEGITIMATE_HOSTS.some((w) => {
+              const j = th.indexOf(w);
+              return j !== -1 && j <= i && i + form.length <= j + w.length;
+            })
+          ) {
+            from = i + 1;
+            continue;
+          }
           banned.push({
             rule: term.rule,
             target: id,

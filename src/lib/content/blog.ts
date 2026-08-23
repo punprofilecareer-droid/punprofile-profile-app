@@ -442,7 +442,7 @@ export const PLAYBOOKS_INTRO: Copy = {
   // Paul's wording, 17/08/2026. `ควรเริ่มอ่าน` rather than `ควรอ่านก่อน`,
   // which is where to begin rather than an order of merit, and `พื้นฐาน`
   // names what they start from.
-  th: "บทความที่ควรเริ่มอ่าน แต่ละเรื่องอธิบายตั้งแต่พื้นฐานจนคุณนำไปลงมือทำต่อได้ด้วยตัวเอง",
+  th: "บทความแนะนำสำหรับเริ่มต้น แต่ละเรื่องอธิบายตั้งแต่พื้นฐานจนคุณนำไปใช้ต่อได้ด้วยตัวเอง",
 };
 
 /** The field's accessible name. Never rendered as a visible label. */
@@ -518,7 +518,7 @@ export const SIGNUP_CONSENT: Copy = {
   // `ปั้นโปรไฟล์` in Thai script rather than the wordmark, which is LR-01 where
   // the brand opens a Thai clause.
   en: "You agree that PunProfile may keep and use your email address to send you news and practical advice. We do not pass your details to anyone else.",
-  th: "ยินยอมให้ ปั้นโปรไฟล์ เก็บและใช้อีเมลของคุณเพื่อส่งข่าวสารและคำแนะนำ เราจะไม่ส่งต่อข้อมูลของคุณให้บุคคลอื่น",
+  th: "ยินยอมให้ PunProfile เก็บและใช้อีเมลของคุณเพื่อส่งข่าวสารและคำแนะนำ เราจะไม่ส่งต่อข้อมูลของคุณให้บุคคลอื่น",
 };
 
 export const SIGNUP_DONE: Copy = {
@@ -608,5 +608,5 @@ export const BLOG_CLOSE: Copy = {
   // The second half is his own closing sentence from the pinned post,
   // already used on the home page, so the blog closes the way the site
   // closes.
-  th: "อ่านมาถึงตรงนี้แล้วยังไม่รู้ว่าจะเริ่มจากไหน? ใช้เวลาแค่ 2 นาที เช็กว่าตอนนี้คุณอยู่ขั้นไหนบนเส้นทางไปทำงานในยุโรป",
+  th: "อ่านมาถึงตรงนี้แล้วยังไม่รู้ว่าจะเริ่มจากไหน? ใช้เวลาเพียง 2 นาที เช็กว่าตอนนี้คุณอยู่ขั้นไหน และควรทำอะไรต่อเพื่อไปทำงานในยุโรป",
 };

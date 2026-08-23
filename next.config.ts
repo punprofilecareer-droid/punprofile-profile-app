@@ -28,6 +28,15 @@ const nextConfig: NextConfig = {
     return [
       { source: "/assess", destination: "/efc-assessment", permanent: true },
       { source: "/en/assess", destination: "/en/efc-assessment", permanent: true },
+      /**
+       * `/services` folded into `/coaching` on 23/08/2026. Same rule as above and
+       * the same reason: the route was in the sitemap from 16/08/2026 and in the
+       * footer of every page, so the link exists in other people's hands.
+       * `?focus=` is preserved by Next along with every other query string, which
+       * is what keeps the result screen's link pointing at the right card.
+       */
+      { source: "/services", destination: "/coaching", permanent: true },
+      { source: "/en/services", destination: "/en/coaching", permanent: true },
     ];
   },
 };
