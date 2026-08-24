@@ -25,8 +25,10 @@
  * and not the one this script uses.
  */
 
+import { existsSync, readFileSync } from "node:fs";
 import { lintThai, type LintTarget } from "./lint-thai.js";
 import { walkCopy } from "./lib/copy-walk.js";
+import { NAV, PRODUCTS } from "../src/lib/content/nav.js";
 import * as home from "../src/lib/content/home.js";
 // Added 23/08/2026. Both shipped that day and neither was reachable by any
 // check: this list is hardcoded, so 44 product strings and 39 pricing strings
@@ -122,6 +124,53 @@ if (findings.length === 0) {
     console.log(`          ${f.message}`);
   }
   console.log("");
+}
+
+/* -------------------------------------------------------------------------
+ * Every destination is reachable at every width, 24/08/2026.
+ *
+ * **This exists because of a bug that shipped to production.** The Products
+ * group moved into its own array in `nav.ts` on 23/08 so the top bar could give
+ * it a dropdown. `TopNav` is `hidden ... expanded:flex`, so it renders nothing
+ * below 840px, and `SiteMenu`, the only navigation a phone has, kept mapping
+ * `NAV` alone. Six destinations, the five product pages and `/coaching`, were
+ * unreachable on the screen size that is most of this product's audience, and
+ * nothing anywhere failed. Every check was green.
+ *
+ * Two crude assertions, and crude is the point: they are the two things that
+ * were false and a real one of either would have caught it.
+ *
+ * 1. Both navigation components reference both arrays. A source-text check, not
+ *    a render test. It cannot tell whether the list is displayed correctly and
+ *    does not try; it tells you a component forgot a list exists, which is what
+ *    happened.
+ * 2. Every href in both arrays has a route file behind it, so a link cannot
+ *    point at a page nobody built. The `nav.ts` header claimed
+ *    `verify-content.ts` already did this sweep. It never did.
+ */
+const NAV_COMPONENTS = ["src/components/SiteMenu.tsx", "src/components/TopNav.tsx"];
+for (const file of NAV_COMPONENTS) {
+  const src = readFileSync(file, "utf8");
+  for (const list of ["NAV", "PRODUCTS"]) {
+    if (!new RegExp(`\\b${list}\\b`).test(src)) {
+      console.error(
+        `FAIL ${file} never mentions ${list}. Both navigations have to carry every ` +
+          `destination, or the width where only one of them renders loses the rest.`,
+      );
+      failures.push({ rule: "nav-reach", target: file, message: `missing ${list}`, level: "fail" });
+    }
+  }
+}
+
+for (const item of [...PRODUCTS, ...NAV]) {
+  const seg = item.href.replace(/^\//, "");
+  const hit =
+    existsSync(`src/app/(th)/${seg}/page.tsx`) ||
+    existsSync(`src/app/(th)/${seg.split("/")[0]}/[slug]/page.tsx`);
+  if (!hit) {
+    console.error(`FAIL ${item.href} is in the menu and has no route file.`);
+    failures.push({ rule: "nav-route", target: item.href, message: "no route", level: "fail" });
+  }
 }
 
 // Exits non-zero because this is in the pre-push list, so a failure has to stop

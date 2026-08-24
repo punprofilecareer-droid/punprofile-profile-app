@@ -192,14 +192,18 @@
    mid-range Android hardware this audience is on.
    --------------------------------------------------------------------------- */
 
+/* The drawer travels in from the RIGHT edge since 24/08/2026, because that is
+   the edge its button is on. The burger moved to the upper right on 23/08 for
+   thumb reach, and a panel that slid in from the opposite side left the whole
+   gesture crossing the screen. Positive translate, not negative. */
 @keyframes menu-panel-in {
-  from { transform: translateX(-100%); }
+  from { transform: translateX(100%); }
   to   { transform: translateX(0); }
 }
 
 @keyframes menu-panel-out {
   from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
 }
 
 @keyframes menu-scrim-in {

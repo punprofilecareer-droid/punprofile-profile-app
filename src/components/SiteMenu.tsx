@@ -3,9 +3,18 @@
 /**
  * The burger menu. TASK-085, 14/08/2026.
  *
- * Upper left, with the wordmark centred beside it. The wordmark stays inert:
- * it sits above a running assessment, and now that navigation has its own
- * control there is no reason to make the logo a second one.
+ * Upper RIGHT since 23/08/2026, Paul's call: easier to reach with a thumb. The
+ * wordmark is left-aligned beside it and stays inert, because it sits above a
+ * running assessment and navigation has its own control.
+ *
+ * **This is the ONLY navigation below `expanded` (840px), so it has to carry
+ * every destination.** `TopNav` is `hidden ... expanded:flex`, which means on a
+ * phone it renders nothing at all. When the Products group moved into its own
+ * array in `nav.ts` for the top bar on 23/08/2026, this drawer kept mapping
+ * `NAV` alone and silently lost six destinations, the five product pages and
+ * `/coaching`, on the screen size that is most of this product's audience.
+ * Fixed 24/08/2026. Any entry added to `nav.ts` has to appear here as well as
+ * in `TopNav`, and the two lists are the only place to check.
  *
  * **It hides while an assessment is in progress**, which is the point of
  * `navLock`. Not disabled and not confirming: absent. A disabled control still
@@ -50,7 +59,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCopy } from "@/components/LocaleProvider";
-import { NAV } from "@/lib/content/nav";
+import { NAV, PRODUCTS } from "@/lib/content/nav";
 import { DESTINATIONS } from "@/lib/content/cta";
 
 /** The card advertises the assessment, so it takes the assessment's own label. */
@@ -194,7 +203,7 @@ export default function SiteMenu() {
         aria-label={t("nav.menu")}
         aria-expanded={open}
         aria-controls="site-menu"
-        className="-ml-2 flex size-12 items-center justify-center rounded-full text-on-surface transition-colors hover:bg-tertiary-container"
+        className="-mr-2 flex size-12 items-center justify-center rounded-full text-on-surface transition-colors hover:bg-tertiary-container"
       >
         {/* Three rules, drawn rather than typed: the glyph characters that look
             like a burger render at different weights across Thai and Latin
@@ -224,10 +233,16 @@ export default function SiteMenu() {
             {/* One tier above the language menu, because a drawer covers more.
                 Level 3, which the skill maps to `surface-container-high`; the
                 tone is what carries the elevation and the shadow only earns its
-                place because the drawer floats over the page. Only the right corners are
-                rounded, because the left edge is against the screen and a
+                place because the drawer floats over the page.
+
+                **It is attached to the RIGHT edge since 24/08/2026**, which is
+                the edge its button is on: the burger moved to the upper right on
+                23/08 for thumb reach, and a panel opening from the far side sent
+                the whole gesture across the screen. Only the left corners are
+                rounded, because the right edge is against the screen and a
                 rounded corner there would float the panel off an edge it is
-                supposed to be attached to. */}
+                supposed to be attached to. The keyframes in `globals.css`
+                translate positive for the same reason. */}
             <div
               id="site-menu"
               ref={panelRef}
@@ -235,7 +250,7 @@ export default function SiteMenu() {
               role="dialog"
               aria-modal="true"
               aria-label={t("nav.menu")}
-              className={`fixed inset-y-0 left-0 z-50 flex w-[min(20rem,80vw)] flex-col overflow-hidden rounded-r-large bg-surface-container-high px-5 pt-5 shadow-level-3 outline-none ${
+              className={`fixed inset-y-0 right-0 z-50 flex w-[min(20rem,80vw)] flex-col overflow-hidden rounded-l-large bg-surface-container-high px-5 pt-5 shadow-level-3 outline-none ${
                 closing ? "menu-panel-out" : "menu-panel-in"
               }`}
               style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
@@ -244,7 +259,7 @@ export default function SiteMenu() {
                 type="button"
                 onClick={close}
                 aria-label={t("nav.menuClose")}
-                className="-ml-1 mb-5 flex size-12 items-center justify-center self-start rounded-full text-on-surface transition-colors hover:bg-black/5"
+                className="-mr-1 mb-5 flex size-12 items-center justify-center self-end rounded-full text-on-surface transition-colors hover:bg-black/5"
               >
                 <span aria-hidden className="text-title-large leading-none">
                   &times;
@@ -257,15 +272,61 @@ export default function SiteMenu() {
                   read as six buttons. A drawer is a list of destinations, and
                   the thing it should be is quiet and easy to scan.
 
-                  `headline-small` and a 28px gap rather than `body-large` and
-                  4px. The generosity is the design; a cramped list is what
-                  chips were compensating for.
-
                   The current page is marked by weight and colour rather than by
                   a filled background, which is the same information without a
                   second shape competing with the card below. `aria-current`
-                  carries it for a screen reader either way. */}
-              <nav className="flex flex-col gap-7">
+                  carries it for a screen reader either way.
+
+                  ---------------------------------------------------------
+                  TEN DESTINATIONS, NOT FOUR, 24/08/2026
+                  ---------------------------------------------------------
+
+                  The 16/08 decision chose `headline-small` and a 28px gap over
+                  `body-large` and 4px, and the note said the generosity was the
+                  design. That decision was about not compensating for a cramped
+                  list with chips; it was not a commitment to 24px. It was also
+                  made for four entries.
+
+                  With the Products group here it is ten, and ten at 24px with
+                  28px gaps does not fit a 360x640 phone above the promo card,
+                  which is the screen this drawer exists for. So the list is
+                  `title-large` at a 20px gap, still generous, still quiet, and
+                  it SCROLLS: `min-h-0 flex-1 overflow-y-auto` on the nav with
+                  the card pinned below it, so a shorter phone loses nothing and
+                  the action never scrolls away.
+
+                  **One size for all ten, deliberately.** Products are the
+                  catalogue and FAQ is a support page, so sizing the group
+                  smaller would have said the opposite of what is true, and
+                  sizing it larger would have made the support pages look like an
+                  afterthought. The group label carries the grouping, and the
+                  hairline carries the split. Nothing else has to. */}
+              <nav className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto">
+                {/* The group label, `nav.products`. Not a link: `/products` is
+                    not a page, and a heading that looks tappable and is not is
+                    worse than no heading. */}
+                <span className="text-label-large text-on-surface-variant">
+                  {t("nav.products")}
+                </span>
+                {PRODUCTS.map((item) => {
+                  const href = path(item.href);
+                  const here = pathname === href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={href}
+                      aria-current={here ? "page" : undefined}
+                      className={`text-title-large transition-colors hover:text-primary ${
+                        here ? "font-semibold text-primary" : "text-on-surface"
+                      }`}
+                    >
+                      {t(item.label)}
+                    </Link>
+                  );
+                })}
+
+                <hr className="border-t border-outline-variant" />
+
                 {NAV.map((item) => {
                   // `path()` first, then compare. `pathname` is the real URL, so
                   // on the English tree it is `/en/faq` and the table's `/faq`
@@ -278,7 +339,7 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-headline-small transition-colors hover:text-primary ${
+                      className={`text-title-large transition-colors hover:text-primary ${
                         here ? "font-semibold text-primary" : "text-on-surface"
                       }`}
                     >
@@ -303,7 +364,7 @@ export default function SiteMenu() {
                   other surface cannot drift into two wordings of one button. */}
               <Link
                 href={path(ASSESS.href)}
-                className="group mt-auto flex flex-col gap-6 rounded-extra-large bg-tertiary-container p-6 transition-colors hover:bg-tertiary-fixed-dim"
+                className="group mt-6 flex shrink-0 flex-col gap-6 rounded-extra-large bg-tertiary-container p-6 transition-colors hover:bg-tertiary-fixed-dim"
               >
                 <span className="text-headline-medium font-bold text-balance text-on-tertiary-container">
                   {t("menu.promo")}

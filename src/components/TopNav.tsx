@@ -19,6 +19,13 @@
  * that case, now from the upper RIGHT on Paul's call of 23/08/2026: easier to
  * reach with a thumb.
  *
+ * **This component renders NOTHING below 840px**, which is the trap this file
+ * has to state out loud. It is `hidden ... expanded:flex`, so on a phone the
+ * drawer is the only navigation there is. When `PRODUCTS` was split out of `NAV`
+ * for the dropdown here, the drawer kept mapping `NAV` alone and six
+ * destinations vanished on mobile with every check green. `verify-pages.ts` now
+ * fails when either component forgets either array.
+ *
  * ---------------------------------------------------------------------------
  * THE DROPDOWN, AND WHY IT IS NOT HOVER-ONLY
  * ---------------------------------------------------------------------------

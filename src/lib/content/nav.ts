@@ -4,9 +4,17 @@ import { POSTS } from "./blog";
 /**
  * The site menu, in order. TASK-085, 14/08/2026.
  *
- * One list, read by the menu and by the route sweep in
- * `scripts/verify-content.ts`, so a link that points at a route nobody built
+ * One list, read by BOTH navigations and by the reach check in
+ * `scripts/verify-pages.ts`, so a link that points at a route nobody built
  * fails a check rather than a visitor's tap.
+ *
+ * The claim here used to name `verify-content.ts` as doing that sweep. It never
+ * did, and on 23/08/2026 that cost six destinations on mobile. The check is real
+ * now and it lives in `verify-pages.ts`, which is in the pre-push list.
+ *
+ * **Anything added to either array below has to appear in `TopNav.tsx` AND in
+ * `SiteMenu.tsx`.** They render at different widths and neither is a fallback
+ * for the other.
  *
  * `/admin` and `/login` are absent and must stay absent. They are protected by
  * `requireAdmin` in Convex and by the middleware, so listing them would not be
