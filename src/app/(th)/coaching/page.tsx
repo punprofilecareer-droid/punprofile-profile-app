@@ -71,7 +71,7 @@ function ProofPanel() {
   if (lines.length === 0) return null;
 
   return (
-    <Band ground="soft">
+    <Band block="B1" ground="soft">
       <h2 className={SECTION_HEADING(locale)}>{pick(PROOF_HEADING)}</h2>
       <div className="mt-6 grid gap-4 medium:grid-cols-3">
         {lines.map(({ line, value }) => (
@@ -100,7 +100,7 @@ export default function CoachingPage() {
           section: the founder section below is already on brand orange, and the
           system allows one fixed high-energy ground per page. Two of them is two
           things claiming to be the loudest. 16/08/2026. */}
-      <Band ground="canvas" width="wide">
+      <Band block="B3" ground="canvas" width="wide">
         <div className="mx-auto grid max-w-5xl items-center gap-10 large:grid-cols-[1.15fr_1fr]">
           <div>
             {/* Same rule as the footer: tracked and uppercased in English,
@@ -146,7 +146,7 @@ export default function CoachingPage() {
 
         {/* Recognition before argument. A reader who has ticked three of these
             off in their head reads the rest of the page differently. */}
-        <Band ground="canvas">
+        <Band block="B5" ground="canvas">
           <h2 className={SECTION_HEADING(locale)}>{pick(PAIN_HEADING)}</h2>
           <div className="mt-6 grid gap-3 medium:grid-cols-2">
             {PAINS.map((p, i) => (
@@ -161,7 +161,7 @@ export default function CoachingPage() {
 
         {/* The machine. The section this business is best placed to write,
             because the framework genuinely does say what it cannot do. */}
-        <Band ground="soft">
+        <Band block="B2" ground="soft">
           <h2 className={SECTION_HEADING(locale)}>{pick(METHOD_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(METHOD_INTRO)}</p>
           <div className="mt-8 grid gap-4 medium:grid-cols-2">
@@ -181,7 +181,11 @@ export default function CoachingPage() {
           </div>
         </Band>
 
-        <Band ground="canvas">
+        {/* B10 rather than B5: this band holds "who it is for" and then "who it
+            is NOT for", and the second half is the limit slot. Labelled B5 for
+            an afternoon, which made `verify:narrative` say this page asks
+            without limiting when it does the opposite. */}
+        <Band block="B10" ground="canvas">
           <h2 className={SECTION_HEADING(locale)}>{pick(PERSONA_HEADING)}</h2>
           <ul className="mt-6 flex flex-col gap-3">
             {PERSONAS.map((p, i) => (
@@ -216,7 +220,7 @@ export default function CoachingPage() {
           is `ink-deep` at 9.45 rather than a role that would follow the scheme
           and vanish. This is the longest piece of running text on the site, so
           the ratio is the reason the label is not white. */}
-      <Band ground="brand">
+      <Band block="B7" ground="brand">
           <div className="flex flex-col gap-8 medium:flex-row medium:items-start">
             <Image
               src="/paul-portrait.png"
@@ -258,11 +262,11 @@ export default function CoachingPage() {
 
           It carries the `?focus=` contract the result screen depends on. See the
           note at the top of `ServiceCards`. */}
-      <Band ground="soft" width="wide">
+      <Band block="B4" ground="soft" width="wide">
         <ServiceCards />
       </Band>
 
-      <Band ground="dark" align="center" className="text-center">
+      <Band block="B8" ground="dark" align="center" className="text-center">
         <p className={SECTION_HEADING(locale)}>{pick(CLOSE_LEAD)}</p>
         <CallToAction page="/coaching" className="mt-8" align="center" />
       </Band>

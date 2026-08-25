@@ -51,12 +51,14 @@ export default function ContactPage() {
 
   return (
     <div className="w-full">
-      <Band ground="canvas">
+      <Band block="B1" ground="canvas">
         <h1 className={HERO_HEADING(locale)}>{pick(CONTACT_HEADING)}</h1>
         <p className="mt-4 text-body-large text-on-surface-variant">{pick(CONTACT_INTRO)}</p>
       </Band>
 
-      <Band ground="soft">
+      {/* B8, not B2. This band is the ask and the channels it can be made
+          through; nothing on this page describes a thing you buy. */}
+      <Band block="B8" ground="soft">
         <CallToAction page="/contact" />
 
         <p className="mt-5 text-body-medium text-on-surface-variant">{pick(CONTACT_CHANNELS)}</p>

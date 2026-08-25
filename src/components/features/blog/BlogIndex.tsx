@@ -92,7 +92,7 @@ function BlogBody() {
       {/* Brand lime, the one unmissable ground on this page. It is allowed here
           because the blog index carries no brand orange; `design.md` permits one
           fixed high-energy ground per page and no more. Ink text, never white. */}
-      <Band ground="brand" width="wide">
+      <Band block="B1" ground="brand" width="wide">
         <div>
           <h1 className={`max-w-3xl ${HERO_HEADING(locale)}`}>{pick(BLOG_HEADING)}</h1>
           <p className="mt-5 max-w-2xl text-body-large text-on-surface-variant">{pick(BLOG_INTRO)}</p>
@@ -110,7 +110,7 @@ function BlogBody() {
           than three colours down the page. `design.md` asks for one wash per
           section and lets spacing do the sub-grouping. */}
       {playbooks().length > 1 && (
-        <Band ground="canvas" width="wide">
+        <Band block="B19" ground="canvas" width="wide">
           {/*
             B19: the category heading carries the chevron and is itself the way
             in, so a row does not need a "see all" link sitting apart from it.
@@ -129,7 +129,7 @@ function BlogBody() {
         </Band>
       )}
 
-      <Band ground="soft" width="wide">
+      <Band block="B19" ground="soft" width="wide">
         {/* No topic row when there is nothing to filter. A row of one chip
             reading "All" is a control that cannot do anything, and it makes an
             empty page look broken rather than new. */}

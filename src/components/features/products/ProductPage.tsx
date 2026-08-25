@@ -56,7 +56,7 @@ export default function ProductPage({ product }: { product: Product }) {
 
   return (
     <div className="w-full">
-      <Band ground="canvas">
+      <Band block="B1" ground="canvas">
       {/* B22, the audience chip: the reference's product pages say who a thing
           is for before they say anything else, which is a cheap and honest way
           to let the wrong reader leave. None of the five has ever said it. */}
@@ -86,7 +86,7 @@ export default function ProductPage({ product }: { product: Product }) {
           that each step gets a hairline and the section gets something to look
           at, which is what the reference does on every page that has to say
           what a product actually does. */}
-      <Band ground="soft" width="wide">
+      <Band block="B2" ground="soft" width="wide">
         <h2 className={SECTION_HEADING(locale)}>{pick(HOW_HEADING)}</h2>
         {/* The reference puts a line under this heading before the checklist. */}
         <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
@@ -104,7 +104,7 @@ export default function ProductPage({ product }: { product: Product }) {
           Several of these carry a standing decision (the app does not rewrite
           CVs; PunProfile is not a recruiter), and a decision that only appears
           as a footnote is one nobody reads before they buy. */}
-      <Band ground="canvas">
+      <Band block="B10" ground="canvas">
         <div className="card-plain border border-line px-8 py-9">
           <h2 className="text-heading-sm">{pick(LIMIT_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(product.limit)}</p>
@@ -113,7 +113,7 @@ export default function ProductPage({ product }: { product: Product }) {
 
       {/* --------------------------------------------------------- faq ---- */}
       {product.faq.length > 0 && (
-        <Band ground="soft">
+        <Band block="B5" ground="soft">
           {product.faq.map((item, i) => (
             <div key={i} className="border-b border-line py-6 last:border-b-0">
               <h3 className="text-heading-sm">{pick(item.q)}</h3>
@@ -126,7 +126,7 @@ export default function ProductPage({ product }: { product: Product }) {
       {/* The same action as the top, once more at the foot. Rule 1 in `cta.ts`
           allows one action to repeat; a reader who got this far arrived at the
           decision here rather than at the headline. */}
-      <Band ground="dark" align="center" className="text-center">
+      <Band block="B8" ground="dark" align="center" className="text-center">
         <CallToAction page={product.actionsKey} align="center" show="primary" />
       </Band>
     </div>

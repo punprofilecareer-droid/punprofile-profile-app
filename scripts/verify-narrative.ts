@@ -30,14 +30,22 @@
  *    spine does not have is a typo that would silently exempt a section from
  *    checking.
  *
- * It does NOT check that a given page renders a given slot. That needs the
- * page-to-block map to be data rather than JSX, and inventing that mapping to
- * satisfy a checker would be the checker writing the architecture.
+ * 6. **Every page's blocks exist, and every page that asks also limits.** Each
+ *    `Band` declares the block it is, so the pages are walkable. The rule being
+ *    enforced is the one the spine states and nothing could hold it to: a limit
+ *    comes before an ask. A page that carries an `ask`-bearing block and no
+ *    `limit`-bearing one is a page selling something without saying what it is
+ *    not, which is the failure mode every one of these pages started in.
+ *
+ * It still does not check WHICH offer a page tells. A page can carry a B7 and
+ * say nothing the record says, and no script can see that. What it can see is
+ * a page shaped wrongly, and that is most of it.
  */
 
 import { readFileSync } from "node:fs";
 import { load } from "js-yaml";
 import { PRODUCTS } from "../src/lib/content/products.js";
+import { SERVICES } from "../src/lib/content/services.js";
 import { DESTINATIONS } from "../src/lib/content/cta.js";
 
 const SOURCE =
@@ -52,8 +60,15 @@ interface Spine {
 
 interface Offer {
   slug: string;
+  /**
+   * Which module the offer lives in. `products` is the default and the five
+   * self-serve pages; `services` is the three 1:1 engagements, which are sold
+   * through a conversation and have no product page, so they are checked
+   * against `services.ts` instead.
+   */
+  source?: "products" | "services";
   pitch: string;
-  [slot: string]: string;
+  [slot: string]: string | undefined;
 }
 
 interface Narrative {
@@ -80,24 +95,31 @@ const fail = (m: string) => {
 
 const slots = n.spine.map((s) => s.id);
 
-// 1. every product has a record
+// 1. every offer, in either module, has a record and every record has an offer
 const recorded = new Set(n.offers.map((o) => o.slug));
 for (const p of PRODUCTS) {
   if (!recorded.has(p.slug)) {
     fail(`${p.slug} is a product with no narrative record. Add one to Narrative_System.md.`);
   }
 }
-// and no record describes a product that does not exist
-const real = new Set(PRODUCTS.map((p) => p.slug));
+for (const s of SERVICES) {
+  if (!recorded.has(s.id)) {
+    fail(`${s.id} is a service with no narrative record. Add one to Narrative_System.md.`);
+  }
+}
+const realProducts = new Set(PRODUCTS.map((p) => p.slug));
+const realServices = new Set(SERVICES.map((s) => s.id));
 for (const o of n.offers) {
-  if (!real.has(o.slug)) fail(`${o.slug} has a record and is not in products.ts.`);
+  const where = o.source === "services" ? realServices : realProducts;
+  const module = o.source === "services" ? "services.ts" : "products.ts";
+  if (!where.has(o.slug)) fail(`${o.slug} has a record and is not in ${module}.`);
 }
 
 // 2, 3, 4. every record is complete, points somewhere real, and states no figure
 const DIGITS = /\d/;
 for (const o of n.offers) {
   for (const slot of slots) {
-    const v = o[slot];
+    const v = o[slot] as string | undefined;
     if (!v || !v.trim()) {
       fail(`${o.slug} is missing the "${slot}" slot.`);
       continue;
@@ -115,6 +137,54 @@ for (const o of n.offers) {
     fail(`${o.slug} asks for "${o.ask}", which is not a destination in cta.ts.`);
   }
   if (!o.pitch || !o.pitch.trim()) fail(`${o.slug} has no pitch line.`);
+}
+
+// 6. the pages: every declared block is real, and asking implies limiting
+const PAGES = [
+  "src/app/(th)/page.tsx",
+  "src/app/(th)/coaching/page.tsx",
+  "src/app/(th)/pricing/page.tsx",
+  "src/app/(th)/faq/page.tsx",
+  "src/app/(th)/contact/page.tsx",
+  "src/components/features/products/ProductPage.tsx",
+  "src/components/features/blog/BlogIndex.tsx",
+];
+for (const page of PAGES) {
+  let src: string;
+  try {
+    src = readFileSync(page, "utf8");
+  } catch {
+    fail(`${page} is in the page list and does not exist.`);
+    continue;
+  }
+  const used = [...src.matchAll(/<Band\s+block="([A-Z0-9]+)"/g)].map((m) => m[1]);
+  if (used.length === 0) {
+    fail(`${page} renders no Band with a declared block.`);
+    continue;
+  }
+  const carries = (slot: string) =>
+    used.some((b) => (n.blocks[b] ?? []).includes(slot));
+  for (const b of used) {
+    if (!(b in n.blocks)) {
+      fail(`${page} uses block ${b}, which the map in Narrative_System.md does not have.`);
+    }
+  }
+  /*
+   * The rule applies to pages that SELL, and not to every page with a button.
+   *
+   * Scoped after the first run said `/contact` and the blog index were selling
+   * blind. They are not selling: a contact page's ask is the page, and a blog
+   * index asks you to read. A page is selling when it describes a thing you can
+   * buy, which is `mechanism` or `artefact`, and those are the pages that owe
+   * the reader a limit.
+   */
+  if (carries("ask") && (carries("mechanism") || carries("artefact")) && !carries("limit")) {
+    fail(
+      `${page} asks without limiting. The spine puts slot 6 before slot 8: a page ` +
+        `that describes what you get and then asks, without ever saying what it is ` +
+        `not, is selling blind.`,
+    );
+  }
 }
 
 // 5. the block map only names slots the spine has

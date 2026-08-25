@@ -33,13 +33,42 @@ const WIDTH = {
   wide: "max-w-none",
 } as const;
 
+/**
+ * The block this section is, from `block-library.md`.
+ *
+ * **Declared rather than inferred, and required.** `Narrative_System.md` maps
+ * every block to the narrative slots it carries, so a section that names its
+ * block is a section a script can ask questions of: does this page state a
+ * limit before it makes an ask, does a row list carry the reader's own words,
+ * does any page ask twice and explain once. A section with no declared block is
+ * a section nobody decided the shape of, and that is exactly the section that
+ * gets written from nothing.
+ *
+ * `verify:narrative` walks the pages for these and fails on a block the map
+ * does not have.
+ */
+export type BlockId =
+  | "B1"
+  | "B2"
+  | "B3"
+  | "B4"
+  | "B5"
+  | "B6"
+  | "B7"
+  | "B8"
+  | "B10"
+  | "B13"
+  | "B19";
+
 export default function Band({
+  block,
   ground = "canvas",
   width = "text",
   align = "start",
   className,
   children,
 }: {
+  block: BlockId;
   ground?: keyof typeof GROUND;
   width?: keyof typeof WIDTH;
   /**
@@ -59,7 +88,10 @@ export default function Band({
   children: React.ReactNode;
 }) {
   return (
-    <section className={`${GROUND[ground]} py-16 medium:py-20 ${className ?? ""}`}>
+    <section
+      data-block={block}
+      className={`${GROUND[ground]} py-16 medium:py-20 ${className ?? ""}`}
+    >
       {/* `.page-container` sets the gutter and the 1440 cap, and it is the same
           one the header and the footer use, so a band's first character sits at
           the same x as the lockup above it. The inner box is the reading

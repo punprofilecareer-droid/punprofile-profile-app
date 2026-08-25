@@ -25,12 +25,12 @@ export default function FaqPage() {
 
   return (
     <div className="w-full">
-      <Band ground="canvas">
+      <Band block="B1" ground="canvas">
         <h1 className={HERO_HEADING(locale)}>{pick(FAQ_HEADING)}</h1>
         <p className="mt-4 text-body-large text-on-surface-variant">{pick(FAQ_INTRO)}</p>
       </Band>
 
-      <Band ground="soft">
+      <Band block="B5" ground="soft">
       <div className="flex flex-col gap-3">
         {FAQ.map((item) => (
           <details
@@ -69,7 +69,7 @@ export default function FaqPage() {
       </div>
       </Band>
 
-      <Band ground="dark" align="center" className="text-center">
+      <Band block="B8" ground="dark" align="center" className="text-center">
         <p className={SECTION_HEADING(locale)}>{pick(FAQ_CLOSE)}</p>
         <CallToAction page="/faq" className="mt-8" align="center" show="primary" />
       </Band>

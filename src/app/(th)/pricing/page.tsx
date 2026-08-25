@@ -51,7 +51,7 @@ export default function PricingPage() {
 
   return (
     <div className="w-full">
-      <Band ground="canvas" width="wide">
+      <Band block="B1" ground="canvas" width="wide">
         <h1 className={HERO_HEADING(locale)}>{pick(PRICING_HEADING)}</h1>
         <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
           {pick(PRICING_INTRO)}
@@ -59,7 +59,7 @@ export default function PricingPage() {
       </Band>
 
       {/* ------------------------------------------------------------ free */}
-      <Band ground="soft" width="wide">
+      <Band block="B4" ground="soft" width="wide">
         <h2 className={SECTION_HEADING(locale)}>{pick(FREE_HEADING)}</h2>
         <div className="mt-5 grid gap-4 large:grid-cols-2">
           {FREE_ITEMS.map((item) => (
@@ -75,7 +75,7 @@ export default function PricingPage() {
       </Band>
 
       {/* ----------------------------------------------------------- packs */}
-      <Band ground="canvas" width="wide">
+      <Band block="B4" ground="canvas" width="wide">
         <h2 className={SECTION_HEADING(locale)}>{pick(PACKS_HEADING)}</h2>
 
         {/* No `items-start`: the default stretch makes the three cards share
@@ -129,7 +129,7 @@ export default function PricingPage() {
       </Band>
 
       {/* -------------------------------------------------------- includes */}
-      <Band ground="soft" width="wide">
+      <Band block="B3" ground="soft" width="wide">
         <h2 className={SECTION_HEADING(locale)}>{pick(INCLUDES_HEADING)}</h2>
         <ul className="mt-5 flex flex-col gap-2.5">
           {INCLUDES.map((item, i) => (
@@ -142,7 +142,7 @@ export default function PricingPage() {
       </Band>
 
       {/* ----------------------------------------------- what a token buys */}
-      <Band ground="canvas" width="wide">
+      <Band block="B6" ground="canvas" width="wide">
         <h2 className={SECTION_HEADING(locale)}>{pick(TOKEN_HEADING)}</h2>
         <p className="mt-3 max-w-2xl text-body-large text-on-surface-variant">{pick(TOKEN_BODY)}</p>
         <ul className="mt-5 flex flex-col gap-2.5">
@@ -160,7 +160,7 @@ export default function PricingPage() {
       <TokenCalculator />
 
       {/* ------------------------------------------------------- questions */}
-      <Band ground="soft" width="wide">
+      <Band block="B5" ground="soft" width="wide">
         {PRICING_QUESTIONS.map((item, i) => (
           <div key={i} className="border-b border-outline-variant py-6 last:border-b-0">
             <h3 className="text-heading-sm">{pick(item.q)}</h3>
@@ -174,7 +174,7 @@ export default function PricingPage() {
       </Band>
 
       {/* The page's secondary, exactly once, where a secondary belongs. */}
-      <Band ground="dark" align="center" className="text-center">
+      <Band block="B8" ground="dark" align="center" className="text-center">
         <CallToAction page="/pricing" align="center" show="secondary" />
       </Band>
     </div>

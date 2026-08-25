@@ -131,7 +131,7 @@ export default function Home() {
         transparent and the ground is white here, so the panel was only ever
         there to fill a column.
       */}
-      <Band ground="canvas" width="wide" align="center" className="text-center">
+      <Band block="B1" ground="canvas" width="wide" align="center" className="text-center">
         <div className="mx-auto max-w-3xl">
           {/*
             The credibility row, which is the reference's first element and the
@@ -241,7 +241,7 @@ export default function Home() {
         evidence, and putting them in three boxes made them read as three things
         for sale directly under a hero that is asking for a click.
       */}
-      <Band ground="canvas" width="wide">
+      <Band block="B3" ground="canvas" width="wide">
           <div className="max-w-3xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(MARKET_HEADING)}</h2>
             <p className="mt-3 text-body-large text-on-surface-variant">{pick(MARKET_BODY)}</p>
@@ -315,7 +315,7 @@ export default function Home() {
         about being read correctly, which is the same idea this paragraph is
         making. It is not used anywhere outside the flow.
       */}
-      <Band ground="canvas" width="wide">
+      <Band block="B7" ground="canvas" width="wide">
         <div className="overflow-hidden rounded-3xl bg-primary-pale">
           <div className="grid items-center gap-0 large:grid-cols-2">
             <div className="relative min-h-[280px] w-full self-stretch large:min-h-[420px]">
@@ -356,7 +356,7 @@ export default function Home() {
             Report is and should not have to. Five of the six lines are answer
             options out of `questions.ts`, so this is the words candidates
             actually use rather than personas invented to sell something. */}
-      <Band ground="canvas">
+      <Band block="B5" ground="canvas">
           <h2 className={SECTION_HEADING(locale)}>{pick(TRIAGE_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(TRIAGE_LEAD)}</p>
           <Triage />
@@ -373,7 +373,7 @@ export default function Home() {
         Hidden below `large`, where a phone should get the steps and not a
         picture of somebody having them explained.
       */}
-      <Band ground="soft" width="wide">
+      <Band block="B2" ground="soft" width="wide">
         <div className="grid items-center gap-12 large:grid-cols-[1.2fr_1fr]">
           <div>
           <h2 className={SECTION_HEADING(locale)}>{pick(HOW_HEADING)}</h2>
@@ -443,7 +443,7 @@ export default function Home() {
         `ground-fixed` inside `Band` pins the content colours, so nothing here
         names one.
       */}
-      <Band ground="brand" width="wide">
+      <Band block="B2" ground="brand" width="wide">
         <div className="grid items-center gap-10 large:grid-cols-[1fr_1.1fr]">
           <div className="max-w-xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(SAMPLE_HEADING)}</h2>
@@ -474,7 +474,7 @@ export default function Home() {
             Replaces the old services cards AND the old cost table. Read from
             `products.ts` at render, split by what it costs rather than by what
             it is, because that is the question a stranger is holding. */}
-      <Band ground="canvas" width="wide">
+      <Band block="B4" ground="canvas" width="wide">
           <div className="max-w-3xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(CATALOGUE_HEADING)}</h2>
             {/* A sub line under the heading, which every card row on the
@@ -559,7 +559,7 @@ export default function Home() {
           words it did. Paraphrasing him to fix that is not available and
           inventing a heading that says something else is worse, so the
           paragraph is the section, set one tier up in `headline-small`. */}
-      <Band ground="canvas">
+      <Band block="B10" ground="canvas">
         <p className={`max-w-3xl ${SECTION_HEADING(locale)}`}>{pick(VISA_BODY)}</p>
         <Link
             href={path(DESTINATIONS.assess.href)}
@@ -582,7 +582,7 @@ export default function Home() {
             thirteen years and 26,000 resumes; nothing of that kind is claimed
             here, and the only figures on this page are the pipeline's, which
             sit in the section above the fold rather than in this one. */}
-      <Band ground="canvas" width="wide">
+      <Band block="B2" ground="canvas" width="wide">
         {/* B2: the reference states who is behind a thing beside a picture of
             them, not as a paragraph on its own. The portrait is a placeholder;
             `/coaching` has the real one and this page has never carried it. */}
@@ -622,7 +622,7 @@ export default function Home() {
             link per card. Neither is here: there is one screen of cards and no
             case study to link to, and a control that does nothing is worse than
             no control. */}
-        <Band ground="canvas" width="wide">
+        <Band block="B13" ground="canvas" width="wide">
           <div className="max-w-3xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(RESULTS_HEADING)}</h2>
             <p className="mt-4">
@@ -645,7 +645,7 @@ export default function Home() {
             Three questions and a link, which is what the reference product
             does. Read from `faq.ts` rather than restated, and deliberately not
             expandable: an accordion here would be a second FAQ to maintain. */}
-      <Band ground="soft">
+      <Band block="B5" ground="soft">
           <h2 className={SECTION_HEADING(locale)}>{pick(FAQ_TEASER_HEADING)}</h2>
           <ul className="mt-6 flex flex-col gap-4">
             {FAQ.slice(0, 3).map((item, i) => (
@@ -687,7 +687,7 @@ export default function Home() {
           the footer is a quiet band now and the full-bleed version sat directly
           against it.
         */}
-        <Band ground="canvas" width="wide">
+        <Band block="B8" ground="canvas" width="wide">
           <div className="ground-dark rounded-3xl bg-canvas-dark px-8 py-14 text-center medium:px-16">
           <span
             aria-hidden
