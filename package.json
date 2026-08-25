@@ -23,7 +23,8 @@
     "tokens": "tsx scripts/build-tokens.ts",
     "review:thai": "tsx scripts/export-thai-review.ts",
     "blog:cards": "tsx scripts/build-share-cards.ts",
-    "snapshot:leads": "tsx scripts/export-leads-snapshot.ts"
+    "snapshot:leads": "tsx scripts/export-leads-snapshot.ts",
+    "verify:narrative": "tsx scripts/verify-narrative.ts"
   },
   "dependencies": {
     "@auth/core": "^0.41.3",

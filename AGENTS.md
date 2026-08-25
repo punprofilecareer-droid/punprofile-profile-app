@@ -333,10 +333,23 @@ npx tsc --noEmit -p convex/tsconfig.json
 npm run lint
 npm run verify:copy
 npm run verify:pages
+npm run verify:narrative
 npm run verify:consent
 npm run blog:cards -- --check
 git push origin master
 ```
+
+**`verify:narrative` joined this list on 25/08/2026**, with the narrative
+system. It reads the YAML frontmatter of `Narrative_System.md` in the sibling
+repo and fails if a product has no story record, if a record is missing one of
+the eight slots, if a record asks for a destination `cta.ts` does not have, or if
+a record states a figure instead of pointing at the document that owns it.
+
+That last one is the reason it exists rather than a document being enough. A
+narrative record with a number in it is a fourth place for a stale figure to
+hide, and nothing would have caught it: the number would read correctly, sound
+confident, and be wrong six weeks later. Same arrangement as `termbase.yml` and
+`lint-thai.ts`, one layer up.
 
 **`blog:cards --check` joined this list on 18/08/2026**, with the first article
 to carry its own artwork. It fails if an article has an image and no sharing
