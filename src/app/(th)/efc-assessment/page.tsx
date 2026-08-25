@@ -12,6 +12,7 @@ import BlockPanel, { type BlockImage } from "@/components/features/assessment/Bl
 import SpiderChart from "@/components/features/chart/SpiderChart";
 import ScoreLegend from "@/components/features/chart/ScoreLegend";
 import { useCopy } from "@/components/LocaleProvider";
+import { SECTION_HEADING } from "@/lib/content/footer";
 import ContactGate from "@/components/features/assessment/ContactGate";
 import LanguageGrid from "@/components/features/assessment/LanguageGrid";
 import EnglishSwitchPrompt from "@/components/features/assessment/EnglishSwitchPrompt";
@@ -592,7 +593,7 @@ export default function AssessPage() {
   return (
     <div className="mx-auto w-full max-w-md px-6 py-10 text-center large:max-w-5xl large:px-8 large:py-16">
       <ResetScroll />
-      <h1 className="text-headline-large text-on-tertiary-container large:text-display-small">{t("teaser.headline")}</h1>
+      <h1 className={`text-on-primary-pale ${SECTION_HEADING(locale)}`}>{t("teaser.headline")}</h1>
       <p className="mt-2 text-body-large text-on-surface-variant large:text-body-large">{t("teaser.selfReported")}</p>
 
       {/* Chart and read, side by side from `lg`.
@@ -607,10 +608,10 @@ export default function AssessPage() {
         {/* The chart gets its own surface. The radar's grid is 1px neutral-300
             and the field's gradient moves through the same value range, so on
             the field alone the grid reads as noise rather than as structure. */}
-        <div className="card-outlined mt-6 rounded-large px-4 py-6 text-left large:mt-0 large:px-6 large:py-7">
-          <h2 className="text-title-large text-on-tertiary-container">{t("teaser.chart.heading")}</h2>
+        <div className="card-plain mt-6 px-4 py-6 text-left large:mt-0 large:px-6 large:py-7">
+          <h2 className="text-heading-sm text-on-primary-pale">{t("teaser.chart.heading")}</h2>
           <SpiderChart scores={scores} variant="teaser" />
-          <div className="mt-2 border-t border-outline-variant pt-5">
+          <div className="mt-2 border-t border-line pt-5">
             <ScoreLegend scores={scores} />
           </div>
         </div>
@@ -621,7 +622,7 @@ export default function AssessPage() {
               can claim more than the answers support. */}
           {summary && (
             <div className="mt-8 space-y-4 text-left large:mt-0">
-              <p className="text-title-medium text-on-surface">{summary.opener}</p>
+              <p className="text-heading-sm text-on-surface">{summary.opener}</p>
               <p className="text-body-large text-on-surface-variant">{summary.standing}</p>
             </div>
           )}
@@ -657,14 +658,14 @@ export default function AssessPage() {
           {summary && (
             <div className="space-y-3 text-left">
               {summary.strengthLead && (
-                <p className="text-title-medium text-on-surface">{summary.strengthLead}</p>
+                <p className="text-heading-xs text-on-surface">{summary.strengthLead}</p>
               )}
               {/* The most actionable sentence on the screen, and no longer in a
                   panel of its own. Three stacked coloured boxes meant none of
                   them read as important; the label carries the emphasis. */}
               {summary.next && (
                 <p className="text-body-large text-on-surface-variant">
-                  <span className="font-semibold text-on-tertiary-container">{summary.nextLead} </span>
+                  <span className="font-semibold text-on-primary-pale">{summary.nextLead} </span>
                   {summary.next}
                 </p>
               )}
@@ -678,8 +679,11 @@ export default function AssessPage() {
               happens next rather than asking for anything. It stays inside the
               read's column on desktop: it is the end of that thought, and full
               width would make a queue notice the widest thing on the page. */}
-          <div className="card-tonal mt-6 flex items-start gap-3 rounded-large px-5 py-4 text-left">
-            <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-primary">
+          <div className="card-plain mt-6 flex items-start gap-3 border border-line px-5 py-4 text-left">
+            {/* `on-primary`, not `primary`: the lime holds 1.47 on white and an
+                icon carrying meaning needs 3:1, so it takes the ink the brand
+                puts on its own accent. */}
+            <svg viewBox="0 0 24 24" aria-hidden className="mt-0.5 size-5 shrink-0 fill-on-primary">
               <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM13.25 17h-2.5v-6.5h2.5V17Z" />
             </svg>
             <div>

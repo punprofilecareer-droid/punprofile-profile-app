@@ -18,6 +18,8 @@
 
 import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
+import Band from "@/components/Band";
+import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import {
   COMING_SOON,
   HOW_HEADING,
@@ -26,14 +28,15 @@ import {
 } from "@/lib/content/products";
 
 export default function ProductPage({ product }: { product: Product }) {
-  const { pick } = useCopy();
+  const { pick, locale } = useCopy();
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-16">
-      <p className="text-title-medium text-on-surface-variant">{pick(product.name)}</p>
+    <div className="w-full">
+      <Band ground="canvas">
+      <p className="text-heading-xs text-mute-strong">{pick(product.name)}</p>
 
       {product.status === "soon" && (
-        <p className="mt-2 inline-flex rounded-full bg-tertiary-container px-3 py-1 text-body-medium text-on-tertiary-container">
+        <p className="mt-2 inline-flex rounded-full bg-primary-pale px-3 py-1 text-body-sm-strong text-on-primary-pale">
           {pick(COMING_SOON)}
         </p>
       )}
@@ -41,20 +44,21 @@ export default function ProductPage({ product }: { product: Product }) {
       {/* The problem, not the feature. A page that opens on what the product IS
           asks a stranger to care about the product first; one that opens on what
           went wrong hands them their own experience. */}
-      <h1 className="mt-4 text-headline-large text-balance">{pick(product.headline)}</h1>
+      <h1 className={`mt-4 text-balance ${HERO_HEADING(locale)}`}>{pick(product.headline)}</h1>
       <p className="mt-5 text-body-large text-on-surface-variant">{pick(product.lede)}</p>
 
       <CallToAction page={product.actionsKey} className="mt-8" show="primary" />
+      </Band>
 
       {/* --------------------------------------------------------- how ---- */}
-      <section className="mt-16">
-        <h2 className="text-title-large">{pick(HOW_HEADING)}</h2>
+      <Band ground="soft">
+        <h2 className={SECTION_HEADING(locale)}>{pick(HOW_HEADING)}</h2>
         <ul className="mt-5 flex flex-col gap-4">
           {product.how.map((item, i) => (
             <li key={i} className="flex gap-4 text-body-large text-on-surface">
               <span
                 aria-hidden
-                className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary-container text-body-medium text-on-secondary-container"
+                className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-canvas text-body-sm-strong text-on-primary"
               >
                 {i + 1}
               </span>
@@ -62,34 +66,38 @@ export default function ProductPage({ product }: { product: Product }) {
             </li>
           ))}
         </ul>
-      </section>
+      </Band>
 
       {/* ------------------------------------------------------- limit ---- */}
       {/* Its own block with its own heading rather than a line of small print.
           Several of these carry a standing decision (the app does not rewrite
           CVs; PunProfile is not a recruiter), and a decision that only appears
           as a footnote is one nobody reads before they buy. */}
-      <section className="mt-14 rounded-large border border-outline-variant bg-surface-container-low px-6 py-6">
-        <h2 className="text-title-medium">{pick(LIMIT_HEADING)}</h2>
-        <p className="mt-3 text-body-large text-on-surface-variant">{pick(product.limit)}</p>
-      </section>
+      <Band ground="canvas">
+        <div className="card-plain border border-line px-8 py-9">
+          <h2 className="text-heading-sm">{pick(LIMIT_HEADING)}</h2>
+          <p className="mt-3 text-body-large text-on-surface-variant">{pick(product.limit)}</p>
+        </div>
+      </Band>
 
       {/* --------------------------------------------------------- faq ---- */}
       {product.faq.length > 0 && (
-        <section className="mt-14">
+        <Band ground="soft">
           {product.faq.map((item, i) => (
-            <div key={i} className="border-b border-outline-variant py-6 last:border-b-0">
-              <h3 className="text-title-medium">{pick(item.q)}</h3>
+            <div key={i} className="border-b border-line py-6 last:border-b-0">
+              <h3 className="text-heading-sm">{pick(item.q)}</h3>
               <p className="mt-3 text-body-large text-on-surface-variant">{pick(item.a)}</p>
             </div>
           ))}
-        </section>
+        </Band>
       )}
 
       {/* The same action as the top, once more at the foot. Rule 1 in `cta.ts`
           allows one action to repeat; a reader who got this far arrived at the
           decision here rather than at the headline. */}
-      <CallToAction page={product.actionsKey} className="mt-14" show="primary" />
+      <Band ground="dark" className="text-center">
+        <CallToAction page={product.actionsKey} align="center" show="primary" />
+      </Band>
     </div>
   );
 }

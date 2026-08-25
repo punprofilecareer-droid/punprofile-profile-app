@@ -223,7 +223,7 @@ export default function CoachingPage() {
               alt={pick(PORTRAIT_ALT)}
               width={421}
               height={421}
-              className="size-32 shrink-0 rounded-full bg-secondary-container object-cover medium:size-40"
+              className="size-32 shrink-0 rounded-full bg-canvas object-cover medium:size-40"
             />
             <div>
               <h2 className={SECTION_HEADING(locale)}>{pick(FOUNDER_HEADING)}</h2>

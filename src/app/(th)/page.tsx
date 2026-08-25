@@ -208,7 +208,7 @@ export default function Home() {
                     the cost of drawing it without saying so. */}
                 <span
                   aria-hidden
-                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary-container text-title-medium text-on-secondary-container"
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-heading-xs text-on-primary"
                 >
                   {step.n}
                 </span>
