@@ -76,7 +76,19 @@ interface Narrative {
   spine: Spine[];
   blocks: Record<string, string[]>;
   offers: Offer[];
-  house: { id: string; rule: string }[];
+  house: {
+    slots: { id: string; rule: string }[];
+    not: string;
+    consequence: string;
+    people: {
+      id: string;
+      who: string | null;
+      done: string | null;
+      relevance: string | null;
+      /** Slots this person has not written yet. See the note in the file. */
+      pending: string[];
+    }[];
+  };
 }
 
 const raw = readFileSync(SOURCE, "utf8");
@@ -187,6 +199,40 @@ for (const page of PAGES) {
   }
 }
 
+/*
+ * 7. The house narrative.
+ *
+ * Its people are checked differently from an offer, and the difference is the
+ * point. An offer with an empty slot is broken, because the page it feeds will
+ * be written from nothing. A PERSON with an empty slot is normal: they have not
+ * written it yet, and writing it for them is the failure.
+ *
+ * So a slot may be empty only if it is declared pending, and a slot may be
+ * pending only if it is empty. Either half alone is a lie: a filled pending
+ * slot means somebody wrote it and forgot to say so, and an empty slot with no
+ * pending marker means the site is one edit away from claiming nothing.
+ */
+const HOUSE_PERSON_SLOTS = ["who", "done", "relevance"] as const;
+let pendingCount = 0;
+for (const person of n.house.people) {
+  for (const slot of HOUSE_PERSON_SLOTS) {
+    const filled = Boolean(person[slot] && String(person[slot]).trim());
+    const pending = person.pending.includes(slot);
+    if (!filled && !pending) {
+      fail(`house › ${person.id} has no "${slot}" and does not declare it pending.`);
+    }
+    if (filled && pending) {
+      fail(`house › ${person.id} declares "${slot}" pending and has filled it.`);
+    }
+    if (pending) pendingCount += 1;
+  }
+}
+for (const slot of ["not", "consequence"] as const) {
+  if (!n.house[slot] || !n.house[slot].trim()) {
+    fail(`house › "${slot}" is empty. It belongs to the business and is never pending.`);
+  }
+}
+
 // 5. the block map only names slots the spine has
 for (const [block, wants] of Object.entries(n.blocks)) {
   for (const slot of wants) {
@@ -203,5 +249,11 @@ if (failures.length) {
 
 console.log(
   `narrative ${n.version}: ${n.offers.length} offers, ${slots.length} slots, ` +
-    `${Object.keys(n.blocks).length} blocks mapped, ${n.house.length} house slots. OK`,
+    `${Object.keys(n.blocks).length} blocks mapped, ${n.house.people.length} people. OK`,
 );
+if (pendingCount) {
+  console.log(
+    `  ${pendingCount} house slot(s) pending, which is a state and not a failure. ` +
+      `They are waiting on their own words; see dew-tatiy-review.md.`,
+  );
+}
