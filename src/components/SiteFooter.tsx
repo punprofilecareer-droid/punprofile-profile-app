@@ -57,38 +57,34 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
               being on a product surface. `footer.ts` carries the full history,
               including the two separate reasons that line was wrong. */}
           <div>
-            {/* Both wordmarks, and the footer declares that it sits on
-                `inverse-surface` rather than declaring a colour scheme.
+            {/*
+                One asset, one colour, 25/08/2026, and both halves of that are
+                changes.
 
-                This was hard-coded to the reversed asset until 17/08/2026, on
-                the reasoning that the footer is on `inverse-surface` in both
-                schemes so its logo never needs to change. The premise was right
-                and the conclusion was backwards: `inverse-surface` is the role
-                that flips, `#2f312a` in light and `#e2e4d8` in dark, so a
-                `#F0F2E7` wordmark that is correct in light lands at about 1.06:1
-                on the dark scheme's pale ground. Paul spotted it.
+                **The mark is no longer brand orange.** `#E7703A` was the last of
+                the retired palette on this surface and it held 4.49 on the
+                footer's green, which is a mark shouting at a wordmark that is
+                not. `punprofile-logo-mono-light.svg` is the same vector with the
+                mark taking the wordmark's own colour, so the lockup reads as one
+                shape. `-mono-black.svg` is its twin for a light ground and is
+                not used here; it measures 1.51 on this one.
 
-                The header declares `surface` and gets the opposite pair.
-                `globals.css` holds the one rule that knows what either ground
-                means in either scheme. */}
-            <span data-logo-ground="inverse" className="contents">
-              <Image
-                src="/punprofile-logo-reversed.svg"
-                alt={t("nav.brand", locale)}
-                width={2421}
-                height={657}
-                className="brand-wordmark-white h-11 w-auto"
-              />
-              <Image
-                src="/punprofile-logo.svg"
-                // Empty: the copy above already names the brand for a screen
-                // reader and only one of the two is ever displayed.
-                alt=""
-                width={2421}
-                height={657}
-                className="brand-wordmark-black h-11 w-auto"
-              />
-            </span>
+                **The two-asset swap is gone with the ground that needed it.**
+                The footer used to render both wordmarks and let `globals.css`
+                pick, because `inverse-surface` flipped between schemes: dark in
+                light, pale in dark. It resolves to `canvas-dark` now, which is
+                dark in both, so there is one ground and one correct asset and
+                the swap was picking between two answers to a question that
+                stopped being asked. The header still declares its ground and
+                still needs the pair, because `canvas` does flip.
+            */}
+            <Image
+              src="/punprofile-logo-mono-light.svg"
+              alt={t("nav.brand", locale)}
+              width={2421}
+              height={657}
+              className="h-11 w-auto"
+            />
             <p className={`mt-8 text-inverse-primary ${EYEBROW(locale)}`}>
               {pick(FOLLOW_EYEBROW, locale)}
             </p>
