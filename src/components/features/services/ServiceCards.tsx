@@ -114,16 +114,6 @@ function Body() {
                   ))}
                 </ul>
 
-                {/* `mt-auto` pins the action to the bottom of its own card, so
-                    the three buttons line up with each other even though the
-                    cards above them do not.
-
-                    **Three buttons, one action.** All three go to the same
-                    place, which is rule 1 in `cta.ts`. They now read from the
-                    `/coaching` entry rather than the retired `/services` one,
-                    and that entry's primary is `contact`, so the promise is
-                    unchanged. */}
-                <CallToAction page="/coaching" className="mt-auto pt-7" show="primary" />
               </div>
             </section>
           );
@@ -131,6 +121,22 @@ function Body() {
       </div>
 
       <p className="mt-10 max-w-3xl text-body-md text-body">{pick(AI_NOTE)}</p>
+
+      {/*
+        One action under the row, 25/08/2026, replacing one per card.
+
+        The three cards each carried a filled button, defended here as one
+        action repeated. All three did go to the same place, so the promise was
+        never in doubt; what was wrong is that three filled buttons sat in one
+        view, and the system's rule is one. Three of the same control side by
+        side is also a choice the reader does not have: whichever they press,
+        they arrive in the same conversation.
+
+        B12's shape in the block library: cards, then one centred pill.
+      */}
+      <div className="mt-10 flex justify-center">
+        <CallToAction page="/coaching" align="center" show="primary" />
+      </div>
     </div>
   );
 }
