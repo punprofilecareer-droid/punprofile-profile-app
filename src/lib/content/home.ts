@@ -221,16 +221,16 @@ export const MARKET_FOOT: Copy = {
 
 export const PROBLEM_HEADING: Copy = {
   en: "The problem is rarely the experience",
-  // TH-UNREVIEWED, 24/08/2026. `10_Methodology.md`'s core claim said to a
+  // Read back 25/08/2026. `10_Methodology.md`'s core claim said to a
   // stranger: illegibility rather than capability.
   th: "ปัญหาส่วนใหญ่ไม่ได้อยู่ที่ประสบการณ์ของคุณ",
 };
 
 export const PROBLEM_BODY: Copy = {
   en: "A Bangkok senior title can read as mid-level in Amsterdam. A well-known Thai employer reads as an unknown one. Most people are not turned down for what they have done, they are turned down before anyone works out what that was.",
-  // TH-UNREVIEWED, 24/08/2026. Drafted from `10_Methodology.md` and from the
+  // Read back 25/08/2026. Drafted from `10_Methodology.md` and from the
   // CV Check page's own `how` lines, which Paul reviewed on 23/08/2026.
-  th: "ตำแหน่งระดับอาวุโสในกรุงเทพฯ อาจถูกอ่านเป็นระดับกลางในอัมสเตอร์ดัม บริษัทที่คนไทยรู้จักดีอาจเป็นชื่อที่ไม่มีใครเคยได้ยินในยุโรป คนส่วนใหญ่จึงไม่ได้ถูกปฏิเสธเพราะทำงานมาไม่ดีพอ แต่ถูกปฏิเสธก่อนที่ใครจะได้เข้าใจว่าเคยทำอะไรมาบ้าง",
+  th: "ตำแหน่งระดับอาวุโสในกรุงเทพฯ อาจถูกมองว่าเป็นเพียงระดับกลางในอัมสเตอร์ดัม บริษัทชื่อดังในไทยอาจไม่มีใครรู้จักในยุโรป คนส่วนใหญ่ไม่ได้ถูกปฏิเสธเพราะประสบการณ์ที่มี แต่ถูกปฏิเสธก่อนที่ใครจะเข้าใจด้วยซ้ำว่าเคยทำอะไรมาบ้าง",
 };
 
 // ------------------------------------------------------------------ triage
@@ -259,14 +259,14 @@ export interface Triage {
 
 export const TRIAGE_HEADING: Copy = {
   en: "You do not need to know which service you need",
-  // TH-UNREVIEWED, 24/08/2026. The reference product's own framing, which is
+  // Read back 25/08/2026. The reference product's own framing, which is
   // the load-bearing idea on its page: the reader picks a problem, not a tool.
   th: "คุณไม่จำเป็นต้องรู้ว่าควรใช้บริการไหน",
 };
 
 export const TRIAGE_LEAD: Copy = {
   en: "Pick the one that sounds like you.",
-  // TH-UNREVIEWED, 24/08/2026.
+  // Read back 25/08/2026.
   th: "เลือกข้อที่ตรงกับคุณที่สุด",
 };
 
@@ -294,7 +294,7 @@ export const TRIAGE: readonly Triage[] = [
     id: "cv-not-europe",
     line: {
       en: "I have a CV, but it has not been adapted for Europe.",
-      // TH-UNREVIEWED, 24/08/2026. Paul's CV option `มีแต่ยังไม่ปรับให้เหมาะกับยุโรป`
+      // Read back 25/08/2026. Paul's CV option `มีแต่ยังไม่ปรับให้เหมาะกับยุโรป`
       // with its subject restored, because the option is a fragment answering
       // a question the reader cannot see here.
       th: "มี CV อยู่แล้ว แต่ยังไม่ได้ปรับให้เหมาะกับตลาดยุโรป",
@@ -305,9 +305,9 @@ export const TRIAGE: readonly Triage[] = [
     id: "visa-unknown",
     line: {
       en: "On visas and work rights, I do not yet know what I need to prepare.",
-      // TH-UNREVIEWED, 24/08/2026. Paul's visa option `ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง`
+      // Read back 25/08/2026. Paul's visa option `ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง`
       // with the subject of its own question folded in.
-      th: "เรื่องวีซ่าและสิทธิ์การทำงาน ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง",
+      th: "เรื่องวีซ่าและสิทธิในการทำงาน ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง",
     },
     href: "/efc-assessment",
   },
@@ -315,7 +315,7 @@ export const TRIAGE: readonly Triage[] = [
     id: "no-target",
     line: {
       en: "I am not sure which field I want to work in over there.",
-      // TH-UNREVIEWED, 24/08/2026. Paul's `ยังไม่แน่ใจ` on the target-field
+      // Read back 25/08/2026. Paul's `ยังไม่แน่ใจ` on the target-field
       // question, which needs that question to mean anything.
       th: "ยังไม่แน่ใจว่าอยากทำงานสายไหนในยุโรป",
     },
@@ -325,7 +325,7 @@ export const TRIAGE: readonly Triage[] = [
     id: "dormant-linkedin",
     line: {
       en: "I have a LinkedIn, but I have not updated it in a long time.",
-      // TH-UNREVIEWED, 24/08/2026. Paul's LinkedIn option `มี แต่ไม่ได้อัปเดต`,
+      // Read back 25/08/2026. Paul's LinkedIn option `มี แต่ไม่ได้อัปเดต`,
       // expanded the same way as the two above.
       th: "มี LinkedIn อยู่ แต่ไม่ได้อัปเดตมานานแล้ว",
     },
@@ -352,7 +352,7 @@ export interface HowStep {
 
 export const HOW_HEADING: Copy = {
   en: "How it works",
-  // TH-UNREVIEWED, 24/08/2026.
+  // Read back 25/08/2026.
   th: "ขั้นตอนเป็นอย่างไร",
 };
 
@@ -366,21 +366,21 @@ export const HOW_STEPS: readonly HowStep[] = [
     },
     body: {
       en: "Seventeen questions about where you are now. No CV needed and no account.",
-      // TH-UNREVIEWED, 24/08/2026. The count is real: `verify-content.ts` pins
+      // Read back 25/08/2026. The count is real: `verify-content.ts` pins
       // Stage 1 at 17 questions and fails the build if it drifts.
-      th: "คำถาม 17 ข้อเกี่ยวกับสถานะของคุณตอนนี้ ไม่ต้องใช้ CV และไม่ต้องสมัครสมาชิก",
+      th: "คำถาม 17 ข้อเกี่ยวกับสถานการณ์ของคุณตอนนี้ ไม่ต้องใช้ CV และไม่ต้องสร้างบัญชี",
     },
   },
   {
     n: 2,
     title: {
       en: "See your first read straight away",
-      // TH-UNREVIEWED, 24/08/2026.
+      // Read back 25/08/2026.
       th: "เห็นผลเบื้องต้นทันที",
     },
     body: {
       en: "Four scores against the bars the European market uses, and the parts your answers could not reach are named rather than filled in.",
-      // TH-UNREVIEWED, 24/08/2026. The second clause is the not-measured rule
+      // Read back 25/08/2026. The second clause is the not-measured rule
       // from `teaser.score.none`, which is the honest half of this product.
       th: "คะแนนสี่ด้านเทียบกับเกณฑ์ที่ตลาดยุโรปใช้จริง ส่วนที่คำตอบของคุณยังประเมินไม่ได้ เราจะบอกตรง ๆ แทนที่จะเดาให้",
     },
@@ -389,12 +389,12 @@ export const HOW_STEPS: readonly HowStep[] = [
     n: 3,
     title: {
       en: "Find which one comes first",
-      // TH-UNREVIEWED, 24/08/2026.
+      // Read back 25/08/2026.
       th: "รู้ว่าควรเริ่มจากเรื่องไหน",
     },
     body: {
       en: "The read names the weakest area and what to do about it, in the order that moves the result soonest.",
-      // TH-UNREVIEWED, 24/08/2026. `เห็นผลได้เร็วที่สุด` is Paul's own phrase from
+      // Read back 25/08/2026. `เห็นผลได้เร็วที่สุด` is Paul's own phrase from
       // the Fit Report page, reviewed 23/08/2026.
       th: "ผลจะบอกว่าด้านไหนยังอ่อนที่สุด และควรทำอะไรก่อน โดยเริ่มจากสิ่งที่จะช่วยให้คุณเห็นผลได้เร็วที่สุด",
     },
@@ -403,12 +403,12 @@ export const HOW_STEPS: readonly HowStep[] = [
     n: 4,
     title: {
       en: "Take the next step when you are ready",
-      // TH-UNREVIEWED, 24/08/2026.
+      // Read back 25/08/2026.
       th: "ไปต่อเมื่อคุณพร้อม",
     },
     body: {
       en: "Some of what comes next is free. The rest is bought a piece at a time, and nothing needs a subscription.",
-      // TH-UNREVIEWED, 24/08/2026. Says nothing about being contacted, which is
+      // Read back 25/08/2026. Says nothing about being contacted, which is
       // the 23/08/2026 decision recorded on `FREE_ITEMS` in `pricing.ts`.
       th: "บางส่วนใช้ได้ฟรี ส่วนที่เหลือเลือกซื้อทีละชิ้นได้ตามที่ต้องการ ไม่มีระบบสมาชิกรายเดือน",
     },
@@ -442,14 +442,14 @@ export interface SampleAxis {
 
 export const SAMPLE_HEADING: Copy = {
   en: "You cannot fix what nobody will tell you",
-  // TH-UNREVIEWED, 24/08/2026. The reference product's own heading, which is
+  // Read back 25/08/2026. The reference product's own heading, which is
   // the argument for the whole section.
   th: "สิ่งที่ไม่มีใครบอก คุณก็แก้ไม่ได้",
 };
 
 export const SAMPLE_LABEL: Copy = {
   en: "Example",
-  // TH-UNREVIEWED, 24/08/2026. One word, above the card, unmissable.
+  // Read back 25/08/2026. One word, above the card, unmissable.
   th: "ตัวอย่าง",
 };
 
@@ -462,7 +462,7 @@ export const SAMPLE_AXES: readonly SampleAxis[] = [
 
 export const SAMPLE_NOTE: Copy = {
   en: "An example, not a real person. Your own numbers come from your own answers.",
-  // TH-UNREVIEWED, 24/08/2026. Built on the shape of Paul's own calculator
+  // Read back 25/08/2026. Built on the shape of Paul's own calculator
   // disclaimer of 23/08/2026, which says the numbers come from what you typed.
   th: "นี่เป็นเพียงตัวอย่าง ไม่ใช่ผลของคนจริง ตัวเลขของคุณจะมาจากคำตอบของคุณเอง",
 };
@@ -479,15 +479,15 @@ export const SAMPLE_NOTE: Copy = {
  */
 export const WHO_HEADING: Copy = {
   en: "Who is behind this",
-  // TH-UNREVIEWED, 24/08/2026.
+  // Read back 25/08/2026.
   th: "ใครอยู่เบื้องหลัง PunProfile",
 };
 
 export const WHO_BODY: Copy = {
   en: "PunProfile is run by one person, and every conversation is with him. That is the reason the advice starts from your goals rather than from a vacancy somebody is rushing to fill.",
-  // TH-UNREVIEWED, 24/08/2026. The second sentence is Paul's own, from
+  // Read back 25/08/2026. The second sentence is Paul's own, from
   // `FOUNDER_AFTER` in `coaching.ts`, which he wrote and reviewed.
-  th: "PunProfile ดำเนินงานโดยคนคนเดียว และทุกการพูดคุยคือการคุยกับเขาโดยตรง นั่นคือเหตุผลที่คำแนะนำเริ่มจากเป้าหมายของคุณ ไม่ใช่จากตำแหน่งที่ใครสักคนกำลังรีบหาคนไปเติม",
+  th: "PunProfile ดูแลโดยคนเพียงคนเดียว และทุกครั้งคุณจะได้คุยกับเขาโดยตรง นั่นคือเหตุผลที่คำแนะนำเริ่มจากเป้าหมายของคุณ ไม่ใช่จากตำแหน่งว่างที่ใครบางคนกำลังเร่งหาคน",
 };
 
 // ------------------------------------------------------------------- results
@@ -541,7 +541,7 @@ export const RESULTS: readonly Result[] = [];
  */
 export const CATALOGUE_HEADING: Copy = {
   en: "What you can get",
-  // TH-UNREVIEWED, 24/08/2026.
+  // Read back 25/08/2026.
   th: "คุณได้อะไรจากที่นี่บ้าง",
 };
 
@@ -553,28 +553,28 @@ export const CATALOGUE_FREE: Copy = {
 
 export const CATALOGUE_PAID: Copy = {
   en: "Paid with tokens",
-  // TH-UNREVIEWED, 24/08/2026.
+  // Read back 25/08/2026.
   th: "จ่ายด้วยโทเคน",
 };
 
 export const CATALOGUE_PRICE_LINE: Copy = {
   en: "One role that matches your criteria, sent to you, is 50 THB. Everything here is priced in the same token.",
   /*
-   * TH-UNREVIEWED, 24/08/2026, and this is the only price on the page.
+   * Read back 25/08/2026, and this is the only price on the page.
    *
    * Paul, 24/08/2026, option 2a: one number and a link, not the pack table.
    * The number is the unit rather than a pack, which is the whole reason the
    * unit was held flat at 50 THB when the packs were decided: it is the one
    * figure a candidate has to carry, and it stays true whichever pack they buy.
    */
-  th: "1 ตำแหน่งที่ตรงกับเงื่อนไขของคุณ ส่งถึงคุณ ราคา 50 บาท ทุกอย่างที่นี่ใช้โทเคนเดียวกัน",
+  th: "ตำแหน่งงาน 1 ตำแหน่งที่ตรงกับเงื่อนไขของคุณและส่งตรงถึงคุณ ราคา 50 บาท ทุกอย่างที่นี่คิดราคาเป็นหน่วยโทเคนเดียวกัน",
 };
 
 // --------------------------------------------------------------- FAQ teaser
 
 export const FAQ_TEASER_HEADING: Copy = {
   en: "You ask, we answer straight",
-  // TH-UNREVIEWED, 24/08/2026. The reference product's own heading, and it
+  // Read back 25/08/2026. The reference product's own heading, and it
   // suits a page whose FAQ opens by refusing to guarantee a job or a visa.
   th: "ถามมา เราตอบตรง",
 };

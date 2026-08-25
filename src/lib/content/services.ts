@@ -66,7 +66,7 @@ export const SERVICES_HEADING: Copy = {
 
 export const SERVICES_INTRO: Copy = {
   en: "Career coaching is the core service every client starts with. The other two can be taken on their own, depending on what you actually need.",
-  // TH-UNREVIEWED, 24/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`.
+  // Read back 25/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`.
   th: "Career Coaching เป็นบริการหลักที่ลูกค้าทุกคนเริ่มต้นด้วย ส่วนอีกสองบริการเลือกใช้แยกกันได้ตามสิ่งที่คุณต้องการ",
 };
 
@@ -74,7 +74,7 @@ export const SERVICES: readonly Service[] = [
   {
     id: "coaching",
     core: true,
-    // TH-UNREVIEWED, 24/08/2026. Both columns now read `Career Coaching`, which
+    // Read back 25/08/2026. Both columns now read `Career Coaching`, which
     // is what LR-01 does with a service name once the name is English.
     name: { en: "Career Coaching", th: "Career Coaching" },
     question: {

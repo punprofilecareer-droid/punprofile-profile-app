@@ -31,7 +31,7 @@ import type { Copy } from "./copy";
 
 export const HOOK_EYEBROW: Copy = {
   en: "1-1 career coaching for Thai professionals heading to Europe",
-  // TH-UNREVIEWED, 24/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`.
+  // Read back 25/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`.
   th: "Career Coaching แบบตัวต่อตัว สำหรับคนไทยที่ตั้งเป้าไปทำงานในยุโรป",
 };
 
@@ -313,7 +313,7 @@ export const FOUNDER_TURN: Copy = {
 export const FOUNDER_AFTER: readonly Copy[] = [
   {
     en: "To me, career coaching is not writing you a new story that makes you look better than you are. It is helping you see who your existing experience is valuable to, which direction you should be heading, and how to tell your own story so another market understands it.",
-    // TH-UNREVIEWED, 24/08/2026, AND THIS ONE IS HIS OWN SENTENCE. The term is
+    // Read back 25/08/2026, AND THIS ONE IS HIS OWN SENTENCE. The term is
     // swapped and not a word around it. Read it back before it ships: an English
     // phrase dropped into the middle of his Thai is exactly the kind of change
     // that is right as a rule and wrong in a particular voice.
@@ -321,7 +321,7 @@ export const FOUNDER_AFTER: readonly Copy[] = [
   },
   {
     en: "I chose career coaching over being a recruiter because the first question should be “what suits you”, not “which vacancy can I put you into”.",
-    // TH-UNREVIEWED, 24/08/2026, HIS OWN SENTENCE. Term swapped, nothing else.
+    // Read back 25/08/2026, HIS OWN SENTENCE. Term swapped, nothing else.
     th: "ผมเลือกทำ Career Coaching แทนการเป็นนายหน้าจัดหางาน เพราะคำถามแรกควรเป็น “อะไรเหมาะกับคุณ” ไม่ใช่ “จะนำคุณไปใส่ในตำแหน่งไหนได้บ้าง”",
   },
   {

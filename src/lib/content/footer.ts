@@ -141,7 +141,7 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     ],
   },
   {
-    // TH-UNREVIEWED, 24/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`. The English
+    // Read back 25/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`. The English
     // column keeps the short "Coaching": it heads a column whose first link is
     // already called Coaching 1:1, and the full name twice in four words reads
     // as a mistake rather than as emphasis.

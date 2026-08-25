@@ -123,8 +123,8 @@ export const FAQ: readonly FaqItem[] = [
       },
       {
         en: "PunProfile provides career coaching, not recruitment. We are paid by you, not by an employer, so there is no quota and no vacancy anyone has to push you into applying for.",
-        // TH-UNREVIEWED, 24/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`.
-        th: "PunProfile ให้บริการ Career Coaching ไม่ใช่บริษัทจัดหางาน เรารับค่าบริการจากคุณ ไม่ใช่นายจ้าง จึงไม่มีโควตาหรือตำแหน่งที่ต้องผลักให้คุณสมัคร",
+        // Read back 25/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`.
+        th: "PunProfile ให้บริการ Career Coaching ไม่ใช่บริการจัดหางาน เรารับค่าบริการจากคุณ ไม่ใช่นายจ้าง จึงไม่มีโควตาหรือตำแหน่งว่างที่ต้องผลักดันให้คุณสมัคร",
       },
       {
         en: "What we do is help you decide which direction to head in, build a profile that makes people want to keep reading, and work through each application with you.",
