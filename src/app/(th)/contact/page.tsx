@@ -35,6 +35,8 @@
 
 import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
+import Band from "@/components/Band";
+import { HERO_HEADING } from "@/lib/content/footer";
 import {
   CONTACT_ALREADY_IN_QUEUE,
   CONTACT_CHANNELS,
@@ -45,20 +47,24 @@ import {
 export default function ContactPage() {
   // The words moved into `src/lib/content/contact.ts` on 16/08/2026, when the
   // page's title and meta description became a third and fourth reader of them.
-  const { pick } = useCopy();
+  const { pick, locale } = useCopy();
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-6 py-16">
-      <h1 className="text-headline-large">{pick(CONTACT_HEADING)}</h1>
-      <p className="mt-4 text-body-large text-on-surface-variant">{pick(CONTACT_INTRO)}</p>
+    <div className="w-full">
+      <Band ground="canvas">
+        <h1 className={HERO_HEADING(locale)}>{pick(CONTACT_HEADING)}</h1>
+        <p className="mt-4 text-body-large text-on-surface-variant">{pick(CONTACT_INTRO)}</p>
+      </Band>
 
-      <CallToAction page="/contact" className="mt-8" />
+      <Band ground="soft">
+        <CallToAction page="/contact" />
 
-      <p className="mt-5 text-body-medium text-on-surface-variant">{pick(CONTACT_CHANNELS)}</p>
+        <p className="mt-5 text-body-medium text-on-surface-variant">{pick(CONTACT_CHANNELS)}</p>
 
-      <p className="mt-10 text-body-medium text-on-surface-variant">
-        {pick(CONTACT_ALREADY_IN_QUEUE)}
-      </p>
+        <p className="mt-10 text-body-medium text-on-surface-variant">
+          {pick(CONTACT_ALREADY_IN_QUEUE)}
+        </p>
+      </Band>
     </div>
   );
 }

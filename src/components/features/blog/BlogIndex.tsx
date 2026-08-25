@@ -24,6 +24,8 @@ import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
 import PostCard from "@/components/features/blog/PostCard";
 import SignupForm from "@/components/features/blog/SignupForm";
+import Band from "@/components/Band";
+import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import {
   BLOG_ALL,
   BLOG_CLOSE,
@@ -77,7 +79,7 @@ function Chip({
 }
 
 function BlogBody() {
-  const { pick, path } = useCopy();
+  const { pick, path, locale } = useCopy();
   const params = useSearchParams();
   const topics = usedTopics();
   const raw = params.get("topic");
@@ -89,15 +91,15 @@ function BlogBody() {
       {/* Brand lime, the one unmissable ground on this page. It is allowed here
           because the blog index carries no brand orange; `design.md` permits one
           fixed high-energy ground per page and no more. Ink text, never white. */}
-      <section className="ground-fixed bg-brand-lime">
-        <div className="mx-auto w-full max-w-5xl px-6 py-16 medium:py-20">
-          <h1 className="max-w-3xl text-display-small">{pick(BLOG_HEADING)}</h1>
+      <Band ground="brand" width="wide">
+        <div>
+          <h1 className={`max-w-3xl ${HERO_HEADING(locale)}`}>{pick(BLOG_HEADING)}</h1>
           <p className="mt-5 max-w-2xl text-body-large text-on-surface-variant">{pick(BLOG_INTRO)}</p>
           {/* Renders nothing until Paul has read the Thai. `SignupForm` owns
               that gate and says why. */}
           <SignupForm />
         </div>
-      </section>
+      </Band>
 
       {/* Start here. Hidden below two, because pointing at one article out of
           one is the list again with a heading on top, which is the same
@@ -107,8 +109,8 @@ function BlogBody() {
           than three colours down the page. `design.md` asks for one wash per
           section and lets spacing do the sub-grouping. */}
       {playbooks().length > 1 && (
-        <section className="mx-auto w-full max-w-5xl px-6 pt-16">
-          <h2 className="max-w-2xl text-headline-large">{pick(PLAYBOOKS_HEADING)}</h2>
+        <Band ground="canvas" width="wide">
+          <h2 className={`max-w-2xl ${SECTION_HEADING(locale)}`}>{pick(PLAYBOOKS_HEADING)}</h2>
           <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
             {pick(PLAYBOOKS_INTRO)}
           </p>
@@ -129,10 +131,10 @@ function BlogBody() {
               <PostCard key={p.slug} post={p} />
             ))}
           </div>
-        </section>
+        </Band>
       )}
 
-      <section className="mx-auto w-full max-w-5xl px-6 py-16">
+      <Band ground="soft" width="wide">
         {/* No topic row when there is nothing to filter. A row of one chip
             reading "All" is a control that cannot do anything, and it makes an
             empty page look broken rather than new. */}
@@ -174,11 +176,11 @@ function BlogBody() {
             dead end. The line above it does not: it says "read this far", which
             is untrue of a page with nothing on it, and a closing line that
             contradicts the page it closes is worse than no line. */}
-        <div className="card-tonal mt-16 rounded-large px-6 py-7">
+        <div className="card-plain mt-16 px-8 py-9">
           {POSTS.length > 0 && <p className="text-body-large text-on-surface">{pick(BLOG_CLOSE)}</p>}
           <CallToAction page="/blog" className={POSTS.length > 0 ? "mt-5" : ""} />
         </div>
-      </section>
+      </Band>
     </>
   );
 }

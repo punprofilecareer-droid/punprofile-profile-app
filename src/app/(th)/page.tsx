@@ -61,7 +61,8 @@ import CallToAction from "@/components/CallToAction";
 import SampleRead from "@/components/features/home/SampleRead";
 import Triage from "@/components/features/home/Triage";
 import Catalogue from "@/components/features/home/Catalogue";
-import { EYEBROW } from "@/lib/content/footer";
+import Band from "@/components/Band";
+import { EYEBROW, HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import { MARKET } from "@/lib/content/market-snapshot.generated";
 import { FAQ, FAQ_HEADING } from "@/lib/content/faq";
 import {
@@ -104,14 +105,14 @@ export default function Home() {
           Brand lime is deliberately unused. It is the one unmissable ground per
           page and the hero is where it would go, but a button on lime has to be
           `btn-contrast` and `CallToAction` has no variant prop, on purpose. */}
-      <section className="bg-primary-container px-6 py-16 medium:py-20">
-        <div className="mx-auto grid max-w-5xl items-center gap-10 large:grid-cols-[1.15fr_1fr]">
+      <Band ground="canvas" width="wide">
+        <div className="grid items-center gap-10 large:grid-cols-[1.15fr_1fr]">
           <div>
             {/* Tracked and uppercased in English, neither in Thai. See `EYEBROW`
                 in `content/footer.ts` for why that is a script fact rather than
                 a preference. */}
             <p className={`text-on-surface-variant ${EYEBROW(locale)}`}>{t("landing.eyebrow")}</p>
-            <h1 className="mt-5 text-display-small text-balance">{t("landing.headline")}</h1>
+            <h1 className={`mt-5 text-balance ${HERO_HEADING(locale)}`}>{t("landing.headline")}</h1>
             {/* Standing, then the reframe, then what we do, and the order is
                 the argument: we have heard this before, it is the rulebook
                 rather than you, here is what we work on. The subhead comes last
@@ -149,20 +150,19 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
+      </Band>
 
-      <div className="mx-auto w-full max-w-3xl px-6 pb-16">
         {/* The one section about PunProfile doing work rather than making a
             claim, which is why it comes before anything the page asserts about
             itself. Every figure is read from the generated snapshot and the
             window is printed: a screening number with no window is a boast. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(MARKET_HEADING)}</h2>
+      <Band ground="soft">
+          <h2 className={SECTION_HEADING(locale)}>{pick(MARKET_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(MARKET_BODY)}</p>
           <div className="mt-8 grid gap-4 medium:grid-cols-3">
             {MARKET_STATS.map((stat) => (
-              <div key={stat.field} className="card-outlined rounded-large px-6 py-7">
-                <p className="text-headline-large text-primary">{MARKET[stat.field]}</p>
+              <div key={stat.field} className="card-plain px-8 py-9">
+                <p className="text-headline-large text-on-primary">{MARKET[stat.field]}</p>
                 <p className="mt-2 text-body-large text-on-surface">{t(stat.label)}</p>
               </div>
             ))}
@@ -176,13 +176,13 @@ export default function Home() {
               .replaceAll("{from}", MARKET.from)
               .replaceAll("{to}", MARKET.to)}
           </p>
-        </section>
+      </Band>
 
         {/* ------------------------------------------------- the problem */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(PROBLEM_HEADING)}</h2>
+      <Band ground="canvas">
+          <h2 className={SECTION_HEADING(locale)}>{pick(PROBLEM_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(PROBLEM_BODY)}</p>
-        </section>
+      </Band>
 
         {/* ------------------------------------------------------- triage
 
@@ -191,15 +191,15 @@ export default function Home() {
             Report is and should not have to. Five of the six lines are answer
             options out of `questions.ts`, so this is the words candidates
             actually use rather than personas invented to sell something. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(TRIAGE_HEADING)}</h2>
+      <Band ground="canvas">
+          <h2 className={SECTION_HEADING(locale)}>{pick(TRIAGE_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(TRIAGE_LEAD)}</p>
           <Triage />
-        </section>
+      </Band>
 
         {/* -------------------------------------------------- how it works */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(HOW_HEADING)}</h2>
+      <Band ground="soft">
+          <h2 className={SECTION_HEADING(locale)}>{pick(HOW_HEADING)}</h2>
           <ol className="mt-8 flex flex-col gap-8">
             {HOW_STEPS.map((step) => (
               <li key={step.n} className="flex gap-5">
@@ -213,13 +213,13 @@ export default function Home() {
                   {step.n}
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-title-large">{pick(step.title)}</h3>
+                  <h3 className="text-heading-sm">{pick(step.title)}</h3>
                   <p className="mt-2 text-body-large text-on-surface-variant">{pick(step.body)}</p>
                 </div>
               </li>
             ))}
           </ol>
-        </section>
+      </Band>
 
         {/* ------------------------------------------- a sample first read
 
@@ -227,23 +227,22 @@ export default function Home() {
             above the card and under it. It is the only fabricated thing on the
             site and it is publishable because it illustrates a format rather
             than asserting a result. See `SampleRead.tsx`. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(SAMPLE_HEADING)}</h2>
+      <Band ground="canvas">
+          <h2 className={SECTION_HEADING(locale)}>{pick(SAMPLE_HEADING)}</h2>
           <div className="mt-6">
             <SampleRead />
           </div>
-        </section>
+      </Band>
 
         {/* ---------------------------------------------------- catalogue
 
             Replaces the old services cards AND the old cost table. Read from
             `products.ts` at render, split by what it costs rather than by what
             it is, because that is the question a stranger is holding. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(CATALOGUE_HEADING)}</h2>
+      <Band ground="canvas">
+          <h2 className={SECTION_HEADING(locale)}>{pick(CATALOGUE_HEADING)}</h2>
           <Catalogue />
-        </section>
-      </div>
+      </Band>
 
       {/* ---------------------------------------------- visa sponsorship
 
@@ -265,13 +264,10 @@ export default function Home() {
           words it did. Paraphrasing him to fix that is not available and
           inventing a heading that says something else is worse, so the
           paragraph is the section, set one tier up in `headline-small`. */}
-      <section className="bg-secondary-container px-6 py-16">
-        <div className="mx-auto w-full max-w-3xl">
-          <p className="max-w-2xl text-headline-small">{pick(VISA_BODY)}</p>
-        </div>
-      </section>
+      <Band ground="brand">
+        <p className={`max-w-2xl ${SECTION_HEADING(locale)}`}>{pick(VISA_BODY)}</p>
+      </Band>
 
-      <div className="mx-auto w-full max-w-3xl px-6 pb-16">
         {/* --------------------------------------------------- who this is
 
             Paul's call of 24/08/2026, option 1c: a line about who is behind
@@ -279,12 +275,12 @@ export default function Home() {
             thirteen years and 26,000 resumes; nothing of that kind is claimed
             here, and the only figures on this page are the pipeline's, which
             sit in the section above the fold rather than in this one. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(WHO_HEADING)}</h2>
+      <Band ground="canvas">
+          <h2 className={SECTION_HEADING(locale)}>{pick(WHO_HEADING)}</h2>
           <p className="mt-3 max-w-2xl text-body-large text-on-surface-variant">
             {pick(WHO_BODY)}
           </p>
-        </section>
+      </Band>
 
         {/* ------------------------------------------------------- results
 
@@ -295,17 +291,17 @@ export default function Home() {
             in the meantime: a visible placeholder for social proof is itself a
             claim that social proof is imminent. */}
         {RESULTS.length > 0 && (
-          <section className="mt-20">
-            <h2 className="text-headline-small">{pick(RESULTS_HEADING)}</h2>
+        <Band ground="canvas">
+            <h2 className={SECTION_HEADING(locale)}>{pick(RESULTS_HEADING)}</h2>
             <ul className="mt-8 flex flex-col gap-6">
               {RESULTS.map((r) => (
-                <li key={r.id} className="card-outlined rounded-large px-6 py-7">
+                <li key={r.id} className="card-plain px-8 py-9">
                   <p className="text-body-large text-on-surface">{pick(r.quote)}</p>
                   <p className="mt-3 text-body-medium text-on-surface-variant">{pick(r.who)}</p>
                 </li>
               ))}
             </ul>
-          </section>
+        </Band>
         )}
 
         {/* --------------------------------------------------- FAQ teaser
@@ -313,8 +309,8 @@ export default function Home() {
             Three questions and a link, which is what the reference product
             does. Read from `faq.ts` rather than restated, and deliberately not
             expandable: an accordion here would be a second FAQ to maintain. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(FAQ_TEASER_HEADING)}</h2>
+      <Band ground="soft">
+          <h2 className={SECTION_HEADING(locale)}>{pick(FAQ_TEASER_HEADING)}</h2>
           <ul className="mt-6 flex flex-col gap-4">
             {FAQ.slice(0, 3).map((item, i) => (
               <li key={i} className="border-b border-outline-variant pb-4 text-body-large">
@@ -324,19 +320,18 @@ export default function Home() {
           </ul>
           <Link
             href={path("/faq")}
-            className="mt-6 inline-block text-body-large text-primary underline underline-offset-2"
+            className="mt-6 inline-block text-body-large text-on-primary underline underline-offset-2"
           >
             {pick(FAQ_HEADING)}
           </Link>
-        </section>
+      </Band>
 
-        <section className="py-16 text-center">
-          <p className="text-title-medium text-on-surface">{pick(CLOSE_LEAD)}</p>
+        <Band ground="dark" className="text-center">
+          <p className={SECTION_HEADING(locale)}>{pick(CLOSE_LEAD)}</p>
           {/* Primary only. The secondary belongs to the page and has already
               appeared once, under the hero. */}
-          <CallToAction page="/" className="mt-6" align="center" show="primary" />
-        </section>
-      </div>
+          <CallToAction page="/" className="mt-8" align="center" show="primary" />
+        </Band>
     </div>
   );
 }

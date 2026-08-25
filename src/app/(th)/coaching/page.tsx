@@ -25,7 +25,8 @@ import Image from "next/image";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useCopy } from "@/components/LocaleProvider";
-import { EYEBROW } from "@/lib/content/footer";
+import { EYEBROW, HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
+import Band from "@/components/Band";
 import CallToAction from "@/components/CallToAction";
 import ServiceCards from "@/components/features/services/ServiceCards";
 import {
@@ -58,7 +59,7 @@ import {
 
 function ProofPanel() {
   const stats = useQuery(api.stats.community);
-  const { pick } = useCopy();
+  const { pick, locale } = useCopy();
   if (!stats) return null;
 
   const lines = PROOF_LINES.map((line) => ({
@@ -70,19 +71,19 @@ function ProofPanel() {
   if (lines.length === 0) return null;
 
   return (
-    <section className="mt-20">
-      <h2 className="text-headline-small">{pick(PROOF_HEADING)}</h2>
+    <Band ground="soft">
+      <h2 className={SECTION_HEADING(locale)}>{pick(PROOF_HEADING)}</h2>
       <div className="mt-6 grid gap-4 medium:grid-cols-3">
         {lines.map(({ line, value }) => (
-          <div key={line.share} className="card-outlined rounded-large px-6 py-7">
-            <p className="text-headline-large text-primary">{value.pct}%</p>
+          <div key={line.share} className="card-plain px-8 py-9">
+            <p className="text-headline-large text-on-primary">{value.pct}%</p>
             <p className="mt-2 text-body-large text-on-surface">{pick(line.label)}</p>
           </div>
         ))}
       </div>
       <p className="mt-4 text-body-medium text-on-surface-variant">{pick(PROOF_FOOT)}</p>
-      <p className="mt-6 text-title-medium text-on-surface">{pick(PROOF_CONCLUSION)}</p>
-    </section>
+      <p className="mt-6 text-heading-sm text-on-surface">{pick(PROOF_CONCLUSION)}</p>
+    </Band>
   );
 }
 
@@ -99,7 +100,7 @@ export default function CoachingPage() {
           section: the founder section below is already on brand orange, and the
           system allows one fixed high-energy ground per page. Two of them is two
           things claiming to be the loudest. 16/08/2026. */}
-      <section className="bg-primary-container px-6 py-16 medium:py-20">
+      <Band ground="canvas" width="wide">
         <div className="mx-auto grid max-w-5xl items-center gap-10 large:grid-cols-[1.15fr_1fr]">
           <div>
             {/* Same rule as the footer: tracked and uppercased in English,
@@ -108,10 +109,10 @@ export default function CoachingPage() {
             {/* Two lines, second in Teal. `text-balance` because the break
                 between them is meaningful and a ragged first line reads as a
                 mistake rather than as a beat. */}
-            <h1 className="mt-5 text-display-small text-balance">
+            <h1 className={`mt-5 text-balance ${HERO_HEADING(locale)}`}>
               {pick(HOOK_LINE_1)}
               <br />
-              <span className="text-primary">{pick(HOOK_LINE_2)}</span>
+              <span className="text-on-primary">{pick(HOOK_LINE_2)}</span>
             </h1>
             <div className="mt-6 flex max-w-xl flex-col gap-4">
               {HOOK_BODY.map((p, i) => (
@@ -141,34 +142,33 @@ export default function CoachingPage() {
             />
           </div>
         </div>
-      </section>
+      </Band>
 
-      <div className="mx-auto w-full max-w-3xl px-6 pb-16">
         {/* Recognition before argument. A reader who has ticked three of these
             off in their head reads the rest of the page differently. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(PAIN_HEADING)}</h2>
+        <Band ground="canvas">
+          <h2 className={SECTION_HEADING(locale)}>{pick(PAIN_HEADING)}</h2>
           <div className="mt-6 grid gap-3 medium:grid-cols-2">
             {PAINS.map((p, i) => (
-              <p key={i} className="card-outlined rounded-large px-6 py-5 text-body-large text-on-surface">
+              <p key={i} className="card-plain px-8 py-6 text-body-large text-on-surface">
                 {pick(p)}
               </p>
             ))}
           </div>
-        </section>
+        </Band>
 
         <ProofPanel />
 
         {/* The machine. The section this business is best placed to write,
             because the framework genuinely does say what it cannot do. */}
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(METHOD_HEADING)}</h2>
+        <Band ground="soft">
+          <h2 className={SECTION_HEADING(locale)}>{pick(METHOD_HEADING)}</h2>
           <p className="mt-3 text-body-large text-on-surface-variant">{pick(METHOD_INTRO)}</p>
           <div className="mt-8 grid gap-4 medium:grid-cols-2">
             {METHOD.map((step) => (
-              <div key={step.n} className="card-outlined rounded-large px-6 py-7">
-                <p className="text-headline-small text-primary">{step.n}</p>
-                <h3 className="mt-2 text-title-large">{pick(step.heading)}</h3>
+              <div key={step.n} className="card-plain px-8 py-9">
+                <p className="text-headline-small text-on-primary">{step.n}</p>
+                <h3 className="mt-2 text-heading-sm">{pick(step.heading)}</h3>
                 <div className="mt-3 flex flex-col gap-3">
                   {step.body.map((b, i) => (
                     <p key={i} className="text-body-large text-on-surface-variant">
@@ -179,10 +179,10 @@ export default function CoachingPage() {
               </div>
             ))}
           </div>
-        </section>
+        </Band>
 
-        <section className="mt-20">
-          <h2 className="text-headline-small">{pick(PERSONA_HEADING)}</h2>
+        <Band ground="canvas">
+          <h2 className={SECTION_HEADING(locale)}>{pick(PERSONA_HEADING)}</h2>
           <ul className="mt-6 flex flex-col gap-3">
             {PERSONAS.map((p, i) => (
               <li key={i} className="flex gap-3 text-body-large text-on-surface">
@@ -193,7 +193,7 @@ export default function CoachingPage() {
           </ul>
 
           {/* Saying who you turn away is the cheapest credibility on the page. */}
-          <h3 className="mt-10 text-title-large">{pick(NOT_FOR_HEADING)}</h3>
+          <h3 className="mt-10 text-heading-sm">{pick(NOT_FOR_HEADING)}</h3>
           <ul className="mt-4 flex flex-col gap-3">
             {NOT_FOR.map((p, i) => (
               <li key={i} className="flex gap-3 text-body-large text-on-surface-variant">
@@ -205,24 +205,18 @@ export default function CoachingPage() {
               </li>
             ))}
           </ul>
-        </section>
-      </div>
+        </Band>
 
       {/* Last, and only now. An About page asks a stranger to care who you
           are before they have a reason to; this asks a reader who has just
           agreed with six things.
 
-          Full-bleed Mascot Orange, on Paul's call. Ink text rather than white,
-          which is not a taste decision: white on this orange holds 3.08:1 and
-          fails AA at body size, ink holds 5.12:1 and passes, and this is the
-          longest piece of running text on the site. See the token note in
-          `globals.css`.
-
-          The portrait keeps its own mint disc rather than being recoloured to
-          match. Teal against terracotta is the brand's own pairing, so the
-          contrast reads as the system rather than as an unedited asset. */}
-      <section className="ground-fixed bg-brand-orange px-6 py-20">
-        <div className="mx-auto w-full max-w-3xl">
+          Full-bleed on the lime band, which is the page's one unmissable
+          ground. `ground-fixed` pins the content colours, so the running text
+          is `ink-deep` at 9.45 rather than a role that would follow the scheme
+          and vanish. This is the longest piece of running text on the site, so
+          the ratio is the reason the label is not white. */}
+      <Band ground="brand">
           <div className="flex flex-col gap-8 medium:flex-row medium:items-start">
             <Image
               src="/paul-portrait.png"
@@ -232,7 +226,7 @@ export default function CoachingPage() {
               className="size-32 shrink-0 rounded-full bg-secondary-container object-cover medium:size-40"
             />
             <div>
-              <h2 className="text-headline-large">{pick(FOUNDER_HEADING)}</h2>
+              <h2 className={SECTION_HEADING(locale)}>{pick(FOUNDER_HEADING)}</h2>
               <div className="mt-5 flex flex-col gap-4">
                 {FOUNDER_BEFORE.map((p, i) => (
                   <p key={i} className="text-body-large">
@@ -246,7 +240,7 @@ export default function CoachingPage() {
           {/* The hinge of the section, given its own line and its own weight.
               In Paul's draft it sits alone between two blocks of paragraphs,
               and running it in as another paragraph would lose the beat. */}
-          <p className="mt-10 text-headline-small">{pick(FOUNDER_TURN)}</p>
+          <p className="mt-10 text-heading-sm">{pick(FOUNDER_TURN)}</p>
 
           <div className="mt-6 flex max-w-2xl flex-col gap-4">
             {FOUNDER_AFTER.map((p, i) => (
@@ -255,8 +249,7 @@ export default function CoachingPage() {
               </p>
             ))}
           </div>
-        </div>
-      </section>
+    </Band>
 
       {/* The three services, folded in from `/services` on 23/08/2026. They sit
           after the case for coaching and before the close, which is where "and
@@ -265,14 +258,14 @@ export default function CoachingPage() {
 
           It carries the `?focus=` contract the result screen depends on. See the
           note at the top of `ServiceCards`. */}
-      <section className="py-16">
+      <Band ground="soft" width="wide">
         <ServiceCards />
-      </section>
+      </Band>
 
-      <section className="mx-auto w-full max-w-3xl px-6 py-16 text-center">
-        <p className="text-title-medium text-on-surface">{pick(CLOSE_LEAD)}</p>
-        <CallToAction page="/coaching" className="mt-6" align="center" />
-      </section>
+      <Band ground="dark" className="text-center">
+        <p className={SECTION_HEADING(locale)}>{pick(CLOSE_LEAD)}</p>
+        <CallToAction page="/coaching" className="mt-8" align="center" />
+      </Band>
     </div>
   );
 }

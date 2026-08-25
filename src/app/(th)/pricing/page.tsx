@@ -43,36 +43,40 @@ import {
   PRICING_HEADING,
   PRICING_INTRO,
 } from "@/lib/content/pricing";
+import Band from "@/components/Band";
+import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 
 export default function PricingPage() {
-  const { pick } = useCopy();
+  const { pick, locale } = useCopy();
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-16">
-      <h1 className="text-headline-large">{pick(PRICING_HEADING)}</h1>
-      <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
-        {pick(PRICING_INTRO)}
-      </p>
+    <div className="w-full">
+      <Band ground="canvas" width="wide">
+        <h1 className={HERO_HEADING(locale)}>{pick(PRICING_HEADING)}</h1>
+        <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
+          {pick(PRICING_INTRO)}
+        </p>
+      </Band>
 
       {/* ------------------------------------------------------------ free */}
-      <section className="mt-14">
-        <h2 className="text-title-large">{pick(FREE_HEADING)}</h2>
+      <Band ground="soft" width="wide">
+        <h2 className={SECTION_HEADING(locale)}>{pick(FREE_HEADING)}</h2>
         <div className="mt-5 grid gap-4 large:grid-cols-2">
           {FREE_ITEMS.map((item) => (
             <div
               key={item.id}
-              className="rounded-large border border-outline-variant bg-surface px-6 py-5"
+              className="card-plain px-6 py-5"
             >
-              <h3 className="text-title-medium">{pick(item.name)}</h3>
+              <h3 className="text-heading-sm">{pick(item.name)}</h3>
               <p className="mt-2 text-body-large text-on-surface-variant">{pick(item.body)}</p>
             </div>
           ))}
         </div>
-      </section>
+      </Band>
 
       {/* ----------------------------------------------------------- packs */}
-      <section className="mt-16">
-        <h2 className="text-title-large">{pick(PACKS_HEADING)}</h2>
+      <Band ground="canvas" width="wide">
+        <h2 className={SECTION_HEADING(locale)}>{pick(PACKS_HEADING)}</h2>
 
         {/* No `items-start`: the default stretch makes the three cards share
             the tallest, and the card is `flex flex-col` with an `mt-auto`
@@ -91,7 +95,7 @@ export default function PricingPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-title-large">{pick(pack.name)}</h3>
                 {pack.recommended && (
-                  <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-action">
+                  <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-on-primary">
                     {pick(RECOMMENDED_BADGE)}
                   </span>
                 )}
@@ -122,11 +126,11 @@ export default function PricingPage() {
             </section>
           ))}
         </div>
-      </section>
+      </Band>
 
       {/* -------------------------------------------------------- includes */}
-      <section className="mt-16">
-        <h2 className="text-title-large">{pick(INCLUDES_HEADING)}</h2>
+      <Band ground="soft" width="wide">
+        <h2 className={SECTION_HEADING(locale)}>{pick(INCLUDES_HEADING)}</h2>
         <ul className="mt-5 flex flex-col gap-2.5">
           {INCLUDES.map((item, i) => (
             <li key={i} className="flex gap-3 text-body-large text-on-surface">
@@ -135,11 +139,11 @@ export default function PricingPage() {
             </li>
           ))}
         </ul>
-      </section>
+      </Band>
 
       {/* ----------------------------------------------- what a token buys */}
-      <section className="mt-16">
-        <h2 className="text-title-large">{pick(TOKEN_HEADING)}</h2>
+      <Band ground="canvas" width="wide">
+        <h2 className={SECTION_HEADING(locale)}>{pick(TOKEN_HEADING)}</h2>
         <p className="mt-3 max-w-2xl text-body-large text-on-surface-variant">{pick(TOKEN_BODY)}</p>
         <ul className="mt-5 flex flex-col gap-2.5">
           {TOKEN_EXAMPLES.map((item, i) => (
@@ -150,16 +154,16 @@ export default function PricingPage() {
           ))}
         </ul>
         <p className="mt-5 max-w-2xl text-body-large text-on-surface">{pick(NOTHING_FOUND)}</p>
-      </section>
+      </Band>
 
       {/* ------------------------------------------------------ calculator */}
       <TokenCalculator />
 
       {/* ------------------------------------------------------- questions */}
-      <section className="mt-16">
+      <Band ground="soft" width="wide">
         {PRICING_QUESTIONS.map((item, i) => (
           <div key={i} className="border-b border-outline-variant py-6 last:border-b-0">
-            <h3 className="text-title-medium">{pick(item.q)}</h3>
+            <h3 className="text-heading-sm">{pick(item.q)}</h3>
             {item.a.map((line, j) => (
               <p key={j} className="mt-3 text-body-large text-on-surface-variant">
                 {pick(line)}
@@ -167,10 +171,12 @@ export default function PricingPage() {
             ))}
           </div>
         ))}
-      </section>
+      </Band>
 
       {/* The page's secondary, exactly once, where a secondary belongs. */}
-      <CallToAction page="/pricing" className="mt-14" show="secondary" />
+      <Band ground="dark" className="text-center">
+        <CallToAction page="/pricing" align="center" show="secondary" />
+      </Band>
     </div>
   );
 }

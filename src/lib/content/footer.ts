@@ -56,6 +56,25 @@ export const EYEBROW = (locale: string) =>
     ? "text-body-medium font-semibold"
     : "text-body-medium font-semibold uppercase tracking-[0.14em]";
 
+/**
+ * The two heading tiers, per script. 25/08/2026, with the `wise-1` system.
+ *
+ * The system has three families and only one of them carries Thai, so a single
+ * class cannot serve both scripts here the way `EYEBROW` nearly does. Latin
+ * takes the brand's own metrics: `display-*` is Archivo at 900 on a line box
+ * 0.85 of the size, and `headline-*` is Inter at 600 with 3% negative tracking.
+ * Thai takes Anuphan on a line box nearly 1.4 of the size, because an 0.85 box
+ * clips tone marks and vowels outright.
+ *
+ * So these are the same two jobs, sized and led differently per script, and a
+ * page names the job rather than the class.
+ */
+export const HERO_HEADING = (locale: string) =>
+  locale === "th" ? "text-thai-display" : "text-display-lg";
+
+export const SECTION_HEADING = (locale: string) =>
+  locale === "th" ? "text-thai-headline" : "text-headline-lg";
+
 export interface FooterLink {
   href: string;
   label: Copy;

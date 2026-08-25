@@ -16,21 +16,26 @@
 import Link from "next/link";
 import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
+import Band from "@/components/Band";
+import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import { FAQ, FAQ_CLOSE, FAQ_HEADING, FAQ_INTRO } from "@/lib/content/faq";
 
 export default function FaqPage() {
-  const { pick, path } = useCopy();
+  const { pick, path, locale } = useCopy();
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-6 py-16">
-      <h1 className="text-headline-large">{pick(FAQ_HEADING)}</h1>
-      <p className="mt-3 text-body-large text-on-surface-variant">{pick(FAQ_INTRO)}</p>
+    <div className="w-full">
+      <Band ground="canvas">
+        <h1 className={HERO_HEADING(locale)}>{pick(FAQ_HEADING)}</h1>
+        <p className="mt-4 text-body-large text-on-surface-variant">{pick(FAQ_INTRO)}</p>
+      </Band>
 
-      <div className="mt-10 flex flex-col gap-3">
+      <Band ground="soft">
+      <div className="flex flex-col gap-3">
         {FAQ.map((item) => (
           <details
             key={item.q.en}
-            className="card-outlined group rounded-large px-6 py-5 [&_summary::-webkit-details-marker]:hidden"
+            className="card-plain group px-6 py-5 [&_summary::-webkit-details-marker]:hidden"
           >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-body-large text-on-surface">
               {pick(item.q)}
@@ -53,7 +58,7 @@ export default function FaqPage() {
               {item.link && (
                 <Link
                   href={path(item.link.href)}
-                  className="text-body-large text-primary underline underline-offset-2"
+                  className="text-body-large text-on-primary underline underline-offset-2"
                 >
                   {pick(item.link.label)}
                 </Link>
@@ -62,11 +67,12 @@ export default function FaqPage() {
           </details>
         ))}
       </div>
+      </Band>
 
-      <div className="card-tonal mt-12 rounded-large px-6 py-7">
-        <p className="text-body-large text-on-surface">{pick(FAQ_CLOSE)}</p>
-        <CallToAction page="/faq" className="mt-5" />
-      </div>
+      <Band ground="dark" className="text-center">
+        <p className={SECTION_HEADING(locale)}>{pick(FAQ_CLOSE)}</p>
+        <CallToAction page="/faq" className="mt-8" align="center" show="primary" />
+      </Band>
     </div>
   );
 }
