@@ -28,7 +28,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCopy } from "@/components/LocaleProvider";
 import { DESTINATIONS } from "@/lib/content/cta";
-import { FAQ_HEADING } from "@/lib/content/faq";
 
 /** The section's own root, and the page that explains what it is. */
 const ROOT = "/products/eu-fit-check";
@@ -50,19 +49,18 @@ export default function SectionNav() {
   if (!here) return null;
 
   /*
-   * The links, and why the list is short.
+   * One link, because the section has one other page.
    *
-   * Three destinations, each with a label that already exists and is already
-   * reviewed: the check, what it costs, and the questions. Inventing a fourth
-   * would mean inventing Thai for it, and a section bar padded out with pages
-   * that are not the section's is the same mistake as a menu that lists
-   * everything.
+   * It carried three: the check, what it costs, and the questions. Two of those
+   * point OUT of the section, at `/pricing` and `/faq`, which belong to the
+   * site and already sit in the main nav. A bar whose job is to say "you are in
+   * EU Fit Check" that offers two ways out of it is doing the opposite.
+   *
+   * So it lists what is in the section and nothing else. One link reads as a
+   * section with one other page, which is true today, and the list grows on its
+   * own when Fit Report or Matched Jobs ship.
    */
-  const links = [
-    { href: DESTINATIONS.assess.href, label: pick(DESTINATIONS.assess.label) },
-    { href: DESTINATIONS.pricing.href, label: pick(DESTINATIONS.pricing.label) },
-    { href: "/faq", label: pick(FAQ_HEADING) },
-  ];
+  const links = [{ href: DESTINATIONS.assess.href, label: pick(DESTINATIONS.assess.label) }];
 
   return (
     <div className="sticky top-[76px] z-30 border-b border-line bg-canvas-soft">
