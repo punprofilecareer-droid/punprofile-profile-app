@@ -30,22 +30,24 @@ import {
 } from "@/lib/content/products";
 
 /**
- * A picture per product page, and it is a placeholder mapping.
+ * A picture per product page. Every one of them is a placeholder today.
  *
- * These are the assessment's own block photographs, which are studio shots of
- * the mascot rather than pictures of the product, because none of the five has
- * art of its own. Each is assigned by what its question is about, so the pairing
- * is not random, but it is a stand-in and should be replaced the day there is
- * real art. `alt` is empty at the call site for the same reason: a decorative
- * stand-in should not be described to a screen reader as if it meant something.
+ * `placeholder-4x3.svg` is deliberately unmistakable: a dashed box on the quiet
+ * tint that says PLACEHOLDER. The previous version of this map pointed at the
+ * assessment's block photographs, which looked finished and were not, and art
+ * that looks finished is art nobody replaces.
+ *
+ * **This map is the swap list.** One line per product, so replacing one is one
+ * line and replacing all five is five. `alt` is empty at the call site while
+ * these are stand-ins; real art gets a real description from `products.ts`.
  */
 const PRODUCT_ART: Record<string, string> = {
-  "eu-fit-check": "/assess/blocks/now.jpg",
-  "cv-check": "/assess/blocks/understood.jpg",
-  "fit-report": "/assess/blocks/aim.jpg",
-  "matched-jobs": "/assess/blocks/go.jpg",
-  "guided-job-hunt": "/assess/blocks/bring.jpg",
-  default: "/assess/blocks/aim.jpg",
+  "eu-fit-check": "/placeholder-4x3.svg",
+  "cv-check": "/placeholder-4x3.svg",
+  "fit-report": "/placeholder-4x3.svg",
+  "matched-jobs": "/placeholder-4x3.svg",
+  "guided-job-hunt": "/placeholder-4x3.svg",
+  default: "/placeholder-4x3.svg",
 };
 
 export default function ProductPage({ product }: { product: Product }) {
