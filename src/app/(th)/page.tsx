@@ -95,75 +95,86 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      {/* Full-bleed hero on `primary-container`. Olive is the brand and this is
-          the brand's front door, so it takes the brand ground.
+      {/*
+        The hero, rebuilt on the reference's shape 25/08/2026: centred, one
+        column, and the illustration UNDER the words rather than beside them.
 
-          The illustration is `mascot-magnifier` and not `mascot-stepping`, which
-          is `/coaching`'s hero on this same ground. Two identical heroes on the
-          two most-visited pages is a flat site rather than a consistent one.
+        It was a two-column grid with the mascot on the right, hidden below
+        `large` because on a phone it pushed the button under the fold. Centred
+        solves that without hiding anything: the words come first at every
+        width and the picture follows them, so the phone gets the same page as
+        the laptop rather than a reduced one.
 
-          Brand lime is deliberately unused. It is the one unmissable ground per
-          page and the hero is where it would go, but a button on lime has to be
-          `btn-contrast` and `CallToAction` has no variant prop, on purpose. */}
-      <Band ground="canvas" width="wide">
-        <div className="grid items-center gap-10 large:grid-cols-[1.15fr_1fr]">
-          <div>
-            {/* Tracked and uppercased in English, neither in Thai. See `EYEBROW`
-                in `content/footer.ts` for why that is a script fact rather than
-                a preference. */}
-            <p className={`text-on-surface-variant ${EYEBROW(locale)}`}>{t("landing.eyebrow")}</p>
-            <h1 className={`mt-5 text-balance ${HERO_HEADING(locale)}`}>{t("landing.headline")}</h1>
-            {/* Standing, then the reframe, then what we do, and the order is
-                the argument: we have heard this before, it is the rulebook
-                rather than you, here is what we work on. The subhead comes last
-                because it is the only one that also has to stand alone as the
-                site's meta description, and a description that opened on
-                "we have talked to hundreds" would be describing us in a search
-                result rather than the page. */}
-            <div className="mt-6 flex max-w-xl flex-col gap-4">
-              <p className="text-body-large text-on-surface-variant">{pick(HERO_STANDING)}</p>
-              <p className="text-body-large text-on-surface-variant">{pick(HERO_REFRAME)}</p>
-              <p className="text-body-large text-on-surface-variant">{t("landing.subhead")}</p>
-            </div>
-            <CallToAction page="/" className="mt-8" />
-            <p className="mt-3 text-body-medium text-on-surface-variant">
-              {t("landing.reassurance")}
-            </p>
+        The mascot's own mint panel is gone with the grid. The asset is
+        transparent and the ground is white here, so the panel was only ever
+        there to fill a column.
+      */}
+      <Band ground="canvas" width="wide" align="center" className="text-center">
+        <div className="mx-auto max-w-3xl">
+          {/* Tracked and uppercased in English, neither in Thai. See `EYEBROW`
+              in `content/footer.ts` for why that is a script fact rather than
+              a preference. */}
+          <p className={`text-mute-strong ${EYEBROW(locale)}`}>{t("landing.eyebrow")}</p>
+          <h1 className={`mt-5 text-balance ${HERO_HEADING(locale)}`}>{t("landing.headline")}</h1>
+          {/* Standing, then the reframe, then what we do, and the order is
+              the argument: we have heard this before, it is the rulebook
+              rather than you, here is what we work on. The subhead comes last
+              because it is the only one that also has to stand alone as the
+              site's meta description, and a description that opened on
+              "we have talked to hundreds" would be describing us in a search
+              result rather than the page. */}
+          <div className="mt-6 flex flex-col gap-4">
+            <p className="text-body-large text-on-surface-variant">{pick(HERO_STANDING)}</p>
+            <p className="text-body-large text-on-surface-variant">{pick(HERO_REFRAME)}</p>
+            <p className="text-body-large text-on-surface-variant">{t("landing.subhead")}</p>
           </div>
-
-          {/* The asset bakes its own mint in, so the panel is set to the
-              illustration's exact background rather than to a token two shades
-              off. Hidden below `large` for the same reason `/coaching`'s is: on
-              a phone it pushes the headline and the button below the fold, and
-              the button is the whole job of this section. */}
-          <div
-            className="hidden overflow-hidden rounded-large large:block"
-            style={{ backgroundColor: "#e4fbf5" }}
-          >
-            <Image
-              src="/mascot-magnifier.png"
-              alt={pick(HERO_MASCOT_ALT)}
-              width={1442}
-              height={720}
-              priority
-              className="h-auto w-full"
-            />
-          </div>
+          <CallToAction page="/" className="mt-8" align="center" />
+          <p className="mt-3 text-body-medium text-on-surface-variant">
+            {t("landing.reassurance")}
+          </p>
         </div>
+
+        <Image
+          src="/mascot-magnifier.png"
+          alt={pick(HERO_MASCOT_ALT)}
+          width={1442}
+          height={720}
+          priority
+          sizes="(max-width: 840px) 92vw, 720px"
+          className="mx-auto mt-12 h-auto w-full max-w-[720px]"
+        />
       </Band>
 
         {/* The one section about PunProfile doing work rather than making a
             claim, which is why it comes before anything the page asserts about
             itself. Every figure is read from the generated snapshot and the
             window is printed: a screening number with no window is a boast. */}
-      <Band ground="soft">
-          <h2 className={SECTION_HEADING(locale)}>{pick(MARKET_HEADING)}</h2>
-          <p className="mt-3 text-body-large text-on-surface-variant">{pick(MARKET_BODY)}</p>
-          <div className="mt-8 grid gap-4 medium:grid-cols-3">
+      {/*
+        The trust row, on the reference's own construction: a hairline, then the
+        facts side by side in the open with a small chip each. Not cards.
+
+        They were `card-plain` on a tinted band, which is the shape this system
+        uses for an OFFER. These are not offers, they are the page's only
+        evidence, and putting them in three boxes made them read as three things
+        for sale directly under a hero that is asking for a click.
+      */}
+      <Band ground="canvas" width="wide">
+          <div className="max-w-3xl">
+            <h2 className={SECTION_HEADING(locale)}>{pick(MARKET_HEADING)}</h2>
+            <p className="mt-3 text-body-large text-on-surface-variant">{pick(MARKET_BODY)}</p>
+          </div>
+          <hr className="mt-10 border-line" />
+          <div className="mt-10 grid gap-10 medium:grid-cols-3">
             {MARKET_STATS.map((stat) => (
-              <div key={stat.field} className="card-plain px-8 py-9">
-                <p className="text-headline-large text-on-primary">{MARKET[stat.field]}</p>
-                <p className="mt-2 text-body-large text-on-surface">{t(stat.label)}</p>
+              <div key={stat.field}>
+                <span
+                  aria-hidden
+                  className="flex size-9 items-center justify-center rounded-full bg-primary-pale text-body-sm-strong text-on-primary-pale"
+                >
+                  &#10003;
+                </span>
+                <p className="mt-4 text-display-md text-on-primary">{MARKET[stat.field]}</p>
+                <p className="mt-2 text-body-large text-body">{t(stat.label)}</p>
               </div>
             ))}
           </div>
@@ -198,7 +209,19 @@ export default function Home() {
       </Band>
 
         {/* -------------------------------------------------- how it works */}
-      <Band ground="soft">
+      {/*
+        Split, with the steps beside a picture, which is the reference's shape
+        for a section that explains rather than sells. `mascot-laptop` was the
+        one illustration in `public/` that nothing used; the hero has the
+        magnifier and `/coaching` has the stepping pose, so all three poses now
+        appear once each and none of them twice.
+
+        Hidden below `large`, where a phone should get the steps and not a
+        picture of somebody having them explained.
+      */}
+      <Band ground="soft" width="wide">
+        <div className="grid items-center gap-12 large:grid-cols-[1.2fr_1fr]">
+          <div>
           <h2 className={SECTION_HEADING(locale)}>{pick(HOW_HEADING)}</h2>
           <ol className="mt-8 flex flex-col gap-8">
             {HOW_STEPS.map((step) => (
@@ -219,6 +242,17 @@ export default function Home() {
               </li>
             ))}
           </ol>
+          </div>
+
+          <Image
+            src="/mascot-laptop.png"
+            alt=""
+            width={1442}
+            height={720}
+            sizes="420px"
+            className="hidden h-auto w-full large:block"
+          />
+        </div>
       </Band>
 
         {/* ------------------------------------------- a sample first read
@@ -227,11 +261,27 @@ export default function Home() {
             above the card and under it. It is the only fabricated thing on the
             site and it is publishable because it illustrates a format rather
             than asserting a result. See `SampleRead.tsx`. */}
-      <Band ground="canvas">
-          <h2 className={SECTION_HEADING(locale)}>{pick(SAMPLE_HEADING)}</h2>
-          <div className="mt-6">
+      {/*
+        The lime band, and the page's one unmissable ground.
+
+        The reference puts a white card on this ground beside a short line of
+        words, and that is exactly the shape this section already had: an
+        example of the thing on the left, the claim about it on the right. The
+        card is the sample read, which is the closest thing this site has to
+        their converter, a working illustration rather than a promise.
+
+        `ground-fixed` inside `Band` pins the content colours, so nothing here
+        names one.
+      */}
+      <Band ground="brand" width="wide">
+        <div className="grid items-center gap-10 large:grid-cols-[1fr_1.1fr]">
+          <div className="max-w-xl">
+            <h2 className={SECTION_HEADING(locale)}>{pick(SAMPLE_HEADING)}</h2>
+          </div>
+          <div className="card-plain p-6 medium:p-8">
             <SampleRead />
           </div>
+        </div>
       </Band>
 
         {/* ---------------------------------------------------- catalogue
@@ -264,8 +314,8 @@ export default function Home() {
           words it did. Paraphrasing him to fix that is not available and
           inventing a heading that says something else is worse, so the
           paragraph is the section, set one tier up in `headline-small`. */}
-      <Band ground="brand">
-        <p className={`max-w-2xl ${SECTION_HEADING(locale)}`}>{pick(VISA_BODY)}</p>
+      <Band ground="canvas">
+        <p className={`max-w-3xl ${SECTION_HEADING(locale)}`}>{pick(VISA_BODY)}</p>
       </Band>
 
         {/* --------------------------------------------------- who this is
@@ -313,7 +363,7 @@ export default function Home() {
           <h2 className={SECTION_HEADING(locale)}>{pick(FAQ_TEASER_HEADING)}</h2>
           <ul className="mt-6 flex flex-col gap-4">
             {FAQ.slice(0, 3).map((item, i) => (
-              <li key={i} className="border-b border-outline-variant pb-4 text-body-large">
+              <li key={i} className="border-b border-line pb-4 text-body-large">
                 {pick(item.q)}
               </li>
             ))}
@@ -326,11 +376,31 @@ export default function Home() {
           </Link>
       </Band>
 
-        <Band ground="dark" align="center" className="text-center">
-          <p className={SECTION_HEADING(locale)}>{pick(CLOSE_LEAD)}</p>
+        {/*
+          The close is a PANEL, not a band. 25/08/2026.
+
+          The reference ends its page on a dark green card with a 40px radius
+          sitting on the white page, and that is a different thing from a
+          full-bleed dark ground: a band says the page has changed subject, a
+          panel says here is one more thing. This is one more thing.
+
+          It also stopped the page ending on two adjacent dark surfaces, since
+          the footer is a quiet band now and the full-bleed version sat directly
+          against it.
+        */}
+        <Band ground="canvas" width="wide">
+          <div className="ground-dark rounded-3xl bg-canvas-dark px-8 py-14 text-center medium:px-16">
+          <span
+            aria-hidden
+            className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary text-heading-sm text-on-primary"
+          >
+            &#10003;
+          </span>
+          <p className={`mx-auto mt-6 max-w-2xl ${SECTION_HEADING(locale)}`}>{pick(CLOSE_LEAD)}</p>
           {/* Primary only. The secondary belongs to the page and has already
               appeared once, under the hero. */}
           <CallToAction page="/" className="mt-8" align="center" show="primary" />
+          </div>
         </Band>
     </div>
   );
