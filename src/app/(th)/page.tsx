@@ -66,7 +66,7 @@ import { DESTINATIONS } from "@/lib/content/cta";
 import Band from "@/components/Band";
 import Slot from "@/components/blocks/Slot";
 import SplitFeature from "@/components/blocks/SplitFeature";
-import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
+import { EYEBROW, HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import { MARKET } from "@/lib/content/market-snapshot.generated";
 import { FAQ, FAQ_HEADING } from "@/lib/content/faq";
 import {
@@ -140,7 +140,16 @@ export default function Home() {
             a sentence describing the service, where this row is two short
             proofs. It moves nowhere for now and is listed in the handover.
           */}
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-body-sm">
+          {/*
+            `landing.eyebrow` is one element more than the reference's hero has,
+            and it is here because deleting it is not mine to do: it is Paul's
+            own wording from the 17/08/2026 review sheet, and it says who the
+            site is for, which nothing else on this page says. The block wants
+            the proofs directly above the headline. Left as a decision.
+          */}
+          <p className={`text-mute-strong ${EYEBROW(locale)}`}>{t("landing.eyebrow")}</p>
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-body-sm">
             <span className="inline-flex items-center gap-2">
               <span
                 aria-hidden
@@ -158,8 +167,13 @@ export default function Home() {
               >
                 &#9733;
               </span>
-              <Slot>proof two, bold</Slot>
-              <Slot>its quieter half</Slot>
+              {/* `landing.reassurance` belongs here and not under the buttons,
+                  which is where it used to sit. Under two minutes, a result
+                  straight away and no account is a proof, and a proof is what
+                  this row carries. */}
+              <span className="text-body-sm-strong text-on-primary">
+                {t("landing.reassurance")}
+              </span>
             </span>
           </div>
 
