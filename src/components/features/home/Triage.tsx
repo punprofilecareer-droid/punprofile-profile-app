@@ -25,7 +25,6 @@
 import Link from "next/link";
 import { useCopy } from "@/components/LocaleProvider";
 import { TRIAGE } from "@/lib/content/home";
-import Slot from "@/components/blocks/Slot";
 
 export default function Triage() {
   const { pick, path } = useCopy();
@@ -44,9 +43,7 @@ export default function Triage() {
                   the title is the situation, the body says what happens if you
                   press it. We have never written those, so each is a slot. */}
               <span className="mt-1 block">
-                <Slot code={`HOME-05-${item.id}`}>
-                  one line: what pressing this row gets them
-                </Slot>
+                <span className="text-body-md text-body">{pick(item.body)}</span>
               </span>
             </span>
             <span

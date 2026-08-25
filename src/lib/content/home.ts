@@ -253,9 +253,45 @@ export interface Triage {
   id: string;
   /** The reader's own situation. */
   line: Copy;
+  /**
+   * What pressing the row gets them. Drafted 25/08/2026 to fill `HOME-05`.
+   *
+   * The reference's row list gives every row a line of body under its title,
+   * and the rule that makes these honest is that each says where the row GOES,
+   * not what it promises: three of the six lead to the check, two to coaching,
+   * one to CV Check, and the line names that rather than the outcome.
+   */
+  body: Copy;
   /** Where the site answers it. */
   href: string;
 }
+
+/**
+ * The line under the sample card's heading. Drafted 25/08/2026 for `HOME-03`.
+ *
+ * The reference's split carries a line between the headline and the action,
+ * saying what the thing beside it is. This one names the card as an example and
+ * nothing more, because `SampleRead` already says twice that its numbers are
+ * invented and a third claim here would be the one that oversells it.
+ */
+// TH-UNREVIEWED, 25/08/2026. Draft.
+export const SAMPLE_LEAD: Copy = {
+  en: "This is what the first read looks like: four scores, and what each one means for you.",
+  th: "หน้าตาของผลเบื้องต้นเป็นแบบนี้ คะแนนสี่ด้าน พร้อมความหมายของแต่ละด้าน",
+};
+
+/**
+ * The line under the catalogue's heading. Drafted 25/08/2026 for `HOME-04`.
+ *
+ * What the three cards have in common, which is the thing the reference's card
+ * rows always say: they are the three ways of working together, and the rest of
+ * the page is what you can buy without one.
+ */
+// TH-UNREVIEWED, 25/08/2026. Draft.
+export const CATALOGUE_LEAD: Copy = {
+  en: "Three ways of working together, and below them everything you can use on your own.",
+  th: "สามรูปแบบของการทำงานร่วมกัน และด้านล่างคือทุกอย่างที่คุณใช้เองได้",
+};
 
 export const TRIAGE_HEADING: Copy = {
   en: "You do not need to know which service you need",
@@ -279,6 +315,11 @@ export const TRIAGE: readonly Triage[] = [
       // Nothing was added: it already stands on its own.
       th: "สมัครไปหลายที่แล้ว แต่แทบไม่มีใครติดต่อกลับ",
     },
+    // TH-UNREVIEWED, 25/08/2026. Draft for `HOME-05-no-callbacks`.
+    body: {
+      en: "Go to CV Check, which reads the CV the way a European screener reads it.",
+      th: "ไปที่ CV Check ซึ่งจะอ่าน CV ของคุณแบบเดียวกับที่ผู้คัดกรองในยุโรปอ่าน",
+    },
     href: "/products/cv-check",
   },
   {
@@ -287,6 +328,11 @@ export const TRIAGE: readonly Triage[] = [
       en: "I have interviewed, but I do not get through to the next round.",
       // Paul's Thai, VERBATIM from `questions.ts`, the job-search-stage option.
       th: "เคยสัมภาษณ์แล้ว แต่ยังไม่ผ่านเข้ารอบถัดไป",
+    },
+    // TH-UNREVIEWED, 25/08/2026. Draft for `HOME-05-no-offers`.
+    body: {
+      en: "Go to coaching, where we work through the round you keep stopping at.",
+      th: "ไปที่หน้าโค้ชชิ่ง เพื่อดูว่าเราทำงานกับรอบที่คุณติดอยู่อย่างไร",
     },
     href: "/coaching",
   },
@@ -299,6 +345,11 @@ export const TRIAGE: readonly Triage[] = [
       // a question the reader cannot see here.
       th: "มี CV อยู่แล้ว แต่ยังไม่ได้ปรับให้เหมาะกับตลาดยุโรป",
     },
+    // TH-UNREVIEWED, 25/08/2026. Draft for `HOME-05-cv-not-europe`.
+    body: {
+      en: "Go to CV Check, which lists what to change and why, one point at a time.",
+      th: "ไปที่ CV Check ซึ่งจะบอกว่าควรแก้จุดไหน พร้อมเหตุผลของแต่ละจุด",
+    },
     href: "/products/cv-check",
   },
   {
@@ -308,6 +359,11 @@ export const TRIAGE: readonly Triage[] = [
       // Read back 25/08/2026. Paul's visa option `ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง`
       // with the subject of its own question folded in.
       th: "เรื่องวีซ่าและสิทธิในการทำงาน ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง",
+    },
+    // TH-UNREVIEWED, 25/08/2026. Draft for `HOME-05-visa-unknown`.
+    body: {
+      en: "Start the check, which asks about work rights and says where you stand.",
+      th: "เริ่มทำ EU Fit Check ซึ่งมีคำถามเรื่องสิทธิการทำงาน และจะบอกว่าคุณอยู่ตรงไหน",
     },
     href: "/efc-assessment",
   },
@@ -319,6 +375,11 @@ export const TRIAGE: readonly Triage[] = [
       // question, which needs that question to mean anything.
       th: "ยังไม่แน่ใจว่าอยากทำงานสายไหนในยุโรป",
     },
+    // TH-UNREVIEWED, 25/08/2026. Draft for `HOME-05-no-target`.
+    body: {
+      en: "Go to coaching, where deciding the direction is the first thing we do.",
+      th: "ไปที่หน้าโค้ชชิ่ง ซึ่งเริ่มจากการตัดสินใจเรื่องทิศทางก่อนเป็นอย่างแรก",
+    },
     href: "/coaching",
   },
   {
@@ -328,6 +389,11 @@ export const TRIAGE: readonly Triage[] = [
       // Read back 25/08/2026. Paul's LinkedIn option `มี แต่ไม่ได้อัปเดต`,
       // expanded the same way as the two above.
       th: "มี LinkedIn อยู่ แต่ไม่ได้อัปเดตมานานแล้ว",
+    },
+    // TH-UNREVIEWED, 25/08/2026. Draft for `HOME-05-dormant-linkedin`.
+    body: {
+      en: "Start the check, which scores how ready your profile is to be found.",
+      th: "เริ่มทำ EU Fit Check ซึ่งจะประเมินว่าโปรไฟล์ของคุณพร้อมให้คนหาเจอแค่ไหน",
     },
     href: "/efc-assessment",
   },

@@ -72,6 +72,7 @@ import { MARKET } from "@/lib/content/market-snapshot.generated";
 import { FAQ, FAQ_HEADING } from "@/lib/content/faq";
 import {
   CATALOGUE_HEADING,
+  CATALOGUE_LEAD,
   CLOSE_LEAD,
   FAQ_TEASER_HEADING,
   HERO_MASCOT_ALT,
@@ -87,6 +88,7 @@ import {
   RESULTS,
   RESULTS_HEADING,
   SAMPLE_HEADING,
+  SAMPLE_LEAD,
   TRIAGE_HEADING,
   TRIAGE_LEAD,
   VISA_BODY,
@@ -158,8 +160,13 @@ export default function Home() {
               >
                 &#9733;
               </span>
-              <Slot code="HOME-01">proof one, in bold: a rating, a count, a figure</Slot>
-              <Slot code="HOME-02">its quieter half: what the figure is out of</Slot>
+              {/* The two proofs are the pipeline's own figures, not invented ones.
+                  `market-snapshot.generated.ts` is regenerated from the real
+                  run, and its labels are strings Paul has already read. A hero
+                  proof that cannot be checked is worse than no hero proof. */}
+              <span className="text-body-sm-strong text-on-primary">
+                {MARKET.screened} {t("stats.market.screened")}
+              </span>
             </span>
             <span className="inline-flex items-center gap-2">
               <span
@@ -442,11 +449,7 @@ export default function Home() {
             <h2 className={SECTION_HEADING(locale)}>{pick(SAMPLE_HEADING)}</h2>
             {/* The reference's split carries a line under the headline before
                 the action. This section has never had one. */}
-            <p className="mt-4">
-              <Slot code="HOME-03" block>
-                one or two lines: what the card beside this is showing
-              </Slot>
-            </p>
+            <p className="mt-4 text-body-large">{pick(SAMPLE_LEAD)}</p>
             <Link
             href={path(DESTINATIONS.assess.href)}
             className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
@@ -476,11 +479,7 @@ export default function Home() {
             <h2 className={SECTION_HEADING(locale)}>{pick(CATALOGUE_HEADING)}</h2>
             {/* A sub line under the heading, which every card row on the
                 reference has and this one does not. */}
-            <p className="mt-4">
-              <Slot code="HOME-04" block>
-                one line: what the three cards below have in common
-              </Slot>
-            </p>
+            <p className="mt-4 text-body-large text-on-surface-variant">{pick(CATALOGUE_LEAD)}</p>
           </div>
 
           {/*
