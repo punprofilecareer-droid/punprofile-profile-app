@@ -116,8 +116,8 @@ Roadmap is `product-roadmap.md` in the sibling repo's
 repo's old `docs/design.md` stub, which said no tokens existed, was wrong and has
 been removed.
 
-Rebranded to **Material Design 3**, 16/08/2026. The token layer is now
-GENERATED, and that is the thing to know before touching styling:
+The design system is **wise-1**, 25/08/2026. The token layer is GENERATED, and
+that is the thing to know before touching styling:
 
 - **`src/app/tokens.generated.css` and `src/lib/design-tokens.generated.ts` are
   written by `scripts/build-tokens.ts` from `design.md` in the sibling repo.**
@@ -126,63 +126,78 @@ GENERATED, and that is the thing to know before touching styling:
   the base layer, the chart styles, the animations. `design-tokens.ts` is a
   re-export, kept so no consumer's import path had to change.
 - `npm run design:html` regenerates the rendered style guide beside `design.md`.
-- **Colour roles, not colour names.** Ask what job an element does, then pick the
-  role. `primary` is olive and is the brand. `secondary` is the teal the brand
-  used to be. `tertiary` is EU Fit Check's blue. `action` is rust and is the
-  single primary action per view, and it is deliberately NOT an M3 role, so a
-  page can be saturated in brand colour with only one thing looking pressable.
-  `error` is none of those.
-- **There is a dark scheme since 16/08/2026, and no component may name it.**
+- **One accent.** `primary` is the lime and it is the only action colour. It is a
+  fill, never type: it holds 1.47 on white. Text that has to say what the lime
+  says uses `ink`, `ink-deep` or the `-deep` member of a semantic pair.
+  `positive` (2.92) and `accent-cyan` (1.93) are fills for the same reason;
+  `positive-deep` is the one you write with.
+- **`mute` is not a text colour under 19px.** It holds 3.64 on white. Captions,
+  chart ticks and field hints take `mute-strong` (5.22). This is the single
+  easiest mistake to make in this palette.
+- **White on sage.** `canvas` is the card, `canvas-soft` is the band it sits in.
+  A sage card on a white page is backwards.
+- **Aliases are temporary.** `design.md > aliases` maps every retired colour name
+  (`surface-container-high`, `on-surface-variant`, `action`, `tertiary`, …) onto
+  a role, and the build emits it as a real value, so a screen that has not been
+  rebuilt renders in the new colours untouched. Read them, never write them. An
+  alias leaves the map when nothing references it, and the map is the migration's
+  progress bar. The type, shape and spacing equivalents are in
+  `scripts/build-tokens.ts` for the same reason.
+- **There is a dark scheme and no component may name it.**
   `tokens.generated.css` redefines the same `--color-*` names inside a
   `prefers-color-scheme: dark` block, so every utility switches on its own.
-  **Do not use Tailwind's `dark:` prefix.** A component that has to name both
-  schemes is a component that can get one of them wrong, and there are roughly
-  nine hundred colour utilities in this app. If a surface looks wrong in dark,
-  the fix is almost always that it is using a literal colour or the wrong role,
-  not that it needs a `dark:` override.
-  The footer is on `inverse-surface` in both schemes, which is what that role is
-  for: it inverts against whatever surrounds it.
-- **Hover is a state layer, not a colour.** 8% of the element's own content
-  colour over its own background. There is no second, brighter token per
-  interactive colour any more. `.btn-filled` in `globals.css` is the worked
-  example and implements `button-filled` from `design.md`.
-- **Buttons are pills.** The old rule forbidding fully-rounded shapes, on the
-  grounds that they were Thai Jobs in Europe's register, was retired 16/08/2026.
-  Colour and type now carry the whole separation between the two brands, which
-  makes Fraunces and the reserved `action` colour load-bearing rather than
-  decorative. Do not drop the serif on small titles to tidy something up.
-- **Shape names are M3's**: `rounded-extra-small|small|medium|large|extra-large|full`.
-  Tailwind still ships its own `rounded-sm|md|lg` and they will silently resolve
-  to Tailwind's values rather than the system's, so do not use them.
-- **Breakpoints are M3's window size classes**: `medium:` 600, `expanded:` 840,
-  `large:` 1200, `xlarge:` 1600. Tailwind's `sm|md|lg|xl` still exist and still
-  mean 640 / 768 / 1024 / 1280, which is a different set of numbers. Do not use
-  them.
+  **Do not use Tailwind's `dark:` prefix.** If a surface looks wrong in dark, the
+  fix is almost always a literal colour or the wrong role, not a `dark:` override.
+- **A fixed ground pins its own content colours.** `bg-primary`, `bg-accent-orange`
+  and the other fixed fills do not change between schemes but everything inside
+  them does, so put `.ground-fixed` on the element. Measured on lime: `ink` 13.05,
+  `body` 6.36, `ink-deep` 9.45.
+- **Hover is a state layer, not a colour.** 8% of the element's own content colour
+  over its own background. There is no second, brighter token per interactive
+  colour. `.btn-filled` in `globals.css` is the worked example.
+- **The page is white and structure comes from bands.** `<Band ground="canvas|soft|brand|dark">`
+  in `src/components/Band.tsx` is the section primitive: it paints a ground edge
+  to edge and centres a column inside it. `brand` and `dark` pin their own
+  content colours through `.ground-fixed` and `.ground-dark`, so nothing inside
+  them names a colour. `src/app/(th)/page.tsx` and `/coaching` are the worked
+  examples of the rhythm. Do not tint the page and do not stack tinted cards in
+  one white column.
+- **Cards.** `.card-plain` is the brand's card: white, 30px, no border, no
+  shadow, and it works because it sits on a band. `.card-outlined` is what a card
+  on white has to do instead, and a page needing many of those wanted a band.
+- **Three type tiers, three jobs.** `display-*` is Archivo 900 on an 0.85 line
+  box, the brand moment, one per page. `headline-*` is Inter 600 tracked -3% and
+  carries every section heading. `heading-*` is Inter 600 tracked +0.1px for card
+  and group titles. Copy is `body-lg` at 18px. `HERO_HEADING(locale)` and
+  `SECTION_HEADING(locale)` in `lib/content/footer.ts` pick the tier per script,
+  because Anuphan needs a line box nearly 1.4 of the size and Archivo's 0.85 box
+  clips Thai outright. Never set a Thai heading in Archivo or Inter.
+- **Shape.** A button is always `pill`. `rounded-2xl` (30px) is the card,
+  `3xl` (40px) the large feature panel, `md` for dense controls, `sm` for the
+  smallest chips. Tailwind still ships its own `rounded-sm|md|lg` with different
+  values, so the system's names win only because they are declared; do not mix.
+- **Breakpoints are window size classes**: `medium:` 600, `expanded:` 840,
+  `large:` 1200, `xlarge:` 1600. Tailwind's `sm|md|lg|xl` still mean
+  640 / 768 / 1024 / 1280, which is a different set of numbers. Do not use them.
 - **A page's columns belong at `large:`, not `expanded:`.** The standard drawer
   appears at `expanded` and takes 280px, so a page's content pane is only 560
-  wide at an 840 window, which wants one column. Content thresholds sit one
-  class above the window ones. The shell and the assessment are the exceptions
-  and use `expanded:`: the shell IS the drawer, and the assessment hides it.
-- **Liquid Glass is retired**, along with `.material`, `.material-mint`, the
-  `.eufit-field` background and the `data-perf` capability probe. M3 answers the
-  same question with tonal surfaces and elevation. Content cards are
-  `.card-outlined` and `.card-tonal`. Do not reintroduce a backdrop filter.
-- **`--ease-settle` is retired**; motion is M3's four curves. Mixing a fifth in
-  from outside breaks the relationship between them.
-- **Write `--color-*`, not `--md-sys-*`.** Both exist; the M3 names are aliases
-  emitted for anything that speaks the spec, and Tailwind generates its utilities
-  from its own namespace. Reading either is fine, writing the M3 one is not.
-- **Elevation is a tone, not a shadow.** Level 1 is `surface-container-low`, 2 is
-  `surface-container`, 3 is `surface-container-high`, 4 and 5 are
-  `surface-container-highest`. A `shadow-level-*` is earned only when the element
-  floats over content that may be busy. Three surfaces in this app qualify.
-- **No spacing tokens.** The system's scale already maps onto Tailwind's 4px base.
+  wide at an 840 window, which wants one column. Content thresholds sit one class
+  above the window ones. The shell and the assessment are the exceptions and use
+  `expanded:`: the shell IS the drawer, and the assessment hides it.
+- **Elevation is a shadow again, and `level-0` is the answer for almost
+  everything.** A white card on a sage ground already separates. `level-1` and
+  `level-2` are for things that genuinely float, a menu or a toast; `level-3` up
+  is a modal. The shadows are tinted with the ink, not pure black.
+- **No spacing tokens in the app.** The system's scale maps onto Tailwind's 4px
+  base. The deck preset is the one consumer that needs them named.
 - **`src/lib/radar.ts` holds no colours** and should stay that way.
 - **The `--viz-*`, `--ink-*` and `--border` names are load-bearing.**
   `scripts/build-report-book.ts` reads them out of a rendered report's
   stylesheet; renaming one strips the book's sidebar with no error. They are
   emitted outside `@theme` with bare names for exactly that reason, and mapped
-  onto roles in the `ALIASES` table in `scripts/build-tokens.ts`.
+  onto roles in the `BARE` table in `scripts/build-tokens.ts`.
+- **Do not reintroduce** a backdrop filter, a fifth easing curve, or a second
+  accent colour. Content cards are `.card-outlined` and `.card-tonal`.
 
 The logo and mark now exist as vector SVGs in the sibling repo's
 `ctxt-brand/assets/inbox/`, with a generated favicon set in

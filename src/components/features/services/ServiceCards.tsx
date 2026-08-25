@@ -81,7 +81,7 @@ function Body() {
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-title-large">{pick(s.name)}</h3>
                   {s.core && (
-                    <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-action">
+                    <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-on-primary">
                       {pick(CORE_BADGE)}
                     </span>
                   )}

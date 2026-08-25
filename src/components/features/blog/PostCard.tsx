@@ -61,7 +61,7 @@ export default function PostCard({
       )}
 
       <div className="flex flex-1 flex-col px-6 py-7">
-        <p className="text-body-medium font-semibold text-primary">{pick(topic.label)}</p>
+        <p className="text-body-medium font-semibold text-on-primary">{pick(topic.label)}</p>
 
         <h2 className={`mt-3 ${lead ? "text-headline-small" : "text-title-large"}`}>
           {/* The whole card is not the link. A card-wide anchor swallows the
@@ -84,7 +84,7 @@ export default function PostCard({
               area already covers the card, so a real link here would put two
               stops in the tab order for one destination and read the title
               twice to a screen reader. */}
-          <span aria-hidden className="flex items-center gap-2 text-label-large text-primary">
+          <span aria-hidden className="flex items-center gap-2 text-label-large text-on-primary">
             {pick(BLOG_READ)}
             <span>&rarr;</span>
           </span>

@@ -356,7 +356,7 @@ export default function CallLog({ leadId }: { leadId: Id<"leads"> }) {
                     setEditing(c._id);
                     setError(null);
                   }}
-                  className="text-body-medium text-primary underline"
+                  className="text-body-medium text-on-primary underline"
                 >
                   Edit
                 </button>

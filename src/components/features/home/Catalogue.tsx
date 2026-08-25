@@ -69,7 +69,7 @@ export default function Catalogue() {
   return (
     <div className="mt-8 flex flex-col gap-10">
       <div>
-        <h3 className="text-title-medium text-primary">{pick(CATALOGUE_FREE)}</h3>
+        <h3 className="text-title-medium text-on-primary">{pick(CATALOGUE_FREE)}</h3>
         <ul className="mt-4 grid gap-4 medium:grid-cols-3">
           {free.map((p) =>
             card(p.slug, pick(p.name), pick(p.headline), p.status === "soon"),
@@ -78,7 +78,7 @@ export default function Catalogue() {
       </div>
 
       <div>
-        <h3 className="text-title-medium text-primary">{pick(CATALOGUE_PAID)}</h3>
+        <h3 className="text-title-medium text-on-primary">{pick(CATALOGUE_PAID)}</h3>
         <ul className="mt-4 grid gap-4 medium:grid-cols-2">
           {paid.map((p) =>
             card(p.slug, pick(p.name), pick(p.headline), p.status === "soon"),
@@ -91,7 +91,7 @@ export default function Catalogue() {
         <p className="mt-5 text-body-large text-on-surface">{pick(CATALOGUE_PRICE_LINE)}</p>
         <Link
           href={path(DESTINATIONS.pricing.href)}
-          className="mt-3 inline-block text-body-large text-primary underline underline-offset-2"
+          className="mt-3 inline-block text-body-large text-on-primary underline underline-offset-2"
         >
           {pick(DESTINATIONS.pricing.label)}
         </Link>

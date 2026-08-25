@@ -173,7 +173,7 @@ function QaRow({
           )}
 
           {row.options && onOpen && (
-            <button type="button" onClick={onOpen} className="mt-1 text-body-medium text-primary underline">
+            <button type="button" onClick={onOpen} className="mt-1 text-body-medium text-on-primary underline">
               {open ? "Cancel" : correction ? "Correct again" : row.answer === null ? "Fill in" : "Correct"}
             </button>
           )}

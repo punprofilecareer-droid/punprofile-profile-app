@@ -143,7 +143,7 @@ export default function CallToAction({
       {secondary && (
         <Link
           href={path(secondary.href)}
-          className="text-body-large text-primary underline underline-offset-2"
+          className="text-body-large text-on-primary underline underline-offset-2"
         >
           {pick(secondary.label)}
         </Link>

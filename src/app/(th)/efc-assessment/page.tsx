@@ -697,7 +697,7 @@ export default function AssessPage() {
                   is a link inside a card rather than a second filled button. */}
               <Link
                 href={path(DESTINATIONS.contact.href)}
-                className="mt-2 inline-block text-body-large text-primary underline underline-offset-2"
+                className="mt-2 inline-block text-body-large text-on-primary underline underline-offset-2"
               >
                 {pick(DESTINATIONS.contact.label)}
               </Link>

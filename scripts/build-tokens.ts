@@ -4,31 +4,35 @@
  *   npm run tokens
  *
  * `design.md` in `../punprofile-career-coaching/punprofile-context/ctxt-brand/`
- * is the source. This script emits two files, because the app has two consumers
- * that cannot share one:
+ * is the source. This script emits three files, because there are three
+ * consumers that cannot share one:
  *
- *   src/app/tokens.generated.css      Tailwind v4 `@theme`, for the app itself.
+ *   src/app/tokens.generated.css        Tailwind v4 `@theme`, for the app.
  *   src/lib/design-tokens.generated.ts  A CSS string, for HTML generated outside
  *                                       Next: the candidate report, the report
  *                                       book, the two-views demo.
+ *   ...frontend-slides/…/tokens.generated.css   The deck preset.
  *
- * Both were hand-maintained until 16/08/2026 and both carried a written warning
- * about drifting from each other. Generating them ends that class of problem:
- * there is now one definition, in the coaching repo, and two derived files that
- * are never hand-edited.
+ * There is one definition and three derived files, none of which is ever
+ * hand-edited.
  *
- * `globals.css` still exists and is still hand-written. It holds everything that
- * is not a token: the base layer, the chart styles, the animations. It imports
- * the generated file rather than declaring tokens itself.
+ * ## Three kinds of name
  *
- * ## The load-bearing alias names
+ * 1. **Roles.** `primary`, `ink`, `canvas-soft`, `mute-strong`. The system.
+ *    Everything written from now on uses these.
  *
- * `--viz-*`, `--ink-*` and `--border` are NOT design-system names. They are the
- * names `scripts/build-report-book.ts` reads out of a rendered report's
- * stylesheet to build its own shell, and `src/lib/radar.ts` draws the chart
- * through. Renaming one silently strips the report book's sidebar, with no
- * error. They are kept, and mapped onto M3 roles in ALIASES below, so the
- * mapping is visible in one place instead of being spread through two files.
+ * 2. **Aliases.** The names existing screens and generators are written in.
+ *    `design.md > aliases` maps each onto a role and this script emits it as a
+ *    real value, so a screen that has not been rebuilt yet renders in the new
+ *    colours without being touched. An alias leaves the map when nothing
+ *    references it. The type, shape and spacing equivalents are mechanical
+ *    rather than semantic, so their maps live below rather than in `design.md`.
+ *
+ * 3. **Bare names.** `--viz-*`, `--ink-*` and `--border` are read out of a
+ *    rendered stylesheet by `scripts/build-report-book.ts` and drawn through by
+ *    `src/lib/radar.ts`. Neither knows about Tailwind's `--color-` namespace, so
+ *    these are emitted outside `@theme` with their bare names. Renaming one
+ *    silently strips the report book's sidebar, with no error.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -38,12 +42,6 @@ const SOURCE =
   "../punprofile-career-coaching/punprofile-context/ctxt-brand/design.md";
 const CSS_OUT = "src/app/tokens.generated.css";
 const TS_OUT = "src/lib/design-tokens.generated.ts";
-/*
- * The slides preset in the coaching repo, which used to hand-transcribe
- * `design.md` and carried a note telling whoever changed a token to re-transcribe
- * it. Nobody did, so it was still on teal and terracotta a day after the rebrand.
- * Generated from the same source as everything else now.
- */
 const DECK_TEMPLATE =
   "../punprofile-career-coaching/.claude/skills/frontend-slides/punprofile-editorial/template.html";
 const DECK_OUT =
@@ -62,14 +60,10 @@ interface Design {
   source: string;
   colors: Record<string, string>;
   "colors-dark": Record<string, string>;
-  /**
-   * EU Fit Check's scope. Optional: a design.md without these emits no scoped
-   * block and the app renders exactly as it did before them.
-   */
-  "colors-efc"?: Record<string, string>;
-  "colors-efc-dark"?: Record<string, string>;
-  "colors-efc-contrast"?: Record<string, string>;
-  "colors-efc-contrast-dark"?: Record<string, string>;
+  "colors-contrast": Record<string, string>;
+  "colors-contrast-dark": Record<string, string>;
+  /** Retired colour names, each pointing at a role above. See the header. */
+  aliases: Record<string, string>;
   "state-layers": Record<string, number>;
   typography: Record<string, TypeRole>;
   shape: Record<string, string>;
@@ -79,52 +73,65 @@ interface Design {
   motion: Record<string, string>;
 }
 
-/**
- * The names outside code owns, and the role each one now resolves to.
- *
- * `viz-muted` deliberately takes `on-surface-variant` rather than `outline`:
- * it carries the chart's tick labels and captions at 10 and 11px, and `outline`
- * holds only 4.27 on the ground, which is the 3:1 non-text bar rather than the
- * 4.5 that text at that size needs.
- *
- * `viz-surface` takes `surface-container-lowest` (white) rather than `surface`,
- * because the series dots are stroked in it to punch out from the fill beneath,
- * and that read depends on it being the brightest thing available.
- */
-const ALIASES: Record<string, string> = {
-  "viz-surface": "surface-container-lowest",
-  "viz-page": "surface",
-  "viz-grid": "outline-variant",
-  "viz-muted": "on-surface-variant",
-  // The chart belongs to the assessment, not the company, so it takes EU Fit
-  // Check's colour. Decided 14/08/2026 for lavender; the role outlived the hue.
-  "viz-series-1": "tertiary",
-  "ink-1": "on-surface",
-  "ink-2": "on-surface-variant",
-  border: "outline-variant",
+/** Bare names outside code owns, and the role each resolves to. */
+const BARE: Record<string, string> = {
+  // The chart's ground is the brightest surface available, because the series
+  // dots are stroked in it to punch out from the fill beneath.
+  "viz-surface": "canvas",
+  "viz-page": "canvas-soft",
+  "viz-grid": "line",
+  // Tick labels and captions sit at 10 and 11px, which is below the size `mute`
+  // is safe at, so the chart takes the AA-rated grey instead.
+  "viz-muted": "mute-strong",
+  "viz-series-1": "accent-cyan",
+  "ink-1": "ink",
+  "ink-2": "body",
+  border: "line",
 };
 
-/** Roles the standalone HTML needs beyond the aliases above. */
-const STANDALONE_ROLES = [
-  "primary",
-  "on-primary",
-  "primary-container",
-  "on-primary-container",
-  "secondary",
-  "tertiary",
-  "on-tertiary",
-  "tertiary-container",
-  "action",
-  "on-action",
-  "brand-orange",
-  "surface",
-  "on-surface",
-  "on-surface-variant",
-  "outline",
-  "outline-variant",
-  "error",
-  "on-error",
-];
+/** Retired type roles. The utilities (`text-title-medium`) come from these. */
+const LEGACY_TYPE: Record<string, string> = {
+  "display-large": "display-lg",
+  "display-medium": "headline-lg",
+  "display-small": "headline-md",
+  "display-sm": "headline-md",
+  "display-xs": "headline-sm",
+  "headline-large": "headline-md",
+  "headline-medium": "headline-sm",
+  "headline-small": "headline-sm",
+  "title-large": "heading-sm",
+  "title-medium": "heading-xs",
+  "title-small": "body-sm-strong",
+  "body-large": "body-lg",
+  "body-medium": "body-md",
+  "body-small": "body-sm",
+  "label-large": "body-sm-strong",
+  "label-medium": "caption-strong",
+  "label-small": "caption-strong",
+};
+
+/** Retired radius names. `extra-large` was 28px and is now the 30px card. */
+const LEGACY_SHAPE: Record<string, string> = {
+  none: "none",
+  "extra-small": "sm",
+  small: "sm",
+  medium: "md",
+  large: "2xl",
+  "extra-large": "3xl",
+  full: "full",
+};
+
+/** Retired spacing names. Every one is an exact match on the new scale. */
+const LEGACY_SPACE: Record<string, string> = {
+  "space-1": "xs",
+  "space-2": "sm",
+  "space-3": "lg",
+  "space-4": "xl",
+  "space-5": "2xl",
+  "space-6": "3xl",
+  "space-7": "4xl",
+  "space-8": "5xl",
+};
 
 // ---------------------------------------------------------------- load
 
@@ -135,24 +142,59 @@ if (!raw.startsWith("---") || end === -1) {
 }
 const d = load(raw.slice(3, end)) as Design;
 
-for (const key of ["colors", "colors-dark", "typography", "shape", "spacing", "elevation", "motion", "breakpoints"] as const) {
+for (const key of [
+  "colors", "colors-dark", "aliases", "typography", "shape",
+  "spacing", "elevation", "motion", "breakpoints", "state-layers",
+] as const) {
   if (!d[key]) throw new Error(`${SOURCE}: frontmatter is missing "${key}"`);
 }
 
 /** A missing role here is a mapping bug, not a missing token. Fail loudly. */
-function role(name: string): string {
-  const v = d.colors[name];
+function role(name: string, scheme: "light" | "dark" = "light"): string {
+  const table = scheme === "dark" ? d["colors-dark"] : d.colors;
+  const v = table[name] ?? d.colors[name];
   if (!v) {
     throw new Error(
-      `${SOURCE}: no colour "${name}". Either the token was renamed there, or ` +
-        `the mapping in scripts/build-tokens.ts is stale.`,
+      `${SOURCE}: no colour "${name}". Either the role was renamed there, or ` +
+        `a mapping in scripts/build-tokens.ts is stale.`,
     );
   }
   return v.toLowerCase();
 }
 
-for (const target of Object.values(ALIASES)) role(target);
-for (const r of STANDALONE_ROLES) role(r);
+for (const target of Object.values(BARE)) role(target);
+for (const [alias, target] of Object.entries(d.aliases)) {
+  if (!d.colors[target]) {
+    throw new Error(`${SOURCE}: alias "${alias}" points at unknown role "${target}"`);
+  }
+  if (alias in d.colors && alias !== target) {
+    throw new Error(
+      `${SOURCE}: alias "${alias}" is also a role, and points at "${target}". ` +
+        `One name cannot be two colours.`,
+    );
+  }
+}
+
+/** An alias whose name is already a role is emitted once, by the role. */
+const aliasEntries = Object.entries(d.aliases).filter(([alias]) => !(alias in d.colors));
+const shapeAliases = Object.entries(LEGACY_SHAPE).filter(([alias]) => !(alias in d.shape));
+const typeAliases = Object.entries(LEGACY_TYPE).filter(([alias]) => !(alias in d.typography));
+const spaceAliases = Object.entries(LEGACY_SPACE).filter(([alias]) => !(alias in d.spacing));
+for (const [alias, target] of Object.entries(LEGACY_TYPE)) {
+  if (!d.typography[target]) {
+    throw new Error(`scripts/build-tokens.ts: type alias "${alias}" points at unknown role "${target}"`);
+  }
+}
+for (const [alias, target] of Object.entries(LEGACY_SHAPE)) {
+  if (!d.shape[target]) {
+    throw new Error(`scripts/build-tokens.ts: shape alias "${alias}" points at unknown step "${target}"`);
+  }
+}
+for (const [alias, target] of Object.entries(LEGACY_SPACE)) {
+  if (!d.spacing[target]) {
+    throw new Error(`scripts/build-tokens.ts: spacing alias "${alias}" points at unknown step "${target}"`);
+  }
+}
 
 const BANNER = (file: string) => `/*
  * ${file}
@@ -163,103 +205,68 @@ const BANNER = (file: string) => `/*
  * Design system version: ${d.version}
  */`;
 
+// ---------------------------------------------------------------- helpers
+
+const typeBlock = (name: string, t: TypeRole, indent = "  ") => {
+  const lines = [
+    `${indent}--text-${name}: ${t.fontSize};`,
+    `${indent}--text-${name}--line-height: ${t.lineHeight};`,
+    `${indent}--text-${name}--font-weight: ${t.fontWeight};`,
+  ];
+  if (t.letterSpacing && t.letterSpacing !== "0") {
+    lines.push(`${indent}--text-${name}--letter-spacing: ${t.letterSpacing};`);
+  }
+  return lines.join("\n");
+};
+
+const colourVars = (
+  table: Record<string, string>,
+  indent: string,
+  withAliases = true,
+) => {
+  const roles = Object.entries(table).map(
+    ([k, v]) => `${indent}--color-${k}: ${v.toLowerCase()};`,
+  );
+  if (!withAliases) return roles.join("\n");
+  const aliases = aliasEntries.map(
+    ([alias, target]) =>
+      `${indent}--color-${alias}: ${(table[target] ?? role(target)).toLowerCase()};`,
+  );
+  return [...roles, "", ...aliases].join("\n");
+};
+
+/** The contrast blocks move the boundaries; every alias onto a moved role moves with them. */
+const contrastVars = (table: Record<string, string>, indent: string) => {
+  const roles = Object.entries(table).map(
+    ([k, v]) => `${indent}--color-${k}: ${v.toLowerCase()};`,
+  );
+  const aliases = aliasEntries
+    .filter(([, target]) => target in table)
+    .map(([alias, target]) => `${indent}--color-${alias}: ${table[target].toLowerCase()};`);
+  const bare = Object.entries(BARE)
+    .filter(([, target]) => target in table)
+    .map(([name, target]) => `${indent}--${name}: ${table[target].toLowerCase()};`);
+  return [...roles, ...aliases, ...bare].join("\n");
+};
+
 // ---------------------------------------------------------------- CSS
 
-/** M3's own token names, aliased onto ours. Values live once, under Tailwind. */
-function mdSys(): string {
-  const SHAPE: Record<string, string> = {
-    none: "none", "extra-small": "extra-small", small: "small",
-    medium: "medium", large: "large", "extra-large": "extra-large", full: "full",
-  };
-  const MOTION: Record<string, string> = {
-    emphasized: "easing-emphasized",
-    "emphasized-decelerate": "easing-emphasized-decelerate",
-    "emphasized-accelerate": "easing-emphasized-accelerate",
-    standard: "easing-standard",
-    "duration-short": "duration-short2",
-    "duration-medium": "duration-medium2",
-    "duration-long": "duration-long2",
-  };
-  const OURS_ONLY = new Set([
-    "action", "on-action", "action-container", "on-action-container",
-    "warning", "on-warning", "warning-container", "on-warning-container",
-    "brand-orange", "on-brand-orange", "brand-lime", "on-brand-lime",
-  ]);
-  const colours = Object.keys(d.colors)
-    .filter((k) => !OURS_ONLY.has(k))
-    .map((k) => `    --md-sys-color-${k}: var(--color-${k});`)
-    .join("\n");
-  const shape = Object.entries(SHAPE)
-    .map(([ours, theirs]) => `    --md-sys-shape-corner-${theirs}: var(--radius-${ours});`)
-    .join("\n");
-  const elevation = Object.keys(d.elevation)
-    .map((k, i) => `    --md-sys-elevation-level${i}: var(--shadow-${k});`)
-    .join("\n");
-  const motion = Object.entries(MOTION)
-    .filter(([ours]) => ours in d.motion)
-    .map(([ours, theirs]) =>
-      `    --md-sys-motion-${theirs}: var(--${ours.startsWith("duration") ? "animate" : "ease"}-${ours});`)
-    .join("\n");
-  const type = Object.keys(d.typography)
-    .filter((k) => !k.startsWith("thai-"))
-    .flatMap((k) => [
-      `    --md-sys-typescale-${k}-size: var(--text-${k});`,
-      `    --md-sys-typescale-${k}-line-height: var(--text-${k}--line-height);`,
-      `    --md-sys-typescale-${k}-weight: var(--text-${k}--font-weight);`,
-    ])
-    .join("\n");
-  return `:root {
-${colours}
-
-${shape}
-
-${elevation}
-
-${motion}
-
-${type}
-  }`;
-}
-
 function css(): string {
-  const colours = Object.entries(d.colors)
-    .map(([k, v]) => `  --color-${k}: ${v.toLowerCase()};`)
-    .join("\n");
+  const type = [
+    ...Object.entries(d.typography).map(([name, t]) => typeBlock(name, t)),
+    "",
+    ...typeAliases.map(([alias, target]) => typeBlock(alias, d.typography[target])),
+  ].join("\n");
 
-  // These are emitted OUTSIDE `@theme`, with their bare names. `radar.ts` reads
-  // `var(--viz-grid)` and the report book reads `var(--border)`; neither knows
-  // about Tailwind's `--color-` namespace, and putting them inside `@theme`
-  // would rename them to `--color-viz-grid` and break both silently.
-  const aliases = Object.entries(ALIASES)
-    .map(([alias, target]) => `  --${alias}: ${role(target)};`)
-    .join("\n");
-
-  // Tailwind v4 reads `--text-<name>` plus its `--…--line-height` companions.
-  const type = Object.entries(d.typography)
-    .map(([name, t]) => {
-      const lines = [
-        `  --text-${name}: ${t.fontSize};`,
-        `  --text-${name}--line-height: ${t.lineHeight};`,
-        `  --text-${name}--font-weight: ${t.fontWeight};`,
-      ];
-      if (t.letterSpacing && t.letterSpacing !== "0") {
-        lines.push(`  --text-${name}--letter-spacing: ${t.letterSpacing};`);
-      }
-      return lines.join("\n");
-    })
-    .join("\n");
-
-  // Tailwind v4 generates a variant per `--breakpoint-*`, so declaring these
-  // makes `medium:`, `expanded:`, `large:` and `xlarge:` usable as prefixes.
-  // `compact` is the base and needs no variant, so it is skipped.
   const breakpoints = Object.entries(d.breakpoints)
     .filter(([k]) => k !== "compact")
     .map(([k, v]) => `  --breakpoint-${k}: ${v};`)
     .join("\n");
 
-  const radius = Object.entries(d.shape)
-    .map(([k, v]) => `  --radius-${k}: ${v};`)
-    .join("\n");
+  const radius = [
+    ...Object.entries(d.shape).map(([k, v]) => `  --radius-${k}: ${v};`),
+    ...shapeAliases.map(([alias, target]) => `  --radius-${alias}: ${d.shape[target]};`),
+  ].join("\n");
 
   const shadow = Object.entries(d.elevation)
     .map(([k, v]) => `  --shadow-${k}: ${v};`)
@@ -267,159 +274,43 @@ function css(): string {
 
   const motion = Object.entries(d.motion)
     .map(([k, v]) =>
-      k.startsWith("duration-")
-        ? `  --animate-${k}: ${v};`
-        : `  --ease-${k}: ${v};`,
+      k.startsWith("duration-") ? `  --animate-${k}: ${v};` : `  --ease-${k}: ${v};`,
     )
     .join("\n");
-
-  const MD_SYS = mdSys();
 
   const state = Object.entries(d["state-layers"])
     .map(([k, v]) => `  --state-${k}: ${v};`)
     .join("\n");
 
-  /*
-   * The dark scheme. Emitted as a `prefers-color-scheme` block that redefines
-   * the same `--color-*` names, so every utility in the app switches without a
-   * single `dark:` variant anywhere. Tailwind's own `dark:` prefix is not used
-   * and should not be: a component that has to name both schemes is a component
-   * that can get one of them wrong.
-   *
-   * `color-scheme` is set alongside so form controls, scrollbars and the
-   * browser's own chrome follow.
-   */
-  const darkVars = Object.entries(d["colors-dark"])
-    .map(([k, v]) => `    --color-${k}: ${v.toLowerCase()};`)
-    .join("\n");
-
-  /*
-   * EU Fit Check's scope, 17/08/2026.
-   *
-   * The same `--color-*` names again, on `[data-brand="efc"]` rather than on
-   * `:root`, so the assessment route recolours and no component names the scope.
-   * It is the dark scheme's mechanism pointed at a subtree instead of a media
-   * query, and it works for the same reason: custom properties inherit, and a
-   * declaration on an ancestor of the element beats one on `:root` whatever the
-   * specificity of either.
-   *
-   * **Order in the file is load-bearing.** Four blocks, and each later one has to
-   * be able to win inside the scope:
-   *
-   *   1. `:root` light, from `@theme` above.
-   *   2. `:root` dark, the media block above.
-   *   3. `[data-brand="efc"]` light. Wins over both inside the scope, because it
-   *      is closer to the element.
-   *   4. `[data-brand="efc"]` dark, in a media block. Same closeness as 3, later
-   *      in the source, so it wins in dark mode.
-   *
-   * The two contrast blocks repeat that pairing for `prefers-contrast: more`.
-   * They exist because the parent's contrast block sets its boundary roles on
-   * `:root`, and the scope's own `outline` would otherwise beat it and quietly
-   * undo high contrast for anyone taking the assessment.
-   */
-  const scope = (vars: Record<string, string> | undefined, indent: string) =>
-    vars
-      ? Object.entries(vars)
-          .map(([k, v]) => `${indent}--color-${k}: ${v.toLowerCase()};`)
-          .join("\n")
-      : "";
-
-  /*
-   * The bare alias names, resolved inside the scope too.
-   *
-   * `--viz-*`, `--ink-*` and `--border` are written as literal values at `:root`
-   * rather than as `var()` references, because `build-report-book.ts` reads them
-   * out of a rendered stylesheet and a reference would give it a string it cannot
-   * resolve. That is fine everywhere except here: a literal does not follow the
-   * scope, so without this the spider chart on the result screen would draw its
-   * grid and its captions in the parent's olive-tinted greys on the product's
-   * blue ground. `viz-series-1` is `tertiary`, which the scope does not
-   * redefine, so it falls through to the same blue it has always been.
-   */
-  const scopedAliases = (dark: boolean) =>
-    Object.entries(ALIASES)
-      .map(([alias, target]) => {
-        const src = dark
-          ? (d["colors-efc-dark"]?.[target] ?? d["colors-dark"][target])
-          : d["colors-efc"]?.[target];
-        return `    --${alias}: ${(src ?? role(target)).toLowerCase()};`;
-      })
+  const bare = (scheme: "light" | "dark", indent: string) =>
+    Object.entries(BARE)
+      .map(([name, target]) => `${indent}--${name}: ${role(target, scheme)};`)
       .join("\n");
-
-  const efc = d["colors-efc"]
-    ? `
-
-/* EU Fit Check's ground. The parent's neutral construction with the hue rotated
-   to the product's blue; \`design.md\` carries the derivation and the measured
-   pairs. Roles absent here inherit, which is why rust \`action\` is not repeated. */
-[data-brand="efc"] {
-  color-scheme: light;
-${scope(d["colors-efc"], "  ")}
-
-${scopedAliases(false)}
-}
-${
-  d["colors-efc-dark"]
-    ? `
-@media (prefers-color-scheme: dark) {
-  [data-brand="efc"] {
-    color-scheme: dark;
-${scope(d["colors-efc-dark"], "    ")}
-
-${scopedAliases(true)}
-  }
-}
-`
-    : ""
-}${
-        d["colors-efc-contrast"]
-          ? `
-@media (prefers-contrast: more) {
-  [data-brand="efc"] {
-${scope(d["colors-efc-contrast"], "    ")}
-  }
-}
-`
-          : ""
-      }${
-        d["colors-efc-contrast-dark"]
-          ? `
-@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
-  [data-brand="efc"] {
-${scope(d["colors-efc-contrast-dark"], "    ")}
-  }
-}
-`
-          : ""
-      }`
-    : "";
 
   return `${BANNER(CSS_OUT)}
 
 @theme {
-  /* Colour roles. Every one of these comes from the Material Theme Builder
-     export; none is invented here. */
-${colours}
+  /* Colour. The roles first, then the aliases retired screens still name; both
+     are real values, so an un-rebuilt screen renders in this system's colours. */
+${colourVars(d.colors, "  ")}
 
-  /* Type scale. Fraunces carries display, headline and title; Inter carries
-     body and label; the thai-* roles take taller line boxes because tone marks
-     and vowels stack above and below the baseline. */
+  /* Type scale. Archivo 900 carries \`display-*\`, Inter 600 carries
+     \`headline-*\` and \`heading-*\`, Inter carries copy, and Anuphan carries all
+     Thai on a much taller line box. */
 ${type}
 
-  /* Window size classes. M3's five, as \`medium:\`, \`expanded:\`, \`large:\`
-     and \`xlarge:\` variants. Tailwind's own sm/md/lg are a different set of
-     numbers and mean nothing in this system; prefer these. */
+  /* Window size classes, as \`medium:\`, \`expanded:\`, \`large:\` and \`xlarge:\`
+     variants. \`compact\` is the base and needs no variant. */
 ${breakpoints}
 
-  /* Shape. Buttons are \`full\`; the no-pill rule was retired 16/08/2026. */
+  /* Shape. 24px (\`xl\`) is the signature: a card and a button share it. */
 ${radius}
 
-  /* Elevation. Level 0 is the default for almost everything. */
+  /* Elevation. \`level-0\` is correct for almost everything; a white card on a
+     sage ground already separates. */
 ${shadow}
 
-  /* Motion. M3's set; \`--ease-settle\` was retired 16/08/2026 because mixing a
-     fifth curve in from outside breaks the relationship between the four. */
+  /* Motion. */
 ${motion}
 
   /* State layers, applied as a translucent layer of the element's own content
@@ -427,63 +318,37 @@ ${motion}
 ${state}
 }
 
+/*
+ * Dark. The same names redefined, so every utility in the app switches without a
+ * single \`dark:\` variant anywhere: a component that has to name both schemes is
+ * a component that can get one of them wrong. \`color-scheme\` follows so form
+ * controls, scrollbars and the browser's own chrome switch with it.
+ */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-${darkVars}
+${colourVars(d["colors-dark"], "    ")}
   }
 }
 
 /*
- * The spec's own names, as aliases.
- *
- * Every role lives under Tailwind's namespace, because that is what generates
- * the utilities, and an MD3 compliance check greps for \`--md-sys-color-*\` and
- * finds a system with all the roles and none of the names. Anything that speaks
- * M3 reads these: a devtools inspection, a design tool, another generator, a
- * future migration off Tailwind.
- *
- * Aliases rather than a second set of values, so there is nothing to keep in
- * step. They resolve through the same variables and follow the dark scheme and
- * the contrast block automatically.
- *
- * Only the roles the spec actually names are aliased. \`action\`, \`warning\`,
- * \`brand-orange\` and \`brand-lime\` are this brand's own and have no M3 name,
- * which is the point of them.
- */
-${MD_SYS}
-
-/*
- * High contrast. M3 defines three contrast levels and this app ships the
- * standard one, so rather than a third generated scheme this promotes the two
- * roles a high-contrast reader actually needs: the boundaries.
- *
- * \`outline-variant\` measures 1.61 on the light ground and 1.99 on the dark one.
- * That is correct for a divider and useless to somebody who has asked their
- * operating system to turn contrast up. Each boundary role moves one tier
- * darker, so \`outline\` goes 4.27 to 8.88 and \`outline-variant\` goes 1.61 to
- * 4.27, and every card edge, divider and field border becomes perceivable.
- *
- * Accents are left alone deliberately: they already clear AA, and pushing them
- * further would change the brand for a setting that asked for legibility.
+ * High contrast. The boundaries are promoted and the accents are left alone:
+ * they already clear AA, and pushing them further would change the brand for a
+ * setting that asked for legibility.
  */
 @media (prefers-contrast: more) {
   :root {
-    --color-outline: #45483c;
-    --color-outline-variant: #76786b;
+${contrastVars(d["colors-contrast"], "    ")}
   }
 }
 
 @media (prefers-contrast: more) and (prefers-color-scheme: dark) {
   :root {
-    --color-outline: #c6c8b8;
-    --color-outline-variant: #8d9184;
+${contrastVars(d["colors-contrast-dark"], "    ")}
   }
 }
 
-/* The light scheme is the base, so \`color-scheme\` is declared here and
-   overridden in the dark block above. Without it the browser paints form
-   controls and scrollbars from the OS setting rather than from the palette. */
+/* Light is the base, so \`color-scheme\` is declared here and overridden above. */
 :root { color-scheme: light }
 
 /* Names that code outside the design system owns. \`build-report-book.ts\` reads
@@ -491,28 +356,24 @@ ${MD_SYS}
    renaming one breaks something with no error. Bare names, outside \`@theme\`,
    because neither consumer knows about Tailwind's \`--color-\` namespace. */
 :root {
-${aliases}
+${bare("light", "  ")}
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-${Object.entries(ALIASES)
-  .map(([alias, target]) => `    --${alias}: ${(d["colors-dark"][target] ?? role(target)).toLowerCase()};`)
-  .join("\n")}
+${bare("dark", "    ")}
   }
 }
-${efc}`;
+`;
 }
 
 // ---------------------------------------------------------------- TS
 
 function ts(): string {
   const vars = [
-    ...Object.entries(ALIASES).map(
-      ([alias, target]) => `    --${alias}: ${role(target)};`,
-    ),
+    ...Object.entries(BARE).map(([name, target]) => `    --${name}: ${role(target)};`),
     "",
-    ...STANDALONE_ROLES.map((r) => `    --color-${r}: ${role(r)};`),
+    ...colourVars(d.colors, "    ").split("\n"),
   ].join("\n");
 
   const families = Array.from(
@@ -529,12 +390,12 @@ function ts(): string {
  * report book, the two-views demo. \`src/app/tokens.generated.css\` is the app's
  * copy; both come from the same source, so they cannot drift.
  *
- * **No dark block here, deliberately, and it is not the same reason as before.**
- * The app has a dark scheme since 16/08/2026. This string is for HTML generated
- * outside Next: a candidate's report, the report book, the two-views demo. Those
- * are documents a coach opens, prints and sends on, and a report that renders
- * dark because the reader's laptop is in dark mode is a report that prints
- * wrong and reads as broken when it lands in an inbox. Documents are light.
+ * **No dark block here, deliberately.** This string is for HTML generated
+ * outside Next: a candidate's report, the report book, the two-views demo.
+ * Those are documents a coach opens, prints and sends on, and a report that
+ * renders dark because the reader's laptop is in dark mode is a report that
+ * prints wrong and reads as broken when it lands in an inbox. Documents are
+ * light.
  */
 export const BRAND_TOKENS_CSS = \`  :root {
     color-scheme: light;
@@ -550,7 +411,7 @@ export const BRAND_FONT_LINK = \`<link rel="preconnect" href="https://fonts.goog
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?${query}&display=swap">\`;
 
-export const BRAND_FONT_STACKS = \`  --font-display: Fraunces, Anuphan, Georgia, serif;
+export const BRAND_FONT_STACKS = \`  --font-display: Archivo, Anuphan, system-ui, sans-serif;
   --font-sans: Inter, Anuphan, system-ui, -apple-system, "Segoe UI", sans-serif;\`;
 `;
 }
@@ -569,28 +430,21 @@ export const BRAND_FONT_STACKS = \`  --font-display: Fraunces, Anuphan, Georgia,
  * fixed surface rather than something that follows a reader's preference.
  */
 function deck(): string {
-  const roles = [
-    "primary", "on-primary", "primary-container", "on-primary-container",
-    "secondary", "on-secondary", "secondary-container", "on-secondary-container",
-    "tertiary", "on-tertiary", "tertiary-container", "on-tertiary-container",
-    "action", "on-action", "action-container", "on-action-container",
-    "brand-orange", "on-brand-orange", "brand-lime", "on-brand-lime",
-    "error", "on-error",
-    "background", "surface", "on-surface", "on-surface-variant",
-    "surface-container-lowest", "surface-container-low", "surface-container",
-    "surface-container-high", "surface-container-highest",
-    "outline", "outline-variant", "inverse-surface", "inverse-on-surface",
-  ];
-  const colours = roles.map((r) => `    --${r}: ${role(r)};`).join("\n");
-  const shape = Object.entries(d.shape)
-    .map(([k, v]) => `    --radius-${k}: ${v};`)
-    .join("\n");
+  const colours = [
+    ...Object.keys(d.colors).map((r) => `    --${r}: ${role(r)};`),
+    ...aliasEntries.map(([alias, target]) => `    --${alias}: ${role(target)};`),
+  ].join("\n");
+  const shape = [
+    ...Object.entries(d.shape).map(([k, v]) => `    --radius-${k}: ${v};`),
+    ...shapeAliases.map(([alias, target]) => `    --radius-${alias}: ${d.shape[target]};`),
+  ].join("\n");
   const elevation = Object.entries(d.elevation)
     .map(([k, v]) => `    --elevation-${k}: ${v};`)
     .join("\n");
-  const spacing = Object.entries(d.spacing)
-    .map(([k, v]) => `    --${k}: ${v};`)
-    .join("\n");
+  const spacing = [
+    ...Object.entries(d.spacing).map(([k, v]) => `    --space-${k}: ${v};`),
+    ...spaceAliases.map(([alias, target]) => `    --${alias}: ${d.spacing[target]};`),
+  ].join("\n");
 
   return `/* ===========================================
    PUNPROFILE — GENERATED DECK TOKENS
@@ -599,10 +453,6 @@ function deck(): string {
    \`design.md\` in punprofile-context/ctxt-brand/. Do not hand-edit.
    Run \`npm run tokens\` in punprofile-profile-app and commit both.
 
-   This file used to be transcribed by hand, and was still on the
-   retired teal-and-terracotta palette a day after the rebrand. That
-   is why it is generated now.
-
    The --deck-* scale below is this file's one deck-specific addition:
    design.md's sizes are web pixels, and a fixed 1920x1080 stage needs
    stage-readable type. It is not derived and is kept verbatim.
@@ -610,32 +460,32 @@ function deck(): string {
    Design system version: ${d.version}
    =========================================== */
 :root {
-    /* --- Colour roles, from design.md > colors --- */
+    /* --- Colour roles, from design.md > colors, then > aliases --- */
 ${colours}
 
     /* --- Typography families, from design.md > typography --- */
-    --font-display: 'Fraunces', Georgia, serif;
+    --font-display: 'Archivo', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, sans-serif;
     --font-thai: 'Anuphan', sans-serif;
 
     /* --- Deck-specific type scale. Not derived; see the note above. --- */
-    --deck-display: 140px;   /* cover hero, Fraunces 900 */
-    --deck-h1: 88px;         /* section headline, Fraunces 700 */
-    --deck-h2: 56px;         /* primary slide headline, Fraunces 700 */
-    --deck-h3: 36px;         /* sub-headline / panel title, Fraunces 600 */
+    --deck-display: 140px;   /* cover hero, Archivo 900 */
+    --deck-h1: 88px;         /* section headline, Archivo 900 */
+    --deck-h2: 56px;         /* primary slide headline, Inter 600, -3% */
+    --deck-h3: 36px;         /* sub-headline / panel title, Inter 600 */
     --deck-lede: 28px;       /* supporting paragraph, Inter 400 */
     --deck-body: 22px;       /* standard copy, Inter 400 */
     --deck-caption: 18px;    /* caption, Inter 400 */
     --deck-label: 16px;      /* eyebrow, Inter 600, tracked uppercase */
-    --deck-stat: 72px;       /* stat-callout numeral, Fraunces 700 */
+    --deck-stat: 72px;       /* stat-callout numeral, Archivo 900 */
 
     /* --- Spacing, from design.md > spacing --- */
 ${spacing}
 
     /* --- Deck-specific companion spacing, exact matches to the core scale --- */
-    --deck-pad-edge: var(--space-8);
-    --deck-gap-region: var(--space-7);
-    --deck-gap-card: var(--space-5);
+    --deck-pad-edge: var(--space-5xl);
+    --deck-gap-region: var(--space-4xl);
+    --deck-gap-card: var(--space-2xl);
 
     /* --- Shape, from design.md > shape --- */
 ${shape}
@@ -644,7 +494,9 @@ ${shape}
 ${elevation}
 
     /* --- Motion, from design.md > motion --- */
-${Object.entries(d.motion).map(([k, v]) => (k.startsWith("duration-") ? `    --${k}: ${v};` : `    --ease-${k}: ${v};`)).join("\n")}
+${Object.entries(d.motion)
+  .map(([k, v]) => (k.startsWith("duration-") ? `    --${k}: ${v};` : `    --ease-${k}: ${v};`))
+  .join("\n")}
 }
 `;
 }
@@ -656,9 +508,9 @@ writeFileSync(TS_OUT, ts());
 writeFileSync(DECK_OUT, deck());
 
 /*
- * The deck template carried its own inline copy of the palette, a fourth one.
- * A standalone HTML template does need self-contained CSS, so the block stays
- * inline and is written here between markers instead of being hand-kept.
+ * The deck template carries an inline copy of the palette, because a standalone
+ * HTML template needs self-contained CSS. The block stays inline and is written
+ * here between markers instead of being hand-kept.
  */
 {
   const START = "/* PUNPROFILE-TOKENS-START";
@@ -669,8 +521,9 @@ writeFileSync(DECK_OUT, deck());
   if (a === -1 || b === -1) {
     throw new Error(`${DECK_TEMPLATE}: token markers are missing`);
   }
-  const body = deck()
-    .slice(deck().indexOf(":root {") + ":root {".length)
+  const generated = deck();
+  const body = generated
+    .slice(generated.indexOf(":root {") + ":root {".length)
     .replace(/\}\s*$/, "")
     .trimEnd();
   const header =
@@ -679,9 +532,10 @@ writeFileSync(DECK_OUT, deck());
     `       \`npm run tokens\`. */\n`;
   writeFileSync(DECK_TEMPLATE, tpl.slice(0, a) + header + body + "\n    " + tpl.slice(b));
 }
+
 console.log(
-  `tokens <- design.md  (${Object.keys(d.colors).length} colours + ` +
-    `${Object.keys(ALIASES).length} aliases, ` +
-    `${Object.keys(d.typography).length} type roles)\n` +
-    `  ${CSS_OUT}\n  ${TS_OUT}`,
+  `tokens <- design.md  (${Object.keys(d.colors).length} roles + ` +
+    `${Object.keys(d.aliases).length} aliases + ${Object.keys(BARE).length} bare, ` +
+    `${Object.keys(d.typography).length} type roles + ${Object.keys(LEGACY_TYPE).length} aliased)\n` +
+    `  ${CSS_OUT}\n  ${TS_OUT}\n  ${DECK_OUT}`,
 );

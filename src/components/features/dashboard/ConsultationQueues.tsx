@@ -84,7 +84,7 @@ function Bucket({
       <ul className="mt-2 flex flex-col gap-1.5">
         {rows.map((row) => (
           <li key={row.consultationId} className="text-body-medium">
-            <Link href={`/admin/leads/${row.leadId}`} className="text-primary underline">
+            <Link href={`/admin/leads/${row.leadId}`} className="text-on-primary underline">
               {row.name}
             </Link>
             <span className="text-on-surface-variant"> {detail(row)}</span>

@@ -36,15 +36,7 @@ import { useCopy } from "@/components/LocaleProvider";
  */
 export const ASSESS_PATH = "/efc-assessment";
 
-/**
- * Matches the Thai route at the root and the English one under `/en`.
- *
- * Exported since 17/08/2026, because `BrandScope` needs the same answer to
- * decide whether the content column is inside EU Fit Check's colour scope. Two
- * copies of this would be two things that can disagree about which route the
- * sub-brand lives on, and the lockup and the ground under it disagreeing is the
- * one failure the sub-brand cannot survive.
- */
+/** Matches the Thai route at the root and the English one under `/en`. */
 export function isAssessment(pathname: string): boolean {
   return pathname === ASSESS_PATH || pathname === `/en${ASSESS_PATH}`;
 }

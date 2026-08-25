@@ -25,7 +25,7 @@
 
 @theme inline {
   /*
-   * One stack per tier serves both scripts. Fraunces and Inter carry no Thai
+   * One stack per tier serves both scripts. Archivo and Inter carry no Thai
    * glyphs, so the browser falls through per glyph to Anuphan; no conditional
    * class and no language detection anywhere in the app.
    *
@@ -33,7 +33,7 @@
    * stack takes it at weight 700 and the body stack at 400, which is one file
    * doing what two Noto families used to.
    */
-  --font-display: var(--font-fraunces), var(--font-anuphan), Georgia, serif;
+  --font-display: var(--font-archivo), var(--font-anuphan), system-ui, sans-serif;
   --font-sans: var(--font-inter), var(--font-anuphan), system-ui, sans-serif;
 }
 
@@ -275,33 +275,28 @@
 
 @layer components {
   /*
-   * The serif tier carries its own family.
+   * The display tier carries its own family.
    *
-   * `design.md` says Fraunces carries display, headline and title, and Inter
-   * carries body and label. Tailwind's `--text-*` namespace only holds size,
-   * weight, line-height and tracking, so a `text-title-medium` on a <p> would
-   * inherit `--font-sans` from the body and quietly render the whole title tier
-   * in Inter. The base layer's `h1..h4` rule covered headings and nothing else,
-   * which is why this was invisible: every heading looked right.
+   * Tailwind's `--text-*` namespace holds only size, weight, line-height and
+   * tracking, so a `text-display-lg` on a <p> would inherit `--font-sans` from
+   * the body and render the brand moment in Inter. Bound to the classes rather
+   * than added at every call site, so the next one is correct without anybody
+   * remembering. In the components layer, so an explicit `font-sans` utility at
+   * a call site still wins.
    *
-   * Bound to the classes rather than added at 13 call sites, so the next one is
-   * correct without anybody remembering. In the components layer, so an explicit
-   * `font-sans` utility at a call site still wins.
+   * Only the `display-*` roles are here. `headline-*` and `heading-*` are Inter
+   * by design and must NOT take the display face.
    *
-   * The thai-* roles are here too. `--font-display` falls through per glyph to
-   * Anuphan, which is a sans, so a Thai headline is Anuphan at weight 700 while
-   * the Latin beside it is Fraunces. That is deliberate; `SiteShell` has the
-   * reasoning.
+   * The `thai-*` roles are here too: `--font-display` falls through per glyph to
+   * Anuphan, so a Thai headline is Anuphan at 700 while the Latin beside it is
+   * Archivo at 900.
    */
+  .text-display-mega,
+  .text-display-xxl,
+  .text-display-xl,
+  .text-display-lg,
+  .text-display-md,
   .text-display-large,
-  .text-display-medium,
-  .text-display-small,
-  .text-headline-large,
-  .text-headline-medium,
-  .text-headline-small,
-  .text-title-large,
-  .text-title-medium,
-  .text-title-small,
   .text-thai-display,
   .text-thai-headline,
   .text-thai-title {
@@ -328,19 +323,32 @@
    * Measured on lime: ink 14.31, on-surface-variant 8.03, primary 5.44.
    */
   .ground-fixed {
-    --color-on-surface: #1a1d16;
-    --color-on-surface-variant: #45483c;
-    --color-outline: #76786b;
-    --color-outline-variant: #c6c8b8;
-    --color-primary: #566423;
-    --color-surface: #f9faef;
+    --color-ink: #163300;
+    --color-body: #454745;
+    --color-mute-strong: #6a6c6a;
+    --color-line: #dfe3dc;
+    --color-line-strong: #8b908a;
+    --color-canvas: #ffffff;
+    --color-canvas-soft: #ecefeb;
+    /* The aliases retired screens still name, pinned to the same values.
+       `primary` takes the green-black rather than the lime: on a lime ground
+       the lime is the ground, and the button on it is the dark pill.
+       Measured on lime: ink-deep 9.45, body 6.36. */
+    --color-on-surface: #163300;
+    --color-on-surface-variant: #454745;
+    --color-outline: #8b908a;
+    --color-outline-variant: #dfe3dc;
+    --color-primary: #163300;
+    --color-action: #163300;
+    --color-on-action: #e8ebe6;
+    --color-surface: #ffffff;
     --color-surface-container-lowest: #ffffff;
     /* `btn-contrast` is the button style for exactly these grounds, and it is
        built on the inverse pair. Those invert with the scheme like everything
        else, so in dark the button went light-on-lime at about 1.15. Pinned. */
-    --color-inverse-surface: #2f312a;
-    --color-inverse-on-surface: #f0f2e7;
-    color: var(--color-on-surface);
+    --color-inverse-surface: #163300;
+    --color-inverse-on-surface: #e8ebe6;
+    color: var(--color-ink);
   }
 }
 
@@ -693,6 +701,48 @@
      13.24, so it carries body text at any size. */
   .card-tonal {
     background-color: var(--color-secondary-container);
+  }
+
+  /*
+   * The card the brand actually draws: white, 30px, no border and no shadow.
+   *
+   * It works because it sits on a band rather than on the page. `card-outlined`
+   * is what a card on white has to do instead, and a page that needs a lot of
+   * those is a page that should have been a band.
+   */
+  .card-plain {
+    background-color: var(--color-canvas);
+    border-radius: var(--radius-2xl);
+  }
+}
+
+@layer components {
+  /*
+   * The dark band's content colours.
+   *
+   * Same mechanism as `.ground-fixed` and the same reason: `canvas-dark` is a
+   * fixed ground, so every role inside it has to be pinned or it follows the
+   * scheme and disappears. Measured on `#163300`: `on-canvas-dark` 11.58,
+   * body 8.11, lime 9.45.
+   */
+  .ground-dark {
+    --color-ink: #e8ebe6;
+    --color-body: #c3c7bd;
+    --color-mute-strong: #a3a79e;
+    --color-canvas: #163300;
+    --color-canvas-soft: #1d4200;
+    --color-line: #33521f;
+    --color-line-strong: #6d8a5f;
+    --color-on-surface: #e8ebe6;
+    --color-on-surface-variant: #c3c7bd;
+    --color-surface: #163300;
+    --color-surface-container-lowest: #1d4200;
+    --color-outline: #6d8a5f;
+    --color-outline-variant: #33521f;
+    --color-primary: #9fe870;
+    --color-action: #9fe870;
+    --color-on-action: #163300;
+    color: var(--color-ink);
   }
 }
 

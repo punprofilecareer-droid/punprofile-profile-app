@@ -46,7 +46,7 @@ export default function AdminGate({ children }: { children: React.ReactNode }) {
       <Unauthenticated>
         <p className="text-body-large text-on-surface-variant">
           Not signed in.{" "}
-          <Link className="text-primary underline" href="/login">
+          <Link className="text-on-primary underline" href="/login">
             Go to sign-in
           </Link>
         </p>

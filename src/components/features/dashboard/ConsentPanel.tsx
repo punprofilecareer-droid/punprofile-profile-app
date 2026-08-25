@@ -235,7 +235,7 @@ export default function ConsentPanel({
           <button
             type="button"
             onClick={() => setShowLog((s) => !s)}
-            className="text-body-medium text-primary underline"
+            className="text-body-medium text-on-primary underline"
           >
             {showLog ? "Hide" : "Show"} the full log ({events.length}{" "}
             {events.length === 1 ? "event" : "events"})
@@ -271,7 +271,7 @@ function StatusPill({ status }: { status: ResolvedConsent["status"] }) {
   // one is an opportunity and the other is an instruction.
   const style =
     status === "opted_in"
-      ? "border-primary text-primary"
+      ? "border-primary text-on-primary"
       : status === "opted_out"
         ? "border-error text-error"
         : "border-outline-variant text-on-surface-variant";

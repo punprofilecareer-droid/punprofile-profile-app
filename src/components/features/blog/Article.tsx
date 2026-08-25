@@ -54,7 +54,7 @@ function Body({ blocks }: { blocks: readonly Block[] }) {
                   and drops only the drawn marker. See `blog.ts` for why these
                   passages are a list at all. */}
               {block.bare ? null : block.ordered ? (
-                <span aria-hidden className="shrink-0 font-semibold text-primary">
+                <span aria-hidden className="shrink-0 font-semibold text-on-primary">
                   {j + 1}.
                 </span>
               ) : (
@@ -109,7 +109,7 @@ function Body({ blocks }: { blocks: readonly Block[] }) {
                   href={block.cite.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-body-medium text-primary underline underline-offset-2"
+                  className="text-body-medium text-on-primary underline underline-offset-2"
                 >
                   {block.cite.label} &#8599;
                 </a>

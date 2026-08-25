@@ -38,7 +38,7 @@ export default function Triage() {
             <span className="text-body-large text-on-surface">{pick(item.line)}</span>
             <span
               aria-hidden
-              className="text-body-large text-primary transition-transform group-hover:translate-x-0.5"
+              className="text-body-large text-on-primary transition-transform group-hover:translate-x-0.5"
             >
               &rarr;
             </span>
