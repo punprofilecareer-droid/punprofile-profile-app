@@ -66,6 +66,7 @@ import { DESTINATIONS } from "@/lib/content/cta";
 import Band from "@/components/Band";
 import Slot from "@/components/blocks/Slot";
 import SplitFeature from "@/components/blocks/SplitFeature";
+import Testimonials from "@/components/blocks/Testimonials";
 import { EYEBROW, HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import { MARKET } from "@/lib/content/market-snapshot.generated";
 import { FAQ, FAQ_HEADING } from "@/lib/content/faq";
@@ -157,8 +158,8 @@ export default function Home() {
               >
                 &#9733;
               </span>
-              <Slot>proof one, bold: a rating, a count, a figure</Slot>
-              <Slot>the quieter half: what it is out of</Slot>
+              <Slot code="HOME-01">proof one, in bold: a rating, a count, a figure</Slot>
+              <Slot code="HOME-02">its quieter half: what the figure is out of</Slot>
             </span>
             <span className="inline-flex items-center gap-2">
               <span
@@ -442,7 +443,9 @@ export default function Home() {
             {/* The reference's split carries a line under the headline before
                 the action. This section has never had one. */}
             <p className="mt-4">
-              <Slot block>one or two lines: what the card beside this shows</Slot>
+              <Slot code="HOME-03" block>
+                one or two lines: what the card beside this is showing
+              </Slot>
             </p>
             <Link
             href={path(DESTINATIONS.assess.href)}
@@ -474,7 +477,9 @@ export default function Home() {
             {/* A sub line under the heading, which every card row on the
                 reference has and this one does not. */}
             <p className="mt-4">
-              <Slot block>one line: what the three below have in common</Slot>
+              <Slot code="HOME-04" block>
+                one line: what the three cards below have in common
+              </Slot>
             </p>
           </div>
 
@@ -602,27 +607,39 @@ export default function Home() {
         </SplitFeature>
       </Band>
 
-        {/* ------------------------------------------------------- results
+        {/* -------------------------------------------------- testimonials
 
-            Renders nothing while `RESULTS` is empty, which is today and which
-            is the point. There are no placed clients and the Social Proof
-            pillar is empty, so the shape is held in `home.ts` for the day there
-            is a real one, and no heading, empty state or "coming soon" appears
-            in the meantime: a visible placeholder for social proof is itself a
-            claim that social proof is imminent. */}
-        {RESULTS.length > 0 && (
-        <Band ground="canvas">
+            B13, and the section that used to render nothing at all.
+
+            The rule it was built on has not changed: a visible placeholder for
+            social proof is itself a claim that social proof is imminent. What
+            changed is what a placeholder can be. A coded slot inside a dashed
+            border is a question with Paul's name on it, not a client saying
+            something, and nobody reading this page could mistake one for the
+            other. `RESULTS` is still the source; the day it has a row, the
+            slots go and the quotes take their place with no edit here.
+
+            The reference's version runs as a carousel with arrows and a story
+            link per card. Neither is here: there is one screen of cards and no
+            case study to link to, and a control that does nothing is worse than
+            no control. */}
+        <Band ground="canvas" width="wide">
+          <div className="max-w-3xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(RESULTS_HEADING)}</h2>
-            <ul className="mt-8 flex flex-col gap-6">
-              {RESULTS.map((r) => (
-                <li key={r.id} className="card-plain px-8 py-9">
-                  <p className="text-body-large text-on-surface">{pick(r.quote)}</p>
-                  <p className="mt-3 text-body-medium text-on-surface-variant">{pick(r.who)}</p>
-                </li>
-              ))}
-            </ul>
+            <p className="mt-4">
+              <Slot code="HOME-06" block>
+                one line under the heading: who these people are as a group
+              </Slot>
+            </p>
+          </div>
+          <div className="mt-10">
+            <Testimonials
+              items={RESULTS.map((r) => ({ quote: pick(r.quote), who: pick(r.who) }))}
+              placeholders={3}
+              codePrefix="HOME-07"
+            />
+          </div>
         </Band>
-        )}
 
         {/* --------------------------------------------------- FAQ teaser
 

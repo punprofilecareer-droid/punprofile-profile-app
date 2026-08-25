@@ -21,6 +21,8 @@ import CallToAction from "@/components/CallToAction";
 import Band from "@/components/Band";
 import SplitFeature from "@/components/blocks/SplitFeature";
 import Checklist from "@/components/blocks/Checklist";
+import AudienceChip from "@/components/blocks/AudienceChip";
+import Slot from "@/components/blocks/Slot";
 import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import {
   COMING_SOON,
@@ -56,7 +58,14 @@ export default function ProductPage({ product }: { product: Product }) {
   return (
     <div className="w-full">
       <Band ground="canvas">
-      <p className="text-heading-xs text-mute-strong">{pick(product.name)}</p>
+      {/* B22, the audience chip: the reference's product pages say who a thing
+          is for before they say anything else, which is a cheap and honest way
+          to let the wrong reader leave. None of the five has ever said it. */}
+      <AudienceChip>
+        <Slot code={`PROD-01-${product.slug}`}>who this one is for, in a few words</Slot>
+      </AudienceChip>
+
+      <p className="mt-4 text-heading-xs text-mute-strong">{pick(product.name)}</p>
 
       {product.status === "soon" && (
         <p className="mt-2 inline-flex rounded-full bg-primary-pale px-3 py-1 text-body-sm-strong text-on-primary-pale">
@@ -82,6 +91,12 @@ export default function ProductPage({ product }: { product: Product }) {
           what a product actually does. */}
       <Band ground="soft" width="wide">
         <h2 className={SECTION_HEADING(locale)}>{pick(HOW_HEADING)}</h2>
+        {/* The reference puts a line under this heading before the checklist. */}
+        <p className="mt-4 max-w-2xl">
+          <Slot code={`PROD-02-${product.slug}`} block>
+            one line under the heading: what the steps below add up to
+          </Slot>
+        </p>
         <div className="mt-10">
           <SplitFeature src={PRODUCT_ART[product.slug] ?? PRODUCT_ART.default} alt="" reverse>
             <Checklist items={product.how.map((item) => ({ lead: pick(item) }))} />

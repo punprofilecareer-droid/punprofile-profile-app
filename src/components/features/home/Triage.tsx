@@ -44,7 +44,9 @@ export default function Triage() {
                   the title is the situation, the body says what happens if you
                   press it. We have never written those, so each is a slot. */}
               <span className="mt-1 block">
-                <Slot>one line: what pressing this row gets them</Slot>
+                <Slot code={`HOME-05-${item.id}`}>
+                  one line: what pressing this row gets them
+                </Slot>
               </span>
             </span>
             <span
