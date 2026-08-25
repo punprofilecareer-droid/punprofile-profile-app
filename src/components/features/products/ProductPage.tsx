@@ -19,6 +19,8 @@
 import { useCopy } from "@/components/LocaleProvider";
 import CallToAction from "@/components/CallToAction";
 import Band from "@/components/Band";
+import SplitFeature from "@/components/blocks/SplitFeature";
+import Checklist from "@/components/blocks/Checklist";
 import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import {
   COMING_SOON,
@@ -26,6 +28,25 @@ import {
   LIMIT_HEADING,
   type Product,
 } from "@/lib/content/products";
+
+/**
+ * A picture per product page, and it is a placeholder mapping.
+ *
+ * These are the assessment's own block photographs, which are studio shots of
+ * the mascot rather than pictures of the product, because none of the five has
+ * art of its own. Each is assigned by what its question is about, so the pairing
+ * is not random, but it is a stand-in and should be replaced the day there is
+ * real art. `alt` is empty at the call site for the same reason: a decorative
+ * stand-in should not be described to a screen reader as if it meant something.
+ */
+const PRODUCT_ART: Record<string, string> = {
+  "eu-fit-check": "/assess/blocks/now.jpg",
+  "cv-check": "/assess/blocks/understood.jpg",
+  "fit-report": "/assess/blocks/aim.jpg",
+  "matched-jobs": "/assess/blocks/go.jpg",
+  "guided-job-hunt": "/assess/blocks/bring.jpg",
+  default: "/assess/blocks/aim.jpg",
+};
 
 export default function ProductPage({ product }: { product: Product }) {
   const { pick, locale } = useCopy();
@@ -50,22 +71,20 @@ export default function ProductPage({ product }: { product: Product }) {
       <CallToAction page={product.actionsKey} className="mt-8" show="primary" />
       </Band>
 
-      {/* --------------------------------------------------------- how ---- */}
-      <Band ground="soft">
+      {/* --------------------------------------------------------- how ----
+
+          B11: the steps beside a picture rather than a bulleted list on their
+          own. It was a numbered list and it is still numbered; what changed is
+          that each step gets a hairline and the section gets something to look
+          at, which is what the reference does on every page that has to say
+          what a product actually does. */}
+      <Band ground="soft" width="wide">
         <h2 className={SECTION_HEADING(locale)}>{pick(HOW_HEADING)}</h2>
-        <ul className="mt-5 flex flex-col gap-4">
-          {product.how.map((item, i) => (
-            <li key={i} className="flex gap-4 text-body-large text-on-surface">
-              <span
-                aria-hidden
-                className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-canvas text-body-sm-strong text-on-primary"
-              >
-                {i + 1}
-              </span>
-              <span>{pick(item)}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-10">
+          <SplitFeature src={PRODUCT_ART[product.slug] ?? PRODUCT_ART.default} alt="" reverse>
+            <Checklist items={product.how.map((item) => ({ lead: pick(item) }))} />
+          </SplitFeature>
+        </div>
       </Band>
 
       {/* ------------------------------------------------------- limit ---- */}

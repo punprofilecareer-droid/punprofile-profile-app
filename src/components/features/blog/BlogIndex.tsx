@@ -25,6 +25,7 @@ import CallToAction from "@/components/CallToAction";
 import PostCard from "@/components/features/blog/PostCard";
 import SignupForm from "@/components/features/blog/SignupForm";
 import Band from "@/components/Band";
+import EditorialGrid from "@/components/blocks/EditorialGrid";
 import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import {
   BLOG_ALL,
@@ -110,27 +111,21 @@ function BlogBody() {
           section and lets spacing do the sub-grouping. */}
       {playbooks().length > 1 && (
         <Band ground="canvas" width="wide">
-          <h2 className={`max-w-2xl ${SECTION_HEADING(locale)}`}>{pick(PLAYBOOKS_HEADING)}</h2>
-          <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">
-            {pick(PLAYBOOKS_INTRO)}
-          </p>
           {/*
-            **Feed**, one of M3's three canonical layouts: a collection of
-            browsable cards. The spec's progression is 1 / 2 / 3 / 4 across
-            compact, medium, expanded and large, and this runs 1 / 2 / 3 for two
-            reasons that are both in `design.md`.
-
-            The third column arrives at `large` rather than `expanded`, because
-            the standard drawer takes 280px from `expanded` up and three columns
-            in the 560 that leaves would be 170px each. And there is no fourth,
-            because the reading measure caps this container at 1024 and four
-            columns inside that is a card too narrow to carry a Thai headline.
+            B19: the category heading carries the chevron and is itself the way
+            in, so a row does not need a "see all" link sitting apart from it.
+            `EditorialGrid` owns the heading, the chevron and the columns; the
+            cards stay `PostCard`'s, because a card is a different decision from
+            a grid.
           */}
-          <div className="mt-10 grid items-start gap-6 medium:grid-cols-2 large:grid-cols-3">
+          <EditorialGrid
+            heading={<span className={SECTION_HEADING(locale)}>{pick(PLAYBOOKS_HEADING)}</span>}
+            intro={pick(PLAYBOOKS_INTRO)}
+          >
             {playbooks().map((p) => (
               <PostCard key={p.slug} post={p} />
             ))}
-          </div>
+          </EditorialGrid>
         </Band>
       )}
 
