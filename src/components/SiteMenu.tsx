@@ -111,7 +111,9 @@ export default function SiteMenu() {
   // store never changes, hence the no-op subscribe.
   const mounted = useSyncExternalStore(NEVER_CHANGES, () => true, () => false);
 
-  const EXIT_MS = 200;
+  // Matches `.menu-panel-out` in `globals.css`, which matches the language
+  // drawer. Unmounting before the animation ends would cut it off.
+  const EXIT_MS = 350;
   const close = useCallback(() => {
     setClosing(true);
     window.setTimeout(() => {
@@ -203,7 +205,7 @@ export default function SiteMenu() {
         aria-label={t("nav.menu")}
         aria-expanded={open}
         aria-controls="site-menu"
-        className="-mr-2 flex size-12 items-center justify-center rounded-full text-on-surface transition-colors hover:bg-tertiary-container"
+        className="-mr-2 flex size-12 items-center justify-center rounded-full text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
       >
         {/* Three rules, drawn rather than typed: the glyph characters that look
             like a burger render at different weights across Thai and Latin
@@ -226,7 +228,7 @@ export default function SiteMenu() {
               tabIndex={-1}
               aria-label={t("nav.menuClose")}
               onClick={close}
-              className={`fixed inset-0 z-40 cursor-default bg-on-surface/20 ${
+              className={`fixed inset-0 z-40 cursor-default bg-black/50 backdrop-blur-[8px] ${
                 closing ? "menu-scrim-out" : "menu-scrim-in"
               }`}
             />
@@ -250,21 +252,26 @@ export default function SiteMenu() {
               role="dialog"
               aria-modal="true"
               aria-label={t("nav.menu")}
-              className={`fixed inset-y-0 right-0 z-50 flex w-[min(20rem,80vw)] flex-col overflow-hidden rounded-l-large bg-surface-container-high px-5 pt-5 shadow-level-3 outline-none ${
+              className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col overflow-hidden bg-canvas px-6 pt-6 outline-none ${
                 closing ? "menu-panel-out" : "menu-panel-in"
               }`}
               style={{ paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
             >
-              <button
-                type="button"
-                onClick={close}
-                aria-label={t("nav.menuClose")}
-                className="-mr-1 mb-5 flex size-12 items-center justify-center self-end rounded-full text-on-surface transition-colors hover:bg-black/5"
-              >
-                <span aria-hidden className="text-title-large leading-none">
-                  &times;
-                </span>
-              </button>
+              {/* Title beside the close chip, which is what the language
+                  drawer does. Two panels from the same edge with two different
+                  headers are two components; one header is one component that
+                  happens to hold two lists. */}
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <p className="text-heading-sm">{t("nav.menu")}</p>
+                <button
+                  type="button"
+                  onClick={close}
+                  aria-label={t("nav.menuClose")}
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas-soft text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+                >
+                  <span aria-hidden>&#10005;</span>
+                </button>
+              </div>
 
               {/* Plain text, no chips. Reworked 16/08/2026 from a reference
                   the founder supplied: the old list put every item in a 12px
@@ -305,7 +312,7 @@ export default function SiteMenu() {
                 {/* The group label, `nav.products`. Not a link: `/products` is
                     not a page, and a heading that looks tappable and is not is
                     worse than no heading. */}
-                <span className="text-label-large text-on-surface-variant">
+                <span className="border-b border-line pb-2 text-body-md text-mute-strong">
                   {t("nav.products")}
                 </span>
                 {PRODUCTS.map((item) => {
@@ -316,8 +323,8 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-title-large transition-colors hover:text-on-primary ${
-                        here ? "font-semibold text-on-primary" : "text-on-surface"
+                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-on-primary ${
+                        here ? "font-semibold text-on-primary" : "text-body"
                       }`}
                     >
                       {t(item.label)}
@@ -336,8 +343,8 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-title-large transition-colors hover:text-on-primary ${
-                        here ? "font-semibold text-on-primary" : "text-on-surface"
+                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-on-primary ${
+                        here ? "font-semibold text-on-primary" : "text-body"
                       }`}
                     >
                       {t(item.label)}
@@ -345,7 +352,7 @@ export default function SiteMenu() {
                   );
                 })}
 
-                <hr className="border-t border-outline-variant" />
+                <hr className="border-t border-line" />
 
                 {[...NAV, ACTION].map((item) => {
                   // `path()` first, then compare. `pathname` is the real URL, so
@@ -359,8 +366,8 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-title-large transition-colors hover:text-on-primary ${
-                        here ? "font-semibold text-on-primary" : "text-on-surface"
+                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-on-primary ${
+                        here ? "font-semibold text-on-primary" : "text-body"
                       }`}
                     >
                       {t(item.label)}
@@ -384,18 +391,18 @@ export default function SiteMenu() {
                   other surface cannot drift into two wordings of one button. */}
               <Link
                 href={path(ASSESS.href)}
-                className="group mt-6 flex shrink-0 flex-col gap-6 rounded-extra-large bg-tertiary-container p-6 transition-colors hover:bg-tertiary-fixed-dim"
+                className="group mt-6 flex shrink-0 flex-col gap-6 rounded-2xl bg-primary-pale p-6 duration-[350ms] ease-nav transition-colors hover:bg-primary-neutral"
               >
-                <span className="text-headline-medium font-bold text-balance text-on-tertiary-container">
+                <span className="text-heading-sm font-bold text-balance text-on-primary-pale">
                   {t("menu.promo")}
                 </span>
                 <span className="flex items-center justify-between gap-3">
-                  <span className="text-body-large font-semibold text-on-tertiary-container">
+                  <span className="text-body-md-strong text-on-primary-pale">
                     {pick(ASSESS.label)}
                   </span>
                   <span
                     aria-hidden
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-tertiary text-on-tertiary transition-transform group-hover:translate-x-0.5"
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
                   >
                     &rarr;
                   </span>

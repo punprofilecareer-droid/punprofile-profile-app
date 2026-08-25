@@ -246,18 +246,27 @@
   [data-logo-ground="inverse"] .brand-wordmark-black { display: block; }
 }
 
+/*
+ * One curve and one duration for every drawer, 25/08/2026.
+ *
+ * These were 220/200/200/180ms on three different M3 easings, which was correct
+ * when the header was a Material top app bar. `design.md`'s navigation section
+ * now says the whole header moves on `--ease-nav` for 350ms, and the language
+ * drawer already does. Two drawers opening from the same edge at two different
+ * speeds reads as two different components, so they are the same numbers.
+ */
 @layer components {
   .menu-panel-in {
-    animation: menu-panel-in 220ms var(--ease-emphasized) both;
+    animation: menu-panel-in 350ms var(--ease-nav) both;
   }
   .menu-panel-out {
-    animation: menu-panel-out 200ms var(--ease-emphasized) both;
+    animation: menu-panel-out 350ms var(--ease-nav) both;
   }
   .menu-scrim-in {
-    animation: menu-scrim-in 200ms var(--ease-emphasized-decelerate) both;
+    animation: menu-scrim-in 350ms var(--ease-nav) both;
   }
   .menu-scrim-out {
-    animation: menu-scrim-out 180ms var(--ease-emphasized-accelerate) both;
+    animation: menu-scrim-out 350ms var(--ease-nav) both;
   }
 }
 
