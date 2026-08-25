@@ -37,7 +37,7 @@ export default function MarketProof() {
 
   return (
     <div className="card-outlined mt-4 flex h-full flex-col rounded-large px-5 py-5 text-left">
-      <p className="text-label-large text-on-tertiary-container">{t("stats.market.label")}</p>
+      <p className="text-label-large text-on-primary">{t("stats.market.label")}</p>
 
       {/* The two counts, at display size, because they are the whole point of
           the card. Two columns rather than a stack: they are one fact read
@@ -45,7 +45,7 @@ export default function MarketProof() {
           them invites the reader to take the second on its own. */}
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div>
-          <p className="text-display-small tabular-nums text-on-tertiary-container">
+          <p className="text-display-small tabular-nums text-on-primary">
             {MARKET.screened}
           </p>
           <p className="mt-1 text-body-medium text-on-surface-variant">
@@ -53,7 +53,7 @@ export default function MarketProof() {
           </p>
         </div>
         <div>
-          <p className="text-display-small tabular-nums text-on-tertiary-container">
+          <p className="text-display-small tabular-nums text-on-primary">
             {MARKET.published}
           </p>
           <p className="mt-1 text-body-medium text-on-surface-variant">

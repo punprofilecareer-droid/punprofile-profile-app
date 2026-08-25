@@ -99,13 +99,16 @@
    * for fields only; extending it is deliberate, because keyboard users need to
    * see where they are on buttons and links too.
    *
-   * `primary`, not `action`. It was the action colour until 16/08/2026, which
-   * was wrong twice over: M3 marks focus with primary, and `action` is reserved
-   * for the single primary button on a view, so a focus ring in it made every
-   * focused link briefly look like that button.
+   * `currentColor` since 25/08/2026, and it is the only answer that holds on
+   * four grounds. It was `primary`, which is a FILL in this system: the lime
+   * holds 1.47 on white, and a focus ring is a meaningful graphic that needs
+   * 3:1. Naming any single role instead would be right on the grounds that role
+   * was measured against and wrong on the other three. `currentColor` is by
+   * definition the colour that already contrasts with whatever the focused
+   * thing sits on.
    */
   :focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid currentColor;
     outline-offset: 2px;
   }
 }
@@ -404,7 +407,7 @@
   }
   .field:focus,
   .field:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid currentColor;
     outline-offset: -2px;
   }
   .field:disabled {
@@ -466,15 +469,21 @@
     line-height: var(--text-body-large--line-height);
     transition: background-color 150ms var(--ease-standard), border-color 150ms var(--ease-standard);
   }
+  /* Hover and selected were EU Fit Check's blue through `tertiary`, which now
+     resolves to the cyan accent. A chosen answer is the one thing on the screen
+     the candidate did, so it takes the accent's ground and the ink that goes on
+     it: `primary-pale` fill with an `on-primary` edge, which holds 12.01 against
+     the fill and does not depend on the lime, whose 1.47 on white would have
+     made the selected border invisible. */
   .tile:hover:not([aria-pressed="true"]) {
     background-color: color-mix(
       in srgb, var(--color-on-surface) calc(var(--state-hover) * 100%), var(--color-surface));
-    border-color: var(--color-tertiary);
+    border-color: var(--color-line-strong);
   }
   .tile[aria-pressed="true"] {
-    background-color: var(--color-tertiary-container);
-    border-color: var(--color-tertiary);
-    color: var(--color-on-tertiary-container);
+    background-color: var(--color-primary-pale);
+    border-color: var(--color-on-primary);
+    color: var(--color-on-primary-pale);
   }
   /* The affordance. Sized and coloured so an unselected tile still says it is
      a choice, which is the entire reason it exists. */
@@ -521,8 +530,8 @@
       in srgb, var(--color-on-surface) calc(var(--state-hover) * 100%), var(--color-surface));
   }
   .segment[aria-pressed="true"] {
-    background-color: var(--color-tertiary-container);
-    border-color: var(--color-tertiary);
+    background-color: var(--color-primary-pale);
+    border-color: var(--color-on-primary);
     color: var(--color-on-tertiary-container);
     font-weight: 600;
     z-index: 1;

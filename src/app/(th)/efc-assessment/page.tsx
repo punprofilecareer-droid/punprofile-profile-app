@@ -371,15 +371,15 @@ export default function AssessPage() {
 
                 Roles rather than the literals this markup carried before the
                 rebrand: it was `border-neutral-300 border-t-eufit`, and `eufit`
-                does not exist any more. Inside the assessment's scope `primary`
-                IS the product's blue, so the ring picks up EU Fit Check's colour
-                without naming it, which is what the scope is for.
+                does not exist any more. The head is `on-primary`, the green-black,
+                and not the lime: a spinner is a meaningful graphic and needs 3:1,
+                which the lime does not hold on white.
 
                 `mascot-in` in `globals.css` still has a second caller at the end
                 of the flow, so it stays. */}
             <div
               role="presentation"
-              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-outline-variant border-t-primary"
+              className="mx-auto mb-5 block size-8 animate-spin rounded-full border-2 border-line border-t-on-primary"
             />
             <p className="text-body-large text-on-surface-variant" role="status">
               {t("assess.starting")}
@@ -778,7 +778,7 @@ export default function AssessPage() {
       <button
         type="button"
         onClick={() => setStep(STAGE1.length - 1)}
-        className="mt-6 rounded-small px-2 py-1 text-body-medium text-on-surface-variant underline underline-offset-2 transition-colors hover:text-on-tertiary-container"
+        className="mt-6 rounded-small px-2 py-1 text-body-medium text-on-surface-variant underline underline-offset-2 transition-colors hover:text-on-primary"
       >
         {t("teaser.revise")}
       </button>

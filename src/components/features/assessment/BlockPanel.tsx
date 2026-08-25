@@ -78,7 +78,7 @@ export default function BlockPanel({
         // Lavender rather than grey underneath. It is the field the assessment
         // already sits on, so a panel with nothing in it yet reads as part of
         // the page instead of a hole in it.
-        <div className="relative hidden shrink-0 self-start overflow-hidden bg-tertiary-container expanded:sticky expanded:top-[72px] expanded:block expanded:h-[calc(100dvh-72px)] expanded:w-1/3">
+        <div className="relative hidden shrink-0 self-start overflow-hidden bg-primary-pale expanded:sticky expanded:top-[72px] expanded:block expanded:h-[calc(100dvh-72px)] expanded:w-1/3">
           {leaving && (
             <Image
               key={leaving.src}

@@ -130,7 +130,7 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
       <div className="mt-3 flex flex-col gap-4 large:grid large:grid-cols-3 large:items-stretch large:gap-6">
         {stats.topCountries && (
           <div className="card-outlined h-full rounded-large px-5 py-5">
-            <p className="text-label-large text-on-tertiary-container">{t("stats.countries.label")}</p>
+            <p className="text-label-large text-on-primary">{t("stats.countries.label")}</p>
             <ol className="mt-4 flex flex-col gap-3">
               {stats.topCountries.map((c, i) => (
                 <li key={c.country} className="flex items-center gap-3">
@@ -147,7 +147,7 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
                       left third of the card and read as an error. */}
                   <span
                     aria-hidden
-                    className="h-2 rounded-full bg-tertiary"
+                    className="h-2 rounded-full bg-primary"
                     style={{
                       width: `${Math.max(
                         6,
@@ -171,19 +171,19 @@ export default function CommunityStats({ scores }: { scores: Scores }) {
             the claim, unlike the countries above where the ranking is. */}
         {showReadiness && (
           <div className="card-outlined h-full rounded-large px-5 py-5">
-            <p className="text-label-large text-on-tertiary-container">{t("stats.readiness.label")}</p>
+            <p className="text-label-large text-on-primary">{t("stats.readiness.label")}</p>
             <ul className="mt-4 flex flex-col gap-4">
               {readiness.map((r) => (
                 <li key={r.share}>
                   <div className="flex items-baseline justify-between gap-3">
                     <span className="text-body-large text-on-surface">{t(r.copyKey)}</span>
-                    <span className="shrink-0 text-body-large font-semibold tabular-nums text-on-tertiary-container">
+                    <span className="shrink-0 text-body-large font-semibold tabular-nums text-on-primary">
                       {r.pct}%
                     </span>
                   </div>
                   <div aria-hidden className="mt-2 h-2 w-full rounded-full bg-surface-container">
                     <span
-                      className="block h-2 rounded-full bg-tertiary"
+                      className="block h-2 rounded-full bg-primary"
                       style={{ width: `${r.pct}%` }}
                     />
                   </div>

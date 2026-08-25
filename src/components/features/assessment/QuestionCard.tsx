@@ -205,7 +205,7 @@ export default function QuestionCard({
             <button
               type="button"
               onClick={onBack}
-              className="-mr-2 flex items-center gap-1 rounded-small px-2 py-1 text-body-medium text-on-surface-variant transition-colors hover:text-on-tertiary-container"
+              className="-mr-2 flex items-center gap-1 rounded-small px-2 py-1 text-body-medium text-on-surface-variant transition-colors hover:text-on-primary"
             >
               <span aria-hidden>&larr;</span>
               {t("assess.back")}
@@ -213,7 +213,7 @@ export default function QuestionCard({
           )}
         </div>
         <div
-          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-surface-container-highest"
+          className="mb-5 h-1 w-full overflow-hidden rounded-full bg-canvas-soft"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={total}
@@ -221,7 +221,7 @@ export default function QuestionCard({
         >
           {/* Lavender, not Terracotta: progress is feedback, not the action. */}
           <div
-            className="h-full rounded-full bg-tertiary transition-all"
+            className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${(step / total) * 100}%` }}
           />
         </div>

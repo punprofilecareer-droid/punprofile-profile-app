@@ -49,10 +49,11 @@ export default function BrandLockup() {
   const alt = efc ? `${t("nav.assess")} — ${t("nav.brand")}` : t("nav.brand");
   // The EFC lockup is wider relative to its height and its descriptor line is
   // smaller, so it needs a little more box to read at the same optical size as
-  // the parent.
+  // the parent. Redrawn 25/08/2026: 1986x465, a ratio of 4.27 against the
+  // parent's 3.68, so it keeps the taller box.
   const box = efc ? "h-10 w-auto" : "h-9 w-auto";
-  const w = efc ? 1911 : 2421;
-  const h = efc ? 488 : 657;
+  const w = efc ? 1986 : 2421;
+  const h = efc ? 465 : 657;
 
   /*
    * **Both schemes are rendered and CSS picks one, 17/08/2026, on Paul's read

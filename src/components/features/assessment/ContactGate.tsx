@@ -210,8 +210,8 @@ export default function ContactGate({
       <p className="mb-1 text-body-medium text-on-surface-variant">
         {t("assess.progress", { step: totalSteps, total: totalSteps })}
       </p>
-      <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-surface-container-highest">
-        <div className="h-full w-full rounded-full bg-tertiary" />
+      <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-canvas-soft">
+        <div className="h-full w-full rounded-full bg-primary" />
       </div>
 
       {/* Two columns from `lg`: what we are asking for and why on the left, the
@@ -237,7 +237,7 @@ export default function ContactGate({
 
       <p className="mt-6 text-body-medium text-on-surface-variant">
         {pick(CONSENT_COPY["consent.purpose"])}{" "}
-        <Link href={path("/privacy")} className="text-on-tertiary-container underline">
+        <Link href={path("/privacy")} className="text-on-primary underline">
           {pick(CONSENT_COPY["consent.privacyLink"])}
         </Link>
       </p>
@@ -337,7 +337,7 @@ export default function ContactGate({
               exist. Only the privacy notice becomes a link. */}
           <p className="mt-2 text-body-small text-on-surface-variant">
             {pick(CONSENT_COPY["consent.marketingNote"])}{" "}
-            <Link href={path("/privacy")} className="text-on-tertiary-container underline">
+            <Link href={path("/privacy")} className="text-on-primary underline">
               {pick(CONSENT_COPY["consent.privacyLink"])}
             </Link>
           </p>
