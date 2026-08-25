@@ -664,14 +664,16 @@
       in srgb, var(--color-on-primary-container) calc(var(--state-hover) * 100%),
       var(--color-primary-container));
   }
+  /* `on-primary`, not `primary`. The label was the lime, which holds 1.47 on
+     white: a button nobody could read. The lime is a fill in this system and
+     this button has no fill, so its type takes the ink that goes on the lime. */
   .btn-outlined {
     background-color: transparent;
-    color: var(--color-primary);
-    border: 1px solid var(--color-outline);
+    color: var(--color-on-primary);
+    border: 1px solid var(--color-line-strong);
   }
   .btn-outlined:hover:not(:disabled) {
-    background-color: color-mix(
-      in srgb, var(--color-primary) calc(var(--state-hover) * 100%), transparent);
+    background-color: var(--color-primary-pale);
   }
   .btn-contrast {
     background-color: var(--color-inverse-surface);

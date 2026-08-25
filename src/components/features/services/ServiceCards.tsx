@@ -40,8 +40,8 @@ function Body() {
   const focused = focus ? serviceForDimension(focus) : null;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6">
-      <h2 className="text-headline-small">{pick(SERVICES_HEADING)}</h2>
+    <div className="w-full">
+      <h2 className="text-heading-sm">{pick(SERVICES_HEADING)}</h2>
       <p className="mt-4 max-w-2xl text-body-large text-on-surface-variant">{pick(SERVICES_INTRO)}</p>
 
       {/* No `items-start`, removed 17/08/2026 on Paul's screenshot: it sized
@@ -57,8 +57,8 @@ function Body() {
             <section
               key={s.id}
               id={s.id}
-              className={`flex flex-col overflow-hidden rounded-large border transition-colors ${
-                on ? "border-tertiary bg-tertiary-container" : "border-outline-variant bg-surface"
+              className={`card-plain flex flex-col overflow-hidden border duration-[350ms] ease-nav transition-colors ${
+                on ? "border-on-primary bg-primary-pale" : "border-line"
               }`}
             >
               {/* A fixed 4:3 band, filled. The three illustrations became
@@ -79,16 +79,16 @@ function Body() {
 
               <div className="flex flex-1 flex-col px-6 py-7">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-title-large">{pick(s.name)}</h3>
+                  <h3 className="text-heading-sm">{pick(s.name)}</h3>
                   {s.core && (
-                    <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-on-primary">
+                    <span className="rounded-full bg-primary px-2.5 py-0.5 text-caption-strong text-on-primary">
                       {pick(CORE_BADGE)}
                     </span>
                   )}
                 </div>
 
                 {on && (
-                  <p className="mt-2 text-body-medium text-on-tertiary-container">
+                  <p className="mt-2 text-body-sm-strong text-on-primary-pale">
                     {pick({
                       en: "Your result points here",
                       th: "ผลประเมินของคุณชี้มาที่บริการนี้",
@@ -99,7 +99,7 @@ function Body() {
                 {/* The client's question, not a tagline. A service described by
                     the problem it answers is checkable; one described by its
                     benefits is not. */}
-                <p className="mt-3 text-title-medium text-on-surface">&ldquo;{pick(s.question)}&rdquo;</p>
+                <p className="mt-3 text-heading-xs text-on-primary">&ldquo;{pick(s.question)}&rdquo;</p>
                 <p className="mt-3 text-body-large text-on-surface-variant">{pick(s.summary)}</p>
 
                 <ul className="mt-5 flex flex-col gap-2.5">
@@ -107,7 +107,7 @@ function Body() {
                     <li key={i} className="flex gap-3 text-body-large text-on-surface">
                       <span
                         aria-hidden
-                        className="mt-2 block size-1.5 shrink-0 rounded-full bg-primary"
+                        className="mt-2 block size-1.5 shrink-0 rounded-full bg-on-primary"
                       />
                       <span>{pick(item)}</span>
                     </li>
@@ -130,7 +130,7 @@ function Body() {
         })}
       </div>
 
-      <p className="mt-10 max-w-3xl text-body-large text-on-surface-variant">{pick(AI_NOTE)}</p>
+      <p className="mt-10 max-w-3xl text-body-md text-body">{pick(AI_NOTE)}</p>
     </div>
   );
 }
@@ -139,7 +139,7 @@ export default function ServiceCards() {
   // `useSearchParams` needs a Suspense boundary or the route opts out of static
   // rendering at build time.
   return (
-    <Suspense fallback={<div className="mx-auto w-full max-w-5xl px-6" />}>
+    <Suspense fallback={<div className="w-full" />}>
       <Body />
     </Suspense>
   );

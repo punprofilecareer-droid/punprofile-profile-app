@@ -203,7 +203,14 @@ export default function LanguageGrid({
                   </span>
                 </button>
 
-                {on && (
+                {/* No level picker on `Other`, 25/08/2026.
+                    It is the one entry that names no language: `submit` already
+                    drops it before scoring, because it matches no country and
+                    feeds Country Reach nothing. Asking a candidate to rate their
+                    fluency in "another language" was asking about a thing that
+                    has no answer, and it put a scored-looking control under an
+                    unscored tick. */}
+                {on && lang !== "Other" && (
                   <div
                     className="mt-2 mb-1 flex pl-1"
                     role="group"
