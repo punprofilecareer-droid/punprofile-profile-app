@@ -120,15 +120,15 @@ export const PRODUCTS: readonly Product[] = [
   /* ------------------------------------------------------------ EU Fit Check */
   {
     slug: "eu-fit-check",
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-01-eu-fit-check`.
+    // Read back 25/08/2026. Draft for `PROD-01-eu-fit-check`.
     audience: {
       en: "For anyone weighing up a move to Europe",
       th: "คนที่กำลังคิดเรื่องไปทำงานในยุโรป",
     },
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-02-eu-fit-check`.
+    // Read back 25/08/2026. Draft for `PROD-02-eu-fit-check`.
     howLede: {
       en: "Seventeen questions on your phone, and a first read the moment you finish.",
-      th: "คำถาม 17 ข้อบนมือถือ และรู้ผลเบื้องต้นทันทีเมื่อทำเสร็จ",
+      th: "คำถาม 17 ข้อบนมือถือ พร้อมผลเบื้องต้นทันทีที่คุณทำเสร็จ",
     },
     name: { en: "EU Fit Check", th: "EU Fit Check" },
     status: "live",
@@ -186,12 +186,12 @@ export const PRODUCTS: readonly Product[] = [
   /* --------------------------------------------------------------- CV Check */
   {
     slug: "cv-check",
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-01-cv-check`.
+    // Read back 25/08/2026. Draft for `PROD-01-cv-check`.
     audience: {
       en: "For anyone whose CV was written for the Thai market",
       th: "คนที่เขียน CV ไว้สำหรับตลาดไทย",
     },
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-02-cv-check`.
+    // Read back 25/08/2026. Draft for `PROD-02-cv-check`.
     howLede: {
       en: "We read your CV the way a European reader does, and list what to fix.",
       th: "เราอ่าน CV ของคุณแบบเดียวกับคนอ่านในยุโรป แล้วบอกว่าควรแก้จุดไหนบ้าง",
@@ -256,12 +256,12 @@ export const PRODUCTS: readonly Product[] = [
   /* ------------------------------------------------------------- Fit Report */
   {
     slug: "fit-report",
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-01-fit-report`.
+    // Read back 25/08/2026. Draft for `PROD-01-fit-report`.
     audience: {
       en: "For anyone who wants the full read, not the summary",
       th: "คนที่อยากได้ผลแบบเต็ม ไม่ใช่แค่สรุป",
     },
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-02-fit-report`.
+    // Read back 25/08/2026. Draft for `PROD-02-fit-report`.
     howLede: {
       en: "All four scores against the market's own bars, and what to do first.",
       th: "คะแนนทั้งสี่ด้านเทียบกับเกณฑ์ที่ตลาดใช้จริง พร้อมบอกว่าควรเริ่มจากอะไร",
@@ -321,12 +321,12 @@ export const PRODUCTS: readonly Product[] = [
   /* ----------------------------------------------------------- Matched Jobs */
   {
     slug: "matched-jobs",
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-01-matched-jobs`.
+    // Read back 25/08/2026. Draft for `PROD-01-matched-jobs`.
     audience: {
       en: "For anyone tired of scrolling job boards",
       th: "คนที่เหนื่อยกับการไล่หาประกาศงานเอง",
     },
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-02-matched-jobs`.
+    // Read back 25/08/2026. Draft for `PROD-02-matched-jobs`.
     howLede: {
       en: "You set the criteria, we screen against them and send one role at a time.",
       th: "คุณกำหนดเงื่อนไข เราคัดกรองให้ตามนั้น แล้วส่งให้ทีละตำแหน่ง",
@@ -389,12 +389,12 @@ export const PRODUCTS: readonly Product[] = [
   /* ------------------------------------------------------- Guided Job Hunt */
   {
     slug: "guided-job-hunt",
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-01-guided-job-hunt`.
+    // Read back 25/08/2026. Draft for `PROD-01-guided-job-hunt`.
     audience: {
       en: "For anyone applying to several roles at once",
       th: "คนที่กำลังสมัครงานหลายตำแหน่งพร้อมกัน",
     },
-    // TH-UNREVIEWED, 25/08/2026. Draft for `PROD-02-guided-job-hunt`.
+    // Read back 25/08/2026. Draft for `PROD-02-guided-job-hunt`.
     howLede: {
       en: "One place holding every application and where each one stands.",
       th: "ที่เดียวที่เก็บทุกตำแหน่งที่คุณสมัคร พร้อมสถานะของแต่ละตำแหน่ง",
