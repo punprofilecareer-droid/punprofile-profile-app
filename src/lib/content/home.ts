@@ -1,4 +1,7 @@
 import type { Copy, CopyKey } from "./copy";
+// `SampleAxis` labels the four axes by their `dimension.*` keys rather than by
+// restating them, so the sample cannot drift from the real chart.
+import type { AnyCopyKey } from "@/lib/locale";
 
 /**
  * The home page. 17/08/2026.
@@ -209,29 +212,371 @@ export const MARKET_FOOT: Copy = {
   th: "ระหว่าง {from} ถึง {to} เราได้ประกาศตำแหน่งเหล่านี้ในกลุ่ม Thai Jobs in Europe",
 };
 
-// ------------------------------------------------- three things we help with
 
-/**
- * The names and questions are read out of `SERVICES` in `services.ts` at
- * render. They are deliberately not written here: `01_Project_Foundation.md`
- * § Core Offerings owns the structure and `services.ts` owns the wording, and a
- * third rendering of the same three offerings is a third wording of them.
- */
-export const HELP_HEADING: Copy = {
-  en: "Three things we help with",
-  // Read and passed by Paul on 17/08/2026. He left it unchanged in the review
-  // sheet and confirmed that was approval rather than a skip when asked, which
-  // is why the marker is gone rather than downgraded.
-  th: "สามเรื่องที่เราช่วยคุณได้",
+// ------------------------------------------------------------- the problem
+//
+// Careersy's sections 4 and 5, which are the two that made the reference page
+// worth copying: name the problem in the reader's own words, then let them
+// point at the one that is theirs. `home-page-v2.md` carries the full mapping.
+
+export const PROBLEM_HEADING: Copy = {
+  en: "The problem is rarely the experience",
+  // TH-UNREVIEWED, 24/08/2026. `10_Methodology.md`'s core claim said to a
+  // stranger: illegibility rather than capability.
+  th: "ปัญหาส่วนใหญ่ไม่ได้อยู่ที่ประสบการณ์ของคุณ",
 };
 
-export const HELP_INTRO: Copy = {
-  en: "Everyone starts with career coaching. The other two can be taken on their own, depending on what you need.",
-  // **Paul's wording, 17/08/2026.** The reader is the subject now rather
-  // than the service, and he glossed `แคเรียร์โค้ชชิ่ง (Career Coaching)` on
-  // its first appearance on the page, which is the same courtesy LR-01 asks
-  // for on the brand name.
-  th: "ทุกคนเริ่มต้นด้วยแคเรียร์โค้ชชิ่ง (Career Coaching) ส่วนอีกสองบริการเลือกใช้แยกกันได้ตามความต้องการ",
+export const PROBLEM_BODY: Copy = {
+  en: "A Bangkok senior title can read as mid-level in Amsterdam. A well-known Thai employer reads as an unknown one. Most people are not turned down for what they have done, they are turned down before anyone works out what that was.",
+  // TH-UNREVIEWED, 24/08/2026. Drafted from `10_Methodology.md` and from the
+  // CV Check page's own `how` lines, which Paul reviewed on 23/08/2026.
+  th: "ตำแหน่งระดับอาวุโสในกรุงเทพฯ อาจถูกอ่านเป็นระดับกลางในอัมสเตอร์ดัม บริษัทที่คนไทยรู้จักดีอาจเป็นชื่อที่ไม่มีใครเคยได้ยินในยุโรป คนส่วนใหญ่จึงไม่ได้ถูกปฏิเสธเพราะทำงานมาไม่ดีพอ แต่ถูกปฏิเสธก่อนที่ใครจะได้เข้าใจว่าเคยทำอะไรมาบ้าง",
+};
+
+// ------------------------------------------------------------------ triage
+
+/**
+ * Six things a reader recognises as their own situation, each pointing at where
+ * the site answers it.
+ *
+ * **Five of the six are answer options out of `questions.ts`**, which is Thai
+ * Paul reviewed long ago, expanded only far enough to stand up outside the
+ * question they belong to. `ยังไม่แน่ใจ` on its own means nothing on a landing
+ * page; `ยังไม่แน่ใจว่าอยากทำงานสายไหนในยุโรป` is the same answer with its
+ * question folded in. Each entry records which option it came from.
+ *
+ * That is the point of the section and the reason it is honest: these are not
+ * personas invented to sell something. They are the answers real candidates
+ * pick, taken from the instrument they pick them in.
+ */
+export interface Triage {
+  id: string;
+  /** The reader's own situation. */
+  line: Copy;
+  /** Where the site answers it. */
+  href: string;
+}
+
+export const TRIAGE_HEADING: Copy = {
+  en: "You do not need to know which service you need",
+  // TH-UNREVIEWED, 24/08/2026. The reference product's own framing, which is
+  // the load-bearing idea on its page: the reader picks a problem, not a tool.
+  th: "คุณไม่จำเป็นต้องรู้ว่าควรใช้บริการไหน",
+};
+
+export const TRIAGE_LEAD: Copy = {
+  en: "Pick the one that sounds like you.",
+  // TH-UNREVIEWED, 24/08/2026.
+  th: "เลือกข้อที่ตรงกับคุณที่สุด",
+};
+
+export const TRIAGE: readonly Triage[] = [
+  {
+    id: "no-callbacks",
+    line: {
+      en: "I have applied to a lot of places and hardly anyone gets back to me.",
+      // Paul's Thai, VERBATIM from `questions.ts`, the employer-response option.
+      // Nothing was added: it already stands on its own.
+      th: "สมัครไปหลายที่แล้ว แต่แทบไม่มีใครติดต่อกลับ",
+    },
+    href: "/products/cv-check",
+  },
+  {
+    id: "no-offers",
+    line: {
+      en: "I have interviewed, but I do not get through to the next round.",
+      // Paul's Thai, VERBATIM from `questions.ts`, the job-search-stage option.
+      th: "เคยสัมภาษณ์แล้ว แต่ยังไม่ผ่านเข้ารอบถัดไป",
+    },
+    href: "/coaching",
+  },
+  {
+    id: "cv-not-europe",
+    line: {
+      en: "I have a CV, but it has not been adapted for Europe.",
+      // TH-UNREVIEWED, 24/08/2026. Paul's CV option `มีแต่ยังไม่ปรับให้เหมาะกับยุโรป`
+      // with its subject restored, because the option is a fragment answering
+      // a question the reader cannot see here.
+      th: "มี CV อยู่แล้ว แต่ยังไม่ได้ปรับให้เหมาะกับตลาดยุโรป",
+    },
+    href: "/products/cv-check",
+  },
+  {
+    id: "visa-unknown",
+    line: {
+      en: "On visas and work rights, I do not yet know what I need to prepare.",
+      // TH-UNREVIEWED, 24/08/2026. Paul's visa option `ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง`
+      // with the subject of its own question folded in.
+      th: "เรื่องวีซ่าและสิทธิ์การทำงาน ยังไม่รู้ว่าต้องเตรียมอะไรบ้าง",
+    },
+    href: "/efc-assessment",
+  },
+  {
+    id: "no-target",
+    line: {
+      en: "I am not sure which field I want to work in over there.",
+      // TH-UNREVIEWED, 24/08/2026. Paul's `ยังไม่แน่ใจ` on the target-field
+      // question, which needs that question to mean anything.
+      th: "ยังไม่แน่ใจว่าอยากทำงานสายไหนในยุโรป",
+    },
+    href: "/coaching",
+  },
+  {
+    id: "dormant-linkedin",
+    line: {
+      en: "I have a LinkedIn, but I have not updated it in a long time.",
+      // TH-UNREVIEWED, 24/08/2026. Paul's LinkedIn option `มี แต่ไม่ได้อัปเดต`,
+      // expanded the same way as the two above.
+      th: "มี LinkedIn อยู่ แต่ไม่ได้อัปเดตมานานแล้ว",
+    },
+    href: "/efc-assessment",
+  },
+];
+
+// ------------------------------------------------------------ how it works
+
+/**
+ * The reference product's four numbered steps, which is the shape rather than
+ * the content: theirs describes a conversation with an AI, and this describes
+ * what actually happens here.
+ *
+ * Step 4 deliberately does NOT promise contact. `pricing.ts` carries the same
+ * decision and the reason: outbound contact has not stopped, the public promise
+ * of it has.
+ */
+export interface HowStep {
+  n: number;
+  title: Copy;
+  body: Copy;
+}
+
+export const HOW_HEADING: Copy = {
+  en: "How it works",
+  // TH-UNREVIEWED, 24/08/2026.
+  th: "ขั้นตอนเป็นอย่างไร",
+};
+
+export const HOW_STEPS: readonly HowStep[] = [
+  {
+    n: 1,
+    title: {
+      en: "Answer on your phone",
+      // Rebuilt from Paul's own EU Fit Check line of 23/08/2026 on `/pricing`.
+      th: "ตอบคำถามบนมือถือ",
+    },
+    body: {
+      en: "Seventeen questions about where you are now. No CV needed and no account.",
+      // TH-UNREVIEWED, 24/08/2026. The count is real: `verify-content.ts` pins
+      // Stage 1 at 17 questions and fails the build if it drifts.
+      th: "คำถาม 17 ข้อเกี่ยวกับสถานะของคุณตอนนี้ ไม่ต้องใช้ CV และไม่ต้องสมัครสมาชิก",
+    },
+  },
+  {
+    n: 2,
+    title: {
+      en: "See your first read straight away",
+      // TH-UNREVIEWED, 24/08/2026.
+      th: "เห็นผลเบื้องต้นทันที",
+    },
+    body: {
+      en: "Four scores against the bars the European market uses, and the parts your answers could not reach are named rather than filled in.",
+      // TH-UNREVIEWED, 24/08/2026. The second clause is the not-measured rule
+      // from `teaser.score.none`, which is the honest half of this product.
+      th: "คะแนนสี่ด้านเทียบกับเกณฑ์ที่ตลาดยุโรปใช้จริง ส่วนที่คำตอบของคุณยังประเมินไม่ได้ เราจะบอกตรง ๆ แทนที่จะเดาให้",
+    },
+  },
+  {
+    n: 3,
+    title: {
+      en: "Find which one comes first",
+      // TH-UNREVIEWED, 24/08/2026.
+      th: "รู้ว่าควรเริ่มจากเรื่องไหน",
+    },
+    body: {
+      en: "The read names the weakest area and what to do about it, in the order that moves the result soonest.",
+      // TH-UNREVIEWED, 24/08/2026. `เห็นผลได้เร็วที่สุด` is Paul's own phrase from
+      // the Fit Report page, reviewed 23/08/2026.
+      th: "ผลจะบอกว่าด้านไหนยังอ่อนที่สุด และควรทำอะไรก่อน โดยเริ่มจากสิ่งที่จะช่วยให้คุณเห็นผลได้เร็วที่สุด",
+    },
+  },
+  {
+    n: 4,
+    title: {
+      en: "Take the next step when you are ready",
+      // TH-UNREVIEWED, 24/08/2026.
+      th: "ไปต่อเมื่อคุณพร้อม",
+    },
+    body: {
+      en: "Some of what comes next is free. The rest is bought a piece at a time, and nothing needs a subscription.",
+      // TH-UNREVIEWED, 24/08/2026. Says nothing about being contacted, which is
+      // the 23/08/2026 decision recorded on `FREE_ITEMS` in `pricing.ts`.
+      th: "บางส่วนใช้ได้ฟรี ส่วนที่เหลือเลือกซื้อทีละชิ้นได้ตามที่ต้องการ ไม่มีระบบสมาชิกรายเดือน",
+    },
+  },
+];
+
+// -------------------------------------------------------- a sample first read
+
+/**
+ * The reference product shows a real scored output on its landing page, low on
+ * purpose, because a tool that will tell you something uncomfortable is more
+ * credible than one that promises. This is that section.
+ *
+ * **The numbers are invented and the label says so.** `SAMPLE_LABEL` renders
+ * above the card and `SAMPLE_NOTE` under it. That is not a formality: the
+ * Social Proof pillar is empty, there are no placed clients, and this is the
+ * only fabricated thing on the site. It is publishable because it illustrates
+ * a format rather than asserting a result, which is the same test `/pricing`'s
+ * calculator disclaimer had to pass.
+ *
+ * The profile is deliberately uneven and one axis is unmeasured. A sample where
+ * everything scores well would teach the reader nothing about the instrument,
+ * and the not-measured state is the part of this product worth showing.
+ */
+export interface SampleAxis {
+  /** The `dimension.*` key in `copy.ts`, so the labels cannot drift. */
+  label: AnyCopyKey;
+  /** Out of 5, or null for an axis the answers could not reach. */
+  score: number | null;
+}
+
+export const SAMPLE_HEADING: Copy = {
+  en: "You cannot fix what nobody will tell you",
+  // TH-UNREVIEWED, 24/08/2026. The reference product's own heading, which is
+  // the argument for the whole section.
+  th: "สิ่งที่ไม่มีใครบอก คุณก็แก้ไม่ได้",
+};
+
+export const SAMPLE_LABEL: Copy = {
+  en: "Example",
+  // TH-UNREVIEWED, 24/08/2026. One word, above the card, unmissable.
+  th: "ตัวอย่าง",
+};
+
+export const SAMPLE_AXES: readonly SampleAxis[] = [
+  { label: "dimension.professionalCapability", score: 3.8 },
+  { label: "dimension.employability", score: 2.1 },
+  { label: "dimension.mobilityReadiness", score: 3.0 },
+  { label: "dimension.europeanMarketFit", score: null },
+];
+
+export const SAMPLE_NOTE: Copy = {
+  en: "An example, not a real person. Your own numbers come from your own answers.",
+  // TH-UNREVIEWED, 24/08/2026. Built on the shape of Paul's own calculator
+  // disclaimer of 23/08/2026, which says the numbers come from what you typed.
+  th: "นี่เป็นเพียงตัวอย่าง ไม่ใช่ผลของคนจริง ตัวเลขของคุณจะมาจากคำตอบของคุณเอง",
+};
+
+// --------------------------------------------------------------- who this is
+
+/**
+ * The reference product's founder-credibility block, minus the numbers.
+ *
+ * Paul's call, 24/08/2026: no personal statistics. Careersy leads with thirteen
+ * years and 26,000 resumes. Nothing of that kind is claimed here, and the
+ * section above this one already carries the only figures on the page, which
+ * are the pipeline's rather than a person's.
+ */
+export const WHO_HEADING: Copy = {
+  en: "Who is behind this",
+  // TH-UNREVIEWED, 24/08/2026.
+  th: "ใครอยู่เบื้องหลัง PunProfile",
+};
+
+export const WHO_BODY: Copy = {
+  en: "PunProfile is run by one person, and every conversation is with him. That is the reason the advice starts from your goals rather than from a vacancy somebody is rushing to fill.",
+  // TH-UNREVIEWED, 24/08/2026. The second sentence is Paul's own, from
+  // `FOUNDER_AFTER` in `coaching.ts`, which he wrote and reviewed.
+  th: "PunProfile ดำเนินงานโดยคนคนเดียว และทุกการพูดคุยคือการคุยกับเขาโดยตรง นั่นคือเหตุผลที่คำแนะนำเริ่มจากเป้าหมายของคุณ ไม่ใช่จากตำแหน่งที่ใครสักคนกำลังรีบหาคนไปเติม",
+};
+
+// ------------------------------------------------------------------- results
+
+/**
+ * **Nothing renders from here yet, and that is deliberate.** Paul's call of
+ * 24/08/2026, option 2b: keep the shape so the first real result has somewhere
+ * to go, rather than inventing one now or rebuilding the section later.
+ *
+ * The reference product's equivalent section carries three named testimonials.
+ * PunProfile has no placed clients, the Social Proof pillar in
+ * `01_Project_Foundation.md` is empty, and a fabricated one would be the single
+ * worst thing that could be put on this site.
+ *
+ * **The rules for the day this fills.** A result needs a real person's consent
+ * in writing, their own words rather than a paraphrase, and the same variability
+ * disclaimer the reference product carries. One real result outranks three
+ * polished ones. Until then `RESULTS` stays empty and the page renders no
+ * heading, no empty state and no "coming soon", because a visible placeholder
+ * for social proof is a claim that social proof is imminent.
+ */
+export interface Result {
+  id: string;
+  quote: Copy;
+  /** First name and role only, and only with written consent. */
+  who: Copy;
+}
+
+export const RESULTS_HEADING: Copy = {
+  en: "What happened next",
+  // Not rendered while RESULTS is empty. Held rather than written, so the day
+  // there is one to show, the heading is not the thing blocking it.
+  th: "ผลลัพธ์ที่เกิดขึ้นจริง",
+};
+
+export const RESULTS: readonly Result[] = [];
+
+// -------------------------------------------------------------- the catalogue
+
+/**
+ * Replaces BOTH the old "three things we help with" section, which read
+ * `services.ts` and so named only the coaching half, and the old cost table,
+ * which `/pricing` has carried since 23/08/2026.
+ *
+ * **The cards are read from `products.ts` at render**, not restated here, for
+ * the same reason the old section read `services.ts`: a third rendering of the
+ * catalogue is a third wording of it.
+ *
+ * The one number on this page is the unit, 50 THB, per Paul's decision of
+ * 24/08/2026. Pack prices live on `/pricing` and appear nowhere else.
+ */
+export const CATALOGUE_HEADING: Copy = {
+  en: "What you can get",
+  // TH-UNREVIEWED, 24/08/2026.
+  th: "คุณได้อะไรจากที่นี่บ้าง",
+};
+
+export const CATALOGUE_FREE: Copy = {
+  en: "Free",
+  // Paul's own heading from `/pricing`, 23/08/2026, shortened to a label.
+  th: "ใช้ได้ฟรี",
+};
+
+export const CATALOGUE_PAID: Copy = {
+  en: "Paid with tokens",
+  // TH-UNREVIEWED, 24/08/2026.
+  th: "จ่ายด้วยโทเคน",
+};
+
+export const CATALOGUE_PRICE_LINE: Copy = {
+  en: "One role that matches your criteria, sent to you, is 50 THB. Everything here is priced in the same token.",
+  /*
+   * TH-UNREVIEWED, 24/08/2026, and this is the only price on the page.
+   *
+   * Paul, 24/08/2026, option 2a: one number and a link, not the pack table.
+   * The number is the unit rather than a pack, which is the whole reason the
+   * unit was held flat at 50 THB when the packs were decided: it is the one
+   * figure a candidate has to carry, and it stays true whichever pack they buy.
+   */
+  th: "1 ตำแหน่งที่ตรงกับเงื่อนไขของคุณ ส่งถึงคุณ ราคา 50 บาท ทุกอย่างที่นี่ใช้โทเคนเดียวกัน",
+};
+
+// --------------------------------------------------------------- FAQ teaser
+
+export const FAQ_TEASER_HEADING: Copy = {
+  en: "You ask, we answer straight",
+  // TH-UNREVIEWED, 24/08/2026. The reference product's own heading, and it
+  // suits a page whose FAQ opens by refusing to guarantee a job or a visa.
+  th: "ถามมา เราตอบตรง",
 };
 
 // ------------------------------------------------------------ the visa answer
@@ -265,154 +610,20 @@ export const VISA_BODY: Copy = {
   th: "คำถามเรื่องการสปอนเซอร์วีซ่าคือเรื่องที่เราเจอบ่อยที่สุด สิ่งที่เราทำได้คือช่วยให้โปรไฟล์ของคุณแข็งแรงพอที่จะแข่งขันได้ตั้งแต่แรก แทนที่จะต้องรอให้โชคเข้าข้าง",
 };
 
-// ------------------------------------------------ what is free and what is not
-
-/**
- * The section nothing else on the site carries, and the reason this page was
- * worth rebuilding rather than rewording.
- *
- * `01_Project_Foundation.md` § The three surfaces calls the group, the app and
- * the coaching "one path at three depths". A reader arriving from a job post has
- * no way to know which of those depths costs money, and answering it unprompted
- * is cheaper than being asked.
- *
- * **The group is named and never linked.** `footer.ts` records Paul's
- * instruction of 14/08/2026 not to publish the group's URL, and it is not on
- * record anywhere in the coaching repo in any case.
- *
- * **No prices.** `01_Project_Foundation.md` heads its table "Pricing (pilot
- * hypothesis)" with the validation plan still open, and `services.ts` already
- * refuses to print a hypothesis on a public page. The paid row says มีค่าบริการ
- * and stops.
- *
- * **ฟรี is avoided here in favour of ไม่มีค่าใช้จ่าย.** LR-04 attaches ฟรี only to
- * a word that already denotes a valuable service, ปรึกษาฟรี being the worked
- * example, and a free-versus-paid table is not one.
- */
-export interface CostRow {
-  id: "jobs" | "check" | "coaching";
-  surface: Copy;
-  price: Copy;
-  body: Copy;
-}
-
-export const COST_HEADING: Copy = {
-  en: "What is free, and what costs",
-  // **Paul's wording, 17/08/2026, and it settles the ฟรี question.** He kept
-  // `ส่วนไหน` and put `ฟรี` back where this file had been avoiding it. See the
-  // note on `COST_ROWS` above.
-  /*
-   * `ใช้ได้ฟรี`, not `ใช้ฟรี`, corrected 23/08/2026 against LR-04.
-   *
-   * The quality review replaced Paul's 17/08 `ส่วนไหนฟรี และส่วนไหนมีค่าใช้จ่าย`
-   * with a version built on `ใช้ฟรี`, and the old one passed for a reason the new
-   * one loses: `ส่วนไหนฟรี` is a predicate, ฟรี answering a question, which is
-   * `FREE_PREDICATE_SUBJECTS` in `lint-thai.ts`. `ใช้ฟรี` is a verb with ฟรี
-   * compounded onto it, which is the `คุยฟรี` shape the rule exists to catch.
-   *
-   * Reordered rather than reworded, into the construction the linter already
-   * names as correct: its `POTENTIAL_MARKER` note says in as many words that
-   * `อ่านได้ฟรี` and `ใช้ได้ฟรี` are the same construction and need no exemption,
-   * because ได้ makes ฟรี an adverb on the phrase instead of half a compound.
-   *
-   * The words are the review's; only their order changed.
-   */
-  th: "อะไรใช้ได้ฟรีบ้าง และอะไรมีค่าบริการ?",
-};
-
-export const COST_ROWS: readonly CostRow[] = [
-  {
-    id: "jobs",
-    surface: {
-      en: "The jobs we screen for you",
-      // Paul's wording, 17/08/2026. `ให้` on the end: screened for the reader,
-      // not screened in the abstract.
-      th: "ตำแหน่งงานที่เราคัดมาให้",
-    },
-    price: {
-      en: "Free",
-      // Paul's wording, 17/08/2026. It read `ไม่มีค่าใช้จ่าย ตลอดไป` and he cut it
-      // to one word, which is what a price label on a card should be.
-      th: "ฟรี",
-    },
-    body: {
-      en: "Posted in the Thai Jobs in Europe group, free for anyone to read.",
-      // Paul's wording, 17/08/2026. He also dropped `และจะเป็นอย่างนี้ต่อไป`:
-      // promising a policy will never change is a promise, and the card only has
-      // to say what is true today.
-      th: "ประกาศงานในกลุ่ม Thai Jobs in Europe เปิดให้ทุกคนอ่านฟรี",
-    },
-  },
-  {
-    id: "check",
-    surface: {
-      en: "EU Fit Check",
-      th: "EU Fit Check",
-    },
-    price: {
-      en: "Free",
-      // Paul's wording, 17/08/2026, the same cut as the card above.
-      th: "ฟรี",
-    },
-    body: {
-      en: "Answer on your phone, and get your first read the moment you finish.",
-      // Paul's wording, 17/08/2026. `จริง ๆ` goes back onto `จะมีคนอ่าน`, where
-      // his own `faq.ts` answer has it. It is the word carrying the claim: the
-      // point of the sentence is that a human reads it, not that a reply
-      // arrives.
-      /*
-       * The contact clause is gone, 23/08/2026, and the cut is the point.
-       *
-       * This was Paul's own wording of 17/08/2026 and it ended `จากนั้นจะมีคนอ่าน
-       * คำตอบของคุณจริง ๆ และติดต่อกลับ`. He removed the same clause from the
-       * pricing page on 23/08 with "that's no longer true", and the quality
-       * review's second pass carried the cut here so the two pages stop
-       * disagreeing about what a finisher is promised.
-       *
-       * **Outbound contact has not stopped. The public promise of it has.** He
-       * still contacts the most ready leads; what he will not do is tell every
-       * finisher they will be contacted, because to a lead who is not ready that
-       * is a promise nobody intends to keep. So this is marketing copy, not a
-       * funnel change: the 10/08/2026 decision that a person delivers the full
-       * result stands, and `customer-journey.md` milestone 6 is untouched.
-       *
-       * Three surfaces deliberately keep their contact language, because none of
-       * them is a promise: `consent-copy.ts` asks PERMISSION, which is the legal
-       * basis; `privacy.ts` states factually that a human reads before contact;
-       * and `faq.ts` carries his own hedge that a reply may take a while and its
-       * absence does not mean the result was bad.
-       */
-      th: "ตอบคำถามบนมือถือได้เลย รับผลเบื้องต้นทันทีเมื่อทำเสร็จ",
-    },
-  },
-  {
-    id: "coaching",
-    surface: {
-      // The fixed term from `termbase.yml`. โค้ชชิ่งตัวต่อตัว is banned there.
-      en: "Coaching 1:1",
-      th: "Coaching 1:1",
-    },
-    price: {
-      en: "Paid",
-      // Retyped unchanged by Paul on 17/08/2026, which is an approval rather
-      // than a skip. `COST_HEADING` above says `มีค่าใช้จ่าย` and this says
-      // `มีค่าบริการ`; both are his and the difference is deliberate, since the
-      // heading asks about cost in general and this names a service fee.
-      th: "มีค่าบริการ",
-    },
-    body: {
-      en: "Working one to one with a coach on your CV, your applications and your interview preparation. We go through the details and the cost clearly the first time we talk, and then you decide.",
-      // Paul's wording, 17/08/2026, and it is now `faq.ts`'s price answer almost
-      // word for word, which is the right outcome: one question answered the
-      // same way on both pages.
-      //
-      // `ทำงานร่วมกับโค้ชแบบตัวต่อตัว` names who is on the other side of the
-      // table. The first draft said `ทำงานตัวต่อตัวกับ CV`, which puts the CV
-      // there instead.
-      th: "ทำงานร่วมกับโค้ชแบบตัวต่อตัว ทั้งเรื่อง CV การสมัครงาน และการเตรียมสัมภาษณ์ เราจะคุยรายละเอียดพร้อมแจ้งค่าใช้จ่ายให้ชัดเจนตั้งแต่ครั้งแรก แล้วคุณค่อยตัดสินใจว่าจะใช้บริการหรือไม่",
-    },
-  },
-];
+// ---------------------------------------------------- what is free, RETIRED
+//
+// `COST_HEADING` and `COST_ROWS` were here and came out on 24/08/2026.
+//
+// The section was built as "the section nothing else on the site carries", the
+// only place answering what things cost, and it deliberately printed no prices
+// because `01_Project_Foundation.md` still headed its table "Pricing (pilot
+// hypothesis)". `/pricing` has answered that question with real numbers since
+// 23/08/2026, and two of the three rows here were the same strings as its free
+// block word for word, so the home page was carrying a price section with no
+// prices one click from a price page with prices.
+//
+// Nothing is lost. `FREE_ITEMS` in `pricing.ts` holds both free rows in Paul's
+// own Thai, and the catalogue section above links to them.
 
 // --------------------------------------------------------------------- close
 

@@ -471,11 +471,19 @@ export const listForAdmin = query({
      * Sort key. `recent` is the default and the one the dashboard was built
      * around; the others exist because a coach working a queue wants a
      * different order from a coach scanning what just happened.
+     *
+     * `created` and `created_oldest` sort on `createdAt`, which is NOT what
+     * `recent` and `oldest` do: those read `lastActivityAt`, so an old lead who
+     * came back yesterday sorts as recent. Added 24/08/2026 because "who
+     * arrived this week" and "who did something this week" are different
+     * questions and only the second had an answer.
      */
     sort: v.optional(
       v.union(
         v.literal("recent"),
         v.literal("oldest"),
+        v.literal("created"),
+        v.literal("created_oldest"),
         v.literal("status"),
         v.literal("fit"),
         v.literal("ready"),
@@ -484,6 +492,14 @@ export const listForAdmin = query({
     ),
     /** Hidden by default: a judged-out lead is noise in a working queue. */
     includeDisqualified: v.optional(v.boolean()),
+    /**
+     * One pipeline stage only. Applied before the display limit, so picking a
+     * stage with two hundred people in it returns that stage's first hundred
+     * and not whatever survived a limit taken across all three.
+     */
+    onlyStatus: v.optional(
+      v.union(v.literal("partial"), v.literal("email_captured"), v.literal("completed")),
+    ),
   },
   handler: async (ctx, args) => {
     await requireAdmin(ctx);
@@ -570,14 +586,22 @@ export const listForAdmin = query({
      */
     const leadsOnly = rows.filter((l) => !isBlogOnlySubscriber(l));
 
+    const inStage = args.onlyStatus
+      ? leadsOnly.filter((l) => l.status === args.onlyStatus)
+      : leadsOnly;
+
     const visible = args.includeDisqualified
-      ? leadsOnly
-      : leadsOnly.filter((l) => l.disposition !== "disqualified");
+      ? inStage
+      : inStage.filter((l) => l.disposition !== "disqualified");
 
     const ordered = visible.sort((a, b) => {
       switch (sort) {
         case "oldest":
           return a.lastActivityAt - b.lastActivityAt;
+        case "created":
+          return b.createdAt - a.createdAt;
+        case "created_oldest":
+          return a.createdAt - b.createdAt;
         case "status":
           return (
             STATUS_RANK[a.status] - STATUS_RANK[b.status] ||
@@ -645,6 +669,13 @@ export const listForAdmin = query({
         coachRating: l.coachRating ?? null,
         linkedinUrl: l.linkedinUrl ?? null,
         hasNotes: Boolean(l.notes),
+        // A tick, not an answer. See the schema note: `responses.cv` is the
+        // candidate's rating of their own CV and this is whether a document
+        // actually arrived.
+        cvReceivedAt: l.cvReceivedAt ?? null,
+        // So the row can say the stage was set by hand rather than earned.
+        statusOverrideAt: l.statusOverrideAt ?? null,
+        statusOverrideBy: l.statusOverrideBy ?? null,
         createdAt: l.createdAt,
         lastActivityAt: l.lastActivityAt,
       }));
@@ -693,6 +724,8 @@ export const getForAdmin = query({
       coachRating: lead.coachRating ?? null,
       coachRatingAt: lead.coachRatingAt ?? null,
       coachRatingBy: lead.coachRatingBy ?? null,
+      cvReceivedAt: lead.cvReceivedAt ?? null,
+      cvReceivedBy: lead.cvReceivedBy ?? null,
       /**
        * Resolved from `consentEvents`, per channel and per purpose. This is the
        * only field that can answer "may we send them a job digest", and today
@@ -859,14 +892,137 @@ export const setDisposition = mutation({
 });
 
 /**
- * Coach-entered fields on a lead: LinkedIn, the running note, the rating.
+ * How many leads sit in each pipeline stage. Added 24/08/2026.
  *
- * One mutation for all three because they are one form in the UI and a partial
- * save of a form is a worse bug than a chatty API. Each field is only written
- * when the caller sends it, so saving a note does not silently clear a rating.
+ * **Counted over everyone, not over the list.** The list hides abandoned
+ * sessions and judged-out leads by default, so counting what it returns would
+ * make the abandoned stage read zero on the one screen whose job is to say how
+ * many were abandoned. Same population as `listForAdmin` otherwise: blog-only
+ * subscribers are excluded, because someone who gave an email to read job
+ * openings has not entered this pipeline.
+ *
+ * Judged-out leads are reported beside the stages rather than inside them. A
+ * disposition is a side exit, not a rung, and adding it as a fourth segment
+ * would make the three shares mean something other than "of the people still in
+ * play, this many are here".
+ */
+export const pipeline = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAdmin(ctx);
+
+    const SCAN = 1000;
+    const rows = (
+      await Promise.all(
+        (["partial", "email_captured", "completed"] as const).map((status) =>
+          ctx.db
+            .query("leads")
+            .withIndex("by_status_recency", (q) => q.eq("status", status))
+            .order("desc")
+            .take(SCAN),
+        ),
+      )
+    ).flat();
+
+    const leadsOnly = rows.filter((l) => !isBlogOnlySubscriber(l));
+
+    const counts = { partial: 0, email_captured: 0, completed: 0 };
+    let judgedOut = 0;
+    let notNow = 0;
+    let withCv = 0;
+    let handSet = 0;
+
+    for (const l of leadsOnly) {
+      // Counted and then skipped: a judged-out lead is out of the pipeline, and
+      // the stage it was in when the judgement landed is not where it is now.
+      if (l.disposition === "disqualified") {
+        judgedOut++;
+        continue;
+      }
+      if (l.disposition === "not_now") notNow++;
+      counts[l.status]++;
+      if (l.cvReceivedAt) withCv++;
+      if (l.statusOverrideAt) handSet++;
+    }
+
+    return {
+      counts,
+      judgedOut,
+      notNow,
+      withCv,
+      /** How many of the stages above were set by hand rather than earned. */
+      handSet,
+      /** True when a status hit the scan ceiling, so the counts are a floor.
+       *  Named rather than hidden: a truncated count that looks exact is the
+       *  failure this file already avoids once, in `listForAdmin`. */
+      capped: rows.length >= SCAN * 3,
+    };
+  },
+});
+
+/**
+ * Move a lead to a pipeline stage by hand.
+ *
+ * **This writes the funnel's own column, and that is the point and the cost.**
+ * Paul asked for it on 24/08/2026 having been told what it does: `status` is
+ * what `stats.community` counts, what the abandoned-versus-finished split
+ * reads, and what the booking cut divides by, so a hand-set stage moves those
+ * numbers exactly as a real one would. `statusOverrideAt` is what keeps the
+ * measured answer recoverable; see the schema note.
+ *
+ * The one refusal is a stage that would make the row incoherent rather than
+ * merely optimistic. `email_captured` means the contact gate cleared, and a
+ * lead with no email in it cannot be contacted whatever the column says, so
+ * that combination is rejected instead of stored.
+ */
+export const setStatus = mutation({
+  args: {
+    leadId: v.id("leads"),
+    status: v.union(
+      v.literal("partial"),
+      v.literal("email_captured"),
+      v.literal("completed"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const adminEmail = await requireAdmin(ctx);
+    const lead = await ctx.db.get(args.leadId);
+    if (!lead) throw new ConvexError("Lead not found.");
+
+    if (args.status !== "partial" && !lead.email) {
+      throw new ConvexError(
+        "That stage means we have their contact details, and this lead has no email.",
+      );
+    }
+
+    if (lead.status === args.status) return;
+
+    const now = Date.now();
+    await ctx.db.patch(args.leadId, {
+      status: args.status,
+      statusOverrideAt: now,
+      statusOverrideBy: adminEmail,
+      updatedAt: now,
+      // Deliberately not touched. `lastActivityAt` is the candidate's activity
+      // and the Last column reads it; a coach reclassifying a row is not the
+      // candidate coming back, and writing it here would make a dead lead look
+      // alive on the one column that says whether it is.
+    });
+  },
+});
+
+/**
+ * Coach-entered fields on a lead: LinkedIn, the running note, the rating, and
+ * whether a CV has arrived.
+ *
+ * One mutation for all of them because the first three are one form in the UI
+ * and a partial save of a form is a worse bug than a chatty API. Each field is
+ * only written when the caller sends it, so saving a note does not silently
+ * clear a rating, and the lead list can tick `cvReceived` from a row without
+ * touching anything else.
  *
  * Added 16/08/2026, after a coach found a candidate's LinkedIn by hand and had
- * nowhere to put it.
+ * nowhere to put it. `cvReceived` joined it 24/08/2026.
  */
 export const setCoachFields = mutation({
   args: {
@@ -876,6 +1032,8 @@ export const setCoachFields = mutation({
     notes: v.optional(v.union(v.string(), v.null())),
     /** 1 to 5, or null to clear. */
     coachRating: v.optional(v.union(v.number(), v.null())),
+    /** True stamps now. False clears it back to never-received. */
+    cvReceived: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const adminEmail = await requireAdmin(ctx);
@@ -922,6 +1080,21 @@ export const setCoachFields = mutation({
         patch.notes = text;
         patch.notesAt = now;
         patch.notesBy = adminEmail;
+      }
+    }
+
+    if (args.cvReceived !== undefined) {
+      if (args.cvReceived) {
+        // Re-ticking an already-ticked lead keeps the original date. The field
+        // answers "since when do we have it", and overwriting that on a stray
+        // click would quietly move the date the follow-up clock is read from.
+        if (!lead.cvReceivedAt) {
+          patch.cvReceivedAt = now;
+          patch.cvReceivedBy = adminEmail;
+        }
+      } else {
+        patch.cvReceivedAt = undefined;
+        patch.cvReceivedBy = undefined;
       }
     }
 

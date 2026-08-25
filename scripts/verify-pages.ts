@@ -74,7 +74,11 @@ const MODULES: Record<string, Record<string, unknown>> = {
  * the case worth stopping on. Raise a floor when a module gains strings for good.
  */
 const FLOORS: Record<string, number> = {
-  home: 20,
+  // Raised from 20 on 24/08/2026 with the nine-section rebuild. The old cost
+  // table came out, six sections went in, and 20 would have let thirty strings
+  // disappear without a word. Set just under the real count so a rewrite has
+  // room and a deletion does not.
+  home: 34,
   coaching: 53,
   services: 28,
   faq: 36,

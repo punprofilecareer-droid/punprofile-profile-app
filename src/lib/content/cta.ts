@@ -229,15 +229,27 @@ export interface PageActions {
 export const PAGE_ACTIONS: Record<string, PageActions> = {
   "/": {
     primary: "assess",
-    secondary: "coaching",
+    // `pricing` from 24/08/2026, Paul's call, replacing `coaching`.
+    //
+    // The primary is untouched and the reasoning below still holds. What changed
+    // is the second question a stranger holds. Until 23/08/2026 nothing on this
+    // site had a price, so the useful second step was the page that explained
+    // the engagement. Now the plug&play half can be bought without asking, and
+    // "what does this cost" is answerable in one tap. The catalogue section
+    // links to `/coaching` anyway, so nothing was lost by the swap.
+    secondary: "pricing",
     because:
       "A stranger from the group knows nothing about us yet. The check is the cheapest thing we can ask for and the only one that gives them something back immediately.",
   },
   "/efc-assessment-result": {
     primary: "services",
     secondary: undefined,
+    // `because` corrected 24/08/2026. It said they had "been told there is a
+    // queue", which stopped being true on 20/08/2026 when Paul's rewrite of
+    // `teaser.nextStep` dropped the queue sentence, and stopped being true a
+    // second way on 23/08 when the card above it stopped promising contact.
     because:
-      "They have just finished the check and been told there is a queue. The useful thing to do while waiting is read what the work actually is.",
+      "They have just seen their own result. The useful thing to offer is what the work actually is, not a second booking button on a screen that already has one.",
   },
   "/coaching": {
     primary: "contact",

@@ -122,7 +122,11 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     ],
   },
   {
-    heading: { en: "Coaching", th: "แคเรียร์โค้ชชิ่ง" },
+    // TH-UNREVIEWED, 24/08/2026. `Career Coaching` for `แคเรียร์โค้ชชิ่ง`. The English
+    // column keeps the short "Coaching": it heads a column whose first link is
+    // already called Coaching 1:1, and the full name twice in four words reads
+    // as a mistake rather than as emphasis.
+    heading: { en: "Coaching", th: "Career Coaching" },
     links: [
       { href: "/coaching", label: { en: "Coaching 1:1", th: "Coaching 1:1" } },
       /*

@@ -13,12 +13,20 @@ import BookingCutReadout from "@/components/features/dashboard/BookingCutReadout
  * `AdminGate` is the belt-and-braces fallback for a stale session. Neither is
  * the security boundary: `requireAdmin` in `convex/leads.ts` is, because a
  * direct call to a Convex query never passes through either of them.
+ *
+ * **Width, 24/08/2026.** The shell was `max-w-3xl`, 48rem, while the lead table
+ * declares `min-w-[52rem]` and now more, so the one screen this app exists to be
+ * worked in was permanently horizontally scrolled on a display with room to
+ * spare. The shell is wide now and the two readouts are pinned back to 48rem
+ * inside it: they are prose and short lists, and prose set 100rem wide is worse
+ * than prose set narrow, whereas a table is better wide. This is the site's only
+ * wide page, and it is not a candidate surface.
  */
 export default function AdminPage() {
   const { signOut } = useAuthActions();
   return (
-    <div className="flex flex-1 flex-col items-center gap-4 px-6 py-16 text-center leading-normal">
-      <div className="w-full max-w-3xl text-left">
+    <div className="flex flex-1 flex-col items-center gap-4 px-4 py-10 text-center leading-normal sm:px-6">
+      <div className="w-full max-w-[108rem] text-left">
         <AdminGate>
           <div className="flex items-baseline justify-between gap-4">
             <h1 className="text-headline-large">Coach dashboard</h1>
@@ -36,13 +44,13 @@ export default function AdminPage() {
               which is a question the coach chooses to ask; these four buckets
               are things already promised to someone and not yet done, and the
               reminder among them expires whether or not anyone scrolls. */}
-          <div className="mt-8">
+          <div className="mt-8 max-w-3xl">
             <ConsultationQueues />
           </div>
           {/* Below the queues and above the list: it is a thing to read
               occasionally, not a thing to act on today, and it belongs next to
               the rows it is computed from rather than on a page of its own. */}
-          <div className="mt-4">
+          <div className="mt-4 max-w-3xl">
             <BookingCutReadout />
           </div>
           <div className="mt-8">

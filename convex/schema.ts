@@ -214,6 +214,29 @@ export default defineSchema({
     /** @absent none — only present alongside a rating */
     coachRatingBy: v.optional(v.string()),
 
+    /**
+     * Whether this person has actually sent their CV. Added 24/08/2026.
+     *
+     * **Not `responses.cv`, and the two must never be read as one.**
+     * `responses.cv` is the candidate's own rating of the CV they have
+     * (`none`, `untailored`, `out_dated`, `europe_ready`) and it is an answer
+     * to a form. This is a coach's tick meaning a document arrived, by email or
+     * on LINE, and it is the precondition the Kick-start call actually waits
+     * on.
+     *
+     * A timestamp rather than a boolean, for the same reason the consent fields
+     * are: "we have their CV" is a fact with a date, and the date is what says
+     * whether it predates the last time they were asked for one.
+     *
+     * **It feeds nothing.** It does not move `grade`, it is not an input to the
+     * In Scope gate, and a delivered CV review belongs in `deliverables`. It
+     * exists so the list can be worked without opening every row.
+     */
+    /** @absent notyet — no CV has arrived, or nobody has ticked it */
+    cvReceivedAt: v.optional(v.number()),
+    /** @absent none — only present alongside a received CV */
+    cvReceivedBy: v.optional(v.string()),
+
     // Lifecycle. `email_captured` keeps the PRD's vocabulary, but since
     // 08/08/2026 it means the whole contact set cleared the gate: name, email
     // and a LINE ID or phone number.
@@ -222,6 +245,40 @@ export default defineSchema({
       v.literal("email_captured"),
       v.literal("completed"),
     ),
+    /**
+     * Set by hand from the admin list rather than earned. Added 24/08/2026 on
+     * Paul's call, over the objection recorded here.
+     *
+     * `status` is normally written by the funnel: `captureContact` moves a lead
+     * to `email_captured` when the contact gate clears, and finishing the
+     * assessment moves it to `completed`. Those transitions are evidence. A
+     * hand-set one is a claim, and the two must not be indistinguishable,
+     * because every funnel number on this app is a count of this column:
+     * `stats.community`, the abandoned-versus-finished split, and the
+     * denominator under the booking cut.
+     *
+     * So an override is stamped. **Nothing reads the stamp, and that is a
+     * decision rather than an omission** (Paul, 24/08/2026, having been asked
+     * the question directly). `stats.community`, the abandoned-versus-finished
+     * split and the booking-cut denominator all count a hand-set row exactly
+     * like an earned one, so those numbers describe the working picture rather
+     * than the form's behaviour. Do not "fix" this by filtering on
+     * `statusOverrideAt`: at one to four leads a week the measured funnel is
+     * not the question being asked of this screen, and splitting the two would
+     * put two different answers to "how many completed" on one page.
+     *
+     * The stamp is an audit trail. It says a human touched the row, which is
+     * worth knowing when a number looks wrong, and it is what makes the
+     * measured answer recoverable later if the volume ever justifies asking for
+     * it. The row and the pipeline card both surface it.
+     *
+     * It is not cleared when the funnel would later write the same value on its
+     * own. The stamp records that a human touched the row, which stays true.
+     */
+    /** @absent none — the funnel wrote this status, nobody overrode it */
+    statusOverrideAt: v.optional(v.number()),
+    /** @absent none — only present alongside an override */
+    statusOverrideBy: v.optional(v.string()),
     /**
      * **Superseded 15/08/2026 by `attribution`, still written.** Same
      * three-step retirement as the consent timestamps: dual-write, stop
