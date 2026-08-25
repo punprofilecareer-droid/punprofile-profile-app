@@ -24,7 +24,6 @@ import { Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCopy } from "@/components/LocaleProvider";
-import CallToAction from "@/components/CallToAction";
 import {
   AI_NOTE,
   CORE_BADGE,
@@ -123,20 +122,19 @@ function Body() {
       <p className="mt-10 max-w-3xl text-body-md text-body">{pick(AI_NOTE)}</p>
 
       {/*
-        One action under the row, 25/08/2026, replacing one per card.
+        No action here, and that is the second half of one decision.
 
-        The three cards each carried a filled button, defended here as one
-        action repeated. All three did go to the same place, so the promise was
-        never in doubt; what was wrong is that three filled buttons sat in one
-        view, and the system's rule is one. Three of the same control side by
-        side is also a choice the reader does not have: whichever they press,
-        they arrive in the same conversation.
+        The three cards each carried a filled button. That was three filled
+        buttons in one view where the system allows one, so they became a single
+        centred pill under the row, and the moment they did the real problem
+        showed: the page's closing band sits one screen below with the same
+        "Talk to me", so the section ended by asking twice.
 
-        B12's shape in the block library: cards, then one centred pill.
+        The closing band is the page's declared primary in `cta.ts` and it is
+        the better place for it: a reader who has just read three service cards
+        is a reader still deciding, and the ask belongs after the decision
+        rather than beside it.
       */}
-      <div className="mt-10 flex justify-center">
-        <CallToAction page="/coaching" align="center" show="primary" />
-      </div>
     </div>
   );
 }
