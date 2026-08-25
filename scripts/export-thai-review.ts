@@ -168,7 +168,13 @@ for (const path of SOURCES) {
     // Ten lines is past the longest comment tail in these files and short enough
     // that a marker in a file-level doc comment cannot reach a random string.
     for (let j = i + 1; j < Math.min(i + 10, lines.length); j++) {
-      const m = lines[j].match(/^\s*th:\s*"((?:[^"\\]|\\.)*)"/);
+      // Not anchored to the start of the line since 25/08/2026. A `Copy` object
+      // written on one line, `{ en: "Coaching", th: "Career Coaching" }`, is as
+      // valid as one spread over four, and `footer.ts:144` was reported as an
+      // unresolved marker for years of file life because of it. An exporter
+      // that cannot see a string is an exporter that quietly under-reports what
+      // needs reading, which is the one failure this tool cannot have.
+      const m = lines[j].match(/(?:^|[\s{,])th:\s*"((?:[^"\\]|\\.)*)"/);
       if (m) {
         unreviewedThai.add(m[1].replace(/\\"/g, '"'));
         found = true;
