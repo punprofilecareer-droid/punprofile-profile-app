@@ -351,12 +351,24 @@ export const COPY = {
   "lang.heading": {
     screen: "Stage 2, language grid",
     en: "Do you speak any other European languages?",
-    th: "นอกจากภาษาอังกฤษ คุณใช้ภาษายุโรปอื่นได้อีกไหม?",
+    // Read back 25/08/2026. `แล้ว` after the English clause and `ได้ไหม`
+    // rather than `ได้อีกไหม`: the old one asked whether they could speak one
+    // MORE, which reads as a follow-up to a question nobody asked.
+    th: "นอกจากภาษาอังกฤษแล้ว คุณใช้ภาษายุโรปอื่นได้ไหม?",
   },
   "lang.body": {
     screen: "Stage 2, language grid",
-    en: "This changes which countries are genuinely open to you.",
-    th: "คำตอบนี้มีผลต่อประเทศและตำแหน่งที่คุณมีโอกาสสมัครได้จริง",
+    /*
+     * Both halves rewritten 25/08/2026, Paul, and the English moved with the
+     * Thai rather than being left behind.
+     *
+     * It said the answer CHANGES which countries are open, which overstates
+     * what one question does: it identifies, it does not decide. The old Thai
+     * also claimed an effect on positions as well as countries, and this grid
+     * feeds Country Reach only.
+     */
+    en: "This helps identify which countries are realistic options for you.",
+    th: "คำตอบนี้ช่วยระบุว่าประเทศใดเป็นตัวเลือกที่เป็นไปได้จริงสำหรับคุณ",
   },
   "lang.levelLabel": {
     screen: "Stage 2, language grid",
@@ -365,18 +377,56 @@ export const COPY = {
   },
   "lang.scale": {
     screen: "Stage 2, language grid",
-    en: "A1 beginner, B2 able to work in it, C2 native-level.",
-    th: "A1 ระดับเริ่มต้น, B2 ใช้ในการทำงานได้, C2 เชี่ยวชาญใกล้เคียงเจ้าของภาษา",
+    /*
+     * **C2 is not native-level.** Paul, 25/08/2026, and it is a factual
+     * correction rather than a wording preference: CEFR defines C2 as highly
+     * proficient, and a native speaker is not a CEFR level at all. Telling a
+     * candidate that C2 means native-like invites them to under-tick, which
+     * this grid scores.
+     */
+    en: "A1 beginner, B2 working proficiency, C2 highly proficient.",
+    th: "A1 ระดับเริ่มต้น, B2 ใช้ทำงานได้, C2 ใช้ภาษาได้อย่างเชี่ยวชาญ",
   },
   "lang.submit": {
     screen: "Stage 2, language grid",
     en: "Continue",
     th: "ไปต่อ",
   },
+  /*
+   * The twelve language names, moved here 25/08/2026 on Paul's note.
+   *
+   * They were a `LANGUAGE_TH` map inside `LanguageGrid.tsx`, on the reasoning
+   * that a language name is a proper noun and proper nouns are not copy. His
+   * correction: they are localised UI text whoever they name, and keeping them
+   * in a component split the translation workflow across two files, so the
+   * worksheet and the review exporters could not see half the screen.
+   *
+   * They are candidate-facing strings like any other now, and they go through
+   * the worksheet like any other.
+   */
+  "lang.name.german": { screen: "Stage 2, language grid", en: "German", th: "เยอรมัน" },
+  "lang.name.french": { screen: "Stage 2, language grid", en: "French", th: "ฝรั่งเศส" },
+  "lang.name.spanish": { screen: "Stage 2, language grid", en: "Spanish", th: "สเปน" },
+  "lang.name.italian": { screen: "Stage 2, language grid", en: "Italian", th: "อิตาลี" },
+  "lang.name.dutch": { screen: "Stage 2, language grid", en: "Dutch", th: "ดัตช์" },
+  "lang.name.portuguese": { screen: "Stage 2, language grid", en: "Portuguese", th: "โปรตุเกส" },
+  "lang.name.polish": { screen: "Stage 2, language grid", en: "Polish", th: "โปแลนด์" },
+  "lang.name.swedish": { screen: "Stage 2, language grid", en: "Swedish", th: "สวีเดน" },
+  "lang.name.danish": { screen: "Stage 2, language grid", en: "Danish", th: "เดนมาร์ก" },
+  "lang.name.norwegian": { screen: "Stage 2, language grid", en: "Norwegian", th: "นอร์เวย์" },
+  "lang.name.finnish": { screen: "Stage 2, language grid", en: "Finnish", th: "ฟินแลนด์" },
+  "lang.name.czech": { screen: "Stage 2, language grid", en: "Czech", th: "เช็ก" },
+
   "lang.skip": {
     screen: "Stage 2, language grid",
-    en: "I don't speak another",
-    th: "ยังพูดภาษาอื่นไม่ได้",
+    /*
+     * Rewritten 25/08/2026. "another" alone left the noun to the heading, which
+     * is fine on screen and wrong as a button label read on its own by a screen
+     * reader. The Thai also dropped `ยัง`, which framed not speaking one as a
+     * state the candidate is still in rather than a plain answer.
+     */
+    en: "I don't speak another European language.",
+    th: "ไม่ได้พูดภาษายุโรปอื่น",
   },
 
   "teaser.headline": {

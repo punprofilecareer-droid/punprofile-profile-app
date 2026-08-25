@@ -131,6 +131,19 @@ export const COUNTRY_LANGUAGE: Record<string, readonly string[]> = {
 };
 
 /** The grid's options. `Other` is collected but never matches a country. */
+/*
+ * `Other` left this list on 25/08/2026, Paul's call after reading the step.
+ *
+ * It was a thirteenth option meaning "a European language not on this list".
+ * Selecting it stored exactly what skipping stored, because it matches no
+ * country and the grid dropped it before submitting, so a candidate who ticked
+ * it had answered and been recorded as having answered nothing. It also asked
+ * for a level on a language it never asked the name of.
+ *
+ * It comes back when the screen can capture a name AND a level, and not before.
+ * `convex/leads.ts` whitelists incoming language keys against this array, so
+ * removing it here also stops an `Other` arriving from anywhere else.
+ */
 export const EUROPEAN_LANGUAGES = [
   "German",
   "French",
@@ -144,7 +157,6 @@ export const EUROPEAN_LANGUAGES = [
   "Norwegian",
   "Finnish",
   "Czech",
-  "Other",
 ] as const;
 
 /**

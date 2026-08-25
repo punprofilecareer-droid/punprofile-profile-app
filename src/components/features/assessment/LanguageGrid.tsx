@@ -35,22 +35,25 @@ import ActionBar, { ActionBarSpacer } from "./ActionBar";
 const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 type Level = (typeof LEVELS)[number];
 
-/** Language names are proper nouns; Thai uses the same names in Thai script. */
-const LANGUAGE_TH: Record<string, string> = {
-  German: "เยอรมัน",
-  French: "ฝรั่งเศส",
-  Spanish: "สเปน",
-  Italian: "อิตาลี",
-  Dutch: "ดัตช์",
-  Portuguese: "โปรตุเกส",
-  Polish: "โปแลนด์",
-  Swedish: "สวีเดน",
-  Danish: "เดนมาร์ก",
-  Norwegian: "นอร์เวย์",
-  Finnish: "ฟินแลนด์",
-  Czech: "เช็ก",
-  Other: "ภาษาอื่น",
-};
+/**
+ * A language to its copy key. The names themselves live in `copy.ts` since
+ * 25/08/2026; see the note there for why they stopped being treated as proper
+ * nouns that live in a component.
+ */
+const LANGUAGE_KEY = {
+  German: "lang.name.german",
+  French: "lang.name.french",
+  Spanish: "lang.name.spanish",
+  Italian: "lang.name.italian",
+  Dutch: "lang.name.dutch",
+  Portuguese: "lang.name.portuguese",
+  Polish: "lang.name.polish",
+  Swedish: "lang.name.swedish",
+  Danish: "lang.name.danish",
+  Norwegian: "lang.name.norwegian",
+  Finnish: "lang.name.finnish",
+  Czech: "lang.name.czech",
+} as const;
 
 export default function LanguageGrid({
   onSubmit,
@@ -70,11 +73,12 @@ export default function LanguageGrid({
    *  same block as the English question, so it has one. */
   hasPanel?: boolean;
 }) {
-  const { t, locale } = useCopy();
+  const { t } = useCopy();
   const [levels, setLevels] = useState<Record<string, Level>>({});
   const [busy, setBusy] = useState(false);
 
-  const label = (lang: string) => (locale === "th" ? LANGUAGE_TH[lang] ?? lang : lang);
+  const label = (lang: string) =>
+    lang in LANGUAGE_KEY ? t(LANGUAGE_KEY[lang as keyof typeof LANGUAGE_KEY]) : lang;
   const picked = (lang: string) => lang in levels;
 
   function toggle(lang: string) {
@@ -134,17 +138,15 @@ export default function LanguageGrid({
 
   async function submit() {
     setBusy(true);
-    // `Other` is collected for the coach but matches no country, so it never
-    // reaches the scorer. Dropping it here keeps that true in one place.
-    const scored = Object.fromEntries(
-      Object.entries(levels).filter(([lang]) => lang !== "Other"),
-    );
-    await onSubmit(scored as Record<string, Level>);
+    // Every entry is a named language now, so there is nothing to drop before
+    // scoring. The filter that used to sit here removed `Other`, which left
+    // this list on 25/08/2026; `country-english.ts` carries why.
+    await onSubmit(levels);
   }
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-8">
-      <div className="card-outlined rounded-large px-5 py-6">
+      <div className="card-plain border border-line px-5 py-6">
         {/* The same header a QuestionCard shows, because since 14/08/2026 this
             IS one of the questions rather than a bonus round after the result.
             A step in a sequence that hides the counter reads as an
@@ -203,14 +205,7 @@ export default function LanguageGrid({
                   </span>
                 </button>
 
-                {/* No level picker on `Other`, 25/08/2026.
-                    It is the one entry that names no language: `submit` already
-                    drops it before scoring, because it matches no country and
-                    feeds Country Reach nothing. Asking a candidate to rate their
-                    fluency in "another language" was asking about a thing that
-                    has no answer, and it put a scored-looking control under an
-                    unscored tick. */}
-                {on && lang !== "Other" && (
+                {on && (
                   <div
                     className="mt-2 mb-1 flex pl-1"
                     role="group"
