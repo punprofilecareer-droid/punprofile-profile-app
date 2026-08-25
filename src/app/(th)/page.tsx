@@ -72,7 +72,6 @@ import {
   CLOSE_LEAD,
   FAQ_TEASER_HEADING,
   HERO_MASCOT_ALT,
-  HERO_REFRAME,
   HERO_STANDING,
   HOW_HEADING,
   HOW_STEPS,
@@ -134,18 +133,24 @@ export default function Home() {
               a preference. */}
           <p className={`text-mute-strong ${EYEBROW(locale)}`}>{t("landing.eyebrow")}</p>
           <h1 className={`mt-5 text-balance ${HERO_HEADING(locale)}`}>{t("landing.headline")}</h1>
-          {/* Standing, then the reframe, then what we do, and the order is
-              the argument: we have heard this before, it is the rulebook
-              rather than you, here is what we work on. The subhead comes last
-              because it is the only one that also has to stand alone as the
-              site's meta description, and a description that opened on
-              "we have talked to hundreds" would be describing us in a search
-              result rather than the page. */}
-          <div className="mt-6 flex flex-col gap-4">
-            <p className="text-body-large text-on-surface-variant">{pick(HERO_STANDING)}</p>
-            <p className="text-body-large text-on-surface-variant">{pick(HERO_REFRAME)}</p>
-            <p className="text-body-large text-on-surface-variant">{t("landing.subhead")}</p>
-          </div>
+          {/*
+            One paragraph, since 25/08/2026 and the section audit.
+
+            It was three, 399 characters and six rendered lines, against the
+            block's one paragraph of about a hundred. The hero was pushing the
+            illustration and every section after it down the page.
+
+            `landing.subhead` is the one that stays, because it is also the
+            site's meta description and has to stand alone in a search result.
+            `HERO_STANDING` moved to the pipeline figures, where evidence
+            belongs. `HERO_REFRAME` left this page and did not leave the site:
+            it is EU Fit Check's own headline in `products.ts`, and repeating it
+            here beside `PROBLEM_HEADING`, which makes the same claim, was
+            saying one thing twice.
+          */}
+          <p className="mx-auto mt-6 max-w-xl text-body-large text-on-surface-variant">
+            {t("landing.subhead")}
+          </p>
           <CallToAction page="/" className="mt-8" align="center" />
           <p className="mt-3 text-body-medium text-on-surface-variant">
             {t("landing.reassurance")}
@@ -180,6 +185,28 @@ export default function Home() {
           <div className="max-w-3xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(MARKET_HEADING)}</h2>
             <p className="mt-3 text-body-large text-on-surface-variant">{pick(MARKET_BODY)}</p>
+            {/* Moved out of the hero, 25/08/2026. It is the sentence that says
+                we have heard this before, which is evidence, and evidence
+                belongs beside the figures rather than above the button. */}
+            <p className="mt-3 text-body-large text-on-surface-variant">{pick(HERO_STANDING)}</p>
+          {/* Every section on the reference's home page carries an action; six
+              of ours carried none, so the page asked in the hero and then not
+              again until the foot. These are links rather than buttons on
+              purpose: the block allows one or two actions, and a page with a
+              filled pill in every band has no primary at all. Each label
+              already exists in `cta.ts`. */}
+          <Link
+            href={path(DESTINATIONS.assess.href)}
+            className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
+          >
+            {pick(DESTINATIONS.assess.label)}
+            <span
+              aria-hidden
+              className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </Link>
           </div>
           <hr className="mt-10 border-line" />
           <div className="mt-10 grid gap-10 medium:grid-cols-3">
@@ -245,6 +272,18 @@ export default function Home() {
                 {pick(PROBLEM_HEADING)}
               </h2>
               <p className="mt-5 text-body-large text-on-primary-pale">{pick(PROBLEM_BODY)}</p>
+              <Link
+            href={path(DESTINATIONS.assess.href)}
+            className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
+          >
+            {pick(DESTINATIONS.assess.label)}
+            <span
+              aria-hidden
+              className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </Link>
             </div>
           </div>
         </div>
@@ -297,6 +336,18 @@ export default function Home() {
               </li>
             ))}
           </ol>
+          <Link
+            href={path(DESTINATIONS.assess.href)}
+            className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
+          >
+            {pick(DESTINATIONS.assess.label)}
+            <span
+              aria-hidden
+              className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </Link>
           </div>
 
           <Image
@@ -332,6 +383,18 @@ export default function Home() {
         <div className="grid items-center gap-10 large:grid-cols-[1fr_1.1fr]">
           <div className="max-w-xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(SAMPLE_HEADING)}</h2>
+            <Link
+            href={path(DESTINATIONS.assess.href)}
+            className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
+          >
+            {pick(DESTINATIONS.assess.label)}
+            <span
+              aria-hidden
+              className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </Link>
           </div>
           <div className="card-plain p-6 medium:p-8">
             <SampleRead />
@@ -428,6 +491,18 @@ export default function Home() {
           paragraph is the section, set one tier up in `headline-small`. */}
       <Band ground="canvas">
         <p className={`max-w-3xl ${SECTION_HEADING(locale)}`}>{pick(VISA_BODY)}</p>
+        <Link
+            href={path(DESTINATIONS.assess.href)}
+            className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
+          >
+            {pick(DESTINATIONS.assess.label)}
+            <span
+              aria-hidden
+              className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </Link>
       </Band>
 
         {/* --------------------------------------------------- who this is
@@ -442,6 +517,18 @@ export default function Home() {
           <p className="mt-3 max-w-2xl text-body-large text-on-surface-variant">
             {pick(WHO_BODY)}
           </p>
+          <Link
+            href={path(DESTINATIONS.contact.href)}
+            className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
+          >
+            {pick(DESTINATIONS.contact.label)}
+            <span
+              aria-hidden
+              className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </Link>
       </Band>
 
         {/* ------------------------------------------------------- results
