@@ -162,7 +162,7 @@ export default function SiteShell({
               answers, and absence beats a disabled control that still says there
               is a way out of here.
             */}
-            <header className="sticky top-0 z-40 flex h-[76px] shrink-0 items-center justify-between gap-2 bg-canvas px-4 medium:px-6">
+            <header className="sticky top-0 z-40 flex h-[76px] shrink-0 items-center bg-canvas">
               {/* The lockup, not the word. Still deliberately not a link, and
                   more deliberately now that it is centred and looks like one:
                   the header sits above a running assessment, and a logo that
@@ -175,6 +175,10 @@ export default function SiteShell({
                   the old one at `h-9` because this lockup carries the COACHING
                   descriptor under the wordmark, so the same optical size needs
                   more box. */}
+              {/* `.page-container` rather than the header's own padding: the
+                  lockup has to start where a paragraph starts, and until
+                  25/08/2026 it did not. `globals.css` carries the ladder. */}
+              <div className="page-container flex w-full items-center justify-between gap-2">
               {/* Left: the brand and the offer, in that order and touching.
                   A reader looks at the top left first and what they should find
                   there is who this is and what it sells. */}
@@ -195,6 +199,7 @@ export default function SiteShell({
                 <div className="expanded:hidden">
                   <SiteMenu />
                 </div>
+              </div>
               </div>
             </header>
             <ConvexClientProvider>

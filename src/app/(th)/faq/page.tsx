@@ -69,7 +69,7 @@ export default function FaqPage() {
       </div>
       </Band>
 
-      <Band ground="dark" className="text-center">
+      <Band ground="dark" align="center" className="text-center">
         <p className={SECTION_HEADING(locale)}>{pick(FAQ_CLOSE)}</p>
         <CallToAction page="/faq" className="mt-8" align="center" show="primary" />
       </Band>

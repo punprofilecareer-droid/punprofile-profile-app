@@ -262,7 +262,7 @@ export default function CoachingPage() {
         <ServiceCards />
       </Band>
 
-      <Band ground="dark" className="text-center">
+      <Band ground="dark" align="center" className="text-center">
         <p className={SECTION_HEADING(locale)}>{pick(CLOSE_LEAD)}</p>
         <CallToAction page="/coaching" className="mt-8" align="center" />
       </Band>

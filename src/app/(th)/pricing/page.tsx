@@ -174,7 +174,7 @@ export default function PricingPage() {
       </Band>
 
       {/* The page's secondary, exactly once, where a secondary belongs. */}
-      <Band ground="dark" className="text-center">
+      <Band ground="dark" align="center" className="text-center">
         <CallToAction page="/pricing" align="center" show="secondary" />
       </Band>
     </div>

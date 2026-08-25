@@ -45,8 +45,10 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
    * without the rule the footer and the last section merge into one field.
    */
   return (
-    <footer className="mt-auto border-t border-line bg-canvas-soft px-6 py-14 text-on-primary">
-      <div className="mx-auto w-full max-w-5xl">
+    <footer className="mt-auto border-t border-line bg-canvas-soft py-14 text-on-primary">
+      {/* The same container as the header and every band. */}
+      <div className="page-container">
+      <div className="w-full">
         {/* Columns first and full width. The lockup used to share this row and
             now closes the footer instead, which is the order the reference
             uses: what you might still want, then who this was. */}
@@ -152,6 +154,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
             {t("consent.privacyLink", locale)}
           </Link>
         </div>
+      </div>
       </div>
     </footer>
   );

@@ -95,7 +95,7 @@ export default function ProductPage({ product }: { product: Product }) {
       {/* The same action as the top, once more at the foot. Rule 1 in `cta.ts`
           allows one action to repeat; a reader who got this far arrived at the
           decision here rather than at the headline. */}
-      <Band ground="dark" className="text-center">
+      <Band ground="dark" align="center" className="text-center">
         <CallToAction page={product.actionsKey} align="center" show="primary" />
       </Band>
     </div>

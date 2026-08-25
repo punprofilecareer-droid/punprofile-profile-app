@@ -727,6 +727,49 @@
 
 @layer components {
   /*
+   * One container, and it is why the logo lines up with the paragraph under it.
+   *
+   * Measured off the reference rather than invented. Its header, its sections
+   * and its footer all sit inside a single `.mw-container`: `max-width: 1440px`
+   * with a `margin-inline` that steps up as the window grows. Because it is a
+   * margin rather than a padding, every element that uses it shares one left
+   * edge, which is the whole trick. Their logo sits at 94px on a 1455 window and
+   * so does the first footer column.
+   *
+   * Ours was three different answers: the header on 16px rising to 24, a band on
+   * 24 with a centred column inside it, the footer likewise. On a phone that put
+   * the lockup 8px to the left of every paragraph on the page, which is the kind
+   * of misalignment nobody can name and everybody can see.
+   *
+   * The ladder is theirs, on our own window size classes rather than a second
+   * set of breakpoints. The base is fluid the way theirs is: 16px on a 390 phone
+   * easing to 20px, so a small screen is not choosing between a cramped gutter
+   * and a wasted one. Past `xlarge` the margin becomes `auto`, which is what
+   * caps the line length: 1440 centred, and at 1600 that is 80px a side, so the
+   * step from `large` is continuous rather than a jump.
+   */
+  .page-container {
+    --container-margin: clamp(1rem, calc(0.94231rem + 0.25641vw), 1.25rem);
+    margin-inline: var(--container-margin);
+    max-width: 1440px;
+  }
+}
+
+@media (min-width: 600px) {
+  .page-container { --container-margin: 32px }
+}
+@media (min-width: 840px) {
+  .page-container { --container-margin: 40px }
+}
+@media (min-width: 1200px) {
+  .page-container { --container-margin: 80px }
+}
+@media (min-width: 1600px) {
+  .page-container { --container-margin: auto }
+}
+
+@layer components {
+  /*
    * The dark band's content colours.
    *
    * Same mechanism as `.ground-fixed` and the same reason: `canvas-dark` is a

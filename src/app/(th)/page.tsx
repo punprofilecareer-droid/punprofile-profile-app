@@ -326,7 +326,7 @@ export default function Home() {
           </Link>
       </Band>
 
-        <Band ground="dark" className="text-center">
+        <Band ground="dark" align="center" className="text-center">
           <p className={SECTION_HEADING(locale)}>{pick(CLOSE_LEAD)}</p>
           {/* Primary only. The secondary belongs to the page and has already
               appeared once, under the hero. */}
