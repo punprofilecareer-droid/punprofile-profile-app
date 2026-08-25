@@ -100,16 +100,44 @@ export const PRODUCTS: readonly NavItem[] = [
 ];
 
 /**
- * The flat entries, which sit beside the Products group rather than inside it.
+ * The second group inside the Products menu, 25/08/2026.
  *
- * `/services` and `/coaching` moved into `PRODUCTS` on 23/08/2026, so what is
- * left here is the group's peers: the price surface and the three support pages.
+ * Price left the flat list and moved into the panel beside the products, which
+ * is the shape the reference uses and the shape the question has: "what does it
+ * cost" is a question about the products, not a peer of them. It is its own
+ * array rather than a seventh product because it is not one, and the panel
+ * renders it under its own heading.
+ */
+export const PRICING: readonly NavItem[] = [
+  { href: "/pricing", label: "nav.pricing" },
+];
+
+/**
+ * The flat entries, and they are now the SUPPORT pages only.
+ *
+ * The bar is split by what each side is for, 25/08/2026: the offer sits on the
+ * left next to the logo, where a reader looks first, and the places you go when
+ * you already have a question sit on the right. Price went into `PRICING` and
+ * Contact went into `ACTION`, so what is left here is exactly the two pages that
+ * are neither.
  */
 export const NAV: readonly NavItem[] = [
-  { href: "/pricing", label: "nav.pricing" },
   ...(POSTS.length > 0
     ? [{ href: "/blog", label: "nav.blog" as AnyCopyKey }]
     : []),
   { href: "/faq", label: "nav.faq" },
-  { href: "/contact", label: "nav.contact" },
 ];
+
+/**
+ * The one entry drawn as a button, at the right-hand end of the bar.
+ *
+ * A destination list and an action are different things, and this file has said
+ * so since 17/08/2026 about the EU Fit Check. Contact is the exception the rule
+ * always implied: it is the only entry a reader arrives at having decided
+ * something, so it is the only one that gets the fill. The reference does the
+ * same with its one solid button and everything else as text.
+ *
+ * It is still a page in the list for reachability, so `verify-pages.ts` checks
+ * it like any other destination.
+ */
+export const ACTION: NavItem = { href: "/contact", label: "nav.contact" };

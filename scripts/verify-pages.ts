@@ -28,7 +28,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { lintThai, type LintTarget } from "./lint-thai.js";
 import { walkCopy } from "./lib/copy-walk.js";
-import { NAV, PRODUCTS } from "../src/lib/content/nav.js";
+import { ACTION, NAV, PRICING, PRODUCTS } from "../src/lib/content/nav.js";
 import * as home from "../src/lib/content/home.js";
 // Added 23/08/2026. Both shipped that day and neither was reachable by any
 // check: this list is hardcoded, so 44 product strings and 39 pricing strings
@@ -155,7 +155,7 @@ if (findings.length === 0) {
 const NAV_COMPONENTS = ["src/components/SiteMenu.tsx", "src/components/TopNav.tsx"];
 for (const file of NAV_COMPONENTS) {
   const src = readFileSync(file, "utf8");
-  for (const list of ["NAV", "PRODUCTS"]) {
+  for (const list of ["NAV", "PRODUCTS", "PRICING", "ACTION"]) {
     if (!new RegExp(`\\b${list}\\b`).test(src)) {
       console.error(
         `FAIL ${file} never mentions ${list}. Both navigations have to carry every ` +
@@ -166,7 +166,7 @@ for (const file of NAV_COMPONENTS) {
   }
 }
 
-for (const item of [...PRODUCTS, ...NAV]) {
+for (const item of [...PRODUCTS, ...PRICING, ...NAV, ACTION]) {
   const seg = item.href.replace(/^\//, "");
   const hit =
     existsSync(`src/app/(th)/${seg}/page.tsx`) ||

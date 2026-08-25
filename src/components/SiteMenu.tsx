@@ -59,7 +59,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCopy } from "@/components/LocaleProvider";
-import { NAV, PRODUCTS } from "@/lib/content/nav";
+import { ACTION, NAV, PRICING, PRODUCTS } from "@/lib/content/nav";
 import { DESTINATIONS } from "@/lib/content/cta";
 
 /** The card advertises the assessment, so it takes the assessment's own label. */
@@ -316,8 +316,28 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-title-large transition-colors hover:text-primary ${
-                        here ? "font-semibold text-primary" : "text-on-surface"
+                      className={`text-title-large transition-colors hover:text-on-primary ${
+                        here ? "font-semibold text-on-primary" : "text-on-surface"
+                      }`}
+                    >
+                      {t(item.label)}
+                    </Link>
+                  );
+                })}
+
+                {/* Price sits with the products on the wide bar and it sits
+                    with them here, for the same reason: it is a question about
+                    them. `PRICING` is its own array in `nav.ts`. */}
+                {PRICING.map((item) => {
+                  const href = path(item.href);
+                  const here = pathname === href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={href}
+                      aria-current={here ? "page" : undefined}
+                      className={`text-title-large transition-colors hover:text-on-primary ${
+                        here ? "font-semibold text-on-primary" : "text-on-surface"
                       }`}
                     >
                       {t(item.label)}
@@ -327,7 +347,7 @@ export default function SiteMenu() {
 
                 <hr className="border-t border-outline-variant" />
 
-                {NAV.map((item) => {
+                {[...NAV, ACTION].map((item) => {
                   // `path()` first, then compare. `pathname` is the real URL, so
                   // on the English tree it is `/en/faq` and the table's `/faq`
                   // would never match, leaving the menu with nothing marked as
@@ -339,8 +359,8 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-title-large transition-colors hover:text-primary ${
-                        here ? "font-semibold text-primary" : "text-on-surface"
+                      className={`text-title-large transition-colors hover:text-on-primary ${
+                        here ? "font-semibold text-on-primary" : "text-on-surface"
                       }`}
                     >
                       {t(item.label)}

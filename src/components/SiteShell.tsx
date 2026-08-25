@@ -1,4 +1,4 @@
-import { Anuphan, Fraunces, Inter } from "next/font/google";
+import { Anuphan, Archivo, Inter } from "next/font/google";
 import ConvexClientProvider from "@/app/ConvexClientProvider";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import JsonLd from "@/components/JsonLd";
@@ -8,7 +8,6 @@ import SiteMenu from "@/components/SiteMenu";
 import SiteFooter from "@/components/SiteFooter";
 import NavLockGate from "@/components/NavLockGate";
 import BrandLockup from "@/components/BrandLockup";
-import BrandScope from "@/components/BrandScope";
 import TopNav from "@/components/TopNav";
 import { DEFAULT_LOCALE } from "@/lib/locale";
 import type { Locale } from "@/lib/locale";
@@ -34,7 +33,7 @@ import { pick } from "@/lib/locale";
  */
 
 /**
- * The three faces the design system names: Fraunces and Inter for Latin,
+ * The three faces the design system names: Archivo and Inter for Latin,
  * Anuphan for Thai. `globals.css` composes them into one stack per tier, so
  * Thai and Latin coexist in a single string without a language switch. See
  * `design.md` in the sibling coaching repo.
@@ -42,7 +41,7 @@ import { pick } from "@/lib/locale";
  * Loaded here rather than per layout: `next/font` deduplicates by call site, and
  * three call sites would be three preload sets in the head of one page.
  */
-const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"] });
+const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"] });
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 /**
  * Thai, one family for both tiers. Changed 16/08/2026 from Noto Serif Thai plus
@@ -53,23 +52,16 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
  * on the mid-range Android over mobile data that is this product's actual
  * audience, and the second one existed only to make Thai headlines a serif.
  *
- * That serif is not missed, and this is the part worth writing down. In Latin a
- * serif reads as researched and editorial, which is the whole reason Fraunces is
- * here. Thai does not carry the same association: a Thai serif reads closer to a
- * government form or a school textbook, and a loopless geometric sans is what a
- * Thai reader parses as modern and professional. Keeping a serif for Thai
- * headlines was importing a Latin convention into a script that means something
- * else by it.
- *
- * Fraunces still sets every Latin headline, so the editorial register is intact
- * where it works and absent where it did not.
+ * A loopless geometric sans is what a Thai reader parses as modern and
+ * professional, which is also what Archivo and Inter are doing on the Latin
+ * side, so both scripts now say the same thing about the brand.
  */
 const anuphan = Anuphan({
   variable: "--font-anuphan",
   subsets: ["thai", "latin"],
 });
 
-const fontVars = [fraunces.variable, inter.variable, anuphan.variable].join(" ");
+const fontVars = [archivo.variable, inter.variable, anuphan.variable].join(" ");
 
 export default function SiteShell({
   locale,
@@ -115,12 +107,15 @@ export default function SiteShell({
               in the document head is not something to keep on the chance a
               future feature wants it. */}
           <LocaleProvider initial={locale}>
-            {/* `top-app-bar` from `design.md`: `surface`, elevation level 0, a
-                hairline underneath. Sticky since 14/08/2026. That was decided
-                alongside the glass and outlived it, because it was a navigation
-                decision rather than a property of the material: a header the
-                reader can reach without scrolling back is worth having whatever
-                the header is made of. */}
+            {/* The bar from `design.md`'s navigation section: 76px, on
+                `canvas`, no border and no shadow. The bar is the page rather
+                than a surface above it, and what separates it from the content
+                is the dimmer that appears when a menu opens, not a hairline.
+                Sticky since 14/08/2026: a header the reader can reach without
+                scrolling back is worth having whatever the header is made of.
+
+                `sticky` also makes it the containing block for `TopNav`'s
+                viewport, which is pinned to `top-full` and spans the window. */}
             {/*
               From `expanded` (840px) up the page is a two-column shell: a
               standard navigation drawer on the left, everything else beside it.
@@ -134,10 +129,8 @@ export default function SiteShell({
             */}
             <div className="flex min-h-dvh flex-1">
 
-              {/* The content column, and EU Fit Check's colour scope when the
-                  route is the assessment. The drawer above stays outside it and
-                  keeps PunProfile's own ground; `BrandScope` says why. */}
-              <BrandScope className="flex min-w-0 flex-1 flex-col">
+              {/* The content column. */}
+              <div className="flex min-w-0 flex-1 flex-col">
             {/* Three columns, not a flex row with the logo in the middle:
                 the wordmark is centred on the SCREEN, and a flex row would
                 centre it on whatever space the two controls left over, so it
@@ -169,7 +162,7 @@ export default function SiteShell({
               answers, and absence beats a disabled control that still says there
               is a way out of here.
             */}
-            <header className="sticky top-0 z-40 flex h-[72px] shrink-0 items-center justify-between gap-2 border-b border-outline-variant bg-surface px-4 medium:px-6">
+            <header className="sticky top-0 z-40 flex h-[76px] shrink-0 items-center justify-between gap-2 bg-canvas px-4 medium:px-6">
               {/* The lockup, not the word. Still deliberately not a link, and
                   more deliberately now that it is centred and looks like one:
                   the header sits above a running assessment, and a logo that
@@ -182,12 +175,21 @@ export default function SiteShell({
                   the old one at `h-9` because this lockup carries the COACHING
                   descriptor under the wordmark, so the same optical size needs
                   more box. */}
-              <div className="flex min-w-0 justify-start">
+              {/* Left: the brand and the offer, in that order and touching.
+                  A reader looks at the top left first and what they should find
+                  there is who this is and what it sells. */}
+              <div className="flex min-w-0 items-center gap-4">
                 <BrandLockup />
+                <NavLockGate>
+                  <TopNav slot="primary" />
+                </NavLockGate>
               </div>
+
+              {/* Right: where you go when you already have a question, and the
+                  one filled control on the page. */}
               <div className="flex items-center gap-1">
                 <NavLockGate>
-                  <TopNav />
+                  <TopNav slot="secondary" />
                 </NavLockGate>
                 <LocaleToggle />
                 <div className="expanded:hidden">
@@ -204,7 +206,7 @@ export default function SiteShell({
             <NavLockGate>
               <SiteFooter locale={locale} />
             </NavLockGate>
-              </BrandScope>
+              </div>
             </div>
           </LocaleProvider>
         </body>

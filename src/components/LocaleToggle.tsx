@@ -1,7 +1,11 @@
 "use client";
 
 /**
- * The language switch in the header: a round flag that opens a small menu.
+ * The language switch in the header: a pill that opens a right-hand drawer.
+ *
+ * Rebuilt 25/08/2026 on `design.md`'s navigation section. It was a round flag
+ * opening a 9rem menu; the shape below is the reference's, and the reasoning
+ * about flags and circles that follows is unchanged and still load-bearing.
  *
  * Two shapes were tried on 14/08/2026 and rejected. `TH / EN` asked the reader
  * to decode a two-letter code before they could switch, which is the one thing
@@ -95,6 +99,13 @@ const FLAGS: Record<Locale, () => React.ReactElement> = { th: FlagTh, en: FlagEn
 /** Each language named in itself, so the label reads to the person switching TO it. */
 const NAMES: Record<Locale, string> = { th: "ไทย", en: "English" };
 
+/**
+ * The code beside the flag in the closed state. Latin in both languages on
+ * purpose: it is a label for the language you would switch TO being absent, and
+ * "TH" is what every other site in this market shows a Thai reader.
+ */
+const CODES: Record<Locale, string> = { th: "TH", en: "EN" };
+
 function Flag({ locale, className = "" }: { locale: Locale; className?: string }) {
   const Svg = FLAGS[locale];
   return (
@@ -177,55 +188,97 @@ export default function LocaleToggle() {
   }, [open]);
 
   return (
-    <div ref={root} className="relative">
+    <div ref={root}>
+      {/*
+       * The trigger is a pill, not a bare icon: 14px at 600 beside the flag, in
+       * the same shape and the same padding as every other control in this bar.
+       * The code is redundant to the flag on purpose, because a flag is a
+       * country and this is a language.
+       */}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={`${t("nav.language")}: ${NAMES[locale]}`}
-        // 44px tap target around a 24px flag. The switch lives in a 72px
-        // header on a phone, where a 24px hit area is a miss.
-        className="flex size-12 items-center justify-center rounded-full transition-colors hover:bg-primary-container"
+        className="flex h-9 items-center gap-2 rounded-full px-3 text-body-sm-strong text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
       >
-        <Flag locale={locale} className="size-6" />
+        <Flag locale={locale} className="size-5 shrink-0" />
+        <span aria-hidden>{CODES[locale]}</span>
       </button>
 
-      {open && (
-        <ul
-          role="menu"
-          // Level 2, which the skill maps to `surface-container`. Elevation in
-          // M3 is a tone first and a shadow second: the tone is what says how
-          // high something sits, and the shadow only earns its place because a
-          // menu floats over content that may be busy. The tone was
-          // `surface-container-low` until 17/08/2026, which is level 1's.
-          // `overflow-hidden` has to stay, or the item highlights square off
-          // the rounded corners.
-          className="absolute right-0 z-50 mt-1 min-w-[9rem] overflow-hidden rounded-medium bg-surface-container py-1 shadow-level-2"
-        >
+      {/*
+       * A right-hand drawer rather than a dropdown, on the reference's own
+       * pattern and for its reason: a language switch is a decision about the
+       * whole site, and a 9rem menu hanging off a corner reads as a setting for
+       * whatever is under it.
+       *
+       * Both layers stay mounted and animate: the dimmer on opacity, the panel
+       * on `translate-x`. Mounting on open would put both at their final state
+       * on the first frame, which is the difference between a drawer arriving
+       * and a drawer appearing. 350ms on `--ease-nav`, the same curve as the
+       * menu, because they are the same gesture from the same bar.
+       *
+       * **Choosing applies immediately.** The reference confirms with a button
+       * because it is also choosing a country; with two languages a confirm step
+       * is a second tap that decides nothing.
+       */}
+      <div
+        aria-hidden={!open}
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-[8px] duration-[350ms] ease-nav transition-opacity ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
+      <div
+        role="dialog"
+        aria-modal={open}
+        aria-label={t("nav.language")}
+        aria-hidden={!open}
+        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-[420px] flex-col bg-canvas duration-[350ms] ease-nav transition-transform ${
+          open ? "translate-x-0" : "pointer-events-none translate-x-full"
+        }`}
+      >
+        <div className="flex items-start justify-between gap-4 px-6 py-6">
+          <p className="text-heading-sm">{t("nav.language")}</p>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label={t("nav.menuClose")}
+            tabIndex={open ? undefined : -1}
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas-soft text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+          >
+            <span aria-hidden>&#10005;</span>
+          </button>
+        </div>
+
+        <ul className="flex flex-col gap-2 px-6">
           {LOCALES.map((l) => (
-            <li key={l} role="none">
+            <li key={l}>
               <button
                 type="button"
                 role="menuitemradio"
                 aria-checked={locale === l}
                 onClick={() => choose(l)}
-                className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-body-large transition-colors hover:bg-black/5 ${
-                  locale === l ? "text-on-surface" : "text-on-surface-variant"
+                tabIndex={open ? undefined : -1}
+                className={`flex w-full items-center gap-3 rounded-2xl px-5 py-4 text-left text-body-md-strong duration-[350ms] ease-nav transition-colors ${
+                  locale === l
+                    ? "bg-primary-pale text-on-primary"
+                    : "bg-canvas-soft text-on-primary hover:bg-primary-pale"
                 }`}
               >
-                <Flag locale={l} className="size-5 shrink-0" />
+                <Flag locale={l} className="size-6 shrink-0" />
                 <span>{NAMES[l]}</span>
                 {locale === l && (
-                  <span aria-hidden className="ml-auto text-primary">
-                    ✓
+                  <span aria-hidden className="ml-auto">
+                    &#10003;
                   </span>
                 )}
               </button>
             </li>
           ))}
         </ul>
-      )}
+      </div>
     </div>
   );
 }
