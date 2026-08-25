@@ -152,9 +152,15 @@ export const DESTINATIONS = {
     cost: COST.contact,
     /**
      * First person, on Paul's call, 14/08/2026. "Start a conversation" is what
-     * a company says; this is one person, and every service is delivered by
-     * him. Defined once here, so every page that asks for contact asks for it
-     * in the same words: the services cards, the coaching page, the FAQ.
+     * a company says; this is two people, and every service is delivered by one
+     * of them. It said "one person" until 25/08/2026, when Dew joined and the
+     * claim stopped being true. Defined once here, so every page that asks for
+     * contact asks for it in the same words: the services cards, the coaching
+     * page, the FAQ.
+     *
+     * The label itself did not change and should not: `คุยกับผม` is what the
+     * person the reader reaches actually says, and a promise in the plural from
+     * whoever picks it up is a promise from a company.
      *
      * "คุยกับผม" and not "ติดต่อผม", his revision the same day, and the
      * difference is real. ติดต่อ is what you do to a company, through a form,

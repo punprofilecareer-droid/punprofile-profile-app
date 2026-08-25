@@ -550,10 +550,22 @@ export const WHO_HEADING: Copy = {
 };
 
 export const WHO_BODY: Copy = {
-  en: "PunProfile is run by one person, and every conversation is with him. That is the reason the advice starts from your goals rather than from a vacancy somebody is rushing to fill.",
+  /*
+   * **Two people since 25/08/2026, and this is a factual correction.** Dew
+   * joined, so "run by one person" is wrong rather than dated. The argument
+   * survives the change intact, which is the point worth keeping: what mattered
+   * was never the headcount, it was who pays. `Narrative_System.md` § the house
+   * narrative carries the slot this line fills.
+   *
+   * He is not named here yet. His name, the ten-year claim and why US placement
+   * is evidence for reading a European market are all his to write, and
+   * `dew-tatiy-review.md` is waiting on them.
+   */
+  // TH-UNREVIEWED, 25/08/2026. Drafted.
+  en: "PunProfile is two people, and you talk to both of them. Neither is paid by an employer, so the advice starts from your goals rather than from a vacancy somebody is rushing to fill.",
   // Read back 25/08/2026. The second sentence is Paul's own, from
   // `FOUNDER_AFTER` in `coaching.ts`, which he wrote and reviewed.
-  th: "PunProfile ดูแลโดยคนเพียงคนเดียว และทุกครั้งคุณจะได้คุยกับเขาโดยตรง นั่นคือเหตุผลที่คำแนะนำเริ่มจากเป้าหมายของคุณ ไม่ใช่จากตำแหน่งว่างที่ใครบางคนกำลังเร่งหาคน",
+  th: "PunProfile มีกันสองคน และคุณจะได้คุยกับทั้งคู่ ไม่มีใครรับเงินจากฝั่งนายจ้าง คำแนะนำจึงเริ่มจากเป้าหมายของคุณ ไม่ใช่จากตำแหน่งว่างที่ใครบางคนกำลังเร่งหาคน",
 };
 
 // ------------------------------------------------------------------- results
