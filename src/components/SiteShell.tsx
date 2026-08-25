@@ -5,6 +5,7 @@ import JsonLd from "@/components/JsonLd";
 import LocaleProvider from "@/components/LocaleProvider";
 import LocaleToggle from "@/components/LocaleToggle";
 import SiteMenu from "@/components/SiteMenu";
+import SectionNav from "@/components/SectionNav";
 import SiteFooter from "@/components/SiteFooter";
 import NavLockGate from "@/components/NavLockGate";
 import BrandLockup from "@/components/BrandLockup";
@@ -202,6 +203,13 @@ export default function SiteShell({
               </div>
               </div>
             </header>
+            {/* The section bar, under the header and above the page. It
+                renders nothing outside EU Fit Check's own routes, and nothing
+                during the check: `NavLockGate` for the same reason it wraps the
+                menu and the footer. */}
+            <NavLockGate>
+              <SectionNav />
+            </NavLockGate>
             <ConvexClientProvider>
               <main className="flex flex-1 flex-col">{children}</main>
             </ConvexClientProvider>
