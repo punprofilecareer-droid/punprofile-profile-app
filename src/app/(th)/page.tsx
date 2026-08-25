@@ -64,7 +64,9 @@ import Catalogue from "@/components/features/home/Catalogue";
 import { SERVICES } from "@/lib/content/services";
 import { DESTINATIONS } from "@/lib/content/cta";
 import Band from "@/components/Band";
-import { EYEBROW, HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
+import Slot from "@/components/blocks/Slot";
+import SplitFeature from "@/components/blocks/SplitFeature";
+import { HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import { MARKET } from "@/lib/content/market-snapshot.generated";
 import { FAQ, FAQ_HEADING } from "@/lib/content/faq";
 import {
@@ -128,33 +130,69 @@ export default function Home() {
       */}
       <Band ground="canvas" width="wide" align="center" className="text-center">
         <div className="mx-auto max-w-3xl">
-          {/* Tracked and uppercased in English, neither in Thai. See `EYEBROW`
-              in `content/footer.ts` for why that is a script fact rather than
-              a preference. */}
-          <p className={`text-mute-strong ${EYEBROW(locale)}`}>{t("landing.eyebrow")}</p>
-          <h1 className={`mt-5 text-balance ${HERO_HEADING(locale)}`}>{t("landing.headline")}</h1>
           {/*
-            One paragraph, since 25/08/2026 and the section audit.
+            The credibility row, which is the reference's first element and the
+            one this page never had. Two items, each a chip, a claim in bold and
+            a quieter number beside it. Theirs are store ratings; ours are
+            unwritten, so they are slots.
 
-            It was three, 399 characters and six rendered lines, against the
-            block's one paragraph of about a hundred. The hero was pushing the
-            illustration and every section after it down the page.
-
-            `landing.subhead` is the one that stays, because it is also the
-            site's meta description and has to stand alone in a search result.
-            `HERO_STANDING` moved to the pipeline figures, where evidence
-            belongs. `HERO_REFRAME` left this page and did not leave the site:
-            it is EU Fit Check's own headline in `products.ts`, and repeating it
-            here beside `PROBLEM_HEADING`, which makes the same claim, was
-            saying one thing twice.
+            `landing.eyebrow` used to sit here and does not fit the shape: it is
+            a sentence describing the service, where this row is two short
+            proofs. It moves nowhere for now and is listed in the handover.
           */}
-          <p className="mx-auto mt-6 max-w-xl text-body-large text-on-surface-variant">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-body-sm">
+            <span className="inline-flex items-center gap-2">
+              <span
+                aria-hidden
+                className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-pale text-caption text-on-primary-pale"
+              >
+                &#9733;
+              </span>
+              <Slot>proof one, bold: a rating, a count, a figure</Slot>
+              <Slot>the quieter half: what it is out of</Slot>
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span
+                aria-hidden
+                className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-pale text-caption text-on-primary-pale"
+              >
+                &#9733;
+              </span>
+              <Slot>proof two, bold</Slot>
+              <Slot>its quieter half</Slot>
+            </span>
+          </div>
+
+          <h1 className={`mt-8 text-balance ${HERO_HEADING(locale)}`}>{t("landing.headline")}</h1>
+
+          {/* One paragraph, centred, two lines on the reference. */}
+          <p className="mx-auto mt-6 max-w-xl text-body-large text-body">
             {t("landing.subhead")}
           </p>
-          <CallToAction page="/" className="mt-8" align="center" />
-          <p className="mt-3 text-body-medium text-on-surface-variant">
-            {t("landing.reassurance")}
-          </p>
+
+          {/*
+            The pill and the text link SIDE BY SIDE, which is the reference's
+            hero and was not ours: they were stacked with a third line under
+            them. `CallToAction` stacks by design, so the hero builds its own
+            pair from the same two destinations it would have used.
+
+            `landing.reassurance` had no slot in this block and is not rendered
+            here any more. It is listed in the handover rather than deleted.
+          */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
+            <Link
+              href={path(DESTINATIONS.assess.href)}
+              className="flex min-h-12 items-center rounded-full bg-primary px-6 text-body-md-strong text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-active"
+            >
+              {pick(DESTINATIONS.assess.label)}
+            </Link>
+            <Link
+              href={path(DESTINATIONS.pricing.href)}
+              className="text-body-md-strong underline underline-offset-4"
+            >
+              {pick(DESTINATIONS.pricing.label)}
+            </Link>
+          </div>
         </div>
 
         <Image
@@ -336,18 +374,22 @@ export default function Home() {
               </li>
             ))}
           </ol>
-          <Link
-            href={path(DESTINATIONS.assess.href)}
-            className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
-          >
-            {pick(DESTINATIONS.assess.label)}
-            <span
-              aria-hidden
-              className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+          {/* A button AND a link, which is the reference's pair for this block.
+              It had the link alone. */}
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <Link
+              href={path(DESTINATIONS.assess.href)}
+              className="flex min-h-12 items-center rounded-full bg-primary px-6 text-body-md-strong text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-active"
             >
-              &rarr;
-            </span>
-          </Link>
+              {pick(DESTINATIONS.assess.label)}
+            </Link>
+            <Link
+              href={path(DESTINATIONS.pricing.href)}
+              className="text-body-md-strong underline underline-offset-4"
+            >
+              {pick(DESTINATIONS.pricing.label)}
+            </Link>
+          </div>
           </div>
 
           <Image
@@ -383,6 +425,11 @@ export default function Home() {
         <div className="grid items-center gap-10 large:grid-cols-[1fr_1.1fr]">
           <div className="max-w-xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(SAMPLE_HEADING)}</h2>
+            {/* The reference's split carries a line under the headline before
+                the action. This section has never had one. */}
+            <p className="mt-4">
+              <Slot block>one or two lines: what the card beside this shows</Slot>
+            </p>
             <Link
             href={path(DESTINATIONS.assess.href)}
             className="group mt-6 inline-flex items-center gap-2 text-body-md-strong underline underline-offset-4"
@@ -410,6 +457,11 @@ export default function Home() {
       <Band ground="canvas" width="wide">
           <div className="max-w-3xl">
             <h2 className={SECTION_HEADING(locale)}>{pick(CATALOGUE_HEADING)}</h2>
+            {/* A sub line under the heading, which every card row on the
+                reference has and this one does not. */}
+            <p className="mt-4">
+              <Slot block>one line: what the three below have in common</Slot>
+            </p>
           </div>
 
           {/*
@@ -512,7 +564,11 @@ export default function Home() {
             thirteen years and 26,000 resumes; nothing of that kind is claimed
             here, and the only figures on this page are the pipeline's, which
             sit in the section above the fold rather than in this one. */}
-      <Band ground="canvas">
+      <Band ground="canvas" width="wide">
+        {/* B2: the reference states who is behind a thing beside a picture of
+            them, not as a paragraph on its own. The portrait is a placeholder;
+            `/coaching` has the real one and this page has never carried it. */}
+        <SplitFeature src="/placeholder-4x3.svg" alt="" reverse>
           <h2 className={SECTION_HEADING(locale)}>{pick(WHO_HEADING)}</h2>
           <p className="mt-3 max-w-2xl text-body-large text-on-surface-variant">
             {pick(WHO_BODY)}
@@ -529,6 +585,7 @@ export default function Home() {
               &rarr;
             </span>
           </Link>
+        </SplitFeature>
       </Band>
 
         {/* ------------------------------------------------------- results
@@ -562,8 +619,21 @@ export default function Home() {
           <h2 className={SECTION_HEADING(locale)}>{pick(FAQ_TEASER_HEADING)}</h2>
           <ul className="mt-6 flex flex-col gap-4">
             {FAQ.slice(0, 3).map((item, i) => (
-              <li key={i} className="border-b border-line pb-4 text-body-large">
+              <li
+                key={i}
+                className="flex items-center justify-between gap-4 border-b border-line pb-4 text-body-large"
+              >
                 {pick(item.q)}
+                {/* Every row on the reference's list carries the chip, which is
+                    what says a row is a place to go rather than a line to read.
+                    These rows are not links yet; the section's own link below
+                    is still the way in. */}
+                <span
+                  aria-hidden
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-pale text-caption text-on-primary-pale"
+                >
+                  &rarr;
+                </span>
               </li>
             ))}
           </ul>

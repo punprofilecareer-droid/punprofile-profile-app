@@ -25,6 +25,7 @@
 import Link from "next/link";
 import { useCopy } from "@/components/LocaleProvider";
 import { TRIAGE } from "@/lib/content/home";
+import Slot from "@/components/blocks/Slot";
 
 export default function Triage() {
   const { pick, path } = useCopy();
@@ -37,7 +38,15 @@ export default function Triage() {
             href={path(item.href)}
             className="group flex min-h-20 items-center justify-between gap-4 px-6 py-5 duration-[350ms] ease-nav transition-colors hover:bg-canvas-soft"
           >
-            <span className="text-body-md-strong text-on-primary">{pick(item.line)}</span>
+            <span className="min-w-0">
+              <span className="block text-body-md-strong text-on-primary">{pick(item.line)}</span>
+              {/* The reference's row carries a line of body under its title:
+                  the title is the situation, the body says what happens if you
+                  press it. We have never written those, so each is a slot. */}
+              <span className="mt-1 block">
+                <Slot>one line: what pressing this row gets them</Slot>
+              </span>
+            </span>
             <span
               aria-hidden
               className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-pale text-on-primary-pale duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
