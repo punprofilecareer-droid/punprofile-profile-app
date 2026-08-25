@@ -61,6 +61,8 @@ import CallToAction from "@/components/CallToAction";
 import SampleRead from "@/components/features/home/SampleRead";
 import Triage from "@/components/features/home/Triage";
 import Catalogue from "@/components/features/home/Catalogue";
+import { SERVICES } from "@/lib/content/services";
+import { DESTINATIONS } from "@/lib/content/cta";
 import Band from "@/components/Band";
 import { EYEBROW, HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import { MARKET } from "@/lib/content/market-snapshot.generated";
@@ -289,8 +291,65 @@ export default function Home() {
             Replaces the old services cards AND the old cost table. Read from
             `products.ts` at render, split by what it costs rather than by what
             it is, because that is the question a stranger is holding. */}
-      <Band ground="canvas">
-          <h2 className={SECTION_HEADING(locale)}>{pick(CATALOGUE_HEADING)}</h2>
+      <Band ground="canvas" width="wide">
+          <div className="max-w-3xl">
+            <h2 className={SECTION_HEADING(locale)}>{pick(CATALOGUE_HEADING)}</h2>
+          </div>
+
+          {/*
+            Three cards with photographs, which is the reference's shape for the
+            section that says what you can actually buy, and the one place this
+            page had nothing but lists.
+
+            The pictures are the three service photographs, and they are the
+            same three that appear on `/coaching`. That is a knowing repeat
+            rather than an oversight: they are the only photographs this product
+            owns, and a card row here with drawn mascots in it would be a
+            different section pretending to be this one. Replace them the day
+            there is art of their own.
+
+            Copy is `services.ts`'s own `name` and `question`, and the link goes
+            to the anchor `/coaching` already gives each service, so nothing here
+            is written twice or can drift.
+          */}
+          <ul className="mt-10 grid gap-6 large:grid-cols-3">
+            {SERVICES.map((s) => (
+              <li key={s.id} className="flex">
+                <Link
+                  href={`${path("/coaching")}#${s.id}`}
+                  className="card-plain group flex w-full flex-col overflow-hidden border border-line duration-[350ms] ease-nav transition-colors hover:border-line-strong"
+                >
+                  <span className="relative block aspect-[4/3] w-full">
+                    <Image
+                      src={s.image.src}
+                      alt={pick(s.image.alt)}
+                      fill
+                      sizes="(max-width: 1200px) 100vw, 33vw"
+                      className="object-cover"
+                    />
+                  </span>
+                  <span className="flex flex-1 flex-col px-6 py-7">
+                    <span className="text-heading-sm">{pick(s.name)}</span>
+                    {/* The client's question, not a tagline. A service described
+                        by the problem it answers is checkable. */}
+                    <span className="mt-3 flex-1 text-body-md text-body">
+                      &ldquo;{pick(s.question)}&rdquo;
+                    </span>
+                    <span className="mt-5 flex items-center gap-2 text-body-sm-strong underline underline-offset-4">
+                      {pick(DESTINATIONS.coaching.label)}
+                      <span
+                        aria-hidden
+                        className="duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
+                      >
+                        &rarr;
+                      </span>
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
           <Catalogue />
       </Band>
 

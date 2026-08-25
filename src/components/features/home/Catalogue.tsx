@@ -53,15 +53,15 @@ export default function Catalogue() {
     <li key={slug}>
       <Link
         href={path(`/products/${slug}`)}
-        className="card-outlined group flex h-full flex-col rounded-large px-6 py-7 transition-colors hover:bg-surface-container-high"
+        className="card-plain group flex h-full flex-col border border-line px-6 py-7 duration-[350ms] ease-nav transition-colors hover:border-line-strong"
       >
         <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="text-title-large">{name}</span>
+          <span className="text-heading-sm">{name}</span>
           {soon && (
-            <span className="text-label-large text-on-surface-variant">{pick(COMING_SOON)}</span>
+            <span className="text-caption-strong text-mute-strong">{pick(COMING_SOON)}</span>
           )}
         </span>
-        <span className="mt-2 text-body-large text-on-surface-variant">{headline}</span>
+        <span className="mt-2 text-body-md text-body">{headline}</span>
       </Link>
     </li>
   );
@@ -69,7 +69,7 @@ export default function Catalogue() {
   return (
     <div className="mt-8 flex flex-col gap-10">
       <div>
-        <h3 className="text-title-medium text-on-primary">{pick(CATALOGUE_FREE)}</h3>
+        <h3 className="border-b border-line pb-3 text-body-md text-mute-strong">{pick(CATALOGUE_FREE)}</h3>
         <ul className="mt-4 grid gap-4 medium:grid-cols-3">
           {free.map((p) =>
             card(p.slug, pick(p.name), pick(p.headline), p.status === "soon"),
@@ -78,7 +78,7 @@ export default function Catalogue() {
       </div>
 
       <div>
-        <h3 className="text-title-medium text-on-primary">{pick(CATALOGUE_PAID)}</h3>
+        <h3 className="border-b border-line pb-3 text-body-md text-mute-strong">{pick(CATALOGUE_PAID)}</h3>
         <ul className="mt-4 grid gap-4 medium:grid-cols-2">
           {paid.map((p) =>
             card(p.slug, pick(p.name), pick(p.headline), p.status === "soon"),
