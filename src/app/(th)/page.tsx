@@ -92,6 +92,22 @@ import {
   WHO_HEADING,
 } from "@/lib/content/home";
 
+/**
+ * One mark per pipeline figure. See the note at the call site for why they are
+ * not the same glyph three times.
+ *
+ * `screened` is a document, `published` is a document with a tick, `employers`
+ * is a building. Nothing here is a brand asset; they are the plainest reading
+ * of each noun, which is what an icon beside a number should be.
+ */
+const STAT_MARK: Record<string, string> = {
+  screened: "M6 2h8l4 4v16H6V2Zm7 1.5V7h3.5L13 3.5ZM8 11h8v1.5H8V11Zm0 4h8v1.5H8V15Z",
+  published:
+    "M6 2h8l4 4v16H6V2Zm7 1.5V7h3.5L13 3.5Zm-2.2 15.1L7.5 15.3l1.1-1.1 2.2 2.2 4.6-4.6 1.1 1.1-5.7 5.7Z",
+  employers:
+    "M3 21V7l7-4 7 4v3h4v11H3Zm2-2h4v-3H5v3Zm0-5h4v-3H5v3Zm0-5h4V6H5v3Zm6 10h4v-3h-4v3Zm0-5h4v-3h-4v3Zm0-5h4V6h-4v3Zm8 10h2v-7h-2v7Z",
+};
+
 export default function Home() {
   const { t, pick, path, locale } = useCopy();
 
@@ -169,11 +185,19 @@ export default function Home() {
           <div className="mt-10 grid gap-10 medium:grid-cols-3">
             {MARKET_STATS.map((stat) => (
               <div key={stat.field}>
+                {/* A mark per figure rather than the same tick three times.
+                    Three identical chips say the three numbers are the same
+                    kind of thing, and they are not: a post read, a post that
+                    said the word sponsorship, a company behind them. Drawn
+                    rather than fetched, one path each, inheriting the chip's
+                    own colour. */}
                 <span
                   aria-hidden
-                  className="flex size-9 items-center justify-center rounded-full bg-primary-pale text-body-sm-strong text-on-primary-pale"
+                  className="flex size-10 items-center justify-center rounded-full bg-primary-pale text-on-primary-pale"
                 >
-                  &#10003;
+                  <svg viewBox="0 0 24 24" className="size-5" fill="currentColor">
+                    <path d={STAT_MARK[stat.field] ?? STAT_MARK.screened} />
+                  </svg>
                 </span>
                 <p className="mt-4 text-display-md text-on-primary">{MARKET[stat.field]}</p>
                 <p className="mt-2 text-body-large text-body">{t(stat.label)}</p>
@@ -192,9 +216,38 @@ export default function Home() {
       </Band>
 
         {/* ------------------------------------------------- the problem */}
-      <Band ground="canvas">
-          <h2 className={SECTION_HEADING(locale)}>{pick(PROBLEM_HEADING)}</h2>
-          <p className="mt-3 text-body-large text-on-surface-variant">{pick(PROBLEM_BODY)}</p>
+      {/*
+        B7 in the block library: a rounded colour panel with a picture on one
+        side and the statement on the other. This is the page's emotional turn,
+        the sentence a reader recognises themselves in, and it was a heading and
+        a paragraph on white, indistinguishable from the sections either side of
+        it. A panel is how the reference gives a single idea its own weight
+        without spending a band on it.
+
+        `understood.jpg` is the assessment's own block art for the question
+        about being read correctly, which is the same idea this paragraph is
+        making. It is not used anywhere outside the flow.
+      */}
+      <Band ground="canvas" width="wide">
+        <div className="overflow-hidden rounded-3xl bg-primary-pale">
+          <div className="grid items-center gap-0 large:grid-cols-2">
+            <div className="relative min-h-[280px] w-full self-stretch large:min-h-[420px]">
+              <Image
+                src="/assess/blocks/understood.jpg"
+                alt=""
+                fill
+                sizes="(max-width: 1200px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="px-8 py-12 medium:px-12">
+              <h2 className={`text-on-primary-pale ${SECTION_HEADING(locale)}`}>
+                {pick(PROBLEM_HEADING)}
+              </h2>
+              <p className="mt-5 text-body-large text-on-primary-pale">{pick(PROBLEM_BODY)}</p>
+            </div>
+          </div>
+        </div>
       </Band>
 
         {/* ------------------------------------------------------- triage

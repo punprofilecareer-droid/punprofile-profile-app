@@ -87,14 +87,37 @@ export default function Catalogue() {
         {/* The only price on this page, and it is the unit rather than a pack.
             Paul, 24/08/2026: one number and a link. The unit was held flat at
             50 THB when the packs were decided precisely so that it can be said
-            on its own like this and stay true whichever pack someone buys. */}
-        <p className="mt-5 text-body-large text-on-surface">{pick(CATALOGUE_PRICE_LINE)}</p>
-        <Link
-          href={path(DESTINATIONS.pricing.href)}
-          className="mt-3 inline-block text-body-large text-on-primary underline underline-offset-2"
-        >
-          {pick(DESTINATIONS.pricing.label)}
-        </Link>
+            on its own like this and stay true whichever pack someone buys.
+
+            B6 in the block library, 25/08/2026: a fee is a ROW. A chip
+            introduces it, the sentence sits in the middle, the way to the full
+            prices sits at the end, and hairlines close it top and bottom. It
+            was a paragraph followed by a link, which on a page of cards read as
+            small print rather than as the price.
+
+            The sentence is not split into a label and a value. It is one string
+            in `home.ts` in both languages, and Thai puts the number in its own
+            place; pulling "50" out of it here would be inventing copy and would
+            break the moment the Thai is reviewed. */}
+        <div className="mt-8 border-y border-line py-6">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
+            <span
+              aria-hidden
+              className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-pale text-on-primary-pale"
+            >
+              &#3647;
+            </span>
+            <p className="min-w-0 flex-1 text-body-md-strong text-on-primary">
+              {pick(CATALOGUE_PRICE_LINE)}
+            </p>
+            <Link
+              href={path(DESTINATIONS.pricing.href)}
+              className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-line-strong px-5 text-body-sm-strong text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+            >
+              {pick(DESTINATIONS.pricing.label)}
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

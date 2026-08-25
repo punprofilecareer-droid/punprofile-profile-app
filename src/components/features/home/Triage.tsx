@@ -15,9 +15,11 @@
  * these are the answers real candidates actually pick, taken from the instrument
  * they pick them in.
  *
- * Cards and not buttons, for the reason the old services section gave: six
- * filled actions on one view is six of them being ignored. Each is a link with
- * the whole card as its target, which is the tap size a phone needs.
+ * **One card holding rows, not six cards**, since 25/08/2026 and the block
+ * library. Six separate cards in a two-column grid read as six offers competing
+ * with each other; the reference states the same idea as one white card with a
+ * row per answer, hairlines between them and an arrow chip at the end of each.
+ * The whole row is still the tap target, which is the size a phone needs.
  */
 
 import Link from "next/link";
@@ -28,17 +30,17 @@ export default function Triage() {
   const { pick, path } = useCopy();
 
   return (
-    <ul className="mt-8 grid gap-4 medium:grid-cols-2">
+    <ul className="card-plain mt-8 overflow-hidden border border-line">
       {TRIAGE.map((item) => (
-        <li key={item.id}>
+        <li key={item.id} className="border-b border-line last:border-b-0">
           <Link
             href={path(item.href)}
-            className="card-outlined group flex h-full min-h-20 items-center justify-between gap-4 rounded-large px-6 py-5 transition-colors hover:bg-surface-container-high"
+            className="group flex min-h-20 items-center justify-between gap-4 px-6 py-5 duration-[350ms] ease-nav transition-colors hover:bg-canvas-soft"
           >
-            <span className="text-body-large text-on-surface">{pick(item.line)}</span>
+            <span className="text-body-md-strong text-on-primary">{pick(item.line)}</span>
             <span
               aria-hidden
-              className="text-body-large text-on-primary transition-transform group-hover:translate-x-0.5"
+              className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-pale text-on-primary-pale duration-[350ms] ease-nav transition-transform group-hover:translate-x-1"
             >
               &rarr;
             </span>
