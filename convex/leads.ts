@@ -176,7 +176,7 @@ const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim()
  *
  * Email alone is not enough. It keeps the magic link deliverable (FR-011), but
  * Thai candidates largely do not read email, so a lead reachable only there is
- * not reachable. Decided 08/08/2026, see `09_Decision_Log.md`.
+ * not reachable. See `prd.md` FR-005.
  *
  * Every rule here is enforced server-side. The form checks the same things for
  * immediate feedback, but a hand-crafted request must not be able to create a

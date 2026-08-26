@@ -155,7 +155,7 @@ export const GATES: { key: DimensionKey; bar: number }[] = [
  * Direction is Stage 0 and precedes every gate, but its evidence is scored inside
  * European Market Fit, which gates fourth. That mismatch made the funnel picker
  * and the gate order disagree on a real candidate, so Direction is an explicit
- * precondition rather than a gate. See `09_Decision_Log.md` 2026-08-13.
+ * precondition rather than a gate. See `10_Methodology.md`.
  */
 export const DIRECTION_ITEMS = ["targetClarity", "countryReach"] as const;
 

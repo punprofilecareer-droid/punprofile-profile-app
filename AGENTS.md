@@ -26,7 +26,7 @@ moved there. Nothing here defines what the app should be.
 | **Design tokens: real colours, typography, spacing, components** | `ctxt-brand/design.md` |
 | Brand personality, voice, colour meaning | `Brand_Guidelines.md` |
 | Mission, offerings, scope, audience | `01_Project_Foundation.md` |
-| Decisions and their rationale, including abandoned attempts | `09_Decision_Log.md` |
+| Decisions and their rationale | git history. There is no decision log; a rule lives in the document that owns it, and what was tried and rejected is a closing section of that same document |
 | Roadmap and session handoff | `punprofile-work/work-projects/eu-fit-check/` |
 
 Cross-references in this repo's code are bare filenames in backticks, never

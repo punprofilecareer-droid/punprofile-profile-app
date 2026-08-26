@@ -478,7 +478,7 @@ export default defineSchema({
    *   home is an `assessments` row with `source: "coach"`, not this table.
    * - **`nextStep` is the same pick as `firstAction`**, or the reason it
    *   differs is written down. Two competing answers to "what do I do first" is
-   *   the failure `09_Decision_Log.md` already recorded once.
+   *   the failure `08_Coaching_Business.md` records under merging option values.
    */
   consultations: defineTable({
     leadId: v.id("leads"),
@@ -745,7 +745,7 @@ export default defineSchema({
     /** From `10_Methodology.md` § 4. It labels which stage's work this was. It
      *  never decides what the candidate does next: that is the gates, and two
      *  mechanisms answering "what do I do first" is the failure
-     *  `09_Decision_Log.md` already recorded once. */
+     *  `08_Coaching_Business.md` records under merging option values. */
     methodStage: v.union(
       v.literal("direction"),
       v.literal("route"),

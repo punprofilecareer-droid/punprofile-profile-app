@@ -107,7 +107,7 @@ console.log(violations === 0 ? `  all invariants hold across ${raw.rows.length} 
 /**
  * Target Clarity must be independent of how many countries a candidate names.
  *
- * Decided 13/08/2026 (`09_Decision_Log.md`): country count is reach, not
+ * See `08_Coaching_Business.md` § Country Reach: country count is reach, not
  * clarity. A rule that survives in an if-statement long after the document says
  * it is gone is worse than one nobody agreed to, so this asserts the property
  * behaviourally rather than trusting the code to have been changed. Renaming a

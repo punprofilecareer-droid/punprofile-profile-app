@@ -199,7 +199,7 @@ function scoreRelocationTimeline(r: SurveyResponse): number | null {
 /**
  * Target Clarity scores the ROLE only.
  *
- * Decided 13/08/2026 (`09_Decision_Log.md`): country count is reach, not
+ * See `08_Coaching_Business.md` § Country Reach: country count is reach, not
  * clarity, and it moved out of this item entirely. Counting countries could
  * never tell a language market from a scattergun, because it never asked what
  * the candidate holds — someone with German at B2 naming Germany, Austria and
@@ -227,7 +227,7 @@ function scoreTargetClarity(r: SurveyResponse): number | null {
  * Country Reach: the fraction of the candidate's named countries they can
  * realistically work in, `reachable / selected`.
  *
- * Decided 13/08/2026 (`09_Decision_Log.md`): country count is reach, not clarity.
+ * See `08_Coaching_Business.md` § Country Reach: country count is reach, not clarity.
  * **Four countries a candidate can genuinely reach score ABOVE one country**,
  * because a set held together by a language they hold is capability, not
  * vagueness. A scattergun still scores low with no count rule anywhere: B1

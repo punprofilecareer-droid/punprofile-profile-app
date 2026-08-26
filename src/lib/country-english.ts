@@ -3,7 +3,7 @@
  * candidate's English level into "can they realistically work there".
  *
  * Owned by `07_Reference.md`; this file implements it. Decided 13/08/2026, see
- * `09_Decision_Log.md` and `english-usage-bands.md`.
+ * `08_Coaching_Business.md` and `english-usage-bands.md`.
  *
  * **These are workplace bands, not population proficiency.** EF EPI measures the
  * second and the two disagree. EF scores Germany 598 ("High"), above Switzerland
