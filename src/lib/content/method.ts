@@ -16,15 +16,18 @@ import type { DimensionKey } from "@/lib/model";
  * been carrying Matched Jobs' pipeline count instead. A record cannot cite a
  * page the reader cannot reach. This page is what makes the citation true.
  *
- * **It publishes the reasoning, not the numbers, and that is deliberate.**
- * `10_Methodology.md` is still headed "Status: draft" and calls its bars
- * "**Proposed** bars, for the owner to set". `model.ts` › `GATES` implements
- * 4.0, 4.0, 3.5 and 3.0 and the app scores against them daily, so they are
- * decided in code and undecided in the document that owns them. Printing them
- * for a reader would settle that mismatch by publishing, which is the wrong way
- * round. The gates, their order and the question each one answers are all
- * decided; those go on the page. The bars join it when Paul confirms them and
- * the "proposed" comes out of the owning document.
+ * **It publishes the bars, as of 26/08/2026.** For one day it did not. The page
+ * shipped with the gates and their questions and no numbers, because
+ * `10_Methodology.md` was headed "Status: draft" and called them "**Proposed**
+ * bars, for the owner to set", while `model.ts` › `GATES` implemented 4.0, 4.0,
+ * 3.5 and 3.0 and the app scored real candidates against them daily. Printing a
+ * number the owning document called undecided would have settled it by
+ * publishing, which is backwards.
+ *
+ * Building this page is what forced the decision, and Paul made it the same day:
+ * the bars are confirmed at the values already in the code, and the owning
+ * document says so. Nothing in the app changed. What changed is that the numbers
+ * are now a decision rather than a habit.
  *
  * **The order is not written here.** The page walks `GATES` from `model.ts`,
  * which is the same array `firstAction()` stops at. A published method that
@@ -153,6 +156,17 @@ export const GATE_QUESTIONS: Record<DimensionKey, Copy> = {
     // TH-UNREVIEWED
     th: "คุณทำงานนั้นได้หรือไม่",
   },
+};
+
+/**
+ * The label beside each bar. The NUMBER is never written here: the page reads
+ * it off `GATES` in `model.ts`, the same array the scorer walks, so a published
+ * bar and an enforced bar cannot become two different numbers.
+ */
+export const GATE_BAR: Copy = {
+  en: "clears at",
+  // TH-UNREVIEWED
+  th: "ผ่านที่",
 };
 
 export const GATES_ORDER: Copy = {

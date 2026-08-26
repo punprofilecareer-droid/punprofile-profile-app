@@ -4,9 +4,9 @@
  * `/method`. Added 26/08/2026.
  *
  * The page walks `GATES` from `model.ts` rather than a list of its own, so the
- * published order is the implemented order by construction. See the header of
- * `src/lib/content/method.ts` for why this page exists and what it deliberately
- * does not print.
+ * published order and the published bars are the implemented ones by
+ * construction. See the header of `src/lib/content/method.ts` for why this page
+ * exists, and for the one day it carried the gates without their bars.
  *
  * Blocks, per `Narrative_System.md`: B1 carries the claim and the ask, B6 the
  * gates as spec rows, B10 the limit, B8 the ask again. The limit band is above
@@ -25,6 +25,7 @@ import {
   GATES_HEADING,
   GATES_LOWEST,
   GATES_ORDER,
+  GATE_BAR,
   GATE_QUESTIONS,
   LIMIT_BODY,
   LIMIT_HEADING,
@@ -87,9 +88,18 @@ export default function MethodPage() {
               <span aria-hidden className="text-display-sm text-on-tertiary-container">
                 {i + 1}
               </span>
-              <span>
-                <span className="block text-heading-md text-on-primary">
-                  {t(`dimension.${gate.key}`)}
+              <span className="flex-1">
+                <span className="flex flex-wrap items-baseline justify-between gap-x-4">
+                  <span className="text-heading-md text-on-primary">
+                    {t(`dimension.${gate.key}`)}
+                  </span>
+                  {/* The bar, published 26/08/2026 once Paul confirmed it. The
+                      number is read off `GATES`, never written in the content
+                      module, so the published bar and the enforced bar are the
+                      same value by construction. */}
+                  <span className="text-body-md-strong text-on-tertiary-container">
+                    {pick(GATE_BAR)} {gate.bar.toFixed(1)}
+                  </span>
                 </span>
                 <span className="mt-1 block text-body-large text-on-surface-variant">
                   {pick(GATE_QUESTIONS[gate.key])}
