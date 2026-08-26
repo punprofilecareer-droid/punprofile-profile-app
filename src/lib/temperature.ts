@@ -192,11 +192,34 @@ function applications(input: ScoringInput): TemperatureInput {
   };
 }
 
-/** Q5. */
+/**
+ * Q5.
+ *
+ * **`sponsor_route_named` scores 2, changed 26/08/2026 (Paul).** It scored 1,
+ * the same as `sponsor_no_route`, and that was a straight error rather than a
+ * judgement: `10_Methodology.md`'s Mobility Readiness ladder has five rungs and
+ * names those two separately, because someone who knows they need sponsorship
+ * AND has identified a route they can use is materially further along than
+ * someone who knows they need one and has nothing. The method said so; this
+ * file collapsed them.
+ *
+ * It is also what made the top tier unreachable. Measured across 195 reachable
+ * rows, nobody had ever scored above 7 against a band starting at 8, because
+ * three of the five inputs have a 2-point band this audience is defined by NOT
+ * having: applications wants "got some responses" (0 of 147), this one wanted
+ * EU work rights (10%), and stage wants interviewing or negotiating (2%). The
+ * arithmetic ceiling for a candidate squarely inside the ICP was exactly 7.
+ *
+ * With this line, 8 is reachable from inside the ICP, which is what a top band
+ * has to be. Six leads clear it, all the same profile: country and role known,
+ * actively applying, a named visa route, moving within three months. The
+ * boundary did not move, and lowering it to 7 stays rejected: 33 people sit on
+ * 7 and that is not a call list. See `temperature-top-band.md`.
+ */
 function visa(input: ScoringInput): TemperatureInput {
   if (input.workAuth === undefined || input.workAuth === null) return NOT_REACHED("visa");
   const w = input.workAuth;
-  const points = w === "eu_rights" ? 2 : w === "sponsor_route_named" || w === "sponsor_no_route" ? 1 : 0;
+  const points = w === "eu_rights" || w === "sponsor_route_named" ? 2 : w === "sponsor_no_route" ? 1 : 0;
   return { key: "visa", points, max: 2, basis: w };
 }
 
