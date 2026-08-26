@@ -147,6 +147,35 @@ export const DESTINATIONS = {
     cost: COST.read,
     label: { en: "See the prices", th: "ดูแพ็กเกจและราคา" },
   },
+  /**
+   * Added 26/08/2026, Paul's call, because the CV Check was asking for
+   * `assess`.
+   *
+   * `Narrative_System.md` gives every offer a slot 8, and the checker verifies
+   * that the key names a destination `cta.ts` actually has. `assess` exists, so
+   * `cv-check` passed while promising one thing and routing somewhere else: its
+   * record's ask reads "upload it" and the button sent the reader to the
+   * seventeen-question assessment. A promise with the wrong route is worse than
+   * a promise with no route, because nothing catches it.
+   *
+   * `COST.read` and not `COST.answer`: the product is `status: "soon"`, so what
+   * this asks for today is opening a page, and the page's own action is the one
+   * that costs something. That flips to a real upload on the day the product
+   * opens, alongside the other three things `products.ts` lists as flipping
+   * together.
+   *
+   * Guided Job Hunt keeps `assess` on purpose, decided the same day. It has no
+   * route of its own yet, and the assessment is a real first step for it rather
+   * than a mismatch.
+   */
+  cvcheck: {
+    href: "/products/cv-check",
+    cost: COST.read,
+    // TH-UNREVIEWED. A draft, following the pattern the other `read`-cost
+    // labels already use: `ดู` and then what the page shows, which is how
+    // `pricing` and `coaching` read.
+    label: { en: "See how the CV Check works", th: "ดูว่า CV Check ทำงานอย่างไร" },
+  },
   contact: {
     href: "/contact",
     cost: COST.contact,
@@ -256,6 +285,19 @@ export const PAGE_ACTIONS: Record<string, PageActions> = {
     // second way on 23/08 when the card above it stopped promising contact.
     because:
       "They have just seen their own result. The useful thing to offer is what the work actually is, not a second booking button on a screen that already has one.",
+  },
+  /**
+   * `/method`, added 26/08/2026 with the page. A reader who has just read how
+   * the measurement works is a reader ready to be measured by it, which makes
+   * the assessment the next step rather than a restart. The secondary costs
+   * less, which is what rule 4 asks: reading a page, for someone who wants the
+   * people before the instrument.
+   */
+  "/method": {
+    primary: "assess",
+    secondary: "coaching",
+    because:
+      "The page ends having explained the four gates. The only useful next thing is finding out where the reader stands against them, and the check is the cheapest way to ask.",
   },
   "/coaching": {
     primary: "contact",

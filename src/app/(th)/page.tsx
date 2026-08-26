@@ -69,6 +69,7 @@ import SplitFeature from "@/components/blocks/SplitFeature";
 import Testimonials from "@/components/blocks/Testimonials";
 import { EYEBROW, HERO_HEADING, SECTION_HEADING } from "@/lib/content/footer";
 import { MARKET } from "@/lib/content/market-snapshot.generated";
+import { METHOD_PROOF } from "@/lib/content/method";
 import { FAQ, FAQ_HEADING } from "@/lib/content/faq";
 import {
   CATALOGUE_HEADING,
@@ -152,22 +153,37 @@ export default function Home() {
           */}
           <p className={`text-mute-strong ${EYEBROW(locale)}`}>{t("landing.eyebrow")}</p>
 
+          {/*
+            Two proofs, and since 26/08/2026 neither of them is the pipeline
+            count.
+
+            `Narrative_System.md` says a B1 carries slots 7, 3 and 8, and this
+            hero's headline and button are the EU Fit Check. The count of
+            adverts checked is not the EU Fit Check's proof: it is Matched Jobs'
+            own slot 7, whose record reads "the pipeline figures on the home
+            page are this, counted". The hero was selling one offer with
+            another offer's evidence, which `verify:narrative` cannot see
+            because it checks that a B1 has a proof and not whose.
+
+            It was also on this page twice. The same figure under the same
+            `stats.market.screened` label renders again in the B3 band below,
+            where it has the sentence that explains what screening means and the
+            date window under it. That band earns it; this one had the number
+            with nothing around it. Paul's call, 26/08/2026.
+
+            What is left is the EU Fit Check's own proof, and it is a proof
+            rather than an adjective because the reader can check it by taking
+            the thing: under two minutes, a result straight away, no account.
+
+            **The record's stated proof now has somewhere to point.**
+            `eu-fit-check`'s slot 7 reads "the four gates are published
+            reasoning in 10_Methodology.md, not a claim", and that document is
+            in the coaching repo where no reader can open it, so for a day this
+            hero had one proof and a hole where the second should be. `/method`
+            was built on 26/08/2026 to close it, and the second chip is the link
+            to it: the claim is checkable because the reader can go and check it.
+          */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-body-sm">
-            <span className="inline-flex items-center gap-2">
-              <span
-                aria-hidden
-                className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-pale text-caption text-on-primary-pale"
-              >
-                &#9733;
-              </span>
-              {/* The two proofs are the pipeline's own figures, not invented ones.
-                  `market-snapshot.generated.ts` is regenerated from the real
-                  run, and its labels are strings Paul has already read. A hero
-                  proof that cannot be checked is worse than no hero proof. */}
-              <span className="text-body-sm-strong text-on-primary">
-                {MARKET.screened} {t("stats.market.screened")}
-              </span>
-            </span>
             <span className="inline-flex items-center gap-2">
               <span
                 aria-hidden
@@ -182,6 +198,23 @@ export default function Home() {
               <span className="text-body-sm-strong text-on-primary">
                 {t("landing.reassurance")}
               </span>
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span
+                aria-hidden
+                className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-pale text-caption text-on-primary-pale"
+              >
+                &#9733;
+              </span>
+              {/* The second proof, 26/08/2026, and it is a link because that is
+                  what makes it one. An unlinked "our method is published" is an
+                  adjective, which slot 7 forbids. */}
+              <Link
+                href={path("/method")}
+                className="text-body-sm-strong text-on-primary underline underline-offset-4"
+              >
+                {pick(METHOD_PROOF)}
+              </Link>
             </span>
           </div>
 

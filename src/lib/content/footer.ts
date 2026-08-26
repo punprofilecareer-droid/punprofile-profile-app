@@ -137,6 +137,14 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
     heading: { en: "EU Fit Check", th: "EU Fit Check" },
     links: [
       { href: "/efc-assessment", label: { en: "Take the check", th: "ทำ EU Fit Check" } },
+      /*
+       * `/method`, 26/08/2026, and this column rather than another. The page is
+       * how the check decides what it decides, so it belongs beside the check
+       * and above the questions people ask about it.
+       *
+       * TH-UNREVIEWED on the label, like everything else on that page.
+       */
+      { href: "/method", label: { en: "How we measure", th: "วิธีที่เราใช้ประเมิน" } },
       { href: "/faq", label: { en: "FAQ", th: "FAQ" } },
     ],
   },
