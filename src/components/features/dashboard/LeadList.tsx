@@ -39,6 +39,7 @@ import {
   CRM_STATUS_LABELS,
   PRIORITY_LABELS,
   REASON_REQUIRED,
+  SETTABLE_STATUSES,
   type CrmStatus,
   type Priority,
   type SettableStatus,
@@ -398,6 +399,8 @@ const PRIORITY_STYLE: Record<Priority, string> = {
 const STATUS_STYLE: Record<string, string> = {
   "": "text-on-surface-variant",
   nurturing: "bg-primary-container text-on-primary-container",
+  quoted: "bg-primary-container text-on-primary-container",
+  closed_won: "bg-primary-container text-on-primary-container",
   not_now: "bg-primary-container text-warning",
   closed_lost: "bg-surface-container text-on-surface-variant",
   disqualified: "bg-surface-container text-on-surface-variant",
@@ -424,9 +427,9 @@ function JudgedCell({
   leadId: Id<"leads">;
   crmStatus: SettableStatus | null;
   crmStatusReason: string | null;
-  /** What `crmStatusFor` resolved to. `quoted` and `closed_won` are read off
-   *  the engagement rows and cannot be picked here; the control shows them and
-   *  goes read-only, because the money record is what says they are true. */
+  /** What `crmStatusFor` resolved to, which may be a Quote sent or Closed won
+   *  read off an engagement row rather than set by hand. The control shows it
+   *  so the row does not read as New, and picking anything writes it. */
   derived: CrmStatus | null;
 }) {
   const save = useMutation(api.leads.setCrmStatus);
@@ -449,23 +452,10 @@ function JudgedCell({
     }
   }
 
-  const shown = pending ?? crmStatus ?? "";
-
-  // Read off the engagement rows, so there is nothing to choose here. Showing
-  // the select disabled rather than hiding it says WHY it cannot be changed.
-  const locked = derived === "quoted" || derived === "closed_won";
-  if (locked) {
-    return (
-      <div className="min-w-[9rem]">
-        <span
-          className="inline-block whitespace-nowrap rounded-full bg-primary-container px-3 py-1 text-body-medium text-on-primary-container"
-          title="Read from the engagement row. Change the engagement, not the label: that row carries the figure and is what decides revenue."
-        >
-          {CRM_STATUS_LABELS[derived]}
-        </span>
-      </div>
-    );
-  }
+  // The resolved status, not just the stored one, so a Quote sent that came
+  // from an engagement row shows in the control rather than reading as New.
+  // Picking anything writes it, which is what makes his choice win from then on.
+  const shown = pending ?? crmStatus ?? (derived && derived !== "new" ? derived : "");
 
   return (
     <div className="min-w-[9rem]">
@@ -473,6 +463,7 @@ function JudgedCell({
         value={shown}
         disabled={busy}
         aria-label="Status"
+        data-derived={derived ?? undefined}
         title={crmStatusReason ?? "New. Nobody has worked this lead yet"}
         className={`field h-9 min-h-0 w-full rounded-full px-2 text-body-medium ${STATUS_STYLE[shown] ?? ""}`}
         onChange={(e) => {
@@ -498,11 +489,12 @@ function JudgedCell({
           setReason(crmStatusReason ?? "");
         }}
       >
-        <option value="">new</option>
-        <option value="nurturing">nurturing</option>
-        <option value="not_now">not now</option>
-        <option value="closed_lost">closed lost</option>
-        <option value="disqualified">disqualified</option>
+        <option value="">{CRM_STATUS_LABELS.new}</option>
+        {SETTABLE_STATUSES.map((v) => (
+          <option key={v} value={v}>
+            {CRM_STATUS_LABELS[v]}
+          </option>
+        ))}
       </select>
 
       {pending && (

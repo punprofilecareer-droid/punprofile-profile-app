@@ -975,6 +975,8 @@ export const setCrmStatus = mutation({
     crmStatus: v.union(
       v.literal("nurturing"),
       v.literal("not_now"),
+      v.literal("quoted"),
+      v.literal("closed_won"),
       v.literal("closed_lost"),
       v.literal("disqualified"),
       v.null(),

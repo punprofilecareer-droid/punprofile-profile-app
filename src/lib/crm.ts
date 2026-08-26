@@ -18,15 +18,14 @@ import type { TemperatureTier } from "./temperature";
  *
  * So the split here is by who is speaking:
  *
- * - **Quoted** and **Closed won** are facts. Quoting somebody writes a figure
- *   into `engagements`, and that row is the money record. A hand-set label
- *   could disagree with it, and the row is what decides revenue, so the label
- *   reads the row.
- * - **Nurturing**, **Not now**, **Closed lost** and **Disqualified** are Paul's
- *   decisions. A decision does not go stale when a rule changes; it is a record
- *   of what a person chose, stamped with who and when.
- * - **New** is neither. It is the absence of both: reachable, and nobody has
- *   touched them yet.
+ * - **Every status except New is Paul's to set**, stamped with who and when. A
+ *   decision does not go stale when a rule changes; it is a record of what a
+ *   person chose on a day, which is why storing these does not break the rule
+ *   that keeps `lifecycle.ts` deriving everything.
+ * - **Quote sent and Closed won are also readable off the `engagements` rows**,
+ *   which carry the figures. That is a fallback for when he has set nothing,
+ *   not a lock: a quote goes out before the paperwork catches up.
+ * - **New** is the absence of both: reachable, and nobody has touched them yet.
  *
  * ---------------------------------------------------------------------------
  * ENTRY: NO CONTACT IS TRAFFIC, NOT A LEAD
@@ -56,10 +55,22 @@ export const CRM_STATUSES = [
 ] as const;
 export type CrmStatus = (typeof CRM_STATUSES)[number];
 
-/** The four Paul sets by hand. The other three are read off evidence. */
+/**
+ * **Every status except New is his to set.** Widened 26/08/2026: Quote sent and
+ * Closed won were read-only, derived from the engagement rows, and he could not
+ * pick them from the dropdown. That was the wrong call. The engagement row is
+ * still the money record and still sets the status on its own when there is
+ * one, but it is a fallback now rather than a lock: a quote goes out before
+ * anybody writes a figure down, and the label should not wait for the paperwork.
+ *
+ * They can disagree, and the resolution is that what he set wins. See
+ * `crmStatusFor`.
+ */
 export const SETTABLE_STATUSES = [
   "nurturing",
   "not_now",
+  "quoted",
+  "closed_won",
   "closed_lost",
   "disqualified",
 ] as const;
@@ -156,14 +167,14 @@ export interface CrmInput {
 export function crmStatusFor(input: CrmInput): CrmStatus | null {
   if (!input.reachable) return null;
 
-  if (input.stored === "disqualified") return "disqualified";
-  if (input.stored === "closed_lost") return "closed_lost";
+  // What he set wins, always. He is looking at the person; the engagement row
+  // is looking at the paperwork, and the paperwork is usually behind.
+  if (input.stored) return input.stored;
 
+  // Nothing set, so read the money record. A figure written down is evidence
+  // enough to move the label on its own, which saves setting it twice.
   if (input.engagementsAgreed > 0) return "closed_won";
   if (input.engagementsProposed > 0) return "quoted";
-
-  if (input.stored === "nurturing") return "nurturing";
-  if (input.stored === "not_now") return "not_now";
 
   return "new";
 }
