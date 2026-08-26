@@ -390,7 +390,15 @@ function priorityReason(
 }
 
 const PRIORITY_STYLE: Record<Priority, string> = {
-  now: "bg-primary text-on-primary ground-fixed",
+  // `bg-canvas-brand`, not `bg-primary`, and this is the trap the design system
+  // warns about from the other side. `.ground-fixed` REMAPS `--color-primary`
+  // to the dark green, because on a lime ground the lime is the ground and the
+  // button on it is the dark pill. So `bg-primary` inside `.ground-fixed`
+  // paints #163300, and `text-on-primary` is the same #163300: dark on dark,
+  // which is exactly what it rendered as. `canvas-brand` is the lime and
+  // `.ground-fixed` leaves it alone, and `ink` is what that class pins for text
+  // on it, measured at 9.45.
+  now: "ground-fixed bg-canvas-brand text-ink",
   next: "bg-primary-container text-on-primary-container",
   later: "text-on-surface-variant",
   unranked: "text-mute-strong",
