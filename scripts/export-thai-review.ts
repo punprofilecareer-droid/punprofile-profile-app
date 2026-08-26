@@ -39,6 +39,8 @@ import * as footer from "../src/lib/content/footer.js";
 import * as home from "../src/lib/content/home.js";
 import * as pricing from "../src/lib/content/pricing.js";
 import * as products from "../src/lib/content/products.js";
+import * as cta from "../src/lib/content/cta.js";
+import * as method from "../src/lib/content/method.js";
 
 interface Row {
   /** Dotted path, e.g. `copy.ts › report.footer` or `services.ts › SERVICES[0].includes[4]`. */
@@ -108,6 +110,23 @@ const ALL: Row[] = [
   // carry were invisible to it until they were listed here.
   ...harvest(pricing as unknown as Record<string, unknown>, "pricing.ts", false),
   ...harvest(products as unknown as Record<string, unknown>, "products.ts", false),
+  /*
+   * Added 26/08/2026, Paul's call, and it closes a hole rather than widening
+   * the queue.
+   *
+   * `cta.ts` owns every button label on the site and was in neither list, so a
+   * `TH-UNREVIEWED` marker written beside one would have been REPORTED as
+   * unresolved and the string itself would never have appeared. Found while
+   * adding the `cvcheck` label, whose Thai is a draft.
+   *
+   * This does not surface the existing labels. The queue is driven by the
+   * marker, not by an approval ledger, and the labels Paul has already read
+   * back carry their attribution in a comment instead. Only a marked string
+   * arrives here.
+   */
+  ...harvest(cta as unknown as Record<string, unknown>, "cta.ts", false),
+  // 26/08/2026, with `/method`. Every Thai string on that page is a draft.
+  ...harvest(method as unknown as Record<string, unknown>, "method.ts", false),
 ];
 
 /**
@@ -141,6 +160,9 @@ const SOURCES = [
   // header warns about.
   "src/lib/content/pricing.ts",
   "src/lib/content/products.ts",
+  // 26/08/2026. Moves with the ALL entry above, per the note there.
+  "src/lib/content/cta.ts",
+  "src/lib/content/method.ts",
 ];
 
 const unreviewedThai = new Set<string>();

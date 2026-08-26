@@ -39,6 +39,11 @@ import * as coaching from "../src/lib/content/coaching.js";
 import * as services from "../src/lib/content/services.js";
 import * as faq from "../src/lib/content/faq.js";
 import * as footer from "../src/lib/content/footer.js";
+// 26/08/2026, with `/method`. Its Thai is drafted rather than read back, which
+// is exactly the case this lint exists for: an unreviewed string is the one
+// most likely to carry an LR failure, and it ships behind NOT_YET_INDEXED
+// rather than not shipping.
+import * as method from "../src/lib/content/method.js";
 
 const MODULES: Record<string, Record<string, unknown>> = {
   pricing,
@@ -48,6 +53,7 @@ const MODULES: Record<string, Record<string, unknown>> = {
   services,
   faq,
   footer,
+  method,
 };
 
 /*
@@ -83,6 +89,8 @@ const FLOORS: Record<string, number> = {
   services: 28,
   faq: 36,
   footer: 12,
+  // Set just under the real count, per the note above.
+  method: 18,
 };
 
 const perModule = Object.fromEntries(
