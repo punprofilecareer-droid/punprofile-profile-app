@@ -123,8 +123,11 @@ const realProducts = new Set(PRODUCTS.map((p) => p.slug));
 const realServices = new Set(SERVICES.map((s) => s.id));
 for (const o of n.offers) {
   const where = o.source === "services" ? realServices : realProducts;
-  const module = o.source === "services" ? "services.ts" : "products.ts";
-  if (!where.has(o.slug)) fail(`${o.slug} has a record and is not in ${module}.`);
+  // Not `module`. Next's lint bans assigning that name outright, and this line
+  // has been failing `npm run lint` since 25/08/2026, which took the whole
+  // pre-push list down with it. Found 26/08/2026.
+  const owner = o.source === "services" ? "services.ts" : "products.ts";
+  if (!where.has(o.slug)) fail(`${o.slug} has a record and is not in ${owner}.`);
 }
 
 // 2, 3, 4. every record is complete, points somewhere real, and states no figure
