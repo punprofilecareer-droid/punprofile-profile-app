@@ -81,10 +81,36 @@ export const CRM_STATUS_LABELS: Record<CrmStatus, string> = {
   new: "New",
   nurturing: "Nurturing",
   not_now: "Not now",
-  quoted: "Quoted",
+  quoted: "Quote sent",
   closed_won: "Closed won",
   closed_lost: "Closed lost",
   disqualified: "Disqualified",
+};
+
+/** Funnel order, for the pipeline bar and every stage list on the screen. */
+export const CRM_STATUS_ORDER: readonly CrmStatus[] = [
+  "new",
+  "nurturing",
+  "not_now",
+  "quoted",
+  "closed_won",
+  "closed_lost",
+  "disqualified",
+] as const;
+
+/**
+ * One colour per status: a teal ramp for the live ones, so the bar reads as a
+ * funnel, and greys for the three that are finished, so a closed stretch of the
+ * bar recedes rather than competing with the part still worth working.
+ */
+export const CRM_STATUS_COLOR: Record<CrmStatus, string> = {
+  new: "#5cbdb0",
+  nurturing: "#268e82",
+  not_now: "#b3a369",
+  quoted: "#004d47",
+  closed_won: "#9fe870",
+  closed_lost: "#9aa09a",
+  disqualified: "#c7ccc6",
 };
 
 /** Terminal statuses stop the clock. Nothing is expected of Paul on these rows. */

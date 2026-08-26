@@ -27,11 +27,29 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
+import {
+  CRM_STATUS_COLOR,
+  CRM_STATUS_LABELS,
+  CRM_STATUS_ORDER,
+  type CrmStatus,
+} from "@/lib/crm";
 
-export type LeadStatus = "partial" | "email_captured" | "completed";
+/**
+ * **This bar counts the Status field, since 26/08/2026.** Paul asked for a
+ * pipeline that represents Status, and it had been counting the assessment's
+ * own three stages: page loads, contact given, finished. That is a funnel of
+ * sessions and not a pipeline of people, and it stopped belonging over a list
+ * of people the day traffic left the CRM. Clicking a segment now filters the
+ * list under it, which it could not honestly do before: the first segment held
+ * rows the list no longer contains.
+ *
+ * The three assessment stages are not lost. `leads.status` still carries them,
+ * `stats.community` still counts them, and they belong on a traffic screen when
+ * there is one.
+ */
+export type LeadStatus = CrmStatus;
 
-/** Funnel order, and the order every stage list on this screen uses. */
-export const STATUS_ORDER: readonly LeadStatus[] = ["partial", "email_captured", "completed"] as const;
+export const STATUS_ORDER = CRM_STATUS_ORDER;
 
 /**
  * The stage names, for a row. What one person is.
@@ -46,38 +64,22 @@ export const STATUS_ORDER: readonly LeadStatus[] = ["partial", "email_captured",
  * Abandoned was a verdict on a person the app has no evidence about: most of
  * these rows are a page that was opened, and opening a page is not giving up.
  */
-export const STATUS_LABEL: Record<LeadStatus, string> = {
-  partial: "Started, no contact",
-  email_captured: "Contact given",
-  completed: "Completed",
-};
+export const STATUS_LABEL = CRM_STATUS_LABELS;
 
 /**
- * The same three stages, counted. What a pile of rows is.
+ * The bar and a row now say the same word, and that is the change.
  *
- * **`partial` is "Page loads" here, and the difference from the row label is
- * the point.** 24/08/2026, Paul: the count read as 212 people who gave up, and
- * it is not that. `startSession` inserts a row when someone lands on
- * `/efc-assessment`, before a question is answered, because nothing may be
- * stored on the candidate's device (US-001). So the client cannot recognise a
- * returning visitor, every load is a fresh row, and a reload counts again.
- *
- * One value, two readings, deliberately not one word: "Page loads" is a true
- * name for a total and a meaningless one for a single human, which is why the
- * dropdown on a row uses the map above.
+ * The old split existed because one value had two honest readings: `partial`
+ * was "Started, no contact" for a person and "Page loads" for a total, since a
+ * reload makes a fresh row and one person could be several. A status is not
+ * like that. Nurturing is nurturing whether you are counting one person or
+ * forty.
  */
-export const STATUS_COUNT_LABEL: Record<LeadStatus, string> = {
-  partial: "Page loads",
-  email_captured: "Contact given",
-  completed: "Completed",
-};
+export const STATUS_COUNT_LABEL = CRM_STATUS_LABELS;
+
 
 /** A single teal ramp, light to dark. See the module note for the validation. */
-export const STATUS_COLOR: Record<LeadStatus, string> = {
-  partial: "#5cbdb0",
-  email_captured: "#268e82",
-  completed: "#004d47",
-};
+export const STATUS_COLOR = CRM_STATUS_COLOR;
 
 export default function LeadPipeline({
   active,
@@ -98,31 +100,25 @@ export default function LeadPipeline({
   if (total === 0) {
     return (
       <p className="rounded-large border border-outline-variant bg-surface px-6 py-4 text-body-medium text-on-surface-variant">
-        Nobody in the pipeline yet.
+        Nobody has cleared the contact gate yet.
       </p>
     );
   }
 
   const share = (n: number) => Math.round((n / total) * 100);
 
-  const footnotes: string[] = [
-    // First, because it is the biggest number on the card and the one that
-    // reads wrong without it. Nothing on this screen should need a person to
-    // remember what a column means.
-    "A page load is one visit to the assessment. Nothing is stored on the candidate's device, so a reload counts again and one person can be several.",
-  ];
-  if (p.judgedOut > 0) footnotes.push(`${p.judgedOut} judged out and not counted above.`);
-  if (p.notNow > 0) footnotes.push(`${p.notNow} marked not now, still counted.`);
+  const footnotes: string[] = [];
+  // Beside the bar, never inside it. A session that never gave contact has no
+  // status, so counting it as one would put a number in this bar that the list
+  // underneath cannot show you.
+  if (p.traffic > 0) {
+    footnotes.push(
+      `${p.traffic} sessions never gave contact and are not counted here. A page load is one visit: nothing is stored on the candidate's device, so a reload counts again and one person can be several.`,
+    );
+  }
   footnotes.push(
     p.withCv === 1 ? "1 has sent a CV." : `${p.withCv} have sent a CV.`,
   );
-  if (p.handSet > 0) {
-    footnotes.push(
-      p.handSet === 1
-        ? "1 of these stages was set by hand rather than earned."
-        : `${p.handSet} of these stages were set by hand rather than earned.`,
-    );
-  }
   if (p.capped) {
     footnotes.push("More leads exist than this count scanned, so these are a floor.");
   }
@@ -134,7 +130,7 @@ export default function LeadPipeline({
         <p className="text-body-medium text-on-surface-variant">
           {/* Sessions, not people. Every row here is one visit, including the
               ones that got all the way to the end. */}
-          {total} sessions
+          {total} {total === 1 ? "person" : "people"}
           {active ? `, showing ${STATUS_COUNT_LABEL[active].toLowerCase()} only` : ""}
         </p>
       </div>
@@ -179,10 +175,8 @@ export default function LeadPipeline({
                 onClick={() => onPick(on ? null : s)}
                 title={
                   on
-                    ? "Showing this stage only. Click again for everyone."
-                    : s === "partial"
-                      ? "Show only the sessions that never gave contact details."
-                      : `Show only the ${STATUS_COUNT_LABEL[s].toLowerCase()} leads.`
+                    ? "Showing this status only. Click again for everyone."
+                    : `Show only the people at ${STATUS_COUNT_LABEL[s].toLowerCase()}.`
                 }
                 className={`flex items-center gap-2 rounded-small px-2 py-1 text-left transition-colors hover:bg-surface-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-on-tertiary-container ${
                   on ? "bg-surface-container" : ""
@@ -206,10 +200,7 @@ export default function LeadPipeline({
         })}
       </ul>
 
-      {/* Beside the stages, never inside them. A judged-out lead has left the
-          pipeline and a "not now" has not, which is why only one of the two is
-          subtracted from the shares above.
-          Zero clauses are dropped rather than printed. "0 judged out" is a
+      {/* Zero clauses are dropped rather than printed. "0 judged out" is a
           sentence about nothing, and three of them in a row read as a broken
           readout rather than as a quiet week. */}
       {footnotes.length > 0 && (

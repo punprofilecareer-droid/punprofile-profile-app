@@ -498,6 +498,18 @@ export const listForAdmin = query({
      * nobody.
      */
     view: v.optional(v.union(v.literal("crm"), v.literal("traffic"))),
+    /** Filter to one CRM status, set by clicking a segment of the pipeline bar. */
+    onlyCrmStatus: v.optional(
+      v.union(
+        v.literal("new"),
+        v.literal("nurturing"),
+        v.literal("not_now"),
+        v.literal("quoted"),
+        v.literal("closed_won"),
+        v.literal("closed_lost"),
+        v.literal("disqualified"),
+      ),
+    ),
     sort: v.optional(
       v.union(
         v.literal("priority"),
@@ -577,20 +589,6 @@ export const listForAdmin = query({
       byLead.set(c.leadId, list);
     }
 
-    /**
-     * Engagements, batched the same way and for the same reason. Two counts per
-     * lead is all the CRM status needs: an `agreed` row or beyond makes them
-     * Closed won, a `proposed` row makes them Quoted, and both are read off the
-     * money record rather than off a label somebody typed.
-     */
-    const engByLead = new Map<string, { proposed: number; agreed: number }>();
-    for (const e of await ctx.db.query("engagements").collect()) {
-      const cur = engByLead.get(e.leadId) ?? { proposed: 0, agreed: 0 };
-      if (e.status === "proposed") cur.proposed += 1;
-      else if (e.status !== "refunded") cur.agreed += 1;
-      engByLead.set(e.leadId, cur);
-    }
-
     // Sorted across statuses here, because the index orders within one status,
     // which is not the same thing as "what happened most recently".
     //
@@ -638,6 +636,36 @@ export const listForAdmin = query({
         : withStatus.filter((l) => !hasContact(l));
 
     /**
+     * Engagements, batched the way the consultations above are and for the same
+     * reason: one scan beats an index read per row while these are tens of
+     * rows. Two counts per lead is all the status needs. An `agreed` row or
+     * beyond makes them Closed won and a `proposed` row makes them Quote sent,
+     * both read off the money record rather than off a label somebody typed.
+     *
+     * The resolved status is computed once here because the pipeline filter
+     * needs it and so does every row.
+     */
+    const engForList = new Map<string, { proposed: number; agreed: number }>();
+    for (const e of await ctx.db.query("engagements").collect()) {
+      const cur = engForList.get(e.leadId) ?? { proposed: 0, agreed: 0 };
+      if (e.status === "proposed") cur.proposed += 1;
+      else if (e.status !== "refunded") cur.agreed += 1;
+      engForList.set(e.leadId, cur);
+    }
+    const resolvedFor = (l: Doc<"leads">) =>
+      crmStatusFor({
+        reachable: hasContact(l),
+        fullyWithdrawn: false,
+        stored: l.crmStatus ?? null,
+        engagementsAgreed: engForList.get(l._id)?.agreed ?? 0,
+        engagementsProposed: engForList.get(l._id)?.proposed ?? 0,
+      });
+
+    const inCrmStatus = args.onlyCrmStatus
+      ? visible.filter((l) => resolvedFor(l) === args.onlyCrmStatus)
+      : visible;
+
+    /**
      * Priority, precomputed so the sort can read it without recomputing
      * temperature per comparison.
      *
@@ -648,7 +676,7 @@ export const listForAdmin = query({
      * reason about a person with. See `src/lib/crm.ts`.
      */
     const prio = new Map<string, { rank: number; fit: number }>();
-    for (const l of visible) {
+    for (const l of inCrmStatus) {
       const temp = temperatureFor(toScoringInputForLead(l.responses ?? {}));
       const grade = gradeLead(toGradeInput(l.responses ?? {}), latestCoachIcp(byLead.get(l._id) ?? []));
       const p = priorityFor({
@@ -659,7 +687,7 @@ export const listForAdmin = query({
       prio.set(l._id, { rank: PRIORITY_RANK[p], fit: grade.tier ? FIT_RANK[grade.tier] : 0 });
     }
 
-    const ordered = visible.sort((a, b) => {
+    const ordered = inCrmStatus.sort((a, b) => {
       switch (sort) {
         case "priority": {
           const pa = prio.get(a._id) ?? { rank: 0, fit: 0 };
@@ -738,16 +766,10 @@ export const listForAdmin = query({
          * down. Null means no contact, which since 26/08/2026 means this row is
          * traffic and not a lead at all. See `src/lib/crm.ts`.
          */
-        crmResolved: crmStatusFor({
-          reachable: hasContact(l),
-          // The consent overlay is read on the lead's own page, where there is
-          // room to say what was withdrawn. The list only needs to know they
-          // are still a row.
-          fullyWithdrawn: false,
-          stored: l.crmStatus ?? null,
-          engagementsAgreed: engByLead.get(l._id)?.agreed ?? 0,
-          engagementsProposed: engByLead.get(l._id)?.proposed ?? 0,
-        }),
+        // The consent overlay is read on the lead's own page, where there is
+        // room to say what was withdrawn. The list only needs to know they are
+        // still a row.
+        crmResolved: resolvedFor(l),
         temperature: temperatureFor(toScoringInputForLead(l.responses ?? {})),
         priority: priorityFor({
           temperature: temperatureFor(toScoringInputForLead(l.responses ?? {})).tier,
@@ -1030,32 +1052,60 @@ export const pipeline = query({
 
     const leadsOnly = rows.filter((l) => !isBlogOnlySubscriber(l));
 
-    const counts = { partial: 0, email_captured: 0, completed: 0 };
-    let judgedOut = 0;
-    let notNow = 0;
+    /**
+     * **Counted by CRM status since 26/08/2026, on Paul's call: he wants a
+     * pipeline that represents the Status field.**
+     *
+     * It counted the assessment's own three stages, which is a funnel of page
+     * loads and not a pipeline of people, and it stopped belonging on this
+     * screen the day traffic left the CRM. Nothing is dropped from the bar now
+     * either: disqualified was previously counted and then skipped, so the
+     * shares were of a total that excluded it, and a status bar that hides one
+     * of its own statuses is the readout you cannot reconcile with the list
+     * under it.
+     */
+    const engByLead = new Map<string, { proposed: number; agreed: number }>();
+    for (const e of await ctx.db.query("engagements").collect()) {
+      const cur = engByLead.get(e.leadId) ?? { proposed: 0, agreed: 0 };
+      if (e.status === "proposed") cur.proposed += 1;
+      else if (e.status !== "refunded") cur.agreed += 1;
+      engByLead.set(e.leadId, cur);
+    }
+
+    const counts: Record<string, number> = {
+      new: 0,
+      nurturing: 0,
+      not_now: 0,
+      quoted: 0,
+      closed_won: 0,
+      closed_lost: 0,
+      disqualified: 0,
+    };
+    let traffic = 0;
     let withCv = 0;
-    let handSet = 0;
 
     for (const l of leadsOnly) {
-      // Counted and then skipped: a judged-out lead is out of the pipeline, and
-      // the stage it was in when the judgement landed is not where it is now.
-      if (l.crmStatus === "disqualified") {
-        judgedOut++;
+      const resolved = crmStatusFor({
+        reachable: hasContact(l),
+        fullyWithdrawn: false,
+        stored: l.crmStatus ?? null,
+        engagementsAgreed: engByLead.get(l._id)?.agreed ?? 0,
+        engagementsProposed: engByLead.get(l._id)?.proposed ?? 0,
+      });
+      // No contact is not a status. It is traffic, and it is named beside the
+      // bar rather than inside it.
+      if (!resolved) {
+        traffic++;
         continue;
       }
-      if (l.crmStatus === "not_now") notNow++;
-      counts[l.status]++;
+      counts[resolved]++;
       if (l.cvReceivedAt) withCv++;
-      if (l.statusOverrideAt) handSet++;
     }
 
     return {
       counts,
-      judgedOut,
-      notNow,
+      traffic,
       withCv,
-      /** How many of the stages above were set by hand rather than earned. */
-      handSet,
       /** True when a status hit the scan ceiling, so the counts are a floor.
        *  Named rather than hidden: a truncated count that looks exact is the
        *  failure this file already avoids once, in `listForAdmin`. */

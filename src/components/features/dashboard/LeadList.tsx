@@ -98,11 +98,11 @@ export default function LeadList() {
   /** Set by clicking a stage in the pipeline above. Null is everyone. */
   const [stage, setStage] = useState<LeadStatus | null>(null);
   const leads = useQuery(api.leads.listForAdmin, {
-    // Picking the abandoned stage implies showing abandoned sessions. Without
-    // this, clicking the segment labelled 47 returns an empty table, which
-    // reads as a broken filter rather than as a checkbox left unticked.
-    includeAbandoned: includeAbandoned || stage === "partial",
-    includeDisqualified,
+    includeAbandoned,
+    // Picking Disqualified in the bar implies showing them. Without this,
+    // clicking the segment labelled 3 returns an empty table, which reads as a
+    // broken filter rather than as a checkbox left unticked.
+    includeDisqualified: includeDisqualified || stage === "disqualified",
     sort,
     /**
      * Always the CRM. Paul, 26/08/2026: take traffic out of the CRM. A session
@@ -112,7 +112,7 @@ export default function LeadList() {
      * it and a traffic screen would ask for exactly that.
      */
     view: "crm" as const,
-    onlyStatus: stage ?? undefined,
+    onlyCrmStatus: stage ?? undefined,
   });
 
   const rows = useMemo(() => {
