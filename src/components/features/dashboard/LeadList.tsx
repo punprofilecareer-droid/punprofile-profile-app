@@ -44,14 +44,9 @@ import {
   type SettableStatus,
 } from "@/lib/crm";
 import type { Id } from "../../../../convex/_generated/dataModel";
-import LeadPipeline, { STATUS_COLOR, STATUS_LABEL, STATUS_ORDER } from "./LeadPipeline";
+import LeadPipeline from "./LeadPipeline";
 import type { LeadStatus } from "./LeadPipeline";
 
-const TIER_STYLE: Record<FitTier, string> = {
-  strong: "bg-secondary-container text-on-primary-container",
-  moderate: "bg-primary-container text-on-surface",
-  weak: "bg-surface-container text-on-surface-variant",
-};
 
 
 function ago(ms: number): string {
@@ -99,8 +94,7 @@ export default function LeadList() {
    * limit keeps, not just the order of the ones it already kept.
    */
   const [sort, setSort] = useState<SortKey>("priority");
-  /** The CRM, or the traffic that never gave contact. Two lists, not a filter. */
-  const [view, setView] = useState<"crm" | "traffic">("crm");
+
   /** Set by clicking a stage in the pipeline above. Null is everyone. */
   const [stage, setStage] = useState<LeadStatus | null>(null);
   const leads = useQuery(api.leads.listForAdmin, {
@@ -110,7 +104,14 @@ export default function LeadList() {
     includeAbandoned: includeAbandoned || stage === "partial",
     includeDisqualified,
     sort,
-    view,
+    /**
+     * Always the CRM. Paul, 26/08/2026: take traffic out of the CRM. A session
+     * that never gave contact has no status, no priority and no name, so it is
+     * not a row on a screen for working people. `listForAdmin` still accepts
+     * `traffic`, because the funnel numbers above this list are counted from
+     * it and a traffic screen would ask for exactly that.
+     */
+    view: "crm" as const,
     onlyStatus: stage ?? undefined,
   });
 
@@ -137,48 +138,12 @@ export default function LeadList() {
         <LeadPipeline active={stage} onPick={setStage} />
       </div>
 
-      {/*
-        Two lists, not a filter, and the wording is the point. The CRM holds
-        people who gave a way to reach them; Traffic holds sessions that did
-        not. Paul's rule, 26/08/2026: if you do not exist, meaning no email,
-        you never count in this lifecycle. A row in Traffic has no status, no
-        priority and no name, and calling it a lead is what made the old status
-        column read wrong.
-      */}
-      <div className="mb-4 flex gap-1" role="tablist">
-        {(["crm", "traffic"] as const).map((v) => (
-          <button
-            key={v}
-            type="button"
-            role="tab"
-            aria-selected={view === v}
-            onClick={() => setView(v)}
-            className={`rounded-full px-4 py-1.5 text-body-medium ${
-              view === v
-                ? "ground-fixed bg-primary text-on-primary"
-                : "text-on-surface-variant hover:bg-surface-container"
-            }`}
-          >
-            {v === "crm" ? "CRM" : "Traffic"}
-          </button>
-        ))}
-      </div>
-
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-body-medium text-on-surface-variant">
-          {view === "crm" ? (
-            <>
-              {rows.length} {rows.length === 1 ? "person" : "people"}, {contactable} reachable on
-              LINE or phone, {withCv} with a CV
-            </>
-          ) : (
-            <>
-              {rows.length} session{rows.length === 1 ? "" : "s"} that never gave contact. Not
-              leads, and none of them has a status
-            </>
-          )}
+          {rows.length} {rows.length === 1 ? "person" : "people"}, {contactable} reachable on
+          LINE or phone, {withCv} with a CV
         </p>
-        <div className={`flex flex-wrap items-center gap-4 ${view === "traffic" ? "hidden" : ""}`}>
+        <div className="flex flex-wrap items-center gap-4">
           <label className="flex items-center gap-2 text-body-medium text-on-surface-variant">
             <input
               type="checkbox"
@@ -202,9 +167,7 @@ export default function LeadList() {
 
       {rows.length === 0 ? (
         <p className="rounded-large border border-outline-variant bg-surface px-6 py-6 text-body-large text-on-surface-variant">
-          {view === "crm"
-            ? "Nobody has cleared the contact gate yet."
-            : "No traffic in this window."}
+          Nobody has cleared the contact gate yet.
         </p>
       ) : (
         <div className="overflow-x-auto">
@@ -212,8 +175,9 @@ export default function LeadList() {
             <thead>
               <tr className="border-b border-outline-variant text-body-medium text-on-surface-variant">
                 <Th>Name</Th>
-                <Th>Email</Th>
-                <Th>LINE / phone</Th>
+                <Th title="Every person here cleared the contact gate, so this says which channels they gave rather than whether they can be reached at all.">
+                  Reachable on
+                </Th>
                 <Th title="Has this person actually sent a CV. A tick you set, not an answer they gave: their own rating of their CV is a survey question and lives on the lead's page. Feeds no score.">
                   CV
                 </Th>
@@ -225,22 +189,7 @@ export default function LeadList() {
                 >
                   Priority
                 </Th>
-                <Th
-                  sortKey="fit"
-                  sort={sort}
-                  setSort={setSort}
-                  title={`Fit: should we work with them. Investment Readiness, 0 to 3. Sorts ${SORT_LABEL.fit}.`}
-                >
-                  Fit
-                </Th>
-                <Th
-                  sortKey="ready"
-                  sort={sort}
-                  setSort={setSort}
-                  title={`Readiness: how close they are to landing a job, out of 5. Sorts ${SORT_LABEL.ready}.`}
-                >
-                  Ready
-                </Th>
+
                 <Th
                   sortKey="rating"
                   sort={sort}
@@ -249,26 +198,10 @@ export default function LeadList() {
                 >
                   Rating
                 </Th>
-                <Th
-                  sortKey="status"
-                  sort={sort}
-                  setSort={setSort}
-                  title={`The pipeline stage, and yours to set. Changing it changes what every funnel number on this app counts, so an override is stamped and the row says so. Sorts ${SORT_LABEL.status}.`}
-                >
+                <Th title="Where this person is with you. New means nobody has worked them yet, which is not the same as qualified. Quoted and Closed won are read off the engagement row and cannot be picked here, because that row carries the figure. Disqualified asks for a reason.">
                   Status
                 </Th>
-                <Th title="The coach's judgement, and the one status you set by hand. Blank means nobody has judged, which is not the same as qualified. A reason is required.">
-                  Judged
-                </Th>
-                <Th
-                  sortKey="created"
-                  altKey="created_oldest"
-                  sort={sort}
-                  setSort={setSort}
-                  title={`The date they arrived, which is not the date they last did something. Click once for ${SORT_LABEL.created.toLowerCase()}, again for ${SORT_LABEL.created_oldest.toLowerCase()}.`}
-                >
-                  Created
-                </Th>
+
                 <Th sortKey="recent" sort={sort} setSort={setSort} title={`Sorts ${SORT_LABEL.recent}.`}>
                   Last
                 </Th>
@@ -287,69 +220,49 @@ export default function LeadList() {
                       {l.fullName ?? "Anonymous"}
                     </Link>
                   </Td>
-                  <Td>
-                    {l.email ? (
-                      <a
-                        href={`mailto:${l.email}`}
-                        title={l.email}
-                        className="whitespace-nowrap text-body-medium text-on-surface-variant underline"
-                      >
-                        {l.email}
-                      </a>
-                    ) : (
-                      <span className="text-body-medium text-on-surface-variant">none</span>
-                    )}
-                  </Td>
+                  {/*
+                    One cell, since everyone here cleared the contact gate and
+                    "can I reach them" is answered by their being on this list
+                    at all. What is left worth seeing is WHICH channels, because
+                    most of this audience does not read email. The address is
+                    the mail link's title rather than the row's width.
+                  */}
                   <Td>
                     <span className="whitespace-nowrap text-body-medium text-on-surface-variant">
-                      {l.lineId ?? ""}
-                      {l.lineId && l.phone ? " · " : ""}
-                      {l.phone ?? ""}
-                      {!l.lineId && !l.phone && (
-                        <span className="text-on-surface-variant">not reachable</span>
+                      {l.email && (
+                        <a href={`mailto:${l.email}`} title={l.email} className="underline">
+                          email
+                        </a>
                       )}
+                      {l.email && (l.lineId || l.phone) ? " · " : ""}
+                      {l.lineId ? <span title={l.lineId}>LINE</span> : ""}
+                      {l.lineId && l.phone ? " · " : ""}
+                      {l.phone ? <span title={l.phone}>phone</span> : ""}
                     </span>
                   </Td>
                   <Td>
                     <CvCell leadId={l._id} cvReceivedAt={l.cvReceivedAt} />
                   </Td>
+                  {/*
+                    The band and the two values that produced it, in one cell.
+                    Urgency and Fit had columns of their own for an afternoon
+                    and Paul's read was that five numbers per row is
+                    unreadable. They are the workings, not separate decisions:
+                    Priority IS urgency and fit put in an order, so the answer
+                    and its reason belong in the same place. Both are still on
+                    the lead's own page in full.
+                  */}
                   <Td>
                     <span
-                      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-body-medium ${PRIORITY_STYLE[l.priority]}`}
-                      title={
-                        l.temperature.tier
-                          ? `Urgency: ${l.temperature.tier.replace(/_/g, " ")}, ${l.temperature.score ?? "?"} of ${l.temperature.measuredMax}`
-                          : `Urgency not determined. ${l.temperature.unmeasured.join("; ") || "Nothing measured yet"}`
-                      }
+                      className={`inline-block whitespace-nowrap rounded-full px-2 py-0.5 text-body-medium ${PRIORITY_STYLE[l.priority]}`}
                     >
                       {PRIORITY_LABELS[l.priority]}
                     </span>
+                    <span className="mt-1 block whitespace-nowrap text-body-medium text-on-surface-variant">
+                      {priorityReason(l.temperature, l.grade.tier)}
+                    </span>
                   </Td>
-                  <Td>
-                    {l.grade.tier ? (
-                      <span
-                        className={`whitespace-nowrap rounded-full px-2 py-0.5 text-body-medium ${TIER_STYLE[l.grade.tier]}`}
-                        title={
-                          l.grade.routingNote ??
-                          (l.grade.unmeasured.length
-                            ? `Unmeasured: ${l.grade.unmeasured.join("; ")}`
-                            : "Both gates pass")
-                        }
-                      >
-                        {l.grade.tier}
-                        {l.grade.offeringMatch === "fail" ? " *" : ""}
-                      </span>
-                    ) : (
-                      <span className="text-on-surface-variant">not scored</span>
-                    )}
-                  </Td>
-                  <Td>
-                    {l.readiness === null ? (
-                      <span className="text-on-surface-variant">not scored</span>
-                    ) : (
-                      <span className="tabular-nums text-on-surface">{l.readiness.toFixed(1)}</span>
-                    )}
-                  </Td>
+
                   <Td>
                     {l.coachRating ? (
                       <span
@@ -369,28 +282,12 @@ export default function LeadList() {
                     )}
                   </Td>
                   <Td>
-                    <StatusCell
-                      leadId={l._id}
-                      status={l.status}
-                      statusOverrideAt={l.statusOverrideAt}
-                      statusOverrideBy={l.statusOverrideBy}
-                    />
-                  </Td>
-                  <Td>
                     <JudgedCell
                       leadId={l._id}
                       crmStatus={l.crmStatus}
                       crmStatusReason={l.crmStatusReason}
                       derived={l.crmResolved}
                     />
-                  </Td>
-                  <Td>
-                    <span
-                      className="whitespace-nowrap tabular-nums text-on-surface-variant"
-                      title={new Date(l.createdAt).toLocaleString("en-GB")}
-                    >
-                      {dmy(l.createdAt)}
-                    </span>
                   </Td>
                   <Td>
                     <span className="whitespace-nowrap text-on-surface-variant">{ago(l.lastActivityAt)}</span>
@@ -463,86 +360,6 @@ function CvCell({ leadId, cvReceivedAt }: { leadId: Id<"leads">; cvReceivedAt: n
   );
 }
 
-/**
- * The pipeline stage, set from the row.
- *
- * Writes on change with no confirm step, unlike the judgement next to it, and
- * the difference is deliberate: a crmStatus needs a reason because it is an
- * opinion that outlives whoever formed it, while a stage is a position and the
- * evidence for it is the rest of the row.
- *
- * The stamp is shown, not just stored. A stage somebody typed and a stage the
- * funnel earned look identical in the column, and on a screen used to read the
- * funnel that difference has to be visible somewhere.
- */
-function StatusCell({
-  leadId,
-  status,
-  statusOverrideAt,
-  statusOverrideBy,
-}: {
-  leadId: Id<"leads">;
-  status: LeadStatus;
-  statusOverrideAt: number | null;
-  statusOverrideBy: string | null;
-}) {
-  const save = useMutation(api.leads.setStatus);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  return (
-    <div className="min-w-[9.5rem]">
-      <span className="flex items-center gap-2">
-        <span
-          aria-hidden="true"
-          style={{ backgroundColor: STATUS_COLOR[status] }}
-          className="h-3 w-3 shrink-0 rounded-[2px]"
-        />
-        <select
-          value={status}
-          disabled={busy}
-          aria-label="Pipeline stage"
-          title={
-            statusOverrideAt
-              ? `Set by hand ${dmy(statusOverrideAt)}${statusOverrideBy ? ` by ${statusOverrideBy}` : ""}`
-              : "Written by the funnel, not by hand"
-          }
-          className="field h-9 min-h-0 w-full px-2 text-body-medium"
-          onChange={async (e) => {
-            const next = e.target.value as LeadStatus;
-            setError(null);
-            setBusy(true);
-            try {
-              await save({ leadId, status: next });
-            } catch (err) {
-              setError(
-                err instanceof Error
-                  ? err.message.replace(/^.*ConvexError:\s*/, "")
-                  : "Could not save.",
-              );
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          {STATUS_ORDER.map((s) => (
-            <option key={s} value={s}>
-              {STATUS_LABEL[s]}
-            </option>
-          ))}
-        </select>
-      </span>
-      {statusOverrideAt && (
-        <p className="mt-1 text-body-medium text-on-surface-variant">set by hand</p>
-      )}
-      {error && (
-        <p role="alert" className="mt-1 text-body-medium text-error">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 /**
  * One style per status. The three terminal ones recede rather than shout: a
@@ -553,6 +370,24 @@ function StatusCell({
  * and says everything matters; one says where to start, which is what the
  * column is for. `unranked` is quiet rather than red: nobody asked them.
  */
+/**
+ * The one line under a Priority band that says why it is that band.
+ *
+ * Urgency first because it picks the band, fit second because it only breaks
+ * ties. Both say "not asked" rather than a number when the answers are
+ * missing: an input nobody has been asked about looks identical to one
+ * everybody scores low on, and the row must not blur the two.
+ */
+function priorityReason(
+  temperature: { tier: string | null; score: number | null; measuredMax: number },
+  fit: FitTier | null,
+): string {
+  const urgency = temperature.tier
+    ? `${temperature.tier.replace(/_/g, " ")} ${temperature.score ?? "?"}/${temperature.measuredMax}`
+    : "urgency not asked";
+  return `${urgency} · ${fit ? `${fit} fit` : "fit not asked"}`;
+}
+
 const PRIORITY_STYLE: Record<Priority, string> = {
   now: "bg-primary text-on-primary ground-fixed",
   next: "bg-primary-container text-on-primary-container",
