@@ -17,7 +17,7 @@
  * - `grade` and `scores` are computed from evidence and can be re-derived.
  *   `coachRating` cannot, and its whole value is that it is a judgement made
  *   after talking to someone.
- * - `disposition` answers whether to work with them. The rating answers how
+ * - `crmStatus` answers whether to work with them. The rating answers how
  *   promising they feel. A lead can be a 5 and still be `not_now`.
  *
  * The note is one editable field, not a log, which is what was asked for and is

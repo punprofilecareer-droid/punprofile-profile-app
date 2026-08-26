@@ -35,6 +35,7 @@ import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import { latestCoachIcp } from "@/lib/leadGrade";
 import { applyCorrections } from "@/lib/corrections";
+import { CRM_STATUS_LABELS } from "@/lib/crm";
 import LeadBriefing from "./LeadBriefing";
 import CallLog from "./CallLog";
 import AnswerSheet from "./AnswerSheet";
@@ -149,7 +150,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   const engagements = useQuery(api.delivery.forLead, { leadId });
   const outcomes = useQuery(api.outcomes.forLead, { leadId });
   const deleteLead = useMutation(api.leads.deleteLeadOnRequest);
-  const setDisposition = useMutation(api.leads.setDisposition);
+  const setCrmStatus = useMutation(api.leads.setCrmStatus);
   const [dispReason, setDispReason] = useState("");
   // Which report is being built, so one spinner cannot appear on both buttons.
   const [building, setBuilding] = useState<"full" | "limited" | null>(null);
@@ -213,7 +214,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
                   : "border-outline-variant text-on-surface-variant"
             }`}
           >
-            {LIFECYCLE_LABELS[lifecycle]}
+            {lifecycle ? LIFECYCLE_LABELS[lifecycle] : "Traffic, no contact"}
           </span>
           <span className="text-body-medium text-on-surface-variant">
             assessment {lead.status} · started {stamp(lead.createdAt)} · last active{" "}
@@ -434,26 +435,28 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
       {/* The judgement, kept well away from Delete. One is about whether to
           work with someone, the other erases them, and putting them side by
           side would invite the wrong click. */}
-      <Section title="Should we work with this lead">
+      <Section title="Where this lead is">
         <p className="text-body-large text-on-surface-variant">
-          Blank is the normal state and means nobody has judged. It does{" "}
-          <strong>not</strong> mean qualified. Out of scope is Gate 1 from the
-          qualification framework: not a white-collar or IT professional. Not
-          now is the right person at the wrong moment, which is a different
-          thing and should not be recorded as the first.
+          Blank means <strong>New</strong>: reachable, and nobody has worked
+          them yet. It does not mean qualified. Nurturing and Not now are both
+          live and differ in whether you are working them this month.
+          Disqualified is your call that we do not pursue them and it asks for a
+          reason, because it will outlive whoever made it. Closed lost is
+          theirs, not yours. Quoted and Closed won are not here: they are read
+          off the engagement row, because that row carries the figure.
         </p>
-        {lead.disposition ? (
+        {lead.crmStatus ? (
           <div className="mt-3 rounded-small border border-outline-variant bg-primary-container px-4 py-3">
             <p className="text-body-large text-on-surface">
-              {lead.disposition === "disqualified" ? "Out of scope" : "Not now"}
-              {lead.dispositionReason ? `: ${lead.dispositionReason}` : ""}
+              {CRM_STATUS_LABELS[lead.crmStatus]}
+              {lead.crmStatusReason ? `: ${lead.crmStatusReason}` : ""}
             </p>
             <button
               type="button"
-              onClick={() => void setDisposition({ leadId, disposition: null })}
+              onClick={() => void setCrmStatus({ leadId, crmStatus: null })}
               className="mt-2 text-body-medium text-on-primary underline"
             >
-              Clear this judgement
+              Back to New
             </button>
           </div>
         ) : (
@@ -472,9 +475,9 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
                 type="button"
                 disabled={!dispReason.trim()}
                 onClick={() =>
-                  void setDisposition({
+                  void setCrmStatus({
                     leadId,
-                    disposition: "disqualified",
+                    crmStatus: "disqualified",
                     reason: dispReason.trim(),
                   }).then(() => setDispReason(""))
                 }
@@ -486,9 +489,9 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
                 type="button"
                 disabled={!dispReason.trim()}
                 onClick={() =>
-                  void setDisposition({
+                  void setCrmStatus({
                     leadId,
-                    disposition: "not_now",
+                    crmStatus: "not_now",
                     reason: dispReason.trim(),
                   }).then(() => setDispReason(""))
                 }

@@ -19,7 +19,7 @@
  * ---------------------------------------------------------------------------
  *
  * Two cells write. `CV` ticks whether a document arrived, and `Judged` sets the
- * disposition, both without opening the lead. Everything else on this screen is
+ * crmStatus, both without opening the lead. Everything else on this screen is
  * still read-only and derived, which is the point: a coach triaging thirty rows
  * should not have to open thirty pages to record the two facts that decide
  * whether a row is worth opening at all.
@@ -35,6 +35,14 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { readinessScore } from "@/lib/leadGrade";
 import type { FitTier } from "@/lib/leadGrade";
+import {
+  CRM_STATUS_LABELS,
+  PRIORITY_LABELS,
+  REASON_REQUIRED,
+  type CrmStatus,
+  type Priority,
+  type SettableStatus,
+} from "@/lib/crm";
 import type { Id } from "../../../../convex/_generated/dataModel";
 import LeadPipeline, { STATUS_COLOR, STATUS_LABEL, STATUS_ORDER } from "./LeadPipeline";
 import type { LeadStatus } from "./LeadPipeline";
@@ -61,6 +69,7 @@ function dmy(ms: number): string {
 }
 
 const SORTS = [
+  ["priority", "Priority, most urgent first"],
   ["fit", "Fit, best first"],
   ["ready", "Readiness, highest first"],
   ["created", "Newest first, by the date they arrived"],
@@ -80,10 +89,18 @@ const SORT_LABEL = Object.fromEntries(SORTS) as Record<SortKey, string>;
 export default function LeadList() {
   const [includeAbandoned, setIncludeAbandoned] = useState(false);
   const [includeDisqualified, setIncludeDisqualified] = useState(false);
-  // Defaults to fit, which is the order this list has always shown. The sort
-  // moved to the server so that changing it changes which leads the limit
-  // keeps, not just the order of the ones it already kept.
-  const [sort, setSort] = useState<SortKey>("fit");
+  /**
+   * Defaults to priority since 26/08/2026, which is the whole point of the
+   * column: the list opens on who to work next rather than on who arrived last.
+   * It sorted by fit before, and fit is now the tiebreak inside a priority
+   * band rather than the key.
+   *
+   * The sort runs on the server so that changing it changes which leads the
+   * limit keeps, not just the order of the ones it already kept.
+   */
+  const [sort, setSort] = useState<SortKey>("priority");
+  /** The CRM, or the traffic that never gave contact. Two lists, not a filter. */
+  const [view, setView] = useState<"crm" | "traffic">("crm");
   /** Set by clicking a stage in the pipeline above. Null is everyone. */
   const [stage, setStage] = useState<LeadStatus | null>(null);
   const leads = useQuery(api.leads.listForAdmin, {
@@ -93,6 +110,7 @@ export default function LeadList() {
     includeAbandoned: includeAbandoned || stage === "partial",
     includeDisqualified,
     sort,
+    view,
     onlyStatus: stage ?? undefined,
   });
 
@@ -119,12 +137,48 @@ export default function LeadList() {
         <LeadPipeline active={stage} onPick={setStage} />
       </div>
 
+      {/*
+        Two lists, not a filter, and the wording is the point. The CRM holds
+        people who gave a way to reach them; Traffic holds sessions that did
+        not. Paul's rule, 26/08/2026: if you do not exist, meaning no email,
+        you never count in this lifecycle. A row in Traffic has no status, no
+        priority and no name, and calling it a lead is what made the old status
+        column read wrong.
+      */}
+      <div className="mb-4 flex gap-1" role="tablist">
+        {(["crm", "traffic"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            role="tab"
+            aria-selected={view === v}
+            onClick={() => setView(v)}
+            className={`rounded-full px-4 py-1.5 text-body-medium ${
+              view === v
+                ? "ground-fixed bg-primary text-on-primary"
+                : "text-on-surface-variant hover:bg-surface-container"
+            }`}
+          >
+            {v === "crm" ? "CRM" : "Traffic"}
+          </button>
+        ))}
+      </div>
+
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-body-medium text-on-surface-variant">
-          {rows.length} lead{rows.length === 1 ? "" : "s"}, {contactable} reachable on LINE or
-          phone, {withCv} with a CV
+          {view === "crm" ? (
+            <>
+              {rows.length} {rows.length === 1 ? "person" : "people"}, {contactable} reachable on
+              LINE or phone, {withCv} with a CV
+            </>
+          ) : (
+            <>
+              {rows.length} session{rows.length === 1 ? "" : "s"} that never gave contact. Not
+              leads, and none of them has a status
+            </>
+          )}
         </p>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className={`flex flex-wrap items-center gap-4 ${view === "traffic" ? "hidden" : ""}`}>
           <label className="flex items-center gap-2 text-body-medium text-on-surface-variant">
             <input
               type="checkbox"
@@ -148,7 +202,9 @@ export default function LeadList() {
 
       {rows.length === 0 ? (
         <p className="rounded-large border border-outline-variant bg-surface px-6 py-6 text-body-large text-on-surface-variant">
-          No leads yet.
+          {view === "crm"
+            ? "Nobody has cleared the contact gate yet."
+            : "No traffic in this window."}
         </p>
       ) : (
         <div className="overflow-x-auto">
@@ -160,6 +216,14 @@ export default function LeadList() {
                 <Th>LINE / phone</Th>
                 <Th title="Has this person actually sent a CV. A tick you set, not an answer they gave: their own rating of their CV is a survey question and lives on the lead's page. Feeds no score.">
                   CV
+                </Th>
+                <Th
+                  sortKey="priority"
+                  sort={sort}
+                  setSort={setSort}
+                  title={`Who to work next. Urgency picks the band, Fit breaks ties inside it, and both stay readable in their own columns: this is a sort, never a blended score. Now means interviewing, negotiating, or ready to move. Unranked means the answers that would place them were never given, which is not the same as cold. Sorts ${SORT_LABEL.priority}.`}
+                >
+                  Priority
                 </Th>
                 <Th
                   sortKey="fit"
@@ -215,7 +279,7 @@ export default function LeadList() {
                 <tr
                   key={l._id}
                   className={`border-b border-outline-variant align-top transition-colors hover:bg-secondary-container ${
-                    l.disposition === "disqualified" ? "opacity-55" : ""
+                    l.crmStatus === "disqualified" ? "opacity-55" : ""
                   }`}
                 >
                   <Td>
@@ -248,6 +312,18 @@ export default function LeadList() {
                   </Td>
                   <Td>
                     <CvCell leadId={l._id} cvReceivedAt={l.cvReceivedAt} />
+                  </Td>
+                  <Td>
+                    <span
+                      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-body-medium ${PRIORITY_STYLE[l.priority]}`}
+                      title={
+                        l.temperature.tier
+                          ? `Urgency: ${l.temperature.tier.replace(/_/g, " ")}, ${l.temperature.score ?? "?"} of ${l.temperature.measuredMax}`
+                          : `Urgency not determined. ${l.temperature.unmeasured.join("; ") || "Nothing measured yet"}`
+                      }
+                    >
+                      {PRIORITY_LABELS[l.priority]}
+                    </span>
                   </Td>
                   <Td>
                     {l.grade.tier ? (
@@ -303,8 +379,9 @@ export default function LeadList() {
                   <Td>
                     <JudgedCell
                       leadId={l._id}
-                      disposition={l.disposition}
-                      dispositionReason={l.dispositionReason}
+                      crmStatus={l.crmStatus}
+                      crmStatusReason={l.crmStatusReason}
+                      derived={l.crmResolved}
                     />
                   </Td>
                   <Td>
@@ -390,7 +467,7 @@ function CvCell({ leadId, cvReceivedAt }: { leadId: Id<"leads">; cvReceivedAt: n
  * The pipeline stage, set from the row.
  *
  * Writes on change with no confirm step, unlike the judgement next to it, and
- * the difference is deliberate: a disposition needs a reason because it is an
+ * the difference is deliberate: a crmStatus needs a reason because it is an
  * opinion that outlives whoever formed it, while a stage is a position and the
  * evidence for it is the rest of the row.
  *
@@ -467,16 +544,34 @@ function StatusCell({
   );
 }
 
-const JUDGED_STYLE: Record<string, string> = {
+/**
+ * One style per status. The three terminal ones recede rather than shout: a
+ * closed row is not a warning, it is a row with nothing left to do on it.
+ */
+/**
+ * `now` is the only one that carries colour. Four coloured bands is a rainbow
+ * and says everything matters; one says where to start, which is what the
+ * column is for. `unranked` is quiet rather than red: nobody asked them.
+ */
+const PRIORITY_STYLE: Record<Priority, string> = {
+  now: "bg-primary text-on-primary ground-fixed",
+  next: "bg-primary-container text-on-primary-container",
+  later: "text-on-surface-variant",
+  unranked: "text-mute-strong",
+};
+
+const STATUS_STYLE: Record<string, string> = {
   "": "text-on-surface-variant",
+  nurturing: "bg-primary-container text-on-primary-container",
   not_now: "bg-primary-container text-warning",
+  closed_lost: "bg-surface-container text-on-surface-variant",
   disqualified: "bg-surface-container text-on-surface-variant",
 };
 
 /**
- * The disposition, set from the row.
+ * The crmStatus, set from the row.
  *
- * **The reason is not optional and is not defaulted.** `setDisposition` refuses
+ * **The reason is not optional and is not defaulted.** `setCrmStatus` refuses
  * a judgement with no reason, on the grounds that it will outlive whoever set
  * it, and a list control that quietly sent "set from the list" would be the
  * change that makes every reason in the database worthless. So picking a
@@ -487,24 +582,29 @@ const JUDGED_STYLE: Record<string, string> = {
  */
 function JudgedCell({
   leadId,
-  disposition,
-  dispositionReason,
+  crmStatus,
+  crmStatusReason,
+  derived,
 }: {
   leadId: Id<"leads">;
-  disposition: "disqualified" | "not_now" | null;
-  dispositionReason: string | null;
+  crmStatus: SettableStatus | null;
+  crmStatusReason: string | null;
+  /** What `crmStatusFor` resolved to. `quoted` and `closed_won` are read off
+   *  the engagement rows and cannot be picked here; the control shows them and
+   *  goes read-only, because the money record is what says they are true. */
+  derived: CrmStatus | null;
 }) {
-  const save = useMutation(api.leads.setDisposition);
-  const [pending, setPending] = useState<"disqualified" | "not_now" | null>(null);
+  const save = useMutation(api.leads.setCrmStatus);
+  const [pending, setPending] = useState<SettableStatus | null>(null);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function commit(next: "disqualified" | "not_now" | null, why?: string) {
+  async function commit(next: SettableStatus | null, why?: string) {
     setError(null);
     setBusy(true);
     try {
-      await save({ leadId, disposition: next, reason: why });
+      await save({ leadId, crmStatus: next, reason: why });
       setPending(null);
       setReason("");
     } catch (err) {
@@ -514,16 +614,32 @@ function JudgedCell({
     }
   }
 
-  const shown = pending ?? disposition ?? "";
+  const shown = pending ?? crmStatus ?? "";
+
+  // Read off the engagement rows, so there is nothing to choose here. Showing
+  // the select disabled rather than hiding it says WHY it cannot be changed.
+  const locked = derived === "quoted" || derived === "closed_won";
+  if (locked) {
+    return (
+      <div className="min-w-[9rem]">
+        <span
+          className="inline-block whitespace-nowrap rounded-full bg-primary-container px-3 py-1 text-body-medium text-on-primary-container"
+          title="Read from the engagement row. Change the engagement, not the label: that row carries the figure and is what decides revenue."
+        >
+          {CRM_STATUS_LABELS[derived]}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-w-[9rem]">
       <select
         value={shown}
         disabled={busy}
-        aria-label="Judgement"
-        title={dispositionReason ?? "Nobody has judged this lead"}
-        className={`field h-9 min-h-0 w-full rounded-full px-2 text-body-medium ${JUDGED_STYLE[shown] ?? ""}`}
+        aria-label="Status"
+        title={crmStatusReason ?? "New. Nobody has worked this lead yet"}
+        className={`field h-9 min-h-0 w-full rounded-full px-2 text-body-medium ${STATUS_STYLE[shown] ?? ""}`}
         onChange={(e) => {
           const next = e.target.value;
           setError(null);
@@ -534,13 +650,24 @@ function JudgedCell({
           }
           // Prefilled with the reason already on record, so changing "not now"
           // to "out of scope" is not a retyping exercise.
-          setPending(next as "disqualified" | "not_now");
-          setReason(dispositionReason ?? "");
+          const chosen = next as SettableStatus;
+          // Only Disqualified stops for a reason. The rest are working states
+          // and a form in front of every one of them would make the control
+          // cost more than it is worth.
+          if (!REASON_REQUIRED.includes(chosen)) {
+            setPending(null);
+            void commit(chosen);
+            return;
+          }
+          setPending(chosen);
+          setReason(crmStatusReason ?? "");
         }}
       >
-        <option value="">not judged</option>
+        <option value="">new</option>
+        <option value="nurturing">nurturing</option>
         <option value="not_now">not now</option>
-        <option value="disqualified">out of scope</option>
+        <option value="closed_lost">closed lost</option>
+        <option value="disqualified">disqualified</option>
       </select>
 
       {pending && (

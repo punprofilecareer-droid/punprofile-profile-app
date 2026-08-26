@@ -163,11 +163,11 @@ export function mergedFields(keep: Doc<"leads">, drop: Doc<"leads">): Partial<Do
     patch.coachRatingAt = drop.coachRatingAt;
     patch.coachRatingBy = drop.coachRatingBy;
   }
-  if (keep.disposition === undefined && drop.disposition !== undefined) {
-    patch.disposition = drop.disposition;
-    patch.dispositionReason = drop.dispositionReason;
-    patch.dispositionAt = drop.dispositionAt;
-    patch.dispositionBy = drop.dispositionBy;
+  if (keep.crmStatus === undefined && drop.crmStatus !== undefined) {
+    patch.crmStatus = drop.crmStatus;
+    patch.crmStatusReason = drop.crmStatusReason;
+    patch.crmStatusAt = drop.crmStatusAt;
+    patch.crmStatusBy = drop.crmStatusBy;
   }
 
   // First touch wins on attribution, the rule the schema states for itself.

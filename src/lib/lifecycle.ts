@@ -23,8 +23,17 @@
  * and `qualification`.
  */
 
+/**
+ * **`visitor` left on 26/08/2026, on Paul's call:** *if you do not exist,
+ * meaning no email, you never count in this lifecycle. It is just traffic.*
+ *
+ * A row with no contact now has no lifecycle position at all rather than the
+ * weakest one, `stateFor` returns null for it, and the admin splits into a CRM
+ * view and a Traffic view. The consequence to carry into every funnel number on
+ * this app: the denominator moved from every row to every reachable person, and
+ * the two are roughly a factor of three apart.
+ */
 export const LIFECYCLE_STATES = [
-  "visitor",
   "lead",
   "sql",
   "consulted",
@@ -64,7 +73,7 @@ export type LifecycleInput = {
  * told us). So this reads downward from the strongest evidence rather than
  * checking each rung.
  */
-export function stateFor(input: LifecycleInput): LifecycleState {
+export function stateFor(input: LifecycleInput): LifecycleState | null {
   // Checked first and not last: someone who has asked to be left alone is that,
   // whatever else their record says, and a report that still called them a live
   // client would be the report that got them contacted again.
@@ -75,7 +84,9 @@ export function stateFor(input: LifecycleInput): LifecycleState {
   if (input.consultationsHeld > 0) return "consulted";
   if (input.meetsSqlRule && input.hasContact) return "sql";
   if (input.hasContact) return "lead";
-  return "visitor";
+  // Not a state. See the note on LIFECYCLE_STATES: without contact this is
+  // traffic, and traffic has no position in a lifecycle.
+  return null;
 }
 
 /**
@@ -125,7 +136,6 @@ export function hasContact(lead: {
 
 /** Ops-facing labels. Never candidate-facing; see the module note. */
 export const LIFECYCLE_LABELS: Record<LifecycleState, string> = {
-  visitor: "Started, no contact",
   lead: "Contactable",
   sql: "Meets the booking rule",
   consulted: "Call held",

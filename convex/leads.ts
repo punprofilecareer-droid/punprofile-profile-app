@@ -12,7 +12,16 @@ import { gradeLead, toGradeInput, latestCoachIcp } from "../src/lib/leadGrade";
 import { eventsFor, recordConsent } from "./consentDb";
 import { isBlogOnlySubscriber } from "./subscribe";
 import { resolveAll, ynGrid } from "../src/lib/consent";
-import { meetsBookingGate } from "../src/lib/lifecycle";
+import { meetsBookingGate, hasContact } from "../src/lib/lifecycle";
+import {
+  crmStatusFor,
+  priorityFor,
+  REASON_REQUIRED,
+  PRIORITY_RANK,
+  FIT_RANK,
+} from "../src/lib/crm";
+import { temperatureFor } from "../src/lib/temperature";
+import { toScoringInputForLead } from "../src/lib/content/mapping";
 import { parseAttribution, attributionFromLegacySource } from "../src/lib/attribution";
 import { eraseLead } from "./erase";
 import type { EraseCounts } from "./erase";
@@ -478,8 +487,20 @@ export const listForAdmin = query({
      * arrived this week" and "who did something this week" are different
      * questions and only the second had an answer.
      */
+    /**
+     * Which list this is. Added 26/08/2026 with the CRM.
+     *
+     * `crm` is everyone who cleared the contact gate, which is the only
+     * population that has a status or a priority. `traffic` is the rest, and
+     * Paul's rule for it is blunt: if you do not exist, meaning no email, you
+     * never count in this lifecycle. Two views rather than one list with a
+     * filter, because they answer different questions and one of them names
+     * nobody.
+     */
+    view: v.optional(v.union(v.literal("crm"), v.literal("traffic"))),
     sort: v.optional(
       v.union(
+        v.literal("priority"),
         v.literal("recent"),
         v.literal("oldest"),
         v.literal("created"),
@@ -556,6 +577,20 @@ export const listForAdmin = query({
       byLead.set(c.leadId, list);
     }
 
+    /**
+     * Engagements, batched the same way and for the same reason. Two counts per
+     * lead is all the CRM status needs: an `agreed` row or beyond makes them
+     * Closed won, a `proposed` row makes them Quoted, and both are read off the
+     * money record rather than off a label somebody typed.
+     */
+    const engByLead = new Map<string, { proposed: number; agreed: number }>();
+    for (const e of await ctx.db.query("engagements").collect()) {
+      const cur = engByLead.get(e.leadId) ?? { proposed: 0, agreed: 0 };
+      if (e.status === "proposed") cur.proposed += 1;
+      else if (e.status !== "refunded") cur.agreed += 1;
+      engByLead.set(e.leadId, cur);
+    }
+
     // Sorted across statuses here, because the index orders within one status,
     // which is not the same thing as "what happened most recently".
     //
@@ -563,7 +598,7 @@ export const listForAdmin = query({
     // changing the sort changes which leads you see and not merely their order.
     // That only holds because the window above is not the limit; see its note.
     const STATUS_RANK = { completed: 0, email_captured: 1, partial: 2 } as const;
-    const sort = args.sort ?? "recent";
+    const sort = args.sort ?? "priority";
 
     /**
      * Blog subscribers are out of this view until they take the check.
@@ -590,12 +625,47 @@ export const listForAdmin = query({
       ? leadsOnly.filter((l) => l.status === args.onlyStatus)
       : leadsOnly;
 
-    const visible = args.includeDisqualified
+    const withStatus = args.includeDisqualified
       ? inStage
-      : inStage.filter((l) => l.disposition !== "disqualified");
+      : inStage.filter((l) => l.crmStatus !== "disqualified");
+
+    // The CRM contains reachable people and nothing else. A row with no
+    // contact is traffic, and traffic has no status, no priority and no name.
+    const view = args.view ?? "crm";
+    const visible =
+      view === "crm"
+        ? withStatus.filter((l) => hasContact(l))
+        : withStatus.filter((l) => !hasContact(l));
+
+    /**
+     * Priority, precomputed so the sort can read it without recomputing
+     * temperature per comparison.
+     *
+     * It is a two-key sort and not a blended score: temperature picks the band,
+     * fit breaks ties inside it, and both stay separately readable on the row.
+     * `08_Coaching_Business.md` forbids collapsing the two axes into one
+     * number, and this does not: nothing here produces a figure anybody could
+     * reason about a person with. See `src/lib/crm.ts`.
+     */
+    const prio = new Map<string, { rank: number; fit: number }>();
+    for (const l of visible) {
+      const temp = temperatureFor(toScoringInputForLead(l.responses ?? {}));
+      const grade = gradeLead(toGradeInput(l.responses ?? {}), latestCoachIcp(byLead.get(l._id) ?? []));
+      const p = priorityFor({
+        temperature: temp.tier,
+        fit: grade.tier,
+        meetsBookingGate: meetsBookingGate(l.responses),
+      });
+      prio.set(l._id, { rank: PRIORITY_RANK[p], fit: grade.tier ? FIT_RANK[grade.tier] : 0 });
+    }
 
     const ordered = visible.sort((a, b) => {
       switch (sort) {
+        case "priority": {
+          const pa = prio.get(a._id) ?? { rank: 0, fit: 0 };
+          const pb = prio.get(b._id) ?? { rank: 0, fit: 0 };
+          return pb.rank - pa.rank || pb.fit - pa.fit || b.lastActivityAt - a.lastActivityAt;
+        }
         case "oldest":
           return a.lastActivityAt - b.lastActivityAt;
         case "created":
@@ -661,8 +731,29 @@ export const listForAdmin = query({
           latestCoachIcp(byLead.get(l._id) ?? []),
         ),
         answered: Object.keys(l.responses ?? {}).length,
-        disposition: l.disposition ?? null,
-        dispositionReason: l.dispositionReason ?? null,
+        crmStatus: l.crmStatus ?? null,
+        crmStatusReason: l.crmStatusReason ?? null,
+        /**
+         * The status actually shown, resolved from the strongest evidence
+         * down. Null means no contact, which since 26/08/2026 means this row is
+         * traffic and not a lead at all. See `src/lib/crm.ts`.
+         */
+        crmResolved: crmStatusFor({
+          reachable: hasContact(l),
+          // The consent overlay is read on the lead's own page, where there is
+          // room to say what was withdrawn. The list only needs to know they
+          // are still a row.
+          fullyWithdrawn: false,
+          stored: l.crmStatus ?? null,
+          engagementsAgreed: engByLead.get(l._id)?.agreed ?? 0,
+          engagementsProposed: engByLead.get(l._id)?.proposed ?? 0,
+        }),
+        temperature: temperatureFor(toScoringInputForLead(l.responses ?? {})),
+        priority: priorityFor({
+          temperature: temperatureFor(toScoringInputForLead(l.responses ?? {})).tier,
+          fit: gradeLead(toGradeInput(l.responses ?? {}), latestCoachIcp(byLead.get(l._id) ?? [])).tier,
+          meetsBookingGate: meetsBookingGate(l.responses),
+        }),
         // Coach-entered, 16/08/2026. The rating is a column in the list; the
         // LinkedIn is here so the list can show whether one has been found
         // without a second query per row.
@@ -711,9 +802,9 @@ export const getForAdmin = query({
       phoneConsentAt: lead.phoneConsentAt ?? null,
       lineConsentAt: lead.lineConsentAt ?? null,
       consentSource: lead.consentSource ?? "app",
-      disposition: lead.disposition ?? null,
-      dispositionReason: lead.dispositionReason ?? null,
-      dispositionAt: lead.dispositionAt ?? null,
+      crmStatus: lead.crmStatus ?? null,
+      crmStatusReason: lead.crmStatusReason ?? null,
+      crmStatusAt: lead.crmStatusAt ?? null,
       // Coach-entered, 16/08/2026. `linkedin` in `responses` is the candidate's
       // own rating of their profile; this is where it lives. Different fields,
       // and a screen that showed one as the other would be lying.
@@ -850,16 +941,22 @@ export const deleteLeadOnRequest = mutation({
 /**
  * Record, or clear, the coach's judgement about working this lead.
  *
- * A reason is required. A disposition with no reason is an opinion nobody can
+ * A reason is required. A crmStatus with no reason is an opinion nobody can
  * review later, and this field will outlive whoever set it.
  *
- * Clearing is `disposition: null`, which is a real action rather than an
+ * Clearing is `crmStatus: null`, which is a real action rather than an
  * absence: it restores "nobody has judged", not "judged and passed".
  */
-export const setDisposition = mutation({
+export const setCrmStatus = mutation({
   args: {
     leadId: v.id("leads"),
-    disposition: v.union(v.literal("disqualified"), v.literal("not_now"), v.null()),
+    crmStatus: v.union(
+      v.literal("nurturing"),
+      v.literal("not_now"),
+      v.literal("closed_lost"),
+      v.literal("disqualified"),
+      v.null(),
+    ),
     reason: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -867,25 +964,32 @@ export const setDisposition = mutation({
     const lead = await ctx.db.get(args.leadId);
     if (!lead) throw new ConvexError("Lead not found.");
 
-    if (args.disposition === null) {
+    if (args.crmStatus === null) {
       await ctx.db.patch(args.leadId, {
-        disposition: undefined,
-        dispositionReason: undefined,
-        dispositionAt: undefined,
-        dispositionBy: undefined,
+        crmStatus: undefined,
+        crmStatusReason: undefined,
+        crmStatusAt: undefined,
+        crmStatusBy: undefined,
         updatedAt: Date.now(),
       });
       return;
     }
 
+    // Only Disqualified. Widened 26/08/2026 with the CRM statuses: that one is
+    // a judgement about a person and will outlive whoever made it, so it stops
+    // for words. Closed lost is a fact about a deal, and Nurturing and Not now
+    // are working states; demanding a paragraph for each would make the control
+    // cost more than it is worth and would train everyone to type "n/a".
     const reason = args.reason?.trim();
-    if (!reason) throw new ConvexError("A reason is required.");
+    if (REASON_REQUIRED.includes(args.crmStatus) && !reason) {
+      throw new ConvexError("A reason is required.");
+    }
 
     await ctx.db.patch(args.leadId, {
-      disposition: args.disposition,
-      dispositionReason: reason,
-      dispositionAt: Date.now(),
-      dispositionBy: adminEmail,
+      crmStatus: args.crmStatus,
+      crmStatusReason: reason || undefined,
+      crmStatusAt: Date.now(),
+      crmStatusBy: adminEmail,
       updatedAt: Date.now(),
     });
   },
@@ -902,7 +1006,7 @@ export const setDisposition = mutation({
  * openings has not entered this pipeline.
  *
  * Judged-out leads are reported beside the stages rather than inside them. A
- * disposition is a side exit, not a rung, and adding it as a fourth segment
+ * crmStatus is a side exit, not a rung, and adding it as a fourth segment
  * would make the three shares mean something other than "of the people still in
  * play, this many are here".
  */
@@ -935,11 +1039,11 @@ export const pipeline = query({
     for (const l of leadsOnly) {
       // Counted and then skipped: a judged-out lead is out of the pipeline, and
       // the stage it was in when the judgement landed is not where it is now.
-      if (l.disposition === "disqualified") {
+      if (l.crmStatus === "disqualified") {
         judgedOut++;
         continue;
       }
-      if (l.disposition === "not_now") notNow++;
+      if (l.crmStatus === "not_now") notNow++;
       counts[l.status]++;
       if (l.cvReceivedAt) withCv++;
       if (l.statusOverrideAt) handSet++;

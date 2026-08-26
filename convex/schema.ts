@@ -142,22 +142,51 @@ export default defineSchema({
      *
      * `not_now` is a real answer that is not a rejection: right person, wrong
      * moment. It exists so that parking someone does not require calling them
-     * disqualified, which would be false and would follow them.
+     * disqualified, which would be false and would follow them. It stayed its
+     * own status rather than becoming a flag on `nurturing`, on Paul's call
+     * 26/08/2026: a parked lead is a different working state from one being
+     * actively worked.
      *
      * **Absent is the normal state and means nobody has judged**, not that the
      * lead passed. Never read an absent value as qualified.
      */
-    /** @absent unmeasured — nobody has judged this lead. NOT the same as qualified */
-    disposition: v.optional(v.union(v.literal("disqualified"), v.literal("not_now"))),
-    /** Why. Required by the mutation, because a disposition with no reason is
-     *  an opinion that cannot be reviewed later. */
-    /** @absent none — only present alongside a disposition */
-    dispositionReason: v.optional(v.string()),
-    /** @absent none — only present alongside a disposition */
-    dispositionAt: v.optional(v.number()),
+    /**
+     * **Widened into the CRM status, 26/08/2026.** It held `disqualified` and
+     * `not_now` and no row had ever been set, so widening cost no migration.
+     *
+     * These are the four statuses Paul sets by hand. The other three are read
+     * off evidence and are never stored: `quoted` and `closed_won` come from
+     * the `engagements` rows, because those carry the figures and a hand-set
+     * label could disagree with the money, and `new` is the absence of both.
+     * `crmStatusFor()` in `src/lib/crm.ts` resolves the one shown.
+     *
+     * **Storing these does not break the no-stored-state rule** that keeps
+     * `lifecycle.ts` computing everything. That rule protects derivations,
+     * which go stale when the rule behind them moves. These are decisions, and
+     * a decision is a record of what a person chose on a day.
+     *
+     * **Absent is the normal state and means New**, not that they passed
+     * anything. Never read an absent value as qualified.
+     */
+    /** @absent notyet — nobody has worked this lead. Displays as New */
+    crmStatus: v.optional(
+      v.union(
+        v.literal("nurturing"),
+        v.literal("not_now"),
+        v.literal("closed_lost"),
+        v.literal("disqualified"),
+      ),
+    ),
+    /** Why. Required by the mutation for `disqualified` only: that one is a
+     *  judgement about a person and will outlive whoever made it. Closed lost
+     *  is a fact about a deal and "they went quiet" is a complete answer. */
+    /** @absent none — only present alongside a status Paul set */
+    crmStatusReason: v.optional(v.string()),
+    /** @absent none — only present alongside a status Paul set */
+    crmStatusAt: v.optional(v.number()),
     /** Which admin decided. Their own data, not the subject's. */
-    /** @absent none — only present alongside a disposition */
-    dispositionBy: v.optional(v.string()),
+    /** @absent none — only present alongside a status Paul set */
+    crmStatusBy: v.optional(v.string()),
 
     /**
      * The candidate's LinkedIn, when the coach finds it.
@@ -203,9 +232,10 @@ export default defineSchema({
      * is exactly the thing the framework cannot reach, and its value is that it
      * is subjective rather than despite it.
      *
-     * Kept separate from `disposition` on purpose. Disposition answers whether
-     * to work with them at all; this answers how promising they feel, and a
-     * lead can be a 5 and still be `not_now`.
+     * Kept separate from `crmStatus` on purpose. The status answers where they
+     * are in the pipeline; this answers how promising they feel, and a lead can
+     * be a 5 and still be `not_now`. Blank until Paul has met them: a rating
+     * nobody has given is not a low rating.
      */
     /** @absent unmeasured — the coach has not rated them */
     coachRating: v.optional(v.number()),

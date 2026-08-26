@@ -97,8 +97,8 @@ interface LeadDoc {
   status: "partial" | "email_captured" | "completed";
   source?: string;
   attribution?: { raw?: string };
-  disposition?: string;
-  dispositionReason?: string;
+  crmStatus?: string;
+  crmStatusReason?: string;
   linkedinUrl?: string;
   notes?: string;
   coachRating?: number;
@@ -274,8 +274,8 @@ interface Row {
   lastActivityAt: number;
   lastActivityDate: string | null;
   status: string;
-  disposition: string | null;
-  dispositionReason: string | null;
+  crmStatus: string | null;
+  crmStatusReason: string | null;
   source: string | null;
   attributionRaw: string | null;
   blogOnlySubscriber: boolean;
@@ -292,7 +292,7 @@ interface Row {
   };
   consent: Record<string, string>;
   lifecycle: {
-    state: LifecycleState;
+    state: LifecycleState | null;
     label: string;
     inputs: {
       hasContact: boolean;
@@ -354,8 +354,8 @@ for (const source of SOURCES) {
       lastActivityAt: lead.lastActivityAt,
       lastActivityDate: ddmmyyyy(lead.lastActivityAt),
       status: lead.status,
-      disposition: lead.disposition ?? null,
-      dispositionReason: lead.dispositionReason ?? null,
+      crmStatus: lead.crmStatus ?? null,
+      crmStatusReason: lead.crmStatusReason ?? null,
       source: lead.source ?? null,
       attributionRaw: lead.attribution?.raw ?? null,
       blogOnlySubscriber: isBlogOnly(lead),
@@ -371,11 +371,16 @@ for (const source of SOURCES) {
         consentSource: lead.consentSource ?? null,
       },
       consent: ynGrid(events),
-      lifecycle: {
-        state: stateFor(inputs),
-        label: LIFECYCLE_LABELS[stateFor(inputs)],
-        inputs,
-      },
+      // Null since 26/08/2026 for a row that never gave contact. That is not
+      // a weak state, it is traffic, and the CRM does not contain it.
+      lifecycle: (() => {
+        const state = stateFor(inputs);
+        return {
+          state,
+          label: state ? LIFECYCLE_LABELS[state] : "Traffic, no contact",
+          inputs,
+        };
+      })(),
       fit: gradeLead(toGradeInput(lead.responses ?? {}), latestCoachIcp(calls)),
       // `toScoringInputForLead`, so the 90 imported leads are read in the survey
       // vocabulary rather than the app's. Same mapper the scores use; a second
