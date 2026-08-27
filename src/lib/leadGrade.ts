@@ -193,6 +193,19 @@ function investmentPoints(prior: ScoringInput["priorInvestment"]): number | null
  *    reading the record directly rather than through the app-only mapper is
  *    what makes imported leads gradeable at all.
  */
+/**
+ * The areas of prior spend the SCORE reads. `language` and `never` are absent
+ * deliberately; see the note in `toGradeInput`. `08_Coaching_Business.md` owns
+ * which areas count, and this set implements that document.
+ */
+const SCORED_INVESTMENT = new Set([
+  "soft_skills",
+  "technical",
+  "certification",
+  "profile_docs",
+  "career_coach",
+]);
+
 export function toGradeInput(responses: Record<string, unknown>): ScoringInput {
   const experience = responses.experienceYears;
   const investment = responses.priorInvestment;
@@ -207,10 +220,30 @@ export function toGradeInput(responses: Record<string, unknown>): ScoringInput {
    * The 90 imported survey rows hold a single string from the old vocabulary.
    * App rows since 14/08/2026 hold an array of the areas the candidate paid
    * for, because Paul wanted to know what they bought rather than only whether
-   * they bought. The score deliberately does not read the areas: the framework
-   * asks about prior spend and not its aim, so any paid area is `unrelated`,
-   * which is the band that already means "paid for something, relevance not
-   * established". `never` is the exclusive no, and it maps to `none`.
+   * they bought.
+   *
+   * **The score reads five of the six areas, not all of them.** Changed
+   * 27/08/2026 on Paul's call, and the measurement is in
+   * `icp-discrimination-remeasured.md`. Any paid area used to collapse to
+   * `unrelated`, which put 85% of app answers in the paid band against the
+   * survey's 38%, and this criterion exists precisely because it was the only
+   * one of the three that separated the pool. One option accounted for nearly
+   * all of it: **learning a language, ticked by 54%, against a next-highest of
+   * 20%.** Paying for a language course is close to universal for a Thai
+   * professional targeting Europe. It is a life expense rather than a
+   * career-development investment, and it says almost nothing about whether
+   * someone will pay for career help.
+   *
+   * Reading the other five restores the split to 44/56, within a few points of
+   * the survey's own. **The question is untouched**: its Thai was read back on
+   * 14/08 and the areas still reach the coach for call preparation, which is
+   * what they were added for. Only the collapse to paid-or-not changed.
+   *
+   * The cost, stated: somebody whose only paid learning was a language course
+   * reads as `none` to the score while their row still shows the coach they
+   * paid for language. That is the correct reading of a criterion about
+   * investment in a career, and it is worth saying rather than leaving somebody
+   * to find the two disagreeing.
    *
    * An empty array is not a no. It means the question was reached and left,
    * which is unmeasured, and the whole product rests on not confusing the two.
@@ -224,8 +257,7 @@ export function toGradeInput(responses: Record<string, unknown>): ScoringInput {
     if (Array.isArray(investment)) {
       const picked = investment.filter((v): v is string => typeof v === "string");
       if (!picked.length) return null;
-      if (picked.includes("never")) return "none";
-      return "unrelated";
+      return picked.some((v) => SCORED_INVESTMENT.has(v)) ? "unrelated" : "none";
     }
     return null;
   };
