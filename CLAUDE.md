@@ -56,6 +56,7 @@ duplicate one into the other.
 | Mission, offerings, scope, audience | `01_Project_Foundation.md` |
 | Product story slots and their destinations | `Narrative_System.md` |
 | Which candidate data exists and where it sits | `data-inventory.md` |
+| The campaign link parameters every posted URL carries | `00_Quick_Facts.md` |
 | The four similarly named instruments, in full | the sibling repo's root `CLAUDE.md` |
 | Roadmap and session handoff | `punprofile-work/work-projects/eu-fit-check/` |
 
@@ -80,6 +81,8 @@ Implements: here.
 
 `sitemap.ts`, `robots.ts` and `llms.txt/` sit at the root of `src/app/`, outside both locale trees.
 A page is three edits, not one (R36), and a page put in the wrong place is invisible in one language.
+There are three root layouts because Next renders one `<html>` per request and `<html lang>` has to
+be true. All three render `SiteShell` and differ only in the locale they pass.
 
 **Working notes do not belong in this repository.** Session summaries, state-of-play documents,
 reviews, handovers, scratch analysis: extract what matters into the file that owns it and keep the
@@ -102,7 +105,7 @@ sibling repo by the exporter that makes them.
 | **R10** | This app's candidate-facing product copy may use em dashes, which is the exemption C29 asks each repo to state. Chat, LINE, email and social copy may not. |
 | **R11** | `src/lib/scoring.ts` is the only scoring implementation. Never add a second, including as a spreadsheet formula. |
 | **R12** | A score is tiered `ecra` where the survey collects that competency's own defined inputs, `proxy` where it evidences part of the picture, `coach` where it does not reach. Never score a `coach` item, and never name a proxy after the competency it gestures at. |
-| **R13** | Run `npx tsx scripts/audit.ts <responses.json>` after touching `src/lib/normalize.ts`. |
+| **R13** | Run `npx tsx scripts/audit.ts <responses.json>` after touching `src/lib/normalize.ts`. It reports per-question parse rates, prints every rejected value, and asserts the scoring invariants. |
 | **R14 LAW** | `src/app/tokens.generated.css` and `src/lib/design-tokens.generated.ts` are generated. Never hand-edit either: change the token in `design.md`, run `npm run tokens`, commit both. |
 | **R15** | `globals.css` holds only what is not a token: the base layer, the chart styles, the animations. `src/lib/design-tokens.ts` is a re-export and nothing more. |
 | **R16** | One accent. `primary` is a fill, never type. Text that has to say what the lime says takes `ink`, `ink-deep`, or the `-deep` member of a semantic pair. `positive` and `accent-cyan` are fills for the same reason. |
@@ -112,7 +115,7 @@ sibling repo by the exporter that makes them.
 | **R20** | No component names the dark scheme and Tailwind's `dark:` prefix is never used. A surface that looks wrong in dark holds a literal colour or the wrong role. |
 | **R21** | A fixed fill carries `.ground-fixed`, because the content inside it does change between schemes. The lime fill is `bg-canvas-brand`, never `bg-primary`: inside a fixed ground `primary` is remapped to the green-black, so the two together paint ink on ink. |
 | **R22** | Hover is a state layer, 8% of the element's own content colour over its own background. There is no second, brighter token per interactive colour. |
-| **R23** | The page is white and structure comes from `<Band ground="canvas\|soft\|brand\|dark">`. Do not tint the page and do not stack tinted cards in one white column. |
+| **R23** | The page is white and structure comes from `<Band ground="canvas\|soft\|brand\|dark">` in `src/components/Band.tsx`. Do not tint the page and do not stack tinted cards in one white column. |
 | **R24** | `.card-plain` is the card on a band, `.card-outlined` the card on white, and a page needing many of those wanted a band. Content cards are `.card-outlined` and `.card-tonal`. |
 | **R25** | Three type tiers: `display-*` once per page, `headline-*` for section headings, `heading-*` for card and group titles, `body-lg` for copy. Never set a Thai heading in Archivo or Inter; `HERO_HEADING(locale)` and `SECTION_HEADING(locale)` pick the tier per script. |
 | **R26** | A button is always `pill`. `rounded-2xl` is the card, `3xl` the large feature panel, `md` dense controls, `sm` the smallest chips. Never mix in Tailwind's own `rounded-sm\|md\|lg`. |
@@ -127,7 +130,7 @@ sibling repo by the exporter that makes them.
 | **R35** | Every internal link is written as its Thai path and passed through `path()` from `useCopy()`, or `localePath(href, locale)` in a server component. The link tables in `nav.ts`, `footer.ts`, `cta.ts` and `faq.ts` hold no locale. |
 | **R36** | Adding a page means the real file under `(th)/`, an `(en)/en/…/page.tsx` re-exporting its default with its own `pageMetadata({ …, locale: "en" })`, and a `PUBLIC_ROUTES` entry. |
 | **R37 LAW** | A push to `master` is the production deploy, not a step before one, and it is gated by the pre-push list in section 6. Never deploy from a laptop and never run `npx convex deploy --prod`. |
-| **R38** | Every CLI command without `--prod` hits dev, which holds real personal data and is not a scratch environment. |
+| **R38** | Every CLI command without `--prod` hits dev, which holds real personal data and is not a scratch environment. PDPA applies to it. |
 | **R39** | Commit before deploying anything. `git status --short` empty is the gate, because Convex pushes the working tree and not a commit. |
 | **R40** | Dev may drift. Keep it reproducible instead: from a clean tree, `npx convex dev --once` rebuilds it from what is committed. |
 | **R41** | A deploy that changed nothing means the wrong deployment was targeted. Re-check the target rather than deploying again. |
@@ -153,6 +156,7 @@ lone clone runs but cannot regenerate its colours or its termbase. Production is
 | `npm run tokens` | regenerates the token layer from `design.md` (R14) |
 | `npm run design:html` | regenerates the rendered style guide beside `design.md` |
 | `npm run termbase` | syncs the decided Thai terms into this repo |
+| `npm run verify:thai-register` | checks the Thai register against `golden-th/` in the sibling repo |
 | `npm run blog:cards` | generates missing sharing cards, `--force` redoes them. macOS only, output committed, so the Vercel build never runs it |
 | `npm run review:page` | exports a page for review into the sibling repo, and refuses to overwrite a `PB:` line without `--force` (C43) |
 
