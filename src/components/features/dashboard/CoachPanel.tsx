@@ -174,7 +174,7 @@ export default function CoachPanel({
               href={linkedinUrl}
               target="_blank"
               rel="noreferrer noopener"
-              className="self-center whitespace-nowrap text-body-medium text-on-primary underline"
+              className="self-center whitespace-nowrap text-body-medium text-ink-deep underline"
             >
               Open
             </a>

@@ -196,7 +196,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
   return (
     <div className="w-full space-y-8">
       <div>
-        <Link href="/admin" className="text-body-medium text-on-primary underline">
+        <Link href="/admin" className="text-body-medium text-ink-deep underline">
           Back to all leads
         </Link>
         <h1 className="mt-2 text-headline-small">{lead.fullName ?? "Anonymous lead"}</h1>
@@ -210,7 +210,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
               lifecycle === "withdrawn"
                 ? "border-error text-error"
                 : lifecycle === "placed" || lifecycle === "client"
-                  ? "border-primary text-on-primary"
+                  ? "border-primary text-ink-deep"
                   : "border-outline-variant text-on-surface-variant"
             }`}
           >
@@ -454,7 +454,7 @@ export default function LeadDetail({ leadId }: { leadId: Id<"leads"> }) {
             <button
               type="button"
               onClick={() => void setCrmStatus({ leadId, crmStatus: null })}
-              className="mt-2 text-body-medium text-on-primary underline"
+              className="mt-2 text-body-medium text-ink-deep underline"
             >
               Back to New
             </button>
@@ -604,7 +604,7 @@ function Row({
         {value === null ? (
           <span className="text-body-large text-on-surface-variant">not provided</span>
         ) : actionable && href ? (
-          <a className="text-body-large text-on-primary underline" href={href}>
+          <a className="text-body-large text-ink-deep underline" href={href}>
             {value}
           </a>
         ) : actionable && copyable ? (
@@ -612,7 +612,7 @@ function Row({
             type="button"
             onClick={() => void navigator.clipboard?.writeText(value)}
             title="Copy"
-            className="text-body-large text-on-primary underline"
+            className="text-body-large text-ink-deep underline"
           >
             {value}
           </button>

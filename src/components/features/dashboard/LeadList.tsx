@@ -217,7 +217,7 @@ export default function LeadList() {
                   }`}
                 >
                   <Td>
-                    <Link href={`/admin/leads/${l._id}`} className="text-on-primary underline">
+                    <Link href={`/admin/leads/${l._id}`} className="text-ink-deep underline">
                       {l.fullName ?? "Anonymous"}
                     </Link>
                   </Td>
