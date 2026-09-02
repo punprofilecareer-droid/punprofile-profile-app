@@ -71,7 +71,7 @@ export default function Unsubscribe({ token }: { token: string }) {
             {pick(UNSUBSCRIBE_RESTART)}{" "}
             <Link
               href={path("/blog")}
-              className="text-on-primary underline underline-offset-2"
+              className="text-ink-deep underline underline-offset-2"
             >
               {pick(BLOG_BACK)}
             </Link>

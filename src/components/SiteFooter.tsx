@@ -45,7 +45,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
    * without the rule the footer and the last section merge into one field.
    */
   return (
-    <footer className="mt-auto border-t border-line bg-canvas-soft py-14 text-on-primary">
+    <footer className="mt-auto border-t border-line bg-canvas-soft py-14 text-ink-deep">
       {/* The same container as the header and every band. */}
       <div className="page-container">
       <div className="w-full">
@@ -149,7 +149,7 @@ export default function SiteFooter({ locale }: { locale: Locale }) {
           <span>{t("footer.brand", locale)}</span>
           <Link
             href={localePath("/privacy", locale)}
-            className="underline underline-offset-4 duration-[350ms] ease-nav transition-colors hover:text-on-primary"
+            className="underline underline-offset-4 duration-[350ms] ease-nav transition-colors hover:text-ink-deep"
           >
             {t("consent.privacyLink", locale)}
           </Link>

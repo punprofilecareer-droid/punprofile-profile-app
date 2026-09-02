@@ -111,7 +111,7 @@ export default function TopNav({ slot = "primary" }: { slot?: "primary" | "secon
    */
   const itemClass = (active: boolean) =>
     `flex h-9 items-center rounded-full px-3 text-body-sm-strong duration-[350ms] ease-nav transition-colors ${
-      active ? "bg-primary-pale text-on-primary" : "text-on-primary hover:bg-primary-pale"
+      active ? "bg-primary-pale text-on-primary-pale" : "text-ink-deep hover:bg-primary-pale"
     }`;
 
   /*
@@ -298,8 +298,8 @@ export default function TopNav({ slot = "primary" }: { slot?: "primary" | "secon
                     aria-current={isHere(item.href) ? "page" : undefined}
                     className={`group flex min-h-12 items-center gap-3 rounded-md px-3 text-body-md-strong duration-[350ms] ease-nav transition-colors ${
                       isHere(item.href)
-                        ? "bg-primary-pale text-on-primary"
-                        : "text-on-primary hover:bg-canvas-soft"
+                        ? "bg-primary-pale text-on-primary-pale"
+                        : "text-ink-deep hover:bg-canvas-soft"
                     }`}
                   >
                     {/* Decoration, and named as such: the reference gives every
@@ -332,8 +332,8 @@ export default function TopNav({ slot = "primary" }: { slot?: "primary" | "secon
                     aria-current={isHere(item.href) ? "page" : undefined}
                     className={`flex min-h-12 items-center gap-3 rounded-md px-3 text-body-md-strong duration-[350ms] ease-nav transition-colors ${
                       isHere(item.href)
-                        ? "bg-primary-pale text-on-primary"
-                        : "text-on-primary hover:bg-canvas-soft"
+                        ? "bg-primary-pale text-on-primary-pale"
+                        : "text-ink-deep hover:bg-canvas-soft"
                     }`}
                   >
                     <span

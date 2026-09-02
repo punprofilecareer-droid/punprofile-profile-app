@@ -76,7 +76,7 @@ function ProofPanel() {
       <div className="mt-6 grid gap-4 medium:grid-cols-3">
         {lines.map(({ line, value }) => (
           <div key={line.share} className="card-plain px-8 py-9">
-            <p className="text-headline-large text-on-primary">{value.pct}%</p>
+            <p className="text-headline-large text-ink-deep">{value.pct}%</p>
             <p className="mt-2 text-body-large text-on-surface">{pick(line.label)}</p>
           </div>
         ))}
@@ -112,7 +112,7 @@ export default function CoachingPage() {
             <h1 className={`mt-5 text-balance ${HERO_HEADING(locale)}`}>
               {pick(HOOK_LINE_1)}
               <br />
-              <span className="text-on-primary">{pick(HOOK_LINE_2)}</span>
+              <span className="text-ink-deep">{pick(HOOK_LINE_2)}</span>
             </h1>
             <div className="mt-6 flex max-w-xl flex-col gap-4">
               {HOOK_BODY.map((p, i) => (
@@ -167,7 +167,7 @@ export default function CoachingPage() {
           <div className="mt-8 grid gap-4 medium:grid-cols-2">
             {METHOD.map((step) => (
               <div key={step.n} className="card-plain px-8 py-9">
-                <p className="text-headline-small text-on-primary">{step.n}</p>
+                <p className="text-headline-small text-ink-deep">{step.n}</p>
                 <h3 className="mt-2 text-heading-sm">{pick(step.heading)}</h3>
                 <div className="mt-3 flex flex-col gap-3">
                   {step.body.map((b, i) => (

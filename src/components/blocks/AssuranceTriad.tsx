@@ -43,7 +43,7 @@ export default function AssuranceTriad({
                 className="mx-auto mb-6 h-auto w-full max-w-[200px]"
               />
             )}
-            <p className="text-heading-sm text-on-primary">{item.title}</p>
+            <p className="text-heading-sm text-ink-deep">{item.title}</p>
             <p className="mt-3 text-body-md text-body">{item.body}</p>
           </div>
         ))}

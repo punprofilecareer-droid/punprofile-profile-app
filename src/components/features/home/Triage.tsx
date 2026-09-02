@@ -38,7 +38,7 @@ export default function Triage() {
             className="group flex min-h-20 items-center justify-between gap-4 px-6 py-5 duration-[350ms] ease-nav transition-colors hover:bg-canvas-soft"
           >
             <span className="min-w-0">
-              <span className="block text-body-md-strong text-on-primary">{pick(item.line)}</span>
+              <span className="block text-body-md-strong text-ink-deep">{pick(item.line)}</span>
               {/* The reference's row carries a line of body under its title:
                   the title is the situation, the body says what happens if you
                   press it. We have never written those, so each is a slot. */}

@@ -95,7 +95,7 @@ export default function PricingPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-title-large">{pick(pack.name)}</h3>
                 {pack.recommended && (
-                  <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-on-primary">
+                  <span className="rounded-full bg-action-container px-2.5 py-0.5 text-body-medium text-on-action-container">
                     {pick(RECOMMENDED_BADGE)}
                   </span>
                 )}

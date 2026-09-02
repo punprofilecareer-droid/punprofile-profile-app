@@ -195,7 +195,7 @@ export default function Home() {
                   which is where it used to sit. Under two minutes, a result
                   straight away and no account is a proof, and a proof is what
                   this row carries. */}
-              <span className="text-body-sm-strong text-on-primary">
+              <span className="text-body-sm-strong text-ink-deep">
                 {t("landing.reassurance")}
               </span>
             </span>
@@ -211,7 +211,7 @@ export default function Home() {
                   adjective, which slot 7 forbids. */}
               <Link
                 href={path("/method")}
-                className="text-body-sm-strong text-on-primary underline underline-offset-4"
+                className="text-body-sm-strong text-ink-deep underline underline-offset-4"
               >
                 {pick(METHOD_PROOF)}
               </Link>
@@ -319,7 +319,7 @@ export default function Home() {
                     <path d={STAT_MARK[stat.field] ?? STAT_MARK.screened} />
                   </svg>
                 </span>
-                <p className="mt-4 text-display-md text-on-primary">{MARKET[stat.field]}</p>
+                <p className="mt-4 text-display-md text-ink-deep">{MARKET[stat.field]}</p>
                 <p className="mt-2 text-body-large text-body">{t(stat.label)}</p>
               </div>
             ))}
@@ -418,7 +418,7 @@ export default function Home() {
                     the cost of drawing it without saying so. */}
                 <span
                   aria-hidden
-                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-heading-xs text-on-primary"
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-heading-xs text-ink-deep"
                 >
                   {step.n}
                 </span>
@@ -702,7 +702,7 @@ export default function Home() {
           </ul>
           <Link
             href={path("/faq")}
-            className="mt-6 inline-block text-body-large text-on-primary underline underline-offset-2"
+            className="mt-6 inline-block text-body-large text-ink-deep underline underline-offset-2"
           >
             {pick(FAQ_HEADING)}
           </Link>

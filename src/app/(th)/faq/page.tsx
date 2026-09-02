@@ -58,7 +58,7 @@ export default function FaqPage() {
               {item.link && (
                 <Link
                   href={path(item.link.href)}
-                  className="text-body-large text-on-primary underline underline-offset-2"
+                  className="text-body-large text-ink-deep underline underline-offset-2"
                 >
                   {pick(item.link.label)}
                 </Link>

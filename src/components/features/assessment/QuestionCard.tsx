@@ -205,7 +205,7 @@ export default function QuestionCard({
             <button
               type="button"
               onClick={onBack}
-              className="-mr-2 flex items-center gap-1 rounded-small px-2 py-1 text-body-medium text-on-surface-variant transition-colors hover:text-on-primary"
+              className="-mr-2 flex items-center gap-1 rounded-small px-2 py-1 text-body-medium text-on-surface-variant transition-colors hover:text-ink-deep"
             >
               <span aria-hidden>&larr;</span>
               {t("assess.back")}

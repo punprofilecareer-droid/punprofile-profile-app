@@ -98,7 +98,7 @@ function Body() {
                 {/* The client's question, not a tagline. A service described by
                     the problem it answers is checkable; one described by its
                     benefits is not. */}
-                <p className="mt-3 text-heading-xs text-on-primary">&ldquo;{pick(s.question)}&rdquo;</p>
+                <p className="mt-3 text-heading-xs text-ink-deep">&ldquo;{pick(s.question)}&rdquo;</p>
                 <p className="mt-3 text-body-large text-on-surface-variant">{pick(s.summary)}</p>
 
                 <ul className="mt-5 flex flex-col gap-2.5">

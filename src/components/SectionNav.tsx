@@ -68,7 +68,7 @@ export default function SectionNav() {
         <Link
           href={path(ROOT)}
           aria-current={pathname === path(ROOT) ? "page" : undefined}
-          className="shrink-0 text-heading-xs text-on-primary"
+          className="shrink-0 text-heading-xs text-ink-deep"
         >
           {t("nav.assess")}
         </Link>
@@ -79,7 +79,7 @@ export default function SectionNav() {
               key={l.href}
               href={path(l.href)}
               aria-current={pathname === path(l.href) ? "page" : undefined}
-              className={`flex h-9 shrink-0 items-center rounded-full px-3 text-body-sm-strong text-on-primary duration-[350ms] ease-nav transition-colors ${
+              className={`flex h-9 shrink-0 items-center rounded-full px-3 text-body-sm-strong text-ink-deep duration-[350ms] ease-nav transition-colors ${
                 pathname === path(l.href) ? "bg-primary-pale" : "hover:bg-primary-pale"
               }`}
             >

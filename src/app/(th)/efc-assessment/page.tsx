@@ -701,7 +701,7 @@ export default function AssessPage() {
                   is a link inside a card rather than a second filled button. */}
               <Link
                 href={path(DESTINATIONS.contact.href)}
-                className="mt-2 inline-block text-body-large text-on-primary underline underline-offset-2"
+                className="mt-2 inline-block text-body-large text-ink-deep underline underline-offset-2"
               >
                 {pick(DESTINATIONS.contact.label)}
               </Link>
@@ -778,7 +778,7 @@ export default function AssessPage() {
       <button
         type="button"
         onClick={() => setStep(STAGE1.length - 1)}
-        className="mt-6 rounded-small px-2 py-1 text-body-medium text-on-surface-variant underline underline-offset-2 transition-colors hover:text-on-primary"
+        className="mt-6 rounded-small px-2 py-1 text-body-medium text-on-surface-variant underline underline-offset-2 transition-colors hover:text-ink-deep"
       >
         {t("teaser.revise")}
       </button>

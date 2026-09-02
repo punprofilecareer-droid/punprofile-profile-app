@@ -107,12 +107,12 @@ export default function Catalogue() {
             >
               &#3647;
             </span>
-            <p className="min-w-0 flex-1 text-body-md-strong text-on-primary">
+            <p className="min-w-0 flex-1 text-body-md-strong text-ink-deep">
               {pick(CATALOGUE_PRICE_LINE)}
             </p>
             <Link
               href={path(DESTINATIONS.pricing.href)}
-              className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-line-strong px-5 text-body-sm-strong text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+              className="inline-flex min-h-12 shrink-0 items-center rounded-full border border-line-strong px-5 text-body-sm-strong text-ink-deep duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
             >
               {pick(DESTINATIONS.pricing.label)}
             </Link>

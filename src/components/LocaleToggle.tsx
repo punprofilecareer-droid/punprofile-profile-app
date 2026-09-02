@@ -201,7 +201,7 @@ export default function LocaleToggle() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={`${t("nav.language")}: ${NAMES[locale]}`}
-        className="flex h-9 items-center gap-2 rounded-full px-3 text-body-sm-strong text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+        className="flex h-9 items-center gap-2 rounded-full px-3 text-body-sm-strong text-ink-deep duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
       >
         <Flag locale={locale} className="size-5 shrink-0" />
         <span aria-hidden>{CODES[locale]}</span>
@@ -246,7 +246,7 @@ export default function LocaleToggle() {
             onClick={() => setOpen(false)}
             aria-label={t("nav.menuClose")}
             tabIndex={open ? undefined : -1}
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas-soft text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas-soft text-ink-deep duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
           >
             <span aria-hidden>&#10005;</span>
           </button>
@@ -263,8 +263,8 @@ export default function LocaleToggle() {
                 tabIndex={open ? undefined : -1}
                 className={`flex w-full items-center gap-3 rounded-2xl px-5 py-4 text-left text-body-md-strong duration-[350ms] ease-nav transition-colors ${
                   locale === l
-                    ? "bg-primary-pale text-on-primary"
-                    : "bg-canvas-soft text-on-primary hover:bg-primary-pale"
+                    ? "bg-primary-pale text-on-primary-pale"
+                    : "bg-canvas-soft text-ink-deep hover:bg-primary-pale"
                 }`}
               >
                 <Flag locale={l} className="size-6 shrink-0" />

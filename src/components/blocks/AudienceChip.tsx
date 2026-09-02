@@ -16,7 +16,7 @@ export default function AudienceChip({
   mark?: string;
 }) {
   return (
-    <p className="inline-flex items-center gap-2 rounded-full bg-canvas-soft px-4 py-2 text-body-sm-strong text-on-primary">
+    <p className="inline-flex items-center gap-2 rounded-full bg-canvas-soft px-4 py-2 text-body-sm-strong text-ink-deep">
       {mark && (
         <svg viewBox="0 0 24 24" aria-hidden className="size-4 shrink-0" fill="currentColor">
           <path d={mark} />

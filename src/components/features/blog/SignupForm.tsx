@@ -100,7 +100,7 @@ export default function SignupForm() {
         {pick(SIGNUP_CONSENT)}{" "}
         <Link
           href={path("/privacy")}
-          className="text-on-primary underline underline-offset-2"
+          className="text-ink-deep underline underline-offset-2"
         >
           {pick(CONSENT_COPY["consent.privacyLink"])}
         </Link>

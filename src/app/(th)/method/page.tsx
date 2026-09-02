@@ -56,7 +56,7 @@ export default function MethodPage() {
         <div className="mt-10 grid gap-6 medium:grid-cols-2">
           {VERBS.map((verb) => (
             <div key={verb.name.en} className="card-plain px-6 py-6">
-              <p className="text-heading-md text-on-primary">{pick(verb.name)}</p>
+              <p className="text-heading-md text-ink-deep">{pick(verb.name)}</p>
               <p className="mt-3 text-body-large text-on-surface-variant">{pick(verb.body)}</p>
             </div>
           ))}
@@ -90,7 +90,7 @@ export default function MethodPage() {
               </span>
               <span className="flex-1">
                 <span className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <span className="text-heading-md text-on-primary">
+                  <span className="text-heading-md text-ink-deep">
                     {t(`dimension.${gate.key}`)}
                   </span>
                   {/* The bar, published 26/08/2026 once Paul confirmed it. The

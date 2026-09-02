@@ -205,7 +205,7 @@ export default function SiteMenu() {
         aria-label={t("nav.menu")}
         aria-expanded={open}
         aria-controls="site-menu"
-        className="-mr-2 flex size-12 items-center justify-center rounded-full text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+        className="-mr-2 flex size-12 items-center justify-center rounded-full text-ink-deep duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
       >
         {/* Three rules, drawn rather than typed: the glyph characters that look
             like a burger render at different weights across Thai and Latin
@@ -267,7 +267,7 @@ export default function SiteMenu() {
                   type="button"
                   onClick={close}
                   aria-label={t("nav.menuClose")}
-                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas-soft text-on-primary duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas-soft text-ink-deep duration-[350ms] ease-nav transition-colors hover:bg-primary-pale"
                 >
                   <span aria-hidden>&#10005;</span>
                 </button>
@@ -323,8 +323,8 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-on-primary ${
-                        here ? "font-semibold text-on-primary" : "text-body"
+                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-ink-deep ${
+                        here ? "font-semibold text-ink-deep" : "text-body"
                       }`}
                     >
                       {t(item.label)}
@@ -343,8 +343,8 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-on-primary ${
-                        here ? "font-semibold text-on-primary" : "text-body"
+                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-ink-deep ${
+                        here ? "font-semibold text-ink-deep" : "text-body"
                       }`}
                     >
                       {t(item.label)}
@@ -366,8 +366,8 @@ export default function SiteMenu() {
                       key={item.href}
                       href={href}
                       aria-current={here ? "page" : undefined}
-                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-on-primary ${
-                        here ? "font-semibold text-on-primary" : "text-body"
+                      className={`text-heading-sm duration-[350ms] ease-nav transition-colors hover:text-ink-deep ${
+                        here ? "font-semibold text-ink-deep" : "text-body"
                       }`}
                     >
                       {t(item.label)}

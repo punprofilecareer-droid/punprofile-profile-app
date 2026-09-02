@@ -237,7 +237,7 @@ export default function ContactGate({
 
       <p className="mt-6 text-body-medium text-on-surface-variant">
         {pick(CONSENT_COPY["consent.purpose"])}{" "}
-        <Link href={path("/privacy")} className="text-on-primary underline">
+        <Link href={path("/privacy")} className="text-ink-deep underline">
           {pick(CONSENT_COPY["consent.privacyLink"])}
         </Link>
       </p>
@@ -337,7 +337,7 @@ export default function ContactGate({
               exist. Only the privacy notice becomes a link. */}
           <p className="mt-2 text-body-small text-on-surface-variant">
             {pick(CONSENT_COPY["consent.marketingNote"])}{" "}
-            <Link href={path("/privacy")} className="text-on-primary underline">
+            <Link href={path("/privacy")} className="text-ink-deep underline">
               {pick(CONSENT_COPY["consent.privacyLink"])}
             </Link>
           </p>

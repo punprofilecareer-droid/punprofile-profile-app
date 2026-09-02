@@ -100,7 +100,7 @@ export default function SampleRead() {
           view and the hero already spent it on this same destination. */}
       <Link
         href={path(DESTINATIONS.assess.href)}
-        className="mt-5 inline-block text-body-large text-on-primary underline underline-offset-2"
+        className="mt-5 inline-block text-body-large text-ink underline underline-offset-2"
       >
         {pick(DESTINATIONS.assess.label)}
       </Link>

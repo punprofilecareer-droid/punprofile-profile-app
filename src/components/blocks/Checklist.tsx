@@ -40,7 +40,7 @@ export default function Checklist({ items }: { items: readonly ChecklistItem[] }
             )}
           </span>
           <div className="min-w-0">
-            <p className="text-body-md-strong text-on-primary">{item.lead}</p>
+            <p className="text-body-md-strong text-ink-deep">{item.lead}</p>
             {item.body && <p className="mt-1 text-body-md text-body">{item.body}</p>}
           </div>
         </li>

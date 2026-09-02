@@ -68,7 +68,7 @@ export default function PrivacyPage() {
       ))}
 
       <p className="mt-12">
-        <Link href={path("/")} className="text-body-medium text-on-primary underline">
+        <Link href={path("/")} className="text-body-medium text-ink-deep underline">
           {th ? "กลับหน้าแรก" : "Back to the start"}
         </Link>
       </p>

@@ -59,7 +59,7 @@ export default function EnglishSwitchPrompt({
       aria-labelledby="english-switch-title"
     >
       <div className="w-full max-w-sm rounded-extra-large bg-surface-container-high px-6 py-7 shadow-level-3">
-        <h2 id="english-switch-title" className="text-title-large text-on-primary">
+        <h2 id="english-switch-title" className="text-title-large text-ink-deep">
           {t("english.switch.title")}
         </h2>
         <p className="mt-3 text-body-large text-on-surface-variant">{t("english.switch.body")}</p>
@@ -76,7 +76,7 @@ export default function EnglishSwitchPrompt({
         <button
           type="button"
           onClick={onRevert}
-          className="mt-3 w-full rounded-small px-2 py-2 text-body-large text-on-surface-variant underline underline-offset-2 transition-colors hover:text-on-primary"
+          className="mt-3 w-full rounded-small px-2 py-2 text-body-large text-on-surface-variant underline underline-offset-2 transition-colors hover:text-ink-deep"
         >
           {t("english.switch.revert")}
         </button>
